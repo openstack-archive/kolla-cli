@@ -5,61 +5,61 @@ from kollaclient.i18n import _
 from cliff.command import Command
 
 
-class HostAdd(Command):
-    "Host Add"
+class Deploy(Command):
+    "Deploy"
 
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("host add"))
+        self.log.info(_("deploy"))
         self.app.stdout.write(parsed_args)
 
 
-class HostRemove(Command):
-    "Host Remove"
+class List(Command):
+    "List"
 
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("host remove"))
+        self.log.info(_("list"))
         self.app.stdout.write(parsed_args)
 
 
-class HostList(Command):
-    "Host List"
+class Start(Command):
+    "Start"
 
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("host list"))
+        self.log.info(_("start"))
         self.app.stdout.write(parsed_args)
 
 
-class HostSetzone(Command):
-    "Host Setzone"
+class Stop(Command):
+    "Stop"
 
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("host setzone"))
+        self.log.info(_("stop"))
         self.app.stdout.write(parsed_args)
 
 
-class HostAddservice(Command):
-    "Host Addservice"
+class Sync(Command):
+    "Sync"
 
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("host addservice"))
+        self.log.info(_("sync"))
         self.app.stdout.write(parsed_args)
 
 
-class HostRemoveservice(Command):
-    "Host Removeservice"
+class Upgrade(Command):
+    "Upgrade"
 
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("host removeservice"))
+        self.log.info(_("upgrade"))
         self.app.stdout.write(parsed_args)
