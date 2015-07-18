@@ -1,6 +1,9 @@
 import logging
+import os
 
 from kollaclient.i18n import _
+from kollaclient.utils import get_kolla_etc
+from kollaclient.utils import get_kolla_home
 
 from cliff.command import Command
 
@@ -12,7 +15,17 @@ class Deploy(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("deploy"))
-        self.app.stdout.write(parsed_args)
+        self.app.stdout.write(''.join(parsed_args))
+
+
+class Install(Command):
+    "Install"
+
+    log = logging.getLogger(__name__)
+
+    def take_action(self, parsed_args):
+        self.log.info(_("install"))
+        self.app.stdout.write(''.join(parsed_args))
 
 
 class List(Command):
@@ -31,8 +44,18 @@ class Start(Command):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
+        kollaHome = get_kolla_home()
+        kollaEtc = get_kolla_etc()
         self.log.info(_("start"))
-        self.app.stdout.write(parsed_args)
+        self.log.info(kollaHome)
+        cmd = 'ansible-playbook -i'
+        cmd = cmd + kollaHome + '/ansible/inventory/all-in-one'
+        cmd = cmd + ' -e @' + kollaEtc + '/kolla/defaults.yml'
+        cmd = cmd + ' -e @' + kollaEtc + '/kolla/globals.yml'
+        cmd = cmd + ' -e @' + kollaEtc + '/kolla/passwords.yml'
+        cmd = cmd + ' ' + kollaHome + '/ansible/site.yml'
+        self.log.info(cmd)
+        os.system(cmd)
 
 
 class Stop(Command):
@@ -42,7 +65,6 @@ class Stop(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("stop"))
-        self.app.stdout.write(parsed_args)
 
 
 class Sync(Command):
@@ -52,7 +74,6 @@ class Sync(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("sync"))
-        self.app.stdout.write(parsed_args)
 
 
 class Upgrade(Command):
@@ -62,4 +83,3 @@ class Upgrade(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("upgrade"))
-        self.app.stdout.write(parsed_args)
