@@ -83,3 +83,12 @@ class Upgrade(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("upgrade"))
+
+
+class Dump(Command):
+    "Dump"
+
+    log = logging.getLogger(__name__)
+
+    def take_action(self, parsed_args):
+        self.log.info(_("dump"))
