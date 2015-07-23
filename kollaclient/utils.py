@@ -25,6 +25,10 @@ def get_client_etc():
     return get_env("KOLLA_CLIENT_ETC", "/etc/kollaclient/etc/")
 
 
+def get_admin_user():
+    return get_env("KOLLA_ADMIN_USER", "kolla")
+
+
 def get_pk_file():
     return get_env("KOLLA_CLIENT_PKPATH", "/opt/kollaclient/etc/id_rsa")
 

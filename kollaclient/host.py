@@ -1,6 +1,8 @@
 import logging
 
 from kollaclient.i18n import _
+from kollaclient.sshutils import ssh_check_connect
+from kollaclient.sshutils import ssh_check_keys
 from kollaclient.sshutils import ssh_keygen
 from kollaclient.utils import load_etc_yaml
 from kollaclient.utils import save_etc_yaml
@@ -16,21 +18,21 @@ class HostAdd(Command):
     def get_parser(self, prog_name):
         parser = super(HostAdd, self).get_parser(prog_name)
         parser.add_argument('hostname')
-        parser.add_argument('ipaddress')
+        parser.add_argument('networkaddress')
         # TODO(bmace) error if args missing
         return parser
 
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname
-        ipaddr = parsed_args.ipaddress
+        networkAddress = parsed_args.networkaddress
         contents = load_etc_yaml('hosts.yml')
         for host, hostdata in contents.items():
             if host == hostname:
                 # TODO(bmace) fix message
                 self.log.info(_("host already exists"))
                 return
-        hostEntry = {hostname: {'Services': '', 'IPAddress':
-                     ipaddr, 'Zone': ''}}
+        hostEntry = {hostname: {'Services': '', 'NetworkAddress':
+                     networkAddress, 'Zone': ''}}
         contents.update(hostEntry)
         save_etc_yaml('hosts.yml', contents)
 
@@ -118,6 +120,9 @@ class HostCheck(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("host check"))
+        sshKeysExist = ssh_check_keys()
+        if not sshKeysExist:
+            ssh_keygen()
         hostname = parsed_args.hostname
         contents = load_etc_yaml('hosts.yml')
         hostFound = False
@@ -125,8 +130,9 @@ class HostCheck(Command):
             if host == hostname:
                 # TODO(bmace) fix message
                 hostFound = True
-                self.log.info(hostdata['IPAddress'])
-                return
+                networkAddress = hostdata['NetworkAddress']
+                self.log.info(networkAddress)
+                ssh_check_connect(networkAddress)
 
         if hostFound is False:
             self.log.info("no host by name (" + hostname + ") found")
@@ -145,7 +151,9 @@ class HostInstall(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("host install"))
-        ssh_keygen()
+        sshKeysExist = ssh_check_keys()
+        if not sshKeysExist:
+            ssh_keygen()
         hostname = parsed_args.hostname
         contents = load_etc_yaml('hosts.yml')
         hostFound = False
@@ -153,8 +161,8 @@ class HostInstall(Command):
             if host == hostname:
                 # TODO(bmace) fix message
                 hostFound = True
-                self.log.info(hostdata['IPAddress'])
-                return
+                networkAddress = hostdata['NetworkAddress']
+                self.log.info(networkAddress)
 
         if hostFound is False:
             self.log.info("no host by name (" + hostname + ") found")
