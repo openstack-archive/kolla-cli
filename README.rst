@@ -16,3 +16,8 @@ available and any of the sub commands can be executed directly.
 
 Alternately you can not use the shell and just execute commands
 directly via >kollaclient host add, etc.
+
+If you make changes to the i18n strings (denoted by methods like
+_("message")) make sure to re-generate the i18n files with the
+>python setup.py extract_messages command and check in the files
+generated in openstack-kollaclient.

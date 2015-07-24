@@ -1,36 +1,42 @@
+# Copyright(c) 2015, Oracle and/or its affiliates.  All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
 import os
 import yaml
 
 
-def get_env(var, default):
-    value = os.environ.get(var, None)
-    if value:
-        return value
-    return default
-
-
 def get_kolla_home():
-    return get_env("KOLLA_HOME", "/opt/kolla")
+    return os.environ.get("KOLLA_HOME", "/opt/kolla")
 
 
 def get_kolla_etc():
-    return get_env("KOLLA_ETC", "/etc")
+    return os.environ.get("KOLLA_ETC", "/etc")
 
 
 def get_client_home():
-    return get_env("KOLLA_CLIENT_HOME", "/opt/kollaclient/")
+    return os.environ.get("KOLLA_CLIENT_HOME", "/opt/kollaclient/")
 
 
 def get_client_etc():
-    return get_env("KOLLA_CLIENT_ETC", "/etc/kollaclient/etc/")
+    return os.environ.get("KOLLA_CLIENT_ETC", "/etc/kollaclient/etc/")
 
 
 def get_admin_user():
-    return get_env("KOLLA_ADMIN_USER", "kolla")
+    return os.environ.get("KOLLA_ADMIN_USER", "kolla")
 
 
 def get_pk_file():
-    return get_env("KOLLA_CLIENT_PKPATH", "/opt/kollaclient/etc/id_rsa")
+    return os.environ.get("KOLLA_CLIENT_PKPATH", "/opt/kollaclient/etc/id_rsa")
 
 
 def get_pk_password():
