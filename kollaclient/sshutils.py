@@ -57,7 +57,6 @@ def ssh_connect(netAddr, username, password, useKeys):
 
 
 def ssh_check_host(netAddr):
-    log = logging.getLogger(__name__)
     try:
         sshClient = ssh_connect(netAddr, get_admin_user(), '', True)
         sshClient.exec_command("ls")
