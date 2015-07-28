@@ -40,10 +40,10 @@ class HostAdd(Command):
         hostname = parsed_args.hostname.rstrip()
         netAddr = parsed_args.networkaddress.rstrip()
         contents = load_etc_yaml('hosts.yml')
-        for host, hostdata in contents.items():
+        for host in contents:
             if host == hostname:
                 # TODO(bmace) fix message
-                self.log.info(_("host already exists"))
+                self.log.info(_('host already exists (%s)') % hostname)
                 return
         hostEntry = {hostname: {'Services': '', 'NetworkAddress':
                      netAddr, 'Zone': ''}}
@@ -66,7 +66,7 @@ class HostRemove(Command):
         hostname = parsed_args.hostname.rstrip()
         contents = load_etc_yaml('hosts.yml')
         foundHost = False
-        for host, hostdata in contents.items():
+        for host, _ in contents.items():
             if host == hostname:
                 foundHost = True
         if foundHost:
@@ -133,10 +133,14 @@ class HostCheck(Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.log.info(_("host check"))
         sshKeysExist = ssh_check_keys()
         if not sshKeysExist:
-            ssh_keygen()
+            try:
+                ssh_keygen()
+            except Exception as e:
+                self.log.error("Error generating ssh keys: %s" % str(e))
+                return False
+
         hostname = parsed_args.hostname.rstrip()
         netAddr = None
         contents = load_etc_yaml('hosts.yml')
@@ -146,16 +150,21 @@ class HostCheck(Command):
                 # TODO(bmace) fix message
                 hostFound = True
                 netAddr = hostdata['NetworkAddress']
-                self.log.info(netAddr)
+                break
 
         if hostFound is False:
-            self.log.info("no host by name (" + hostname + ") found")
+            self.log.error("No host by name (%s) found" % hostname)
             return False
 
-        sshCheck = ssh_check_host(netAddr)
-        if sshCheck is False:
-            self.log.error("ssh access to host failed")
-            return
+        try:
+            self.log.info('host check (%s) at address (%s)' %
+                          (hostname, netAddr))
+            ssh_check_host(netAddr)
+            self.log.info('host check (%s) passed' % hostname)
+            return True
+        except Exception as e:
+            self.log.error("host check (%s) failed (%s)" % (hostname, str(e)))
+            return False
 
 
 class HostInstall(Command):
@@ -171,10 +180,14 @@ class HostInstall(Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.log.info(_("host install"))
         sshKeysExist = ssh_check_keys()
         if not sshKeysExist:
-            ssh_keygen()
+            try:
+                ssh_keygen()
+            except Exception as e:
+                self.log.error("Error generating ssh keys: %s" % str(e))
+                return False
+
         hostname = parsed_args.hostname.rstrip()
         # TODO(bmace) get this password in another way?
         password = parsed_args.password.rstrip()
@@ -186,23 +199,28 @@ class HostInstall(Command):
                 # TODO(bmace) fix message
                 hostFound = True
                 netAddr = hostdata['NetworkAddress']
-                self.log.info(netAddr)
+                break
 
         if hostFound is False:
-            self.log.info("no host by name (" + hostname + ") found")
+            self.log.info("no host by name (%s) found" % hostname)
             return False
 
-        sshCheck = ssh_check_host(netAddr)
+        # Don't bother doing all the install stuff is the check looks ok
+        sshCheck = False
+        try:
+            ssh_check_host(netAddr)
+            self.log.info('host install skipped for (%s) as check passed' % hostname)
+            return True
+        except Exception as e:
+            pass
+
         # If sshCheck fails we need to set up the user / remote ssh keys
         # using root and the available password
         if sshCheck is False:
-            self.log.info("configuring admin user and ssh keys")
-            self.log.info("calling ssh_install_host with: " + netAddr +
-                          " : " + password)
-            installHost = ssh_install_host(netAddr, password)
-            if installHost is False:
-                # TODO(bmace) probably throw out of ssh_install_host and
-                # log the error here, or maybe log it in ssh_install_host?
-                self.log.info("host install failed for host: " + hostname)
-            else:
-                self.log.info("host install succeeded")
+            try: 
+                self.log.info('host install (%s) at address (%s)' %
+                              (hostname, netAddr))
+                ssh_install_host(netAddr, password)
+                self.log.info('host install (%s) passed' % hostname)
+            except Exception as e:
+                self.log.info('host install (%s) failed (%s)' % (hostname, str(e)))

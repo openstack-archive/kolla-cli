@@ -14,8 +14,8 @@
 import logging
 
 from kollaclient.i18n import _
-from kollaclient.util import load_etc_yaml
-from kollaclient.util import save_etc_yaml
+from kollaclient.utils import load_etc_yaml
+from kollaclient.utils import save_etc_yaml
 
 from cliff.command import Command
 
