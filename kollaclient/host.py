@@ -29,11 +29,26 @@ from kollaclient.utils import save_etc_yaml
 from cliff.command import Command
 
 HOSTS_YML_FNAME = 'hosts.yml'
+ZONES_YML_FNAME = 'zone.yml'
 
 
-def host_not_found(log, hostname):
+def _get_yaml_info(node_name, yaml):
+    value = None
+    for k, v in yaml.items():
+        if node_name == k:
+            value = v
+            break
+    return value
+
+
+def _host_not_found(log, hostname):
     log.info('Host (%s) not found. ' % hostname +
-             'Please add it with "host add hostname"')
+             'Please add it with "Host add"')
+
+
+def _zone_not_found(log, zonename):
+    log.info('Zone (%s) not found. ' % zonename +
+             'Please add it with "Zone add"')
 
 
 class HostAdd(Command):
@@ -51,12 +66,13 @@ class HostAdd(Command):
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.rstrip()
         netAddr = parsed_args.networkaddress.rstrip()
+
         contents = load_etc_yaml(HOSTS_YML_FNAME)
-        for host in contents:
-            if host == hostname:
-                self.log.info(_('Skipping, host (%s) already added.'
-                                % hostname))
-                return
+        if _get_yaml_info(hostname, contents):
+            self.log.debug(_('Skipping, host (%s) already added.'
+                             % hostname))
+            return
+
         hostEntry = {hostname: {'Services': '', 'NetworkAddress':
                      netAddr, 'Zone': ''}}
         contents.update(hostEntry)
@@ -76,14 +92,11 @@ class HostRemove(Command):
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.rstrip()
         contents = load_etc_yaml(HOSTS_YML_FNAME)
-        foundHost = False
-        for host, _ in contents.items():
-            if host == hostname:
-                foundHost = True
-        if foundHost:
+
+        if _get_yaml_info(hostname, contents):
             del contents[hostname]
         else:
-            self.log.info('Host (%s) not found. Skipping remove' % hostname)
+            self.log.debug('Host (%s) not found. Skipping remove' % hostname)
         save_etc_yaml(HOSTS_YML_FNAME, contents)
 
 
@@ -105,9 +118,55 @@ class HostSetzone(Command):
 
     log = logging.getLogger(__name__)
 
+    def get_parser(self, prog_name):
+        parser = super(HostSetzone, self).get_parser(prog_name)
+        parser.add_argument('hostname', metavar='<hostname>', help='host name')
+        parser.add_argument('zone', metavar='[zone]', help='zone name')
+        return parser
+
     def take_action(self, parsed_args):
-        self.log.info(_('host setzone'))
-        self.app.stdout.write(parsed_args)
+        hostname = parsed_args.hostname.strip()
+        zonename = parsed_args.zone.strip()
+
+        zones = load_etc_yaml(ZONES_YML_FNAME)
+        zone_data = _get_yaml_info(zonename, zones)
+        if not zone_data:
+            _zone_not_found(self.log, zonename)
+            return False
+
+        hosts = load_etc_yaml(HOSTS_YML_FNAME)
+        host_data = _get_yaml_info(hostname, hosts)
+        if not host_data:
+            _host_not_found(self.log, hostname)
+            return False
+
+        host_data['Zone'] = zonename
+        hosts[hostname] = host_data
+        save_etc_yaml(HOSTS_YML_FNAME, hosts)
+
+
+class HostClearzone(Command):
+    """Clear the zone from a host"""
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(HostClearzone, self).get_parser(prog_name)
+        parser.add_argument('hostname', metavar='<hostname>', help='host name')
+        return parser
+
+    def take_action(self, parsed_args):
+        hostname = parsed_args.hostname.strip()
+
+        hosts = load_etc_yaml(HOSTS_YML_FNAME)
+        host_data = _get_yaml_info(hostname, hosts)
+        if not host_data:
+            _host_not_found(self.log, hostname)
+            return False
+
+        host_data['Zone'] = ''
+        hosts[hostname] = host_data
+        save_etc_yaml(HOSTS_YML_FNAME, hosts)
 
 
 class HostAddservice(Command):
@@ -146,21 +205,18 @@ class HostCheck(Command):
             try:
                 ssh_keygen()
             except Exception as e:
-                self.log.error_(('Error generating ssh keys: %s' % str(e)))
+                self.log.error('Error generating ssh keys: %s' % str(e))
                 return False
 
         hostname = parsed_args.hostname.rstrip()
         netAddr = None
         contents = load_etc_yaml(HOSTS_YML_FNAME)
-        hostFound = False
-        for host, hostdata in contents.items():
-            if host == hostname:
-                hostFound = True
-                netAddr = hostdata['NetworkAddress']
-                break
 
-        if not hostFound:
-            host_not_found(self.log, hostname)
+        host_data = _get_yaml_info(hostname, contents)
+        if host_data:
+            netAddr = host_data['NetworkAddress']
+        else:
+            _host_not_found(self.log, hostname)
             return False
 
         try:
@@ -198,15 +254,12 @@ class HostInstall(Command):
 
         netAddr = None
         contents = load_etc_yaml(HOSTS_YML_FNAME)
-        hostFound = False
-        for host, hostdata in contents.items():
-            if host == hostname:
-                hostFound = True
-                netAddr = hostdata['NetworkAddress']
-                break
 
-        if not hostFound:
-            host_not_found(self.log, hostname)
+        host_data = _get_yaml_info(hostname, contents)
+        if host_data:
+            netAddr = host_data['NetworkAddress']
+        else:
+            _host_not_found(self.log, hostname)
             return False
 
         # Don't bother doing all the install stuff if the check looks ok
