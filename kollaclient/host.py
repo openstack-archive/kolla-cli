@@ -32,15 +32,6 @@ HOSTS_YML_FNAME = 'hosts.yml'
 ZONES_YML_FNAME = 'zone.yml'
 
 
-def _get_yaml_info(node_name, yaml):
-    value = None
-    for k, v in yaml.items():
-        if node_name == k:
-            value = v
-            break
-    return value
-
-
 def _host_not_found(log, hostname):
     log.info('Host (%s) not found. ' % hostname +
              'Please add it with "Host add"')
@@ -68,7 +59,7 @@ class HostAdd(Command):
         netAddr = parsed_args.networkaddress.rstrip()
 
         contents = load_etc_yaml(HOSTS_YML_FNAME)
-        if _get_yaml_info(hostname, contents):
+        if hostname in contents:
             self.log.debug(_('Skipping, host (%s) already added.'
                              % hostname))
             return
@@ -93,7 +84,7 @@ class HostRemove(Command):
         hostname = parsed_args.hostname.rstrip()
         contents = load_etc_yaml(HOSTS_YML_FNAME)
 
-        if _get_yaml_info(hostname, contents):
+        if hostname in contents:
             del contents[hostname]
         else:
             self.log.debug('Host (%s) not found. Skipping remove' % hostname)
@@ -129,17 +120,18 @@ class HostSetzone(Command):
         zonename = parsed_args.zone.strip()
 
         zones = load_etc_yaml(ZONES_YML_FNAME)
-        zone_data = _get_yaml_info(zonename, zones)
+        zone_data = zones[zonename]
         if not zone_data:
             _zone_not_found(self.log, zonename)
             return False
 
         hosts = load_etc_yaml(HOSTS_YML_FNAME)
-        host_data = _get_yaml_info(hostname, hosts)
-        if not host_data:
+
+        if hostname not in hosts:
             _host_not_found(self.log, hostname)
             return False
 
+        host_data = hosts[hostname]
         host_data['Zone'] = zonename
         hosts[hostname] = host_data
         save_etc_yaml(HOSTS_YML_FNAME, hosts)
@@ -159,11 +151,11 @@ class HostClearzone(Command):
         hostname = parsed_args.hostname.strip()
 
         hosts = load_etc_yaml(HOSTS_YML_FNAME)
-        host_data = _get_yaml_info(hostname, hosts)
-        if not host_data:
+        if hostname not in hosts:
             _host_not_found(self.log, hostname)
             return False
 
+        host_data = hosts[hostname]
         host_data['Zone'] = ''
         hosts[hostname] = host_data
         save_etc_yaml(HOSTS_YML_FNAME, hosts)
@@ -200,6 +192,12 @@ class HostCheck(Command):
         return parser
 
     def take_action(self, parsed_args):
+        hostname = parsed_args.hostname.rstrip()
+        contents = load_etc_yaml(HOSTS_YML_FNAME)
+        if hostname not in contents:
+            _host_not_found(self.log, hostname)
+            return False
+
         sshKeysExist = ssh_check_keys()
         if not sshKeysExist:
             try:
@@ -208,16 +206,8 @@ class HostCheck(Command):
                 self.log.error('Error generating ssh keys: %s' % str(e))
                 return False
 
-        hostname = parsed_args.hostname.rstrip()
-        netAddr = None
-        contents = load_etc_yaml(HOSTS_YML_FNAME)
-
-        host_data = _get_yaml_info(hostname, contents)
-        if host_data:
-            netAddr = host_data['NetworkAddress']
-        else:
-            _host_not_found(self.log, hostname)
-            return False
+        host_data = contents[hostname]
+        netAddr = host_data['NetworkAddress']
 
         try:
             self.log.info('Starting host (%s) check at address (%s)' %
@@ -242,6 +232,12 @@ class HostInstall(Command):
         return parser
 
     def take_action(self, parsed_args):
+        hostname = parsed_args.hostname.strip()
+        contents = load_etc_yaml(HOSTS_YML_FNAME)
+        if hostname not in contents:
+            _host_not_found(self.log, hostname)
+            return False
+
         sshKeysExist = ssh_check_keys()
         if not sshKeysExist:
             try:
@@ -250,17 +246,8 @@ class HostInstall(Command):
                 self.log.error('Error generating ssh keys: %s' % str(e))
                 return False
 
-        hostname = parsed_args.hostname.strip()
-
-        netAddr = None
-        contents = load_etc_yaml(HOSTS_YML_FNAME)
-
-        host_data = _get_yaml_info(hostname, contents)
-        if host_data:
-            netAddr = host_data['NetworkAddress']
-        else:
-            _host_not_found(self.log, hostname)
-            return False
+        host_data = contents[hostname]
+        netAddr = host_data['NetworkAddress']
 
         # Don't bother doing all the install stuff if the check looks ok
         try:
