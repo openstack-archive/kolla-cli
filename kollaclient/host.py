@@ -11,9 +11,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
-import getpass
 import argparse
+import getpass
+import logging
 import traceback
 
 from paramiko import AuthenticationException
@@ -60,8 +60,8 @@ class HostAdd(Command):
 
         contents = load_etc_yaml(HOSTS_YML_FNAME)
         if hostname in contents:
-            self.log.debug(_('Skipping, host (%s) already added.'
-                             % hostname))
+            self.log.debug('Skipping, host (%s) already added.'
+                           % hostname)
             return
 
         hostEntry = {hostname: {'Services': '', 'NetworkAddress':

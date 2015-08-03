@@ -1,3 +1,5 @@
+# Copyright(c) 2015, Oracle and/or its affiliates.  All Rights Reserved.
+#
 #   Licensed under the Apache License, Version 2.0 (the "License"); you may
 #   not use this file except in compliance with the License. You may obtain
 #   a copy of the License at
@@ -10,22 +12,16 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+import common
 import unittest
 
-import common
 
 KEY_NET = 'NetworkAddress'
-KEY_SERVICES = "Services"
+KEY_SERVICES = 'Services'
 KEY_ZONE = 'Zone'
 
 
 class TestFunctional(common.KollaClientTest):
-
-    def setUp(self):
-        super(TestFunctional, self).setUp()
-
-    def tearDown(self):
-        super(TestFunctional, self).tearDown()
 
     def test_host_add_remove(self):
         # host file should be initialized to an empty dict {}
@@ -65,7 +61,8 @@ class TestFunctional(common.KollaClientTest):
         self._check_hosts_yml(hosts, msg)
 
     def _check_hosts_yml(self, hosts, hosts_yml):
-        """
+        """Verify cli data against model data
+
         The yml is a string representation of a simple yml file,
         that is returned by the host list command; of form:
 
@@ -115,13 +112,14 @@ class TestFunctional(common.KollaClientTest):
                     zone = yml_line[zn_start: zn_end]
                     self.assertEqual(exp_zone, zone, 'incorrect zone in yml')
 
-                    # check services (TODO)
+                    # check services (TODO(SNOYES))
 
             self.assertTrue(hostname_found,
                             'hostname: %s not in yml: %s'
                             % (hostname, hosts_yml))
 
-    class Hosts():
+    class Hosts(object):
+        """test representation of host data"""
         info = {}
 
         def remove(self, name):

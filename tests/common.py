@@ -1,3 +1,5 @@
+# Copyright(c) 2015, Oracle and/or its affiliates.  All Rights Reserved.
+#
 #   Licensed under the Apache License, Version 2.0 (the "License"); you may
 #   not use this file except in compliance with the License. You may obtain
 #   a copy of the License at
@@ -10,12 +12,13 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-import os
-import sys
-import subprocess
-import traceback
-import testtools
 import logging
+import os
+import subprocess
+import sys
+import traceback
+
+import testtools
 
 import kollaclient.utils as utils
 
@@ -23,6 +26,7 @@ import kollaclient.utils as utils
 TEST_SUFFIX = '/test/'
 ENV_ETC = 'KOLLA_CLIENT_ETC'
 VENV_PY_PATH = '/.venv/bin/python'
+KOLLA_CMD = 'kollaclient'
 
 
 class KollaClientTest(testtools.TestCase):
@@ -44,9 +48,8 @@ class KollaClientTest(testtools.TestCase):
         # make sure hosts and zones yaml files exist
         # and clear them out
         etc_path = os.getenv('KOLLA_CLIENT_ETC')
+        self.log.debug('$KOLLA_CLIENT_ETC for tests: %s' % etc_path)
         self._init_dir(etc_path)
-        self.log.debug('$KOLLA_CLIENT_ETC for tests: %s'
-                       % os.getenv('KOLLA_CLIENT_ETC'))
         hosts_path = etc_path + '/hosts.yml'
         self._init_file(hosts_path)
         zones_path = etc_path + '/zones.yml'
@@ -106,34 +109,37 @@ class KollaClientTest(testtools.TestCase):
             os.makedirs(path)
 
     def _set_cmd_prefix(self):
-        """ The kolla-client can be run:
+        """Select the command to invoke the kollacli
 
-            1) from the command line via $ kollaclient, or
+            The kolla-client can be run:
+
+            1) from the command line via $ KOLLA_CMD, or
 
             2) if that doesn't work, this assumes that we're operating
-            in a dev't debug environment, which means that the kollaclient
+            in a dev't debug environment, which means that the kollacli
             was installed in a virtualenv. So then we have to use the python
             version in virtualenv and the tests will have to be run
             from the tests directory.
         """
         self._run_command('which python')
-        self.cmd_prefix = 'kollaclient'
+        self.cmd_prefix = 'KOLLA_CMD'
         (retval, msg) = self._run_command('%s host add -h' % self.cmd_prefix)
         if retval == 0:
-            self.log.debug('kollaclient found, will use as the test command')
+            self.log.debug('%s found, will use as the test command'
+                           % KOLLA_CMD)
             return
 
-        self.log.debug('kollaclient exec failed: %s' % msg)
-        self.log.debug('look for kollaclient shell in virtual env')
+        self.log.debug('%s exec failed: %s' % (KOLLA_CMD, msg))
+        self.log.debug('look for kollacli shell in virtual env')
 
         # try to see if this is a debug virtual environment
-        # will run the tests via kollaclient/shell.sh and
+        # will run the tests via kollacli/shell.sh and
         # use the python in .venv/bin/python
         cwd = os.getcwd()
         if cwd.endswith('tests'):
             os_kolla_dir = cwd.rsplit('/', 1)[0]
 
-            shell_dir = os_kolla_dir + '/kollaclient/'
+            shell_dir = os_kolla_dir + '/%s/' % KOLLA_CMD
             shell_path = shell_dir + 'shell.py'
 
             python_path = os_kolla_dir + VENV_PY_PATH
@@ -148,4 +154,4 @@ class KollaClientTest(testtools.TestCase):
                 return
 
         self.assertEqual(0, 1,
-                         'no kollaclient shell command found. Aborting tests')
+                         'no kollacli shell command found. Aborting tests')
