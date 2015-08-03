@@ -51,11 +51,15 @@ def get_pk_bits():
 def load_etc_yaml(fileName):
     try:
         with open(get_client_etc() + fileName, 'r') as f:
-            return yaml.load(f)
+            contents = yaml.load(f)
     except Exception:
         # TODO(bmace) if file doesn't exist on a load we don't
         # want to blow up, some better behavior here?
         return {}
+
+    if not contents:
+        contents = {}
+    return contents
 
 
 def save_etc_yaml(fileName, contents):
