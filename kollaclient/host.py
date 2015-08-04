@@ -23,13 +23,12 @@ from kollaclient.sshutils import ssh_check_host
 from kollaclient.sshutils import ssh_check_keys
 from kollaclient.sshutils import ssh_install_host
 from kollaclient.sshutils import ssh_keygen
-from kollaclient.utils import load_etc_yaml
-from kollaclient.utils import save_etc_yaml
+from kollaclient.utils import Host
+from kollaclient.utils import Hosts
+from kollaclient.utils import Zones
 
 from cliff.command import Command
-
-HOSTS_YML_FNAME = 'hosts.yml'
-ZONES_YML_FNAME = 'zone.yml'
+from cliff.lister import Lister
 
 
 def _host_not_found(log, hostname):
@@ -55,19 +54,15 @@ class HostAdd(Command):
         return parser
 
     def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.rstrip()
-        netAddr = parsed_args.networkaddress.rstrip()
+        hostname = parsed_args.hostname.strip()
+        net_addr = parsed_args.networkaddress.strip()
 
-        contents = load_etc_yaml(HOSTS_YML_FNAME)
-        if hostname in contents:
-            self.log.debug('Skipping, host (%s) already added.'
-                           % hostname)
-            return
-
-        hostEntry = {hostname: {'Services': '', 'NetworkAddress':
-                     netAddr, 'Zone': ''}}
-        contents.update(hostEntry)
-        save_etc_yaml(HOSTS_YML_FNAME, contents)
+        hosts = Hosts()
+        host = hosts.get_host(hostname)
+        if not host:
+            host = Host(hostname, net_addr)
+            hosts.add_host(host)
+            hosts.save()
 
 
 class HostRemove(Command):
@@ -81,27 +76,26 @@ class HostRemove(Command):
         return parser
 
     def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.rstrip()
-        contents = load_etc_yaml(HOSTS_YML_FNAME)
-
-        if hostname in contents:
-            del contents[hostname]
-        else:
-            self.log.debug('Host (%s) not found. Skipping remove' % hostname)
-        save_etc_yaml(HOSTS_YML_FNAME, contents)
+        hostname = parsed_args.hostname.strip()
+        hosts = Hosts()
+        hosts.remove_host(hostname)
+        hosts.save()
 
 
-class HostList(Command):
+class HostList(Lister):
     """List all hosts"""
 
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        contents = load_etc_yaml(HOSTS_YML_FNAME)
-        # TODO(bmace) fix output format
-        for host, hostdata in contents.items():
-            self.log.info(host)
-            self.log.info(hostdata)
+        hosts = Hosts().get_all()
+        data = []
+        if hosts:
+            for host in hosts:
+                data.append((host.hostname, host.net_addr, host.zone))
+        else:
+            data.append(('', '', ''))
+        return (('Host Name', 'Address', 'Zone'), data)
 
 
 class HostSetzone(Command):
@@ -119,22 +113,18 @@ class HostSetzone(Command):
         hostname = parsed_args.hostname.strip()
         zonename = parsed_args.zone.strip()
 
-        zones = load_etc_yaml(ZONES_YML_FNAME)
-        zone_data = zones[zonename]
-        if not zone_data:
+        if zonename not in Zones().get_all():
             _zone_not_found(self.log, zonename)
             return False
 
-        hosts = load_etc_yaml(HOSTS_YML_FNAME)
-
-        if hostname not in hosts:
+        hosts = Hosts()
+        host = hosts.get_host(hostname)
+        if not host:
             _host_not_found(self.log, hostname)
             return False
 
-        host_data = hosts[hostname]
-        host_data['Zone'] = zonename
-        hosts[hostname] = host_data
-        save_etc_yaml(HOSTS_YML_FNAME, hosts)
+        host.zone = zonename
+        hosts.save()
 
 
 class HostClearzone(Command):
@@ -150,15 +140,14 @@ class HostClearzone(Command):
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.strip()
 
-        hosts = load_etc_yaml(HOSTS_YML_FNAME)
-        if hostname not in hosts:
+        hosts = Hosts()
+        host = hosts.get_host(hostname)
+        if not host:
             _host_not_found(self.log, hostname)
             return False
 
-        host_data = hosts[hostname]
-        host_data['Zone'] = ''
-        hosts[hostname] = host_data
-        save_etc_yaml(HOSTS_YML_FNAME, hosts)
+        host.zone = ''
+        hosts.save()
 
 
 class HostAddservice(Command):
@@ -192,9 +181,10 @@ class HostCheck(Command):
         return parser
 
     def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.rstrip()
-        contents = load_etc_yaml(HOSTS_YML_FNAME)
-        if hostname not in contents:
+        hostname = parsed_args.hostname.strip()
+
+        host = Hosts().get_host(hostname)
+        if not host:
             _host_not_found(self.log, hostname)
             return False
 
@@ -206,13 +196,10 @@ class HostCheck(Command):
                 self.log.error('Error generating ssh keys: %s' % str(e))
                 return False
 
-        host_data = contents[hostname]
-        netAddr = host_data['NetworkAddress']
-
         try:
             self.log.info('Starting host (%s) check at address (%s)' %
-                          (hostname, netAddr))
-            ssh_check_host(netAddr)
+                          (hostname, host.net_addr))
+            ssh_check_host(host.net_addr)
             self.log.info('Host (%s), check succeeded' % hostname)
             return True
         except Exception as e:
@@ -233,8 +220,8 @@ class HostInstall(Command):
 
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.strip()
-        contents = load_etc_yaml(HOSTS_YML_FNAME)
-        if hostname not in contents:
+        host = Hosts.get_host(hostname)
+        if not host:
             _host_not_found(self.log, hostname)
             return False
 
@@ -246,12 +233,9 @@ class HostInstall(Command):
                 self.log.error('Error generating ssh keys: %s' % str(e))
                 return False
 
-        host_data = contents[hostname]
-        netAddr = host_data['NetworkAddress']
-
         # Don't bother doing all the install stuff if the check looks ok
         try:
-            ssh_check_host(netAddr)
+            ssh_check_host(host.net_addr)
             self.log.info('Install skipped for host (%s), ' % hostname +
                           'kolla already installed')
             return True
@@ -273,8 +257,8 @@ class HostInstall(Command):
 
         try:
             self.log.info('Starting install of host (%s) at %s)' %
-                          (hostname, netAddr))
-            ssh_install_host(netAddr, password)
+                          (hostname, host.net_addr))
+            ssh_install_host(host.net_addr, password)
             self.log.info('Host (%s) install succeeded' % hostname)
         except Exception as e:
             self.log.info('Host (%s) install failed (%s)'

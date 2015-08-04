@@ -42,13 +42,13 @@ class KollaClientTest(testtools.TestCase):
 
         # switch to test path
         self._setup_env_var()
+        etc_path = os.getenv('KOLLA_CLIENT_ETC')
+        self.log.debug('$KOLLA_CLIENT_ETC for tests: %s' % etc_path)
 
         self._set_cmd_prefix()
 
         # make sure hosts and zones yaml files exist
         # and clear them out
-        etc_path = os.getenv('KOLLA_CLIENT_ETC')
-        self.log.debug('$KOLLA_CLIENT_ETC for tests: %s' % etc_path)
         self._init_dir(etc_path)
         hosts_path = etc_path + '/hosts.yml'
         self._init_file(hosts_path)
@@ -64,8 +64,8 @@ class KollaClientTest(testtools.TestCase):
         self.log.debug('running command: %s' % cmd)
         (retval, msg) = self._run_command(full_cmd)
 
-        self.assertEqual(0, retval, ('command [%s] failed: (%s): %s'
-                                     % (full_cmd, retval, msg)))
+        self.assertEqual(0, retval, ('command failed: (%s), cmd: %s'
+                                     % (msg, full_cmd)))
         return msg
 
     # PRIVATE FUNCTIONS ----------------------------------------------------
@@ -121,8 +121,9 @@ class KollaClientTest(testtools.TestCase):
             version in virtualenv and the tests will have to be run
             from the tests directory.
         """
-        self._run_command('which python')
-        self.cmd_prefix = 'KOLLA_CMD'
+        (_, msg) = self._run_command('which python')
+        self.log.debug('starting with python: %s' % msg)
+        self.cmd_prefix = KOLLA_CMD
         (retval, msg) = self._run_command('%s host add -h' % self.cmd_prefix)
         if retval == 0:
             self.log.debug('%s found, will use as the test command'

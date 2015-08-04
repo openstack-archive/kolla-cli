@@ -12,7 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-import common
+from common import KollaClientTest
 import unittest
 
 
@@ -21,14 +21,13 @@ KEY_SERVICES = 'Services'
 KEY_ZONE = 'Zone'
 
 
-class TestFunctional(common.KollaClientTest):
+class TestFunctional(KollaClientTest):
 
     def test_host_add_remove(self):
-        # host file should be initialized to an empty dict {}
-        msg = self.run_client_cmd('host list')
-        self.assertEqual('', msg, 'hosts.yml is not empty: %s' % msg)
+        hosts = self.TestHosts()
 
-        hosts = self.Hosts()
+        msg = self.run_client_cmd('host list')
+        self._check_cli_output(hosts, msg)
 
         hostname = 'host_test1'
         ip_addr = '1.1.1.1'
@@ -36,7 +35,7 @@ class TestFunctional(common.KollaClientTest):
         self.run_client_cmd('host add %s %s' % (hostname, ip_addr))
 
         msg = self.run_client_cmd('host list')
-        self._check_hosts_yml(hosts, msg)
+        self._check_cli_output(hosts, msg)
 
         hostname = 'host_test2'
         ip_addr = '2.2.2.2'
@@ -44,81 +43,78 @@ class TestFunctional(common.KollaClientTest):
         self.run_client_cmd('host add %s %s' % (hostname, ip_addr))
 
         msg = self.run_client_cmd('host list')
-        self._check_hosts_yml(hosts, msg)
+        self._check_cli_output(hosts, msg)
 
         hostname = 'host_test2'
         hosts.remove(hostname)
         self.run_client_cmd('host remove %s' % hostname)
 
         msg = self.run_client_cmd('host list')
-        self._check_hosts_yml(hosts, msg)
+        self._check_cli_output(hosts, msg)
 
         hostname = 'host_test1'
         hosts.remove(hostname)
         self.run_client_cmd('host remove %s' % hostname)
 
         msg = self.run_client_cmd('host list')
-        self._check_hosts_yml(hosts, msg)
+        self._check_cli_output(hosts, msg)
 
-    def _check_hosts_yml(self, hosts, hosts_yml):
+    def _check_cli_output(self, hosts, hosts_cli):
         """Verify cli data against model data
 
-        The yml is a string representation of a simple yml file,
-        that is returned by the host list command; of form:
+        The host list cli output looks like this:
 
-          \n
-          hostname1\n
-          {'NetworkAddress': 'ip', 'Services': '[]', 'Zone': 'zone'}\n
-          hostname2\n
-          {'NetworkAddress': 'ip', 'Services': '[]', 'Zone': 'zone'}\n
-          etc
+            +-----------+---------+------+
+            | Host Name | Address | Zone |
+            +-----------+---------+------+
+            | foobar    | 2.2.2.2 |      |
+            | foo       | 1.1.1.1 |      |
+            +-----------+---------+------+
         """
-        # check for any host in yml that shouldn't be there
-        yml_lines = hosts_yml.split('}\n')
+        # check for any host in cli output that shouldn't be there
+        cli_lines = hosts_cli.split('\n')
         exp_hosts = hosts.get_hostnames()
-        for yml_line in yml_lines:
-            yml_line = yml_line.strip()
-            if yml_line:
-                yml_host = yml_line.split('\n')[0]
-                self.assertIn(yml_host, exp_hosts,
-                              'yml: %s, contains unexpected host: %s'
-                              % (yml_lines, yml_host))
+        for cli_line in cli_lines:
+            if ('|' not in cli_line or
+               cli_line.startswith('+') or
+               cli_line.startswith('| Host Name ')):
+                continue
+            cli_host = cli_line.split('|')[1].strip()
+            if cli_host:
+                self.assertIn(cli_host, exp_hosts,
+                              'unexpected host: %s, found in cli output: %s'
+                              % (cli_host, cli_lines))
 
         for hostname in exp_hosts:
             exp_ip = hosts.get_ip(hostname)
             exp_zone = hosts.get_zone(hostname)
 
             hostname_found = False
-            for yml_line in yml_lines:
-                yml_line = yml_line.strip()
-                if yml_line.startswith(hostname):
+            for cli_line in cli_lines:
+                if ('|' not in cli_line or
+                   cli_line.startswith('+') or
+                   cli_line.startswith('| Host Name ')):
+                    continue
+
+                tokens = cli_line.split('|')
+                if tokens[1].strip() == hostname:
                     hostname_found = True
 
-                    # check network info
-                    self.assertIn(KEY_NET, yml_line,
-                                  'host: %s, has no %s entry in yml'
-                                  % (hostname, KEY_NET))
-                    ip_start = yml_line.find(KEY_NET) + len(KEY_NET) + 4
-                    ip_end = yml_line.find(',', ip_start) - 1
-                    ip = yml_line[ip_start: ip_end]
-                    self.assertEqual(exp_ip, ip, 'incorrect ip address in yml')
+                    # check network address
+                    yaml_ip = tokens[2].strip()
+                    self.assertEqual(exp_ip, yaml_ip,
+                                     'incorrect ip address in cli output')
 
                     # check zone
-                    self.assertIn(KEY_NET, yml_line,
-                                  'host: %s, has no %s entry in yml'
-                                  % (hostname, KEY_ZONE))
-                    zn_start = yml_line.find(KEY_ZONE) + len(KEY_ZONE) + 4
-                    zn_end = yml_line.find(',', zn_start) - 1
-                    zone = yml_line[zn_start: zn_end]
-                    self.assertEqual(exp_zone, zone, 'incorrect zone in yml')
-
-                    # check services (TODO(SNOYES))
+                    yaml_zone = tokens[3].strip()
+                    self.assertEqual(exp_zone, yaml_zone,
+                                     'incorrect zone in cli output')
 
             self.assertTrue(hostname_found,
-                            'hostname: %s not in yml: %s'
-                            % (hostname, hosts_yml))
+                            'hostname: %s not in cli output: \n%s'
+                            % (hostname, hosts_cli))
 
-    class Hosts(object):
+    class TestHosts(object):
         """test representation of host data"""
         info = {}
 

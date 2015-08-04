@@ -13,9 +13,7 @@
 #    under the License.
 import logging
 
-from kollaclient.i18n import _
-from kollaclient.utils import load_etc_yaml
-from kollaclient.utils import save_etc_yaml
+from kollaclient.utils import Zones
 
 from cliff.command import Command
 
@@ -32,15 +30,9 @@ class ZoneAdd(Command):
 
     def take_action(self, parsed_args):
         zonename = parsed_args.zonename
-        contents = load_etc_yaml('zone.yml')
-        for zone in contents:
-            if zone == zonename:
-                # TODO(bmace) fix message
-                self.log.info(_("zone already exists"))
-                return
-        zoneEntry = {zonename: {'': ''}}
-        contents.update(zoneEntry)
-        save_etc_yaml('zone.yml', contents)
+        zones = Zones()
+        zones.add_zone(zonename)
+        zones.save()
 
 
 class ZoneRemove(Command):
@@ -55,17 +47,9 @@ class ZoneRemove(Command):
 
     def take_action(self, parsed_args):
         zonename = parsed_args.zonename
-        contents = load_etc_yaml('zone.yml')
-        foundZone = False
-        for zone in contents.items():
-            if zone == zonename:
-                foundZone = True
-        if foundZone:
-            del contents[zonename]
-        else:
-            # TODO(bmace) fix message
-            self.log.info("no zone iby name (" + zonename + ") found")
-        save_etc_yaml('zone.yml', contents)
+        zones = Zones()
+        zones.remove_zone(zonename)
+        zones.save()
 
 
 class ZoneList(Command):
@@ -74,7 +58,9 @@ class ZoneList(Command):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("zone list"))
-        contents = load_etc_yaml('zone.yml')
-        for zone in contents:
-            self.log.info(zone)
+        output = ''
+        for zone in Zones().get_all():
+            if output:
+                output = output + ', '
+            output = output + zone
+        self.log.info(output)
