@@ -14,18 +14,11 @@
 import argparse
 import getpass
 import logging
-import traceback
-
-from paramiko import AuthenticationException
 
 from kollaclient.i18n import _
-from kollaclient.sshutils import ssh_check_host
-from kollaclient.sshutils import ssh_check_keys
-from kollaclient.sshutils import ssh_install_host
-from kollaclient.sshutils import ssh_keygen
-from kollaclient.utils import Host
-from kollaclient.utils import Hosts
-from kollaclient.utils import Zones
+from kollaclient.objects.hosts import Host
+from kollaclient.objects.hosts import Hosts
+from kollaclient.objects.zones import Zones
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -42,7 +35,10 @@ def _zone_not_found(log, zonename):
 
 
 class HostAdd(Command):
-    """Add host to open-stack-kolla"""
+    """Add host to open-stack-kolla
+
+    If host already exists, just update the network address.
+    """
 
     log = logging.getLogger(__name__)
 
@@ -58,11 +54,9 @@ class HostAdd(Command):
         net_addr = parsed_args.networkaddress.strip()
 
         hosts = Hosts()
-        host = hosts.get_host(hostname)
-        if not host:
-            host = Host(hostname, net_addr)
-            hosts.add_host(host)
-            hosts.save()
+        host = Host(hostname, net_addr)
+        hosts.add_host(host)
+        hosts.save()
 
 
 class HostRemove(Command):
@@ -188,23 +182,7 @@ class HostCheck(Command):
             _host_not_found(self.log, hostname)
             return False
 
-        sshKeysExist = ssh_check_keys()
-        if not sshKeysExist:
-            try:
-                ssh_keygen()
-            except Exception as e:
-                self.log.error('Error generating ssh keys: %s' % str(e))
-                return False
-
-        try:
-            self.log.info('Starting host (%s) check at address (%s)' %
-                          (hostname, host.net_addr))
-            ssh_check_host(host.net_addr)
-            self.log.info('Host (%s), check succeeded' % hostname)
-            return True
-        except Exception as e:
-            self.log.error('Host (%s), check failed (%s)' % (hostname, str(e)))
-            return False
+        host.check()
 
 
 class HostInstall(Command):
@@ -220,46 +198,14 @@ class HostInstall(Command):
 
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.strip()
-        host = Hosts.get_host(hostname)
+        host = Hosts().get_host(hostname)
         if not host:
             _host_not_found(self.log, hostname)
             return False
 
-        sshKeysExist = ssh_check_keys()
-        if not sshKeysExist:
-            try:
-                ssh_keygen()
-            except Exception as e:
-                self.log.error('Error generating ssh keys: %s' % str(e))
-                return False
-
-        # Don't bother doing all the install stuff if the check looks ok
-        try:
-            ssh_check_host(host.net_addr)
-            self.log.info('Install skipped for host (%s), ' % hostname +
-                          'kolla already installed')
-            return True
-
-        except AuthenticationException as e:
-            # ssh check failed
-            pass
-
-        except Exception as e:
-            self.log.error('Unexpected exception: %s' % traceback.format_exc())
-            raise e
-
-        # sshCheck failed- we need to set up the user / remote ssh keys
-        # using root and the available password
         if parsed_args.insecure:
             password = parsed_args.insecure.strip()
         else:
             password = getpass.getpass('Root password of %s: ' % hostname)
 
-        try:
-            self.log.info('Starting install of host (%s) at %s)' %
-                          (hostname, host.net_addr))
-            ssh_install_host(host.net_addr, password)
-            self.log.info('Host (%s) install succeeded' % hostname)
-        except Exception as e:
-            self.log.info('Host (%s) install failed (%s)'
-                          % (hostname, str(e)))
+        host.install(password)

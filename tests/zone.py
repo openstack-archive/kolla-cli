@@ -19,7 +19,6 @@ import unittest
 class TestFunctional(KollaClientTest):
 
     def test_zone_add_remove(self):
-        # zone file should be initialized to an empty dict {}
         msg = self.run_client_cmd('zone list')
         self.assertEqual('', msg.strip(), 'zone list output is not empty: %s'
                          % msg)
