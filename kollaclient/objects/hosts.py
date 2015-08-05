@@ -11,17 +11,19 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import kollaclient.utils as utils
-
 import logging
 import traceback
+
+from paramiko import AuthenticationException
+
+from kollaclient import exceptions
+from kollaclient import utils
 
 from kollaclient.sshutils import ssh_check_host
 from kollaclient.sshutils import ssh_check_keys
 from kollaclient.sshutils import ssh_install_host
 from kollaclient.sshutils import ssh_keygen
-
-from paramiko import AuthenticationException
+from kollaclient.sshutils import ssh_uninstall_host
 
 
 class Host(object):
@@ -41,45 +43,36 @@ class Host(object):
             try:
                 ssh_keygen()
             except Exception as e:
-                self.log.error('Error generating ssh keys: %s' % str(e))
-                return False
+                raise exceptions.CommandError(
+                    'ERROR: ssh key generation failed on local host : %s'
+                    % e)
 
         try:
             self.log.info('Starting host (%s) check at address (%s)' %
                           (self.hostname, self.net_addr))
             ssh_check_host(self.net_addr)
             self.log.info('Host (%s), check succeeded' % self.hostname)
-            return True
+
+        except AuthenticationException as e:
+            raise exceptions.CommandError(
+                'ERROR: Host (%s), check failed, kolla is not installed'
+                % self.hostname)
         except Exception as e:
-            self.log.error('Host (%s), check failed (%s)'
-                           % (self.hostname, str(e)))
-            return False
+            raise Exception(
+                'ERROR: Host (%s), unexpected exception : %s'
+                % (self.hostname, e))
+        return True
 
     def install(self, password):
-        sshKeysExist = ssh_check_keys()
-        if not sshKeysExist:
-            try:
-                ssh_keygen()
-            except Exception as e:
-                self.log.error('Error generating ssh keys: %s' % str(e))
-                return False
+        self._setup_keys()
 
-        # Don't bother doing all the install stuff if the check looks ok
-        try:
-            ssh_check_host(self.net_addr)
+        # check if already installed
+        if self._is_installed():
             self.log.info('Install skipped for host (%s), ' % self.hostname +
                           'kolla already installed')
             return True
 
-        except AuthenticationException as e:
-            # ssh check failed
-            pass
-
-        except Exception as e:
-            self.log.error('Unexpected exception: %s' % traceback.format_exc())
-            raise e
-
-        # sshCheck failed- we need to set up the user / remote ssh keys
+        # not installed- we need to set up the user / remote ssh keys
         # using root and the available password
         try:
             self.log.info('Starting install of host (%s) at address (%s)'
@@ -87,8 +80,55 @@ class Host(object):
             ssh_install_host(self.net_addr, password)
             self.log.info('Host (%s) install succeeded' % self.hostname)
         except Exception as e:
-            self.log.info('Host (%s) install failed (%s)'
-                          % (self.hostname, str(e)))
+            raise exceptions.CommandError(
+                'ERROR: Host (%s) install failed : %s'
+                % (self.hostname, e))
+        return True
+
+    def uninstall(self):
+        self._setup_keys()
+
+        # check if already uninstalled
+        if not self._is_installed():
+            self.log.info('Uninstall skipped for host (%s), ' % self.hostname +
+                          'kolla already uninstalled')
+            return True
+
+        try:
+            self.log.info('Starting uninstall of host (%s) at address (%s)'
+                          % (self.hostname, self.net_addr))
+            ssh_uninstall_host(self.net_addr)
+            self.log.info('Host (%s) uninstall succeeded' % self.hostname)
+        except Exception as e:
+            raise exceptions.CommandError(
+                'ERROR: Host (%s) uninstall failed : %s'
+                % (self.hostname, e))
+        return True
+
+    def _setup_keys(self):
+        sshKeysExist = ssh_check_keys()
+        if not sshKeysExist:
+            try:
+                ssh_keygen()
+            except Exception as e:
+                raise exceptions.CommandError(
+                    'ERROR: Error generating ssh keys on local host : %s'
+                    % e)
+
+    def _is_installed(self):
+        is_installed = False
+        try:
+            ssh_check_host(self.net_addr)
+            is_installed = True
+
+        except AuthenticationException:
+            # ssh check failed
+            pass
+
+        except Exception:
+            raise Exception('ERROR: Unexpected exception: %s'
+                            % traceback.format_exc())
+        return is_installed
 
 
 class Hosts(object):

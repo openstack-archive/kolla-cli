@@ -12,11 +12,11 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from common import KollaClientTest
+from common import KollaCliTest
 import unittest
 
 
-class TestFunctional(KollaClientTest):
+class TestFunctional(KollaCliTest):
 
     def test_zone_add_remove(self):
         msg = self.run_client_cmd('zone list')

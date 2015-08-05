@@ -22,107 +22,107 @@ from kollaclient.utils import get_pk_password
 
 
 def ssh_check_keys():
-    privateKeyPath = get_pk_file()
-    publicKeyPath = privateKeyPath + ".pub"
-    if os.path.isfile(privateKeyPath) and os.path.isfile(publicKeyPath):
+    private_key_path = get_pk_file()
+    public_key_path = private_key_path + ".pub"
+    if os.path.isfile(private_key_path) and os.path.isfile(public_key_path):
         return True
     else:
         return False
 
 
-def ssh_connect(netAddr, username, password, useKeys):
+def ssh_connect(net_addr, username, password, useKeys):
     log = logging.getLogger(__name__)
     try:
         logging.getLogger("paramiko").setLevel(logging.WARNING)
-        sshClient = paramiko.SSHClient()
-        privateKey = ssh_get_private_key()
-        sshClient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        log.debug("connecting to addr: " + netAddr +
+        ssh_client = paramiko.SSHClient()
+        private_key = ssh_get_private_key()
+        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        log.debug("connecting to addr: " + net_addr +
                   " user: " + username + " password: " + password +
                   " useKeys: " + str(useKeys))
         if useKeys:
-            sshClient.connect(hostname=netAddr, username=username,
-                              password=password, pkey=privateKey)
+            ssh_client.connect(hostname=net_addr, username=username,
+                               password=password, pkey=private_key)
         else:
-            sshClient.connect(hostname=netAddr, username=username,
-                              password=password)
+            ssh_client.connect(hostname=net_addr, username=username,
+                               password=password)
 
-        return sshClient
+        return ssh_client
     except Exception as e:
         try:
-            sshClient.close()
+            ssh_client.close()
         except Exception:
             pass
         raise e
 
 
-def ssh_check_host(netAddr):
+def ssh_check_host(net_addr):
     try:
-        sshClient = ssh_connect(netAddr, get_admin_user(), '', True)
-        sshClient.exec_command("ls")
+        ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
+        ssh_client.exec_command("ls")
         # TODO(bmace) do whatever other checks are needed
     except Exception as e:
         raise e
     finally:
         try:
-            sshClient.close()
+            ssh_client.close()
         except Exception:
             pass
 
 
-def ssh_install_host(netAddr, password):
+def ssh_install_host(net_addr, password):
     log = logging.getLogger(__name__)
-    adminUser = get_admin_user()
+    admin_user = get_admin_user()
     publicKey = ssh_get_public_key()
 
     try:
         # TODO(bmace) allow setup as some user other than root?
         # add user
-        sshClient = ssh_connect(netAddr, "root", password, False)
-        commandStr = "useradd -m " + adminUser
-        log.debug(commandStr)
-        _, stdout, stderr = sshClient.exec_command(commandStr)
+        ssh_client = ssh_connect(net_addr, "root", password, False)
+        command_str = "useradd -m " + admin_user
+        log.debug(command_str)
+        _, stdout, stderr = ssh_client.exec_command(command_str)
         log.debug(str(stdout.read()) + " : " + str(stderr.read()))
 
         # create ssh dir
-        commandStr = ("su - " + adminUser +
-                      " -c \"mkdir /home/" + adminUser +
-                      "/.ssh\"")
-        log.debug(commandStr)
-        _, stdout, stderr = sshClient.exec_command(commandStr)
+        command_str = ("su - " + admin_user +
+                       " -c \"mkdir /home/" + admin_user +
+                       "/.ssh\"")
+        log.debug(command_str)
+        _, stdout, stderr = ssh_client.exec_command(command_str)
         log.debug(str(stdout.read()) + " : " + str(stderr.read()))
 
         # create authorized_keys file
-        commandStr = ("su - " + adminUser +
-                      " -c \"touch /home/" + adminUser +
-                      "/.ssh/authorized_keys\"")
-        log.debug(commandStr)
-        _, stdout, stderr = sshClient.exec_command(commandStr)
+        command_str = ("su - " + admin_user +
+                       " -c \"touch /home/" + admin_user +
+                       "/.ssh/authorized_keys\"")
+        log.debug(command_str)
+        _, stdout, stderr = ssh_client.exec_command(command_str)
         log.debug(str(stdout.read()) + " : " + str(stderr.read()))
 
         # populate authorized keys file w/ public key
-        commandStr = ("su - " + adminUser +
-                      " -c \"echo '" + publicKey +
-                      "' > /home/" + adminUser +
-                      "/.ssh/authorized_keys\"")
-        log.debug(commandStr)
-        _, stdout, stderr = sshClient.exec_command(commandStr)
+        command_str = ("su - " + admin_user +
+                       " -c \"echo '" + publicKey +
+                       "' > /home/" + admin_user +
+                       "/.ssh/authorized_keys\"")
+        log.debug(command_str)
+        _, stdout, stderr = ssh_client.exec_command(command_str)
         log.debug(str(stdout.read()) + " : " + str(stderr.read()))
 
         # set appropriate permissions for ssh dir
-        commandStr = ("su - " + adminUser +
-                      " -c \"chmod 0700 /home/" + adminUser +
-                      "/.ssh\"")
-        log.debug(commandStr)
-        _, stdout, stderr = sshClient.exec_command(commandStr)
+        command_str = ("su - " + admin_user +
+                       " -c \"chmod 0700 /home/" + admin_user +
+                       "/.ssh\"")
+        log.debug(command_str)
+        _, stdout, stderr = ssh_client.exec_command(command_str)
         log.debug(str(stdout.read()) + " : " + str(stderr.read()))
 
         # set appropriate permissions for authorized_keys file
-        commandStr = ("su - " + adminUser +
-                      " -c \"chmod 0740 /home/" + adminUser +
-                      "/.ssh/authorized_keys\"")
-        log.debug(commandStr)
-        _, stdout, stderr = sshClient.exec_command(commandStr)
+        command_str = ("su - " + admin_user +
+                       " -c \"chmod 0740 /home/" + admin_user +
+                       "/.ssh/authorized_keys\"")
+        log.debug(command_str)
+        _, stdout, stderr = ssh_client.exec_command(command_str)
         log.debug(str(stdout.read()) + " : " + str(stderr.read()))
 
         # TODO(bmace) do whatever else needs to be done at install time
@@ -130,7 +130,36 @@ def ssh_install_host(netAddr, password):
         raise e
     finally:
         try:
-            sshClient.close()
+            ssh_client.close()
+        except Exception:
+            pass
+
+
+def ssh_uninstall_host(net_addr):
+    log = logging.getLogger(__name__)
+    admin_user = get_admin_user()
+
+    try:
+        ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
+
+        # delete user
+        command_str = 'userdel %s' % admin_user
+        log.debug(command_str)
+        _, stdout, stderr = ssh_client.exec_command(command_str)
+        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
+
+        # remove directory and files
+        command_str = 'rm -rf /home/%s' % admin_user
+        log.debug(command_str)
+        _, stdout, stderr = ssh_client.exec_command(command_str)
+        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
+
+        # TODO(snoyes) do whatever else needs to be done at uninstall time
+    except Exception as e:
+        raise e
+    finally:
+        try:
+            ssh_client.close()
         except Exception:
             pass
 
@@ -139,26 +168,26 @@ def ssh_keygen():
     log = logging.getLogger(__name__)
 
     try:
-        privateKeyPath = get_pk_file()
-        publicKeyPath = privateKeyPath + ".pub"
-        privateKey = None
-        privateKeyGenerated = False
-        if os.path.isfile(privateKeyPath) is False:
-            privateKey = paramiko.RSAKey.generate(get_pk_bits())
-            privateKey.write_private_key_file(filename=privateKeyPath,
-                                              password=get_pk_password())
-            privateKeyGenerated = True
-            log.info("generated private key at: " + privateKeyPath)
+        private_key_path = get_pk_file()
+        public_key_path = private_key_path + ".pub"
+        private_key = None
+        private_key_generated = False
+        if os.path.isfile(private_key_path) is False:
+            private_key = paramiko.RSAKey.generate(get_pk_bits())
+            private_key.write_private_key_file(filename=private_key_path,
+                                               password=get_pk_password())
+            private_key_generated = True
+            log.info("generated private key at: " + private_key_path)
 
         # If the public key exists already, only regenerate it if the private
         # key has changed
-        if os.path.isfile(publicKeyPath) is False or privateKeyGenerated:
-            publicKey = paramiko.RSAKey(filename=privateKeyPath,
-                                        password=get_pk_password())
-            with open(publicKeyPath, 'w') as pubFile:
-                pubFile.write("%s %s" % (publicKey.get_name(),
-                              publicKey.get_base64()))
-                log.info("generated public key at: " + publicKeyPath)
+        if os.path.isfile(public_key_path) is False or private_key_generated:
+            public_key = paramiko.RSAKey(filename=private_key_path,
+                                         password=get_pk_password())
+            with open(public_key_path, 'w') as pubFile:
+                pubFile.write("%s %s" % (public_key.get_name(),
+                              public_key.get_base64()))
+                log.info("generated public key at: " + public_key_path)
     except Exception as e:
         raise e
 

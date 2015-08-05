@@ -12,16 +12,11 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from common import KollaClientTest
+from common import KollaCliTest
 import unittest
 
 
-KEY_NET = 'NetworkAddress'
-KEY_SERVICES = 'Services'
-KEY_ZONE = 'Zone'
-
-
-class TestFunctional(KollaClientTest):
+class TestFunctional(KollaCliTest):
 
     def test_host_add_remove(self):
         hosts = self.TestHosts()
@@ -86,6 +81,40 @@ class TestFunctional(KollaClientTest):
         msg = self.run_client_cmd('host list')
         self._check_cli_output(hosts, msg)
 
+    def test_host_install(self):
+        test_hosts = self.get_test_hosts()
+        if not test_hosts:
+            self.log.info('no test_hosts file found, skipping test')
+            return
+
+        hostname = test_hosts.get_hostnames()[0]
+        net_addr = test_hosts.get_ip(hostname)
+        pwd = test_hosts.get_password(hostname)
+
+        self.run_client_cmd('host add %s %s' % (hostname, net_addr))
+
+        # check if host is installed
+        msg = self.run_client_cmd('host check %s' % hostname, True)
+        if 'ERROR:' not in msg:
+            # host is installed, uninstall it
+            self.run_client_cmd('host uninstall %s' % hostname)
+            msg = self.run_client_cmd('host check %s' % hostname, True)
+            self.assertIn('ERROR:', msg, 'Uninstall failed on host: (%s)'
+                          % hostname)
+
+        # install the host
+        self.run_client_cmd('host install %s --insecure %s'
+                            % (hostname, pwd))
+        msg = self.run_client_cmd('host check %s' % hostname, True)
+        self.assertNotIn('ERROR:', msg, 'Install failed on host: (%s)'
+                         % hostname)
+
+        # uninstall the host
+        self.run_client_cmd('host uninstall %s' % hostname)
+        msg = self.run_client_cmd('host check %s' % hostname, True)
+        self.assertIn('ERROR:', msg, 'Uninstall failed on host: (%s)'
+                      % hostname)
+
     def _check_cli_output(self, hosts, cli_output):
         """Verify cli data against model data
 
@@ -140,32 +169,6 @@ class TestFunctional(KollaClientTest):
             self.assertTrue(hostname_found,
                             'hostname: %s not in cli output: \n%s'
                             % (hostname, cli_output))
-
-    class TestHosts(object):
-        """test representation of host data"""
-        info = {}
-
-        def remove(self, name):
-            del self.info[name]
-
-        def add(self, name, ip, zone='', services=[]):
-            if name not in self.info:
-                self.info[name] = {}
-            self.info[name][KEY_NET] = ip
-            self.info[name][KEY_ZONE] = zone
-            self.info[name][KEY_SERVICES] = services
-
-        def get_ip(self, name):
-            return self.info[name][KEY_NET]
-
-        def get_zone(self, name):
-            return self.info[name][KEY_ZONE]
-
-        def get_services(self, name):
-            return self.info[name][KEY_SERVICES]
-
-        def get_hostnames(self):
-            return self.info.keys()
 
 if __name__ == '__main__':
     unittest.main()

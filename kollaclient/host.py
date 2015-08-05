@@ -15,6 +15,7 @@ import argparse
 import getpass
 import logging
 
+from kollaclient import exceptions
 from kollaclient.i18n import _
 from kollaclient.objects.hosts import Host
 from kollaclient.objects.hosts import Hosts
@@ -25,13 +26,15 @@ from cliff.lister import Lister
 
 
 def _host_not_found(log, hostname):
-    log.info('Host (%s) not found. ' % hostname +
-             'Please add it with "Host add"')
+    raise exceptions.CommandError(
+        'ERROR: Host (%s) not found. ' % hostname +
+        'Please add it with "host add"')
 
 
 def _zone_not_found(log, zonename):
-    log.info('Zone (%s) not found. ' % zonename +
-             'Please add it with "Zone add"')
+    raise exceptions.CommandError(
+        'ERROR: Zone (%s) not found. ' % zonename +
+        'Please add it with "zone add"')
 
 
 class HostAdd(Command):
@@ -206,6 +209,26 @@ class HostInstall(Command):
         if parsed_args.insecure:
             password = parsed_args.insecure.strip()
         else:
-            password = getpass.getpass('Root password of %s: ' % hostname)
+            password = getpass.getpass('Root password for %s: ' % hostname)
 
         host.install(password)
+
+
+class HostUninstall(Command):
+    """Uninstall openstack-kolla on host (TODO(snoyes))"""
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(HostUninstall, self).get_parser(prog_name)
+        parser.add_argument('hostname', metavar='<hostname>', help='hostname')
+        return parser
+
+    def take_action(self, parsed_args):
+        hostname = parsed_args.hostname.strip()
+        host = Hosts().get_host(hostname)
+        if not host:
+            _host_not_found(self.log, hostname)
+            return False
+
+        host.uninstall()

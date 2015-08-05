@@ -26,19 +26,23 @@ import kollaclient.utils as utils
 TEST_SUFFIX = '/test/'
 ENV_ETC = 'KOLLA_CLIENT_ETC'
 VENV_PY_PATH = '/.venv/bin/python'
-KOLLA_CMD = 'kollaclient'
+KOLLA_CMD = 'kollacli'
+KOLLA_SHELL_DIR = 'kollaclient'
+HOSTS_FNAME = 'test_hosts'
 
 
-class KollaClientTest(testtools.TestCase):
+class KollaCliTest(testtools.TestCase):
 
     cmd_prefix = ''
     log = logging.getLogger(__name__)
 
     def setUp(self):
-        super(KollaClientTest, self).setUp()
+        super(KollaCliTest, self).setUp()
 
         logging.basicConfig(stream=sys.stderr)
-        logging.getLogger(__name__).setLevel(logging.DEBUG)
+        self.log.setLevel(logging.DEBUG)
+        self.log.info('Starting test: %s *************************************'
+                      % self._testMethodName)
 
         # switch to test path
         self._setup_env_var()
@@ -57,16 +61,80 @@ class KollaClientTest(testtools.TestCase):
 
     def tearDown(self):
         self._restore_env_var()
-        super(KollaClientTest, self).tearDown()
+        super(KollaCliTest, self).tearDown()
 
-    def run_client_cmd(self, cmd):
+    def run_client_cmd(self, cmd, expect_error=False):
         full_cmd = ('%s %s' % (self.cmd_prefix, cmd))
         self.log.debug('running command: %s' % cmd)
         (retval, msg) = self._run_command(full_cmd)
 
-        self.assertEqual(0, retval, ('command failed: (%s), cmd: %s'
-                                     % (msg, full_cmd)))
+        if not expect_error:
+            self.assertEqual(0, retval, ('command failed: (%s), cmd: %s'
+                                         % (msg, full_cmd)))
         return msg
+
+    def get_test_hosts(self):
+        """get hosts from test_hosts file
+
+        host is {hostname: net_addr}
+        """
+        hosts = None
+        if not os.path.exists(HOSTS_FNAME):
+            self.log.error('test_hosts file not found, are you running' +
+                           'the tests in the tests directory?')
+            return hosts
+        with open(HOSTS_FNAME, 'r') as f:
+            hosts = self.TestHosts()
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+
+                tokens = line.split()
+                self.assertIs(True, len(tokens) > 2,
+                              '%s expected 3 params on line: %s'
+                              % (HOSTS_FNAME, line))
+                hostname = tokens[0]
+                net_addr = tokens[1]
+                pwd = tokens[2]
+                hosts.add(hostname, net_addr)
+                hosts.set_password(hostname, pwd)
+        return hosts
+
+    class TestHosts(object):
+        """test representation of host data"""
+        info = {}
+
+        def __init__(self):
+            self.info = {}
+
+        def remove(self, name):
+            del self.info[name]
+
+        def add(self, name, ip, zone='', services=[]):
+            if name not in self.info:
+                self.info[name] = {}
+            self.info[name]['net'] = ip
+            self.info[name]['zone'] = zone
+            self.info[name]['services'] = services
+
+        def get_ip(self, name):
+            return self.info[name]['net']
+
+        def get_zone(self, name):
+            return self.info[name]['zone']
+
+        def get_services(self, name):
+            return self.info[name]['services']
+
+        def get_hostnames(self):
+            return self.info.keys()
+
+        def set_password(self, name, password):
+            self.info[name]['pwd'] = password
+
+        def get_password(self, name):
+            return self.info[name]['pwd']
 
     # PRIVATE FUNCTIONS ----------------------------------------------------
     def _setup_env_var(self):
@@ -93,7 +161,8 @@ class KollaClientTest(testtools.TestCase):
 
         except Exception as e:
             retval = e.errno
-            msg = 'Unexpected exception: %s' % traceback.format_exc()
+            msg = ('Unexpected exception: %s, cmd: %s'
+                   % (traceback.format_exc(), cmd))
 
         # the py dev debugger adds a string at the line start, remove it
         if msg.startswith('pydev debugger'):
@@ -111,7 +180,7 @@ class KollaClientTest(testtools.TestCase):
     def _set_cmd_prefix(self):
         """Select the command to invoke the kollacli
 
-            The kolla-client can be run:
+            The kolla cli can be run:
 
             1) from the command line via $ KOLLA_CMD, or
 
@@ -122,7 +191,7 @@ class KollaClientTest(testtools.TestCase):
             from the tests directory.
         """
         (_, msg) = self._run_command('which python')
-        self.log.debug('starting with python: %s' % msg)
+        self.log.debug('starting with python: %s' % msg.strip())
         self.cmd_prefix = KOLLA_CMD
         (retval, msg) = self._run_command('%s host add -h' % self.cmd_prefix)
         if retval == 0:
@@ -130,7 +199,7 @@ class KollaClientTest(testtools.TestCase):
                            % KOLLA_CMD)
             return
 
-        self.log.debug('%s exec failed: %s' % (KOLLA_CMD, msg))
+        # self.log.debug('%s exec failed: %s' % (KOLLA_CMD, msg))
         self.log.debug('look for kollacli shell in virtual env')
 
         # try to see if this is a debug virtual environment
@@ -140,7 +209,7 @@ class KollaClientTest(testtools.TestCase):
         if cwd.endswith('tests'):
             os_kolla_dir = cwd.rsplit('/', 1)[0]
 
-            shell_dir = os_kolla_dir + '/%s/' % KOLLA_CMD
+            shell_dir = os_kolla_dir + '/%s/' % KOLLA_SHELL_DIR
             shell_path = shell_dir + 'shell.py'
 
             python_path = os_kolla_dir + VENV_PY_PATH

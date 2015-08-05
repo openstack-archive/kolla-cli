@@ -25,7 +25,7 @@ class KollaClient(App):
         super(KollaClient, self).__init__(
             description='Command-Line Client for StackForge Kolla',
             version='0.1',
-            command_manager=CommandManager('kolla.client'),
+            command_manager=CommandManager('kolla.cli'),
             )
         self.dump_stack_trace = True
 

@@ -1,0 +1,5 @@
+# This is an example file for defining hosts that can be used in the 
+# unit tests. The file should be named "test_hosts" and is located
+# in this directory. The format is [hostname] [network address]. example:
+host_xyz 10.0.0.1
+host_1   host_1_hostname
