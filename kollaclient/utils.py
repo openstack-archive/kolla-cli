@@ -16,11 +16,11 @@ import yaml
 
 
 def get_kolla_home():
-    return os.environ.get("KOLLA_HOME", "/opt/kolla")
+    return os.environ.get("KOLLA_HOME", "/opt/kolla/")
 
 
 def get_kolla_etc():
-    return os.environ.get("KOLLA_ETC", "/etc")
+    return os.environ.get("KOLLA_ETC", "/etc/kolla/")
 
 
 def get_client_home():
@@ -28,7 +28,7 @@ def get_client_home():
 
 
 def get_client_etc():
-    return os.environ.get("KOLLA_CLIENT_ETC", "/etc/kollaclient/etc/")
+    return os.environ.get("KOLLA_CLIENT_ETC", "/etc/kolla/kollacli/")
 
 
 def get_admin_user():
@@ -36,7 +36,8 @@ def get_admin_user():
 
 
 def get_pk_file():
-    return os.environ.get("KOLLA_CLIENT_PKPATH", "/opt/kollaclient/etc/id_rsa")
+    return os.environ.get("KOLLA_CLIENT_PKPATH",
+                          "/etc/kolla/kollacl/etc/id_rsa")
 
 
 def get_pk_password():
