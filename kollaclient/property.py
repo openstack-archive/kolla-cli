@@ -13,9 +13,11 @@
 #    under the License.
 import logging
 
+from kollaclient.ansible import properties
 from kollaclient.i18n import _
 
 from cliff.command import Command
+from cliff.lister import Lister
 
 
 class PropertySet(Command):
@@ -25,14 +27,21 @@ class PropertySet(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("property set"))
-        self.app.stdout.write(parsed_args)
 
 
-class PropertyList(Command):
-    "Property List"
+class PropertyList(Lister):
+    """List all properties"""
 
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("property list"))
-        self.app.stdout.write(parsed_args)
+        ansible_properties = properties.AnsibleProperties()
+        property_list = ansible_properties.get_all()
+        data = []
+        if property_list:
+            for value in property_list:
+                data.append((value.name, value.value, value.file_name))
+        else:
+            data.append(('', '', ''))
+
+        return (('Property Name', 'Property Value', 'File'), data)
