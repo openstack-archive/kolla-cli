@@ -82,7 +82,7 @@ class AnsibleProperties(object):
                                                                prop_file_name)
                             self._properties.append(ansible_property)
         except Exception as e:
-            self.log.error('read error:% ' % str(e))
+            raise e
 
     def get_all(self):
         return self._properties
