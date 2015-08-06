@@ -37,7 +37,7 @@ def get_admin_user():
 
 def get_pk_file():
     return os.environ.get("KOLLA_CLIENT_PKPATH",
-                          "/etc/kolla/kollacl/etc/id_rsa")
+                          "/etc/kolla/kollacli/etc/id_rsa")
 
 
 def get_pk_password():

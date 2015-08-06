@@ -70,7 +70,7 @@ class AnsibleProperties(object):
             start_dir = kolla_home + '/ansible/roles'
             services = next(os.walk(start_dir))[1]
             for service_name in services:
-                file_name = start_dir+'/'+service_name+'/defaults/main.yml'
+                file_name = start_dir+ '/' +service_name + '/defaults/main.yml'
                 if os.path.isfile(file_name):
                     with open(file_name) as service_file:
                         service_contents = yaml.load(service_file)
