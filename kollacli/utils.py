@@ -24,7 +24,7 @@ def get_kolla_etc():
 
 
 def get_client_home():
-    return os.environ.get("KOLLA_CLIENT_HOME", "/opt/kollaclient/")
+    return os.environ.get("KOLLA_CLIENT_HOME", "/opt/kollacli/")
 
 
 def get_client_etc():

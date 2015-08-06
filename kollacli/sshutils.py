@@ -15,10 +15,10 @@ import logging
 import os.path
 import paramiko
 
-from kollaclient.utils import get_admin_user
-from kollaclient.utils import get_pk_bits
-from kollaclient.utils import get_pk_file
-from kollaclient.utils import get_pk_password
+from kollacli.utils import get_admin_user
+from kollacli.utils import get_pk_bits
+from kollacli.utils import get_pk_file
+from kollacli.utils import get_pk_password
 
 
 def ssh_check_keys():

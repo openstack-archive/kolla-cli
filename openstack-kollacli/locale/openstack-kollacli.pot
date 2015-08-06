@@ -1,0 +1,79 @@
+# Translations template for kollacli.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the kollacli project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: kollacli 0.1.0.dev22\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-08-06 15:09-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.0\n"
+
+#: kollacli/common.py:30
+msgid "deploy"
+msgstr ""
+
+#: kollacli/common.py:40
+msgid "install"
+msgstr ""
+
+#: kollacli/common.py:50
+msgid "list"
+msgstr ""
+
+#: kollacli/common.py:62
+msgid "start"
+msgstr ""
+
+#: kollacli/common.py:80
+msgid "stop"
+msgstr ""
+
+#: kollacli/common.py:89
+msgid "sync"
+msgstr ""
+
+#: kollacli/common.py:98
+msgid "upgrade"
+msgstr ""
+
+#: kollacli/common.py:107
+msgid "dump"
+msgstr ""
+
+#: kollacli/host.py:156
+msgid "host addservice"
+msgstr ""
+
+#: kollacli/host.py:166
+msgid "host removeservice"
+msgstr ""
+
+#: kollacli/property.py:29
+msgid "property set"
+msgstr ""
+
+#: kollacli/service.py:27
+msgid "service activate"
+msgstr ""
+
+#: kollacli/service.py:37
+msgid "service deactivate"
+msgstr ""
+
+#: kollacli/service.py:47
+msgid "service autodeploy"
+msgstr ""
+
+#: kollacli/service.py:57
+msgid "service list"
+msgstr ""
+

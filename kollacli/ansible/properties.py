@@ -15,8 +15,8 @@ import logging
 import os
 import yaml
 
-from kollaclient.utils import get_kolla_etc
-from kollaclient.utils import get_kolla_home
+from kollacli.utils import get_kolla_etc
+from kollacli.utils import get_kolla_home
 
 
 class AnsibleProperties(object):

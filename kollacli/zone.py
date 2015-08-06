@@ -13,7 +13,7 @@
 #    under the License.
 import logging
 
-from kollaclient.objects.zones import Zones
+from kollacli.objects.zones import Zones
 
 from cliff.command import Command
 

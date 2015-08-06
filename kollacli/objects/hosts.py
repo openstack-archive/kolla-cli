@@ -16,14 +16,14 @@ import traceback
 
 from paramiko import AuthenticationException
 
-from kollaclient import exceptions
-from kollaclient import utils
+from kollacli import exceptions
+from kollacli import utils
 
-from kollaclient.sshutils import ssh_check_host
-from kollaclient.sshutils import ssh_check_keys
-from kollaclient.sshutils import ssh_install_host
-from kollaclient.sshutils import ssh_keygen
-from kollaclient.sshutils import ssh_uninstall_host
+from kollacli.sshutils import ssh_check_host
+from kollacli.sshutils import ssh_check_keys
+from kollacli.sshutils import ssh_install_host
+from kollacli.sshutils import ssh_keygen
+from kollacli.sshutils import ssh_uninstall_host
 
 
 class Host(object):

@@ -20,14 +20,14 @@ import traceback
 
 import testtools
 
-import kollaclient.utils as utils
+import kollacli.utils as utils
 
 
 TEST_SUFFIX = '/test/'
 ENV_ETC = 'KOLLA_CLIENT_ETC'
 VENV_PY_PATH = '/.venv/bin/python'
 KOLLA_CMD = 'kollacli'
-KOLLA_SHELL_DIR = 'kollaclient'
+KOLLA_SHELL_DIR = 'kollacli'
 HOSTS_FNAME = 'test_hosts'
 
 

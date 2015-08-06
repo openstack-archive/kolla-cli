@@ -13,7 +13,7 @@
 #    under the License.
 import logging
 
-from kollaclient.i18n import _
+from kollacli.i18n import _
 
 from cliff.command import Command
 

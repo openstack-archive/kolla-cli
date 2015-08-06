@@ -14,9 +14,9 @@
 import logging
 import os
 
-from kollaclient.i18n import _
-from kollaclient.utils import get_kolla_etc
-from kollaclient.utils import get_kolla_home
+from kollacli.i18n import _
+from kollacli.utils import get_kolla_etc
+from kollacli.utils import get_kolla_home
 
 from cliff.command import Command
 

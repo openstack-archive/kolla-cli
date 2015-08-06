@@ -13,8 +13,8 @@
 #    under the License.
 import logging
 
-from kollaclient.ansible import properties
-from kollaclient.i18n import _
+from kollacli.ansible import properties
+from kollacli.i18n import _
 
 from cliff.command import Command
 from cliff.lister import Lister

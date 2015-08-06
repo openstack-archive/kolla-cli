@@ -19,10 +19,10 @@ from cliff.app import App
 from cliff.commandmanager import CommandManager
 
 
-class KollaClient(App):
+class KollaCli(App):
 
     def __init__(self):
-        super(KollaClient, self).__init__(
+        super(KollaCli, self).__init__(
             description='Command-Line Client for StackForge Kolla',
             version='0.1',
             command_manager=CommandManager('kolla.cli'),
@@ -39,7 +39,7 @@ class KollaClient(App):
 
 
 def main(argv=sys.argv[1:]):
-    shell = KollaClient()
+    shell = KollaCli()
     return shell.run(argv)
 
 if __name__ == "__main__":

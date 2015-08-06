@@ -15,11 +15,11 @@ import argparse
 import getpass
 import logging
 
-from kollaclient import exceptions
-from kollaclient.i18n import _
-from kollaclient.objects.hosts import Host
-from kollaclient.objects.hosts import Hosts
-from kollaclient.objects.zones import Zones
+from kollacli import exceptions
+from kollacli.i18n import _
+from kollacli.objects.hosts import Host
+from kollacli.objects.hosts import Hosts
+from kollacli.objects.zones import Zones
 
 from cliff.command import Command
 from cliff.lister import Lister
