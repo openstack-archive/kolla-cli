@@ -59,7 +59,34 @@ class TestFunctional(KollaClientTest):
         msg = self.run_client_cmd('host list')
         self._check_cli_output(hosts, msg)
 
-    def _check_cli_output(self, hosts, hosts_cli):
+    def test_host_setzone(self):
+        hosts = self.TestHosts()
+        hostname = 'host_test1'
+        ip_addr = '1.1.1.1'
+        zonename = 'test_zone1'
+        hosts.add(hostname, ip_addr, zonename)
+        self.run_client_cmd('zone add %s' % zonename)
+
+        self.run_client_cmd('host add %s %s' % (hostname, ip_addr))
+        self.run_client_cmd('host setzone %s %s' % (hostname, zonename))
+        msg = self.run_client_cmd('host list')
+        self._check_cli_output(hosts, msg)
+
+        zonename = 'test_zone2'
+        hosts.add(hostname, ip_addr, zonename)
+        self.run_client_cmd('zone add %s' % zonename)
+
+        self.run_client_cmd('host setzone %s %s' % (hostname, zonename))
+        msg = self.run_client_cmd('host list')
+        self._check_cli_output(hosts, msg)
+
+        zonename = ''
+        hosts.add(hostname, ip_addr, zonename)
+        self.run_client_cmd('host clearzone %s' % hostname)
+        msg = self.run_client_cmd('host list')
+        self._check_cli_output(hosts, msg)
+
+    def _check_cli_output(self, hosts, cli_output):
         """Verify cli data against model data
 
         The host list cli output looks like this:
@@ -72,7 +99,7 @@ class TestFunctional(KollaClientTest):
             +-----------+---------+------+
         """
         # check for any host in cli output that shouldn't be there
-        cli_lines = hosts_cli.split('\n')
+        cli_lines = cli_output.split('\n')
         exp_hosts = hosts.get_hostnames()
         for cli_line in cli_lines:
             if ('|' not in cli_line or
@@ -112,7 +139,7 @@ class TestFunctional(KollaClientTest):
 
             self.assertTrue(hostname_found,
                             'hostname: %s not in cli output: \n%s'
-                            % (hostname, hosts_cli))
+                            % (hostname, cli_output))
 
     class TestHosts(object):
         """test representation of host data"""
