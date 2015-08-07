@@ -222,6 +222,7 @@ class HostUninstall(Command):
     def get_parser(self, prog_name):
         parser = super(HostUninstall, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname>', help='hostname')
+        parser.add_argument('--insecure', nargs='?', help=argparse.SUPPRESS)
         return parser
 
     def take_action(self, parsed_args):
@@ -231,4 +232,8 @@ class HostUninstall(Command):
             _host_not_found(self.log, hostname)
             return False
 
-        host.uninstall()
+        if parsed_args.insecure:
+            password = parsed_args.insecure.strip()
+        else:
+            password = getpass.getpass('Root password for %s: ' % hostname)
+        host.uninstall(password)

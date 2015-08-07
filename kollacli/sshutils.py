@@ -15,10 +15,15 @@ import logging
 import os.path
 import paramiko
 
-from kollacli.utils import get_admin_user
-from kollacli.utils import get_pk_bits
-from kollacli.utils import get_pk_file
-from kollacli.utils import get_pk_password
+from distutils.version import StrictVersion
+
+from kollaclient.exceptions import CommandError
+from kollaclient.utils import get_admin_user
+from kollaclient.utils import get_pk_bits
+from kollaclient.utils import get_pk_file
+from kollaclient.utils import get_pk_password
+
+MIN_DOCKER_VERSION = '1.7.0'
 
 
 def ssh_check_keys():
@@ -49,115 +54,147 @@ def ssh_connect(net_addr, username, password, useKeys):
 
         return ssh_client
     except Exception as e:
-        try:
-            ssh_client.close()
-        except Exception:
-            pass
+        _close_ssh_client(ssh_client)
         raise e
 
 
 def ssh_check_host(net_addr):
+    log = logging.getLogger(__name__)
+    ssh_client = None
     try:
         ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
-        ssh_client.exec_command("ls")
-        # TODO(bmace) do whatever other checks are needed
-    except Exception as e:
-        raise e
+        _pre_install_checks(ssh_client, log)
+        _post_install_checks(net_addr, log)
+
     finally:
-        try:
-            ssh_client.close()
-        except Exception:
-            pass
+        _close_ssh_client(ssh_client)
 
 
 def ssh_install_host(net_addr, password):
     log = logging.getLogger(__name__)
     admin_user = get_admin_user()
-    publicKey = ssh_get_public_key()
+    public_key = ssh_get_public_key()
+    ssh_client = None
 
     try:
         # TODO(bmace) allow setup as some user other than root?
-        # add user
-        ssh_client = ssh_connect(net_addr, "root", password, False)
-        command_str = "useradd -m " + admin_user
-        log.debug(command_str)
-        _, stdout, stderr = ssh_client.exec_command(command_str)
-        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
+        ssh_client = ssh_connect(net_addr, 'root', password, False)
+
+        # before modifying the host, check that it meets requirements
+        _pre_install_checks(ssh_client, log)
+
+        # add user and also add to docker group
+        cmd = 'useradd -g docker -m %s' % admin_user
+        _exec_ssh_cmd(cmd, ssh_client, log)
 
         # create ssh dir
-        command_str = ("su - " + admin_user +
-                       " -c \"mkdir /home/" + admin_user +
-                       "/.ssh\"")
-        log.debug(command_str)
-        _, stdout, stderr = ssh_client.exec_command(command_str)
-        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
+        cmd = ('su - %s -c "mkdir /home/%s/.ssh"'
+               % (admin_user, admin_user))
+        _exec_ssh_cmd(cmd, ssh_client, log)
 
         # create authorized_keys file
-        command_str = ("su - " + admin_user +
-                       " -c \"touch /home/" + admin_user +
-                       "/.ssh/authorized_keys\"")
-        log.debug(command_str)
-        _, stdout, stderr = ssh_client.exec_command(command_str)
-        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
+        cmd = ('su - %s -c \"touch /home/%s/.ssh/authorized_keys"'
+               % (admin_user, admin_user))
+        _exec_ssh_cmd(cmd, ssh_client, log)
 
         # populate authorized keys file w/ public key
-        command_str = ("su - " + admin_user +
-                       " -c \"echo '" + publicKey +
-                       "' > /home/" + admin_user +
-                       "/.ssh/authorized_keys\"")
-        log.debug(command_str)
-        _, stdout, stderr = ssh_client.exec_command(command_str)
-        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
+        cmd = ('su - %s -c "echo \'%s\' > /home/%s/.ssh/authorized_keys"'
+               % (admin_user, public_key, admin_user))
+        _exec_ssh_cmd(cmd, ssh_client, log)
 
         # set appropriate permissions for ssh dir
-        command_str = ("su - " + admin_user +
-                       " -c \"chmod 0700 /home/" + admin_user +
-                       "/.ssh\"")
-        log.debug(command_str)
-        _, stdout, stderr = ssh_client.exec_command(command_str)
-        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
+        cmd = ('su - %s -c "chmod 0700 /home/%s/.ssh"'
+               % (admin_user, admin_user))
+        _exec_ssh_cmd(cmd, ssh_client, log)
 
         # set appropriate permissions for authorized_keys file
-        command_str = ("su - " + admin_user +
-                       " -c \"chmod 0740 /home/" + admin_user +
-                       "/.ssh/authorized_keys\"")
-        log.debug(command_str)
-        _, stdout, stderr = ssh_client.exec_command(command_str)
-        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
+        cmd = ('su - %s -c "chmod 0740 /home/%s/.ssh/authorized_keys"'
+               % (admin_user, admin_user))
+        _exec_ssh_cmd(cmd, ssh_client, log)
 
-        # TODO(bmace) do whatever else needs to be done at install time
+        # verify ssh connection to the new account
+        _post_install_checks(net_addr, log)
+
     except Exception as e:
         raise e
     finally:
-        try:
-            ssh_client.close()
-        except Exception:
-            pass
+        _close_ssh_client(ssh_client)
 
 
-def ssh_uninstall_host(net_addr):
+def ssh_uninstall_host(net_addr, password):
     log = logging.getLogger(__name__)
     admin_user = get_admin_user()
+    ssh_client = None
 
+    try:
+        ssh_client = ssh_connect(net_addr, 'root', password, False)
+
+        # delete user, userdel -r isn't used as it will fail removing
+        # the non-existent mail files
+        cmd = 'userdel %s' % admin_user
+        _, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
+        if errmsg:
+            raise CommandError('ERROR: failed to remove user (%s) : %s'
+                               % (admin_user, errmsg))
+
+        # remove home directory and files
+        cmd = 'rm -rf /home/%s' % admin_user
+        _exec_ssh_cmd(cmd, ssh_client, log)
+        if errmsg:
+            raise CommandError('ERROR: failed to remove home directory' +
+                               ' of user (%s) : %s'
+                               % (admin_user, errmsg))
+
+    except Exception as e:
+        raise e
+    finally:
+        _close_ssh_client(ssh_client)
+
+
+def _pre_install_checks(ssh_client, log):
+        cmd = 'docker --version'
+        msg, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
+        if errmsg:
+            raise CommandError("ERROR: '%s' failed. Is docker installed? : %s"
+                               % (cmd, errmsg))
+        if 'Docker version' not in msg:
+            raise CommandError("ERROR: '%s' failed. Is docker installed? : %s"
+                               % (cmd, msg))
+
+        version = msg.split('version ')[1].split(',')[0]
+        if StrictVersion(version) < StrictVersion(MIN_DOCKER_VERSION):
+            raise CommandError('ERROR: docker version (%s) below minimum (%s)'
+                               % (version, msg))
+
+        # docker is installed, now check if it is running
+        cmd = 'docker info'
+        _, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
+        # docker info can return warning messages in stderr, ignore them
+        if errmsg and 'WARNING' not in errmsg:
+            raise CommandError("ERROR: '%s' failed. Is docker running? : %s"
+                               % (cmd, errmsg))
+
+
+def _post_install_checks(net_addr, log):
     try:
         ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
 
-        # delete user
-        command_str = 'userdel %s' % admin_user
-        log.debug(command_str)
-        _, stdout, stderr = ssh_client.exec_command(command_str)
-        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
-
-        # remove directory and files
-        command_str = 'rm -rf /home/%s' % admin_user
-        log.debug(command_str)
-        _, stdout, stderr = ssh_client.exec_command(command_str)
-        log.debug(str(stdout.read()) + " : " + str(stderr.read()))
-
-        # TODO(snoyes) do whatever else needs to be done at uninstall time
     except Exception as e:
-        raise e
+        raise CommandError("ERROR: remote login failed : %s" % str(e))
+
+    try:
+        # a basic test
+        ssh_client.exec_command('ls')
+
+    except Exception as e:
+        raise CommandError("ERROR: remote command 'ls' failed : %s" % str(e))
+
     finally:
+        _close_ssh_client(ssh_client)
+
+
+def _close_ssh_client(ssh_client):
+    if ssh_client:
         try:
             ssh_client.close()
         except Exception:
@@ -186,10 +223,21 @@ def ssh_keygen():
                                          password=get_pk_password())
             with open(public_key_path, 'w') as pubFile:
                 pubFile.write("%s %s" % (public_key.get_name(),
-                              public_key.get_base64()))
+                                         public_key.get_base64()))
                 log.info("generated public key at: " + public_key_path)
     except Exception as e:
         raise e
+
+
+def _exec_ssh_cmd(cmd, ssh_client, log):
+    log.debug(cmd)
+    _, stdout, stderr = ssh_client.exec_command(cmd)
+    msg = stdout.read()
+    errmsg = stderr.read()
+    log.debug('%s : %s' % (msg, errmsg))
+    if errmsg:
+        log.warn('WARNING: command (%s) message : %s' % (cmd, errmsg.strip()))
+    return msg, errmsg
 
 
 def ssh_get_private_key():
@@ -198,7 +246,7 @@ def ssh_get_private_key():
 
 
 def ssh_get_public_key():
-    with open(get_pk_file() + ".pub", "r") as publicKeyFile:
-        publicKey = publicKeyFile.read()
-        return publicKey
+    with open(get_pk_file() + ".pub", "r") as public_key_file:
+        public_key = public_key_file.read()
+        return public_key
     return None

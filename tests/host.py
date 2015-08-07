@@ -97,7 +97,8 @@ class TestFunctional(KollaCliTest):
         msg = self.run_client_cmd('host check %s' % hostname, True)
         if 'ERROR:' not in msg:
             # host is installed, uninstall it
-            self.run_client_cmd('host uninstall %s' % hostname)
+            self.run_client_cmd('host uninstall %s --insecure %s'
+                                % (hostname, pwd))
             msg = self.run_client_cmd('host check %s' % hostname, True)
             self.assertIn('ERROR:', msg, 'Uninstall failed on host: (%s)'
                           % hostname)
@@ -110,7 +111,8 @@ class TestFunctional(KollaCliTest):
                          % hostname)
 
         # uninstall the host
-        self.run_client_cmd('host uninstall %s' % hostname)
+        self.run_client_cmd('host uninstall %s --insecure %s'
+                            % (hostname, pwd))
         msg = self.run_client_cmd('host check %s' % hostname, True)
         self.assertIn('ERROR:', msg, 'Uninstall failed on host: (%s)'
                       % hostname)

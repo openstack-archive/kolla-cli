@@ -12,9 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import logging
-import traceback
-
-from paramiko import AuthenticationException
 
 from kollacli import exceptions
 from kollacli import utils
@@ -45,7 +42,7 @@ class Host(object):
             except Exception as e:
                 raise exceptions.CommandError(
                     'ERROR: ssh key generation failed on local host : %s'
-                    % e)
+                    % str(e))
 
         try:
             self.log.info('Starting host (%s) check at address (%s)' %
@@ -53,14 +50,10 @@ class Host(object):
             ssh_check_host(self.net_addr)
             self.log.info('Host (%s), check succeeded' % self.hostname)
 
-        except AuthenticationException as e:
-            raise exceptions.CommandError(
-                'ERROR: Host (%s), check failed, kolla is not installed'
-                % self.hostname)
         except Exception as e:
             raise Exception(
-                'ERROR: Host (%s), unexpected exception : %s'
-                % (self.hostname, e))
+                'ERROR: Host (%s), check failed. Reason : %s'
+                % (self.hostname, str(e)))
         return True
 
     def install(self, password):
@@ -82,27 +75,21 @@ class Host(object):
         except Exception as e:
             raise exceptions.CommandError(
                 'ERROR: Host (%s) install failed : %s'
-                % (self.hostname, e))
+                % (self.hostname, str(e)))
         return True
 
-    def uninstall(self):
+    def uninstall(self, password):
         self._setup_keys()
-
-        # check if already uninstalled
-        if not self._is_installed():
-            self.log.info('Uninstall skipped for host (%s), ' % self.hostname +
-                          'kolla already uninstalled')
-            return True
 
         try:
             self.log.info('Starting uninstall of host (%s) at address (%s)'
                           % (self.hostname, self.net_addr))
-            ssh_uninstall_host(self.net_addr)
+            ssh_uninstall_host(self.net_addr, password)
             self.log.info('Host (%s) uninstall succeeded' % self.hostname)
         except Exception as e:
             raise exceptions.CommandError(
                 'ERROR: Host (%s) uninstall failed : %s'
-                % (self.hostname, e))
+                % (self.hostname, str(e)))
         return True
 
     def _setup_keys(self):
@@ -113,7 +100,7 @@ class Host(object):
             except Exception as e:
                 raise exceptions.CommandError(
                     'ERROR: Error generating ssh keys on local host : %s'
-                    % e)
+                    % str(e))
 
     def _is_installed(self):
         is_installed = False
@@ -121,13 +108,9 @@ class Host(object):
             ssh_check_host(self.net_addr)
             is_installed = True
 
-        except AuthenticationException:
-            # ssh check failed
+        except Exception as e:
+            self.log.debug('%s' % str(e))
             pass
-
-        except Exception:
-            raise Exception('ERROR: Unexpected exception: %s'
-                            % traceback.format_exc())
         return is_installed
 
 
