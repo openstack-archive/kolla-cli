@@ -19,8 +19,6 @@ import unittest
 class TestFunctional(KollaCliTest):
 
     def test_property_set_clear(self):
-        hosts = self.TestHosts()
-
         # test list
         msg = self.run_client_cmd('property list')
         key = 'openstack_release'
@@ -35,7 +33,7 @@ class TestFunctional(KollaCliTest):
         msg = self.run_client_cmd('property list')
         ok = self._property_value_exists(key, value, msg)
         self.assertTrue(ok, 'set failed property not in output: %s, %s' %
-                       (key, value))
+                        (key, value))
 
         # test modify existing
         key = 'TeStKeY'
@@ -44,7 +42,7 @@ class TestFunctional(KollaCliTest):
         msg = self.run_client_cmd('property list')
         ok = self._property_value_exists(key, value, msg)
         self.assertTrue(ok, 'set failed property not in output: %s, %s' %
-                       (key, value))
+                        (key, value))
 
         # test clear
         key = 'TeStKeY'
@@ -53,7 +51,7 @@ class TestFunctional(KollaCliTest):
         msg = self.run_client_cmd('property list')
         ok = self._property_value_exists(key, value, msg)
         self.assertFalse(ok, 'clear failed property in output: %s, %s' %
-                       (key, value))
+                         (key, value))
 
     def _property_value_exists(self, key, value, cli_output):
         """Verify cli data against model data"""

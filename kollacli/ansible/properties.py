@@ -20,10 +20,10 @@ import yaml
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
 
-DEFAULTS_FILENAME = '/defaults.yml'
-GLOBALS_FILENAME = '/globals.yml'
-ANSIBLE_ROLES_PATH = '/ansible/roles'
-ANSIBLE_DEFAULTS_PATH = '/defaults/main.yml'
+DEFAULTS_FILENAME = 'defaults.yml'
+GLOBALS_FILENAME = 'globals.yml'
+ANSIBLE_ROLES_PATH = 'ansible/roles'
+ANSIBLE_DEFAULTS_PATH = 'defaults/main.yml'
 
 
 class AnsibleProperties(object):
@@ -50,7 +50,7 @@ class AnsibleProperties(object):
 
         # to add something do property_dict['key'].append('value')
         try:
-            self._defaults_path = kolla_etc + DEFAULTS_FILENAME
+            self._defaults_path = os.path.join(kolla_etc, DEFAULTS_FILENAME)
             with open(self._defaults_path) as defaults_file:
                 defaults_contents = yaml.load(defaults_file)
                 self._file_contents[self._defaults_path] = defaults_contents
@@ -63,7 +63,7 @@ class AnsibleProperties(object):
             raise e
 
         try:
-            self._globals_path = kolla_etc + GLOBALS_FILENAME
+            self._globals_path = os.path.join(kolla_etc, GLOBALS_FILENAME)
             with open(self._globals_path) as globals_file:
                 globals_contents = yaml.load(globals_file)
                 self._file_contents[self._globals_path] = globals_contents
@@ -76,11 +76,11 @@ class AnsibleProperties(object):
             raise e
 
         try:
-            start_dir = kolla_home + ANSIBLE_ROLES_PATH
+            start_dir = os.path.join(kolla_home, ANSIBLE_ROLES_PATH)
             services = next(os.walk(start_dir))[1]
             for service_name in services:
-                file_name = (start_dir + '/' + service_name +
-                             ANSIBLE_DEFAULTS_PATH)
+                file_name = os.path.join(start_dir, service_name,
+                                         ANSIBLE_DEFAULTS_PATH)
                 if os.path.isfile(file_name):
                     with open(file_name) as service_file:
                         service_contents = yaml.load(service_file)
