@@ -22,6 +22,9 @@ from kollacli.utils import get_kolla_home
 
 DEFAULTS_FILENAME = '/defaults.yml'
 GLOBALS_FILENAME = '/globals.yml'
+ANSIBLE_ROLES_PATH = '/ansible/roles'
+ANSIBLE_DEFAULTS_PATH = '/defaults/main.yml'
+
 
 class AnsibleProperties(object):
     log = logging.getLogger(__name__)
@@ -73,11 +76,11 @@ class AnsibleProperties(object):
             raise e
 
         try:
-            start_dir = kolla_home + '/ansible/roles'
+            start_dir = kolla_home + ANSIBLE_ROLES_PATH
             services = next(os.walk(start_dir))[1]
             for service_name in services:
                 file_name = (start_dir + '/' + service_name +
-                             '/defaults/main.yml')
+                             ANSIBLE_DEFAULTS_PATH)
                 if os.path.isfile(file_name):
                     with open(file_name) as service_file:
                         service_contents = yaml.load(service_file)
@@ -113,11 +116,13 @@ class AnsibleProperties(object):
         try:
             if contents is not None:
                 if property_key in contents:
-                    self.change_property(property_key, property_value)
+                    self._change_property(property_key, property_value)
                 else:
-                    self.change_property(property_key, property_value, append=True)
+                    self._change_property(property_key, property_value,
+                                          append=True)
             else:
-                self.change_property(property_key, property_value, append=True)
+                self._change_property(property_key, property_value,
+                                      append=True)
         except Exception as e:
             raise e
 
@@ -128,15 +133,18 @@ class AnsibleProperties(object):
         contents = self._file_contents[self._globals_path]
         if contents is not None:
             if property_key in contents:
-                self.change_property(property_key, None, clear=True)
-            #else:
+                self._change_property(property_key, None, clear=True)
                 # TODO(bmace) do we want any sort of message if we try to clear
                 # a property that doesn't exist?
 
-    def change_property(self, property_key, property_value, append=False, clear=False):
+    def _change_property(self, property_key, property_value, append=False,
+                         clear=False):
         try:
+            # the file handle returned from mkstemp must be closed or else
+            # if this is called many times you will have an unpleasant
+            # file handle leak
             tmp_filehandle, tmp_path = mkstemp()
-            with open(tmp_path, 'w') as tmp_file: 
+            with open(tmp_path, 'w') as tmp_file:
                 with open(self._globals_path) as globals_file:
                     new_line = '%s: "%s"\n' % (property_key, property_value)
                     for line in globals_file:
@@ -151,29 +159,29 @@ class AnsibleProperties(object):
                             tmp_file.write(line)
                     if append is True:
                         tmp_file.write(new_line)
-                    
+
             os.remove(self._globals_path)
             move(tmp_path, self._globals_path)
         except Exception as e:
-            raise e    
+            raise e
         finally:
             try:
                 os.close(tmp_filehandle)
             except Exception:
                 pass
-            
+
             if tmp_filehandle is not None:
                 try:
                     os.close(tmp_filehandle)
                 except Exception:
                     pass
-                
+
             if tmp_path is not None:
                 try:
                     os.remove(tmp_path)
                 except Exception:
-                    pass 
-            
+                    pass
+
 
 class AnsibleProperty(object):
     name = ''

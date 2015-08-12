@@ -14,7 +14,6 @@
 import logging
 
 from kollacli.ansible import properties
-from kollacli.i18n import _
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -63,6 +62,7 @@ class PropertyList(Lister):
     """List all properties"""
 
     log = logging.getLogger(__name__)
+
     def take_action(self, parsed_args):
         ansible_properties = properties.AnsibleProperties()
         property_list = ansible_properties.get_all()

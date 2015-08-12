@@ -103,14 +103,5 @@ class Dump(Command):
 
     log = logging.getLogger(__name__)
 
-    def get_parser(self, prog_name):
-        parser = super(Dump, self).get_parser(prog_name)
-        parser.add_argument('--blue', nargs='?', help='force')
-        return parser
-
     def take_action(self, parsed_args):
         self.log.info(_("dump"))
-        if parsed_args.blue:
-            self.log.info('force')
-        else:
-            self.log.info('no force')
