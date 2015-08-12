@@ -13,14 +13,20 @@
 #    under the License.
 import logging
 import os
+from shutil import move
+from tempfile import mkstemp
 import yaml
 
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
 
+DEFAULTS_FILENAME = '/defaults.yml'
+GLOBALS_FILENAME = '/globals.yml'
 
 class AnsibleProperties(object):
     log = logging.getLogger(__name__)
+    _defaults_path = ''
+    _globals_path = ''
     _properties = []
     # this is so for any given property
     # we can look up the file it is in easily, to be used for the
@@ -41,27 +47,27 @@ class AnsibleProperties(object):
 
         # to add something do property_dict['key'].append('value')
         try:
-            defaults_filename = kolla_etc + 'defaults.yml'
-            with open(defaults_filename) as defaults_file:
+            self._defaults_path = kolla_etc + DEFAULTS_FILENAME
+            with open(self._defaults_path) as defaults_file:
                 defaults_contents = yaml.load(defaults_file)
-                self._file_contents[defaults_filename] = defaults_contents
+                self._file_contents[self._defaults_path] = defaults_contents
                 defaults_contents = self.filter_jinja2(defaults_contents)
                 for key, value in defaults_contents.items():
                     ansible_property = AnsibleProperty(key, value,
-                                                       'defaults.yml')
+                                                       DEFAULTS_FILENAME)
                     self._properties.append(ansible_property)
         except Exception as e:
             raise e
 
         try:
-            globals_filename = kolla_etc + '/globals.yml'
-            with open(globals_filename) as globals_file:
+            self._globals_path = kolla_etc + GLOBALS_FILENAME
+            with open(self._globals_path) as globals_file:
                 globals_contents = yaml.load(globals_file)
-                self._file_contents[globals_filename] = globals_contents
+                self._file_contents[self._globals_path] = globals_contents
                 globals_contents = self.filter_jinja2(globals_contents)
                 for key, value in globals_contents.items():
                     ansible_property = AnsibleProperty(key, value,
-                                                       'globals.yml')
+                                                       GLOBALS_FILENAME)
                     self._properties.append(ansible_property)
         except Exception as e:
             raise e
@@ -70,7 +76,8 @@ class AnsibleProperties(object):
             start_dir = kolla_home + '/ansible/roles'
             services = next(os.walk(start_dir))[1]
             for service_name in services:
-                file_name = start_dir+ '/' +service_name + '/defaults/main.yml'
+                file_name = (start_dir + '/' + service_name +
+                             '/defaults/main.yml')
                 if os.path.isfile(file_name):
                     with open(file_name) as service_file:
                         service_contents = yaml.load(service_file)
@@ -98,6 +105,75 @@ class AnsibleProperties(object):
                 del contents[key]
         return contents
 
+    def set_property(self, property_key, property_value):
+        # We only manipulate values in the globals.yml file so look up the key
+        # and if it is there, we will parse through the file to replace that
+        # line.  if the key doesn't exist we append to the end of the file
+        contents = self._file_contents[self._globals_path]
+        try:
+            if contents is not None:
+                if property_key in contents:
+                    self.change_property(property_key, property_value)
+                else:
+                    self.change_property(property_key, property_value, append=True)
+            else:
+                self.change_property(property_key, property_value, append=True)
+        except Exception as e:
+            raise e
+
+    def clear_property(self, property_key):
+        # We only manipulate values in the globals.yml file so if the variable
+        # does not exist we will do nothing.  if it does exist we need to find
+        # the line and nuke it.
+        contents = self._file_contents[self._globals_path]
+        if contents is not None:
+            if property_key in contents:
+                self.change_property(property_key, None, clear=True)
+            #else:
+                # TODO(bmace) do we want any sort of message if we try to clear
+                # a property that doesn't exist?
+
+    def change_property(self, property_key, property_value, append=False, clear=False):
+        try:
+            tmp_filehandle, tmp_path = mkstemp()
+            with open(tmp_path, 'w') as tmp_file: 
+                with open(self._globals_path) as globals_file:
+                    new_line = '%s: "%s"\n' % (property_key, property_value)
+                    for line in globals_file:
+                        if append is False:
+                            if line.startswith(property_key):
+                                if clear:
+                                    line = ''
+                                else:
+                                    line = new_line
+                            tmp_file.write(line)
+                        else:
+                            tmp_file.write(line)
+                    if append is True:
+                        tmp_file.write(new_line)
+                    
+            os.remove(self._globals_path)
+            move(tmp_path, self._globals_path)
+        except Exception as e:
+            raise e    
+        finally:
+            try:
+                os.close(tmp_filehandle)
+            except Exception:
+                pass
+            
+            if tmp_filehandle is not None:
+                try:
+                    os.close(tmp_filehandle)
+                except Exception:
+                    pass
+                
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except Exception:
+                    pass 
+            
 
 class AnsibleProperty(object):
     name = ''

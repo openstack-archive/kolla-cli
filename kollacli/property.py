@@ -25,15 +25,44 @@ class PropertySet(Command):
 
     log = logging.getLogger(__name__)
 
+    def get_parser(self, prog_name):
+        parser = super(PropertySet, self).get_parser(prog_name)
+        parser.add_argument('propertyname', metavar='<propertyname>',
+                            help='propertyname')
+        parser.add_argument('propertyvalue', metavar='<propertyvalue',
+                            help='propertyvalue')
+        return parser
+
     def take_action(self, parsed_args):
-        self.log.info(_("property set"))
+        property_name = parsed_args.propertyname.strip()
+        property_value = parsed_args.propertyvalue.strip()
+
+        ansible_properties = properties.AnsibleProperties()
+        ansible_properties.set_property(property_name, property_value)
+
+
+class PropertyClear(Command):
+    "Property Clear"
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(PropertyClear, self).get_parser(prog_name)
+        parser.add_argument('propertyname', metavar='<propertyname>',
+                            help='propertyname')
+        return parser
+
+    def take_action(self, parsed_args):
+        property_name = parsed_args.propertyname.strip()
+
+        ansible_properties = properties.AnsibleProperties()
+        ansible_properties.clear_property(property_name)
 
 
 class PropertyList(Lister):
     """List all properties"""
 
     log = logging.getLogger(__name__)
-
     def take_action(self, parsed_args):
         ansible_properties = properties.AnsibleProperties()
         property_list = ansible_properties.get_all()
