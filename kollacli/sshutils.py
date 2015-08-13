@@ -17,11 +17,11 @@ import paramiko
 
 from distutils.version import StrictVersion
 
-from kollaclient.exceptions import CommandError
-from kollaclient.utils import get_admin_user
-from kollaclient.utils import get_pk_bits
-from kollaclient.utils import get_pk_file
-from kollaclient.utils import get_pk_password
+from kollacli.exceptions import CommandError
+from kollacli.utils import get_admin_user
+from kollacli.utils import get_pk_bits
+from kollacli.utils import get_pk_file
+from kollacli.utils import get_pk_password
 
 MIN_DOCKER_VERSION = '1.7.0'
 
