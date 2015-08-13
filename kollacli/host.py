@@ -17,8 +17,7 @@ import logging
 
 from kollacli import exceptions
 from kollacli.i18n import _
-from kollacli.objects.hosts import Host
-from kollacli.objects.hosts import Hosts
+from kollacli.ansible.inventory import Inventory
 from kollacli.objects.zones import Zones
 
 from cliff.command import Command
@@ -38,45 +37,50 @@ def _zone_not_found(log, zonename):
 
 
 class HostAdd(Command):
-    """Add host to open-stack-kolla
+    """Add host to open-stack-kolla"""
+    log = logging.getLogger(__name__)
 
-    If host already exists, just update the network address.
+    def get_parser(self, prog_name):
+        parser = super(HostAdd, self).get_parser(prog_name)
+        parser.add_argument('hostname', metavar='<hostname>',
+                            help='host name or ip address')
+        parser.add_argument('groupname', metavar='<groupname>',
+                            help='group name')
+        return parser
+
+    def take_action(self, parsed_args):
+        hostname = parsed_args.hostname.strip()
+        groupname = parsed_args.groupname.strip()
+
+        inventory = Inventory.load()
+        inventory.add_host(hostname, groupname)
+        Inventory.save(inventory)
+
+
+class HostRemove(Command):
+    """Remove host from openstack-kolla
+
+    If a group is specified, the host will be removed from that group.
+    If no group is specified, the host will be removed from all groups.
     """
 
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(HostAdd, self).get_parser(prog_name)
-        parser.add_argument('hostname', metavar='<hostname>', help='hostname')
-        parser.add_argument('networkaddress', metavar='networkaddress',
-                            help='Network address')
-        return parser
-
-    def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.strip()
-        net_addr = parsed_args.networkaddress.strip()
-
-        hosts = Hosts()
-        host = Host(hostname, net_addr)
-        hosts.add_host(host)
-        hosts.save()
-
-
-class HostRemove(Command):
-    """Remove host from openstack-kolla"""
-
-    log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
         parser = super(HostRemove, self).get_parser(prog_name)
-        parser.add_argument('hostname', metavar='<hostname>', help='hostname')
+        parser.add_argument('hostname', metavar='<hostname>', help='host name')
+        parser.add_argument('groupname', nargs='?',
+                            metavar='<group>', help='group name')
         return parser
 
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.strip()
-        hosts = Hosts()
-        hosts.remove_host(hostname)
-        hosts.save()
+        groupname = None
+        if parsed_args.groupname:
+            groupname = parsed_args.groupname.strip()
+        inventory = Inventory.load()
+        inventory.remove_host(hostname, groupname)
+        Inventory.save(inventory)
 
 
 class HostList(Lister):
@@ -85,14 +89,19 @@ class HostList(Lister):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        hosts = Hosts().get_all()
+        inventory = Inventory.load()
+
+        hosts = inventory.get_hosts()
         data = []
         if hosts:
             for host in hosts:
-                data.append((host.hostname, host.net_addr, host.zone))
+                groupnames = []
+                for group in host.get_groups():
+                    groupnames.append(group.name)
+                data.append((host.name, groupnames))
         else:
-            data.append(('', '', ''))
-        return (('Host Name', 'Address', 'Zone'), data)
+            data.append(('', ''))
+        return (('Host Name', 'Groups'), data)
 
 
 class HostSetzone(Command):
@@ -114,7 +123,7 @@ class HostSetzone(Command):
             _zone_not_found(self.log, zonename)
             return False
 
-        hosts = Hosts()
+        hosts = Inventory()
         host = hosts.get_host(hostname)
         if not host:
             _host_not_found(self.log, hostname)
@@ -137,7 +146,7 @@ class HostClearzone(Command):
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.strip()
 
-        hosts = Hosts()
+        hosts = Inventory()
         host = hosts.get_host(hostname)
         if not host:
             _host_not_found(self.log, hostname)
@@ -180,7 +189,8 @@ class HostCheck(Command):
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.strip()
 
-        host = Hosts().get_host(hostname)
+        inventory = Inventory.load()
+        host = inventory.get_host(hostname)
         if not host:
             _host_not_found(self.log, hostname)
             return False
@@ -201,7 +211,8 @@ class HostInstall(Command):
 
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.strip()
-        host = Hosts().get_host(hostname)
+        inventory = Inventory.load()
+        host = inventory.get_host(hostname)
         if not host:
             _host_not_found(self.log, hostname)
             return False
@@ -227,7 +238,8 @@ class HostUninstall(Command):
 
     def take_action(self, parsed_args):
         hostname = parsed_args.hostname.strip()
-        host = Hosts().get_host(hostname)
+        inventory = Inventory.load()
+        host = inventory.get_host(hostname)
         if not host:
             _host_not_found(self.log, hostname)
             return False

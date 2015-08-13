@@ -13,85 +13,97 @@
 #   under the License.
 #
 from common import KollaCliTest
-import unittest
+from common import TestHosts
 
+import json
+import unittest
 
 class TestFunctional(KollaCliTest):
 
     def test_host_add_remove(self):
-        hosts = self.TestHosts()
+        hosts = TestHosts()
 
-        msg = self.run_client_cmd('host list')
+        msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-        hostname = 'host_test1'
-        ip_addr = '1.1.1.1'
-        hosts.add(hostname, ip_addr)
-        self.run_client_cmd('host add %s %s' % (hostname, ip_addr))
+        host1 = 'host_test1'
+        host2 = 'host_test2'
 
-        msg = self.run_client_cmd('host list')
+        group1 = 'control'
+        group2 = 'network'
+        group3 = 'compute'
+
+        hosts.add(host1)
+        hosts.add_group(host1, group1)
+        self.run_client_cmd('host add %s %s' % (host1, group1))
+        msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-        hostname = 'host_test2'
-        ip_addr = '2.2.2.2'
-        hosts.add(hostname, ip_addr)
-        self.run_client_cmd('host add %s %s' % (hostname, ip_addr))
-
-        msg = self.run_client_cmd('host list')
+        hosts.add_group(host1, group2)
+        self.run_client_cmd('host add %s %s' % (host1, group2))
+        msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-        hostname = 'host_test2'
-        hosts.remove(hostname)
-        self.run_client_cmd('host remove %s' % hostname)
-
-        msg = self.run_client_cmd('host list')
+        hosts.remove_group(host1, group1)
+        self.run_client_cmd('host remove %s %s' % (host1, group1))
+        msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-        hostname = 'host_test1'
-        hosts.remove(hostname)
-        self.run_client_cmd('host remove %s' % hostname)
-
-        msg = self.run_client_cmd('host list')
+        hosts.add(host2)
+        hosts.add_group(host2, group3)
+        self.run_client_cmd('host add %s %s' % (host2, group3))
+        msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-    def test_host_setzone(self):
-        hosts = self.TestHosts()
-        hostname = 'host_test1'
-        ip_addr = '1.1.1.1'
-        zonename = 'test_zone1'
-        hosts.add(hostname, ip_addr, zonename)
-        self.run_client_cmd('zone add %s' % zonename)
-
-        self.run_client_cmd('host add %s %s' % (hostname, ip_addr))
-        self.run_client_cmd('host setzone %s %s' % (hostname, zonename))
-        msg = self.run_client_cmd('host list')
+        hosts.remove(host2)
+        self.run_client_cmd('host remove %s %s' % (host2, group3))
+        msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-        zonename = 'test_zone2'
-        hosts.add(hostname, ip_addr, zonename)
-        self.run_client_cmd('zone add %s' % zonename)
-
-        self.run_client_cmd('host setzone %s %s' % (hostname, zonename))
-        msg = self.run_client_cmd('host list')
+        hosts.remove(host1)
+        self.run_client_cmd('host remove %s' % host1)
+        msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-        zonename = ''
-        hosts.add(hostname, ip_addr, zonename)
-        self.run_client_cmd('host clearzone %s' % hostname)
-        msg = self.run_client_cmd('host list')
-        self._check_cli_output(hosts, msg)
+#     def test_host_setzone(self):
+#         hosts = self.TestHosts()
+#         hostname = 'host_test1'
+#         ip_addr = '1.1.1.1'
+#         zonename = 'test_zone1'
+#         hosts.add(hostname, ip_addr, zonename)
+#         self.run_client_cmd('zone add %s' % zonename)
+#
+#         self.run_client_cmd('host add %s %s' % (hostname, ip_addr))
+#         self.run_client_cmd('host setzone %s %s' % (hostname, zonename))
+#         msg = self.run_client_cmd('host list')
+#         self._check_cli_output(hosts, msg)
+#
+#         zonename = 'test_zone2'
+#         hosts.add(hostname, ip_addr, zonename)
+#         self.run_client_cmd('zone add %s' % zonename)
+#
+#         self.run_client_cmd('host setzone %s %s' % (hostname, zonename))
+#         msg = self.run_client_cmd('host list')
+#         self._check_cli_output(hosts, msg)
+#
+#         zonename = ''
+#         hosts.add(hostname, ip_addr, zonename)
+#         self.run_client_cmd('host clearzone %s' % hostname)
+#         msg = self.run_client_cmd('host list')
+#         self._check_cli_output(hosts, msg)
 
     def test_host_install(self):
-        test_hosts = self.get_test_hosts()
+        test_hosts = TestHosts()
+        test_hosts.load()
+
         if not test_hosts:
             self.log.info('no test_hosts file found, skipping test')
             return
 
         hostname = test_hosts.get_hostnames()[0]
-        net_addr = test_hosts.get_ip(hostname)
         pwd = test_hosts.get_password(hostname)
 
-        self.run_client_cmd('host add %s %s' % (hostname, net_addr))
+        self.run_client_cmd('host add %s control' % (hostname))
 
         # check if host is installed
         msg = self.run_client_cmd('host check %s' % hostname, True)
@@ -117,60 +129,45 @@ class TestFunctional(KollaCliTest):
         self.assertIn('ERROR:', msg, 'Uninstall failed on host: (%s)'
                       % hostname)
 
-    def _check_cli_output(self, hosts, cli_output):
+    def _check_cli_output(self, exp_hosts, cli_output):
         """Verify cli data against model data
 
         The host list cli output looks like this:
 
-            +-----------+---------+------+
-            | Host Name | Address | Zone |
-            +-----------+---------+------+
-            | foobar    | 2.2.2.2 |      |
-            | foo       | 1.1.1.1 |      |
-            +-----------+---------+------+
+            $ host list -f json
+            [{"Host Name": "foo", "Groups": ["control", "network"]}]
         """
         # check for any host in cli output that shouldn't be there
-        cli_lines = cli_output.split('\n')
-        exp_hosts = hosts.get_hostnames()
-        for cli_line in cli_lines:
-            if ('|' not in cli_line or
-               cli_line.startswith('+') or
-               cli_line.startswith('| Host Name ')):
-                continue
-            cli_host = cli_line.split('|')[1].strip()
-            if cli_host:
-                self.assertIn(cli_host, exp_hosts,
-                              'unexpected host: %s, found in cli output: %s'
-                              % (cli_host, cli_lines))
+        cli_hosts = json.loads(cli_output)
 
-        for hostname in exp_hosts:
-            exp_ip = hosts.get_ip(hostname)
-            exp_zone = hosts.get_zone(hostname)
+        exp_hostnames = exp_hosts.get_hostnames()
+        if not exp_hostnames:
+            if len(cli_hosts) == 1:
+                cli_hostname = cli_hosts[0]['Host Name']
+                if not cli_hostname:
+                    # both cli and expected hosts are None
+                    return
 
-            hostname_found = False
-            for cli_line in cli_lines:
-                if ('|' not in cli_line or
-                   cli_line.startswith('+') or
-                   cli_line.startswith('| Host Name ')):
-                    continue
+        for cli_host in cli_hosts:
+            cli_hostname = cli_host['Host Name']
+            self.assertIn(cli_hostname, exp_hostnames,
+                          'unexpected host: %s, found in cli output: %s'
+                          % (cli_hostname, cli_output))
 
-                tokens = cli_line.split('|')
-                if tokens[1].strip() == hostname:
-                    hostname_found = True
+        # check that all expected hosts are in the output
+        for exp_hostname in exp_hosts.get_hostnames():
+            exp_host_found = False
+            for cli_host in cli_hosts:
+                if exp_hostname == cli_host['Host Name']:
+                    exp_host_found = True
+                    cli_groups = cli_host['Groups']
+                    exp_groups = exp_hosts.get_groups(exp_hostname)
+                    self.assertEqual(exp_groups, cli_groups)
 
-                    # check network address
-                    yaml_ip = tokens[2].strip()
-                    self.assertEqual(exp_ip, yaml_ip,
-                                     'incorrect ip address in cli output')
-
-                    # check zone
-                    yaml_zone = tokens[3].strip()
-                    self.assertEqual(exp_zone, yaml_zone,
-                                     'incorrect zone in cli output')
-
-            self.assertTrue(hostname_found,
+            self.assertTrue(exp_host_found,
                             'hostname: %s not in cli output: \n%s'
-                            % (hostname, cli_output))
+                            % (exp_hostname, cli_output))
+
 
 if __name__ == '__main__':
     unittest.main()

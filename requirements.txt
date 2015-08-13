@@ -2,6 +2,7 @@ Babel>=1.3
 cliff>=1.10.0  # Apache-2.0
 cliff-tablib>=1.1
 docker-py>=1.3
+jsonpickle>=0.9
 oslo.i18n>=1.5.0  # Apache-2.0
 paramiko
 pbr>=0.11,<2.0

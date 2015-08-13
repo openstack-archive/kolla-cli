@@ -22,12 +22,12 @@ import testtools
 
 import kollacli.utils as utils
 
-
-TEST_SUFFIX = '/test/'
+TEST_SUFFIX = 'test/'
 ENV_ETC = 'KOLLA_CLIENT_ETC'
-VENV_PY_PATH = '/.venv/bin/python'
+VENV_PY_PATH = '.venv/bin/python'
 KOLLA_CMD = 'kollacli'
 KOLLA_SHELL_DIR = 'kollacli'
+
 HOSTS_FNAME = 'test_hosts'
 
 
@@ -51,13 +51,13 @@ class KollaCliTest(testtools.TestCase):
 
         self._set_cmd_prefix()
 
-        # make sure hosts and zones yaml files exist
-        # and clear them out
+        # make sure inventory dirs exists and remove inventory file
         self._init_dir(etc_path)
-        hosts_path = etc_path + '/hosts.yml'
-        self._init_file(hosts_path)
-        zones_path = etc_path + '/zones.yml'
-        self._init_file(zones_path)
+        etc_ansible_path = os.path.join(etc_path, 'ansible/')
+        self._init_dir(etc_ansible_path)
+        etc_inventory_path = os.path.join(etc_ansible_path, 'inventory/')
+        self._init_dir(etc_inventory_path)
+        self._init_file(os.path.join(etc_inventory_path, 'inventory.p'))
 
     def tearDown(self):
         self._restore_env_var()
@@ -73,73 +73,12 @@ class KollaCliTest(testtools.TestCase):
                                          % (msg, full_cmd)))
         return msg
 
-    def get_test_hosts(self):
-        """get hosts from test_hosts file
-
-        host is {hostname: net_addr}
-        """
-        hosts = None
-        if not os.path.exists(HOSTS_FNAME):
-            self.log.error('test_hosts file not found, are you running' +
-                           'the tests in the tests directory?')
-            return hosts
-        with open(HOSTS_FNAME, 'r') as f:
-            hosts = self.TestHosts()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-
-                tokens = line.split()
-                self.assertIs(True, len(tokens) > 2,
-                              '%s expected 3 params on line: %s'
-                              % (HOSTS_FNAME, line))
-                hostname = tokens[0]
-                net_addr = tokens[1]
-                pwd = tokens[2]
-                hosts.add(hostname, net_addr)
-                hosts.set_password(hostname, pwd)
-        return hosts
-
-    class TestHosts(object):
-        """test representation of host data"""
-        info = {}
-
-        def __init__(self):
-            self.info = {}
-
-        def remove(self, name):
-            del self.info[name]
-
-        def add(self, name, ip, zone='', services=[]):
-            if name not in self.info:
-                self.info[name] = {}
-            self.info[name]['net'] = ip
-            self.info[name]['zone'] = zone
-            self.info[name]['services'] = services
-
-        def get_ip(self, name):
-            return self.info[name]['net']
-
-        def get_zone(self, name):
-            return self.info[name]['zone']
-
-        def get_services(self, name):
-            return self.info[name]['services']
-
-        def get_hostnames(self):
-            return self.info.keys()
-
-        def set_password(self, name, password):
-            self.info[name]['pwd'] = password
-
-        def get_password(self, name):
-            return self.info[name]['pwd']
-
     # PRIVATE FUNCTIONS ----------------------------------------------------
     def _setup_env_var(self):
-        new_etc_path = utils.get_client_etc() + TEST_SUFFIX
-        os.environ[ENV_ETC] = new_etc_path
+        etc_path = utils.get_client_etc()
+        if not etc_path.endswith(TEST_SUFFIX):
+            etc_path = os.path.join(etc_path, TEST_SUFFIX)
+            os.environ[ENV_ETC] = etc_path
 
     def _restore_env_var(self):
         etc_path = utils.get_client_etc()
@@ -170,12 +109,12 @@ class KollaCliTest(testtools.TestCase):
         return (retval, msg)
 
     def _init_file(self, filepath):
-        with open(filepath, 'w') as f:
-            f.close()
+        if os.path.exists(filepath):
+            os.remove(filepath)
 
     def _init_dir(self, path):
         if not os.path.isdir(path):
-            os.makedirs(path)
+            os.mkdir(path)
 
     def _set_cmd_prefix(self):
         """Select the command to invoke the kollacli
@@ -210,9 +149,9 @@ class KollaCliTest(testtools.TestCase):
             os_kolla_dir = cwd.rsplit('/', 1)[0]
 
             shell_dir = os_kolla_dir + '/%s/' % KOLLA_SHELL_DIR
-            shell_path = shell_dir + 'shell.py'
+            shell_path = os.path.join(shell_dir, 'shell.py')
 
-            python_path = os_kolla_dir + VENV_PY_PATH
+            python_path = os.path.join(os_kolla_dir, VENV_PY_PATH)
 
             self.log.debug('shell_path: %s' % shell_path)
             self.log.debug('python_path: %s' % python_path)
@@ -225,3 +164,67 @@ class KollaCliTest(testtools.TestCase):
 
         self.assertEqual(0, 1,
                          'no kollacli shell command found. Aborting tests')
+
+
+class TestHosts(object):
+    """host systems for testing
+
+    This class can either be used for metadata to hold info about test hosts,
+    or can be loaded from a test file for info on actual test host machines.
+    """
+
+    def __init__(self):
+        self.info = {}
+
+    def remove(self, name):
+        del self.info[name]
+
+    def add(self, name):
+        if name not in self.info:
+            self.info[name] = {'groups': [],
+                               'pwd': '',
+                               }
+
+    def get_groups(self, name):
+        return self.info[name]['groups']
+
+    def add_group(self, name, group):
+        if group not in self.info[name]['groups']:
+            self.info[name]['groups'].append(group)
+
+    def remove_group(self, name, group):
+        if group in self.info[name]['groups']:
+            self.info[name]['groups'].remove(group)
+
+    def get_hostnames(self):
+        return self.info.keys()
+
+    def set_password(self, name, password):
+        self.info[name]['pwd'] = password
+
+    def get_password(self, name):
+        return self.info[name]['pwd']
+
+    def load(self):
+        """load hosts from test_hosts file
+
+        """
+        hosts = None
+        if not os.path.exists(HOSTS_FNAME):
+            self.log.error('test_hosts file not found, are you running ' +
+                           'the tests in the tests directory?')
+            return hosts
+        with open(HOSTS_FNAME, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+
+                tokens = line.split()
+                if len(tokens) != 3:
+                    raise Exception('%s expected 3 params on line: %s'
+                                    % (HOSTS_FNAME, line))
+                hostname = tokens[0]
+                pwd = tokens[2]
+                self.add(hostname)
+                self.set_password(hostname, pwd)
