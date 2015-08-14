@@ -18,6 +18,7 @@ from common import TestHosts
 import json
 import unittest
 
+
 class TestFunctional(KollaCliTest):
 
     def test_host_add_remove(self):

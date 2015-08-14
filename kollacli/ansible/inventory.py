@@ -72,26 +72,17 @@ class Host(object):
 
     def __init__(self, hostname):
         self.name = hostname
-        self._groups = {}  # kv = groupname:group
         self.alias = ''
         self.is_mgmt = False
         self.hypervisor = ''
         self.vars = {}
         self.version = self.__class__.class_version
 
+    def get_vars(self):
+        return self.vars.copy()
+
     def upgrade(self):
         pass
-
-    def _add_group(self, group):
-        if group.name not in self._groups:
-            self._groups[group.name] = group
-
-    def _remove_group(self, group):
-        if group.name in self._groups:
-            del self._groups[group.name]
-
-    def get_groups(self):
-        return self._groups.values()
 
     def check(self):
         sshKeysExist = ssh_check_keys()
@@ -176,7 +167,6 @@ class Group(object):
 
     def __init__(self, name):
         self.name = name
-        self.parent = None
         self.children = []
         self._hosts = {}  # kv = hostname:object
         self._version = 1
@@ -191,15 +181,25 @@ class Group(object):
             self._hosts[host.name] = host
         else:
             host = self._hosts[host.name]
-        host._add_group(self)
 
     def remove_host(self, host):
         if host.name in self._hosts:
-            host._remove_group(self)
             del self._hosts[host.name]
 
     def get_hosts(self):
         return self._hosts.values()
+
+    def get_hostnames(self):
+        return self._hosts.keys()
+
+    def get_childnames(self):
+        names = []
+        for child in self.children:
+            names.append(child.name)
+        return names
+
+    def get_vars(self):
+        return self.vars.copy()
 
 
 class Inventory(object):
@@ -272,15 +272,16 @@ class Inventory(object):
             for (service_name, container_names) in services.items():
                 service_group = Group(service_name)
                 deploy_group.children.append(service_group)
-                service_group.parent = deploy_group
                 for container_name in container_names:
                     container_group = Group(container_name)
                     service_group.children.append(container_group)
-                    container_group.parent = service_group
             self._groups[deploy_name] = deploy_group
 
     def get_hosts(self):
         return self._hosts.values()
+
+    def get_hostnames(self):
+        return self._hosts.keys()
 
     def get_host(self, hostname):
         host = None
@@ -305,11 +306,46 @@ class Inventory(object):
     def remove_host(self, hostname, groupname=None):
         if hostname in self._hosts:
             host = self._hosts[hostname]
-            groups = host.get_groups()
+            groups = self.get_groups(host)
+            group_count = len(groups)
             for group in groups:
                 if not groupname or groupname == group.name:
-                    host._remove_group(group)
+                    group_count -= 1
+                    group.remove_host(host)
 
             # if host no longer exists in any group, remove it from inventory
-            if not host.get_groups():
+            if group_count == 0:
                 del self._hosts[hostname]
+
+    def get_groups(self, host=None):
+        """return all groups containing host
+
+        if hosts is none, return all groups in inventory
+        """
+        if not host:
+            return self._groups.values()
+        host_groups = self.get_host_groups([host])
+        groupnames = host_groups[host.name]
+        groups = []
+        for groupname in groupnames:
+            groups.append(self._groups[groupname])
+        return groups
+
+    def get_host_groups(self, hosts):
+        """returns a dict: { hostname : [groupnames] }"""
+        host_groups = self._get_host_groups(hosts, self._groups.values())
+        return host_groups
+
+    def _get_host_groups(self, hosts, groups):
+        host_groups = {}
+        for group in groups:
+            if group.children:
+                hosts_children = self._get_host_groups(hosts, group.children)
+                host_groups.update(hosts_children)
+            for host in hosts:
+                if host.name in group._hosts:
+                    if host.name not in host_groups:
+                        host_groups[host.name] = []
+                    host_groups[host.name].append(group.name)
+
+        return host_groups

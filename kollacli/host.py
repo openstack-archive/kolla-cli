@@ -15,9 +15,9 @@ import argparse
 import getpass
 import logging
 
+from kollacli.ansible.inventory import Inventory
 from kollacli import exceptions
 from kollacli.i18n import _
-from kollacli.ansible.inventory import Inventory
 from kollacli.objects.zones import Zones
 
 from cliff.command import Command
@@ -92,16 +92,15 @@ class HostList(Lister):
         inventory = Inventory.load()
 
         hosts = inventory.get_hosts()
+
         data = []
-        if hosts:
-            for host in hosts:
-                groupnames = []
-                for group in host.get_groups():
-                    groupnames.append(group.name)
-                data.append((host.name, groupnames))
+        host_groups = inventory.get_host_groups(hosts)
+        if host_groups:
+            for (hostname, groupnames) in host_groups.items():
+                data.append((hostname, groupnames))
         else:
             data.append(('', ''))
-        return (('Host Name', 'Groups'), data)
+        return (('Host Name', 'Groups'), sorted(data))
 
 
 class HostSetzone(Command):
