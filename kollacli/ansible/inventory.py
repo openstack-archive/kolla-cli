@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import json
 import jsonpickle
 import logging
 import os
@@ -349,3 +350,50 @@ class Inventory(object):
                     host_groups[host.name].append(group.name)
 
         return host_groups
+
+    def get_ansible_json(self):
+        """generate json inventory for ansible
+
+        typical ansible json format:
+        {
+        'group': {
+            'hosts': [
+                '192.168.28.71',
+                '192.168.28.72'
+            ],
+            'vars': {
+                'ansible_ssh_user': 'johndoe',
+                'ansible_ssh_private_key_file': '~/.ssh/mykey',
+                'example_variable': 'value'
+            }
+            'children': [ 'marietta', '5points' ]
+        },
+        '_meta': {
+            'hostvars': {
+                '192.168.28.71': {
+                    'host_specific_var': 'bar'
+                },
+                '192.168.28.72': {
+                    'host_specific_var': 'foo'
+                }
+            }
+        }
+    }
+    """
+        jdict = {}
+
+        # process groups
+        for group in self.get_groups():
+            jdict[group.name] = {}
+            jdict[group.name]['hosts'] = group.get_hostnames()
+            jdict[group.name]['children'] = group.get_childnames()
+            jdict[group.name]['vars'] = group.get_vars()
+
+        # process hosts vars
+        jdict['_meta'] = {}
+        jdict['_meta']['hostvars'] = {}
+        for host in self.get_hosts():
+            jdict['_meta']['hostvars'][host.name] = host.get_vars()
+
+        # convert to json
+        return json.dumps(jdict, indent=4)
