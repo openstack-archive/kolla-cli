@@ -247,9 +247,13 @@ class Inventory(object):
             # if this is called many times you will have an unpleasant
             # file handle leak
             tmp_filehandle, tmp_path = mkstemp()
+
+            # multiple trips thru json to render a readable inventory file
             data = jsonpickle.encode(inventory)
+            data_str = json.loads(data)
+            pretty_data = json.dumps(data_str, indent=4)
             with open(tmp_path, 'w') as tmp_file:
-                tmp_file.write(data)
+                tmp_file.write(pretty_data)
             shutil.copyfile(tmp_path, inventory_path)
             os.remove(tmp_path)
         except Exception as e:
@@ -283,6 +287,17 @@ class Inventory(object):
 
     def get_hostnames(self):
         return self._hosts.keys()
+
+    def get_host_groups(self):
+        """return { hostname : groupnames }"""
+
+        host_groups = {}
+        for host in self._hosts.values():
+            host_groups[host.name] = []
+            groups = self.get_groups(host)
+            for group in groups:
+                host_groups[host.name].append(group.name)
+        return host_groups
 
     def get_host(self, hostname):
         host = None
@@ -318,6 +333,14 @@ class Inventory(object):
             if group_count == 0:
                 del self._hosts[hostname]
 
+    def add_group(self, groupname):
+        if groupname not in self._groups:
+            self._groups[groupname] = Group(groupname)
+
+    def remove_group(self, groupname):
+        if groupname in self._groups:
+            del self._groups[groupname]
+
     def get_groups(self, host=None):
         """return all groups containing host
 
@@ -325,31 +348,30 @@ class Inventory(object):
         """
         if not host:
             return self._groups.values()
-        host_groups = self.get_host_groups([host])
-        groupnames = host_groups[host.name]
+
         groups = []
-        for groupname in groupnames:
-            groups.append(self._groups[groupname])
+        for group in self._groups.values():
+            if host.name in group.get_hostnames():
+                groups.append(group)
         return groups
 
-    def get_host_groups(self, hosts):
-        """returns a dict: { hostname : [groupnames] }"""
-        host_groups = self._get_host_groups(hosts, self._groups.values())
-        return host_groups
+    def get_group_services(self):
+        """return { groupname : [servicenames] }"""
+        group_services = {}
+        for group in self._groups.values():
+            group_services[group.name] = []
+            for child in group.children:
+                group_services[group.name].append(child.name)
+        return group_services
 
-    def _get_host_groups(self, hosts, groups):
-        host_groups = {}
-        for group in groups:
-            if group.children:
-                hosts_children = self._get_host_groups(hosts, group.children)
-                host_groups.update(hosts_children)
-            for host in hosts:
-                if host.name in group._hosts:
-                    if host.name not in host_groups:
-                        host_groups[host.name] = []
-                    host_groups[host.name].append(group.name)
-
-        return host_groups
+    def get_group_hosts(self):
+        """return { groupname : [hostnames] }"""
+        group_hosts = {}
+        for group in self._groups.values():
+            group_hosts[group.name] = []
+            for host in group.get_hosts():
+                group_hosts[group.name].append(host.name)
+        return group_hosts
 
     def get_ansible_json(self):
         """generate json inventory for ansible

@@ -14,26 +14,19 @@
 import argparse
 import getpass
 import logging
+import traceback
 
 from kollacli.ansible.inventory import Inventory
-from kollacli import exceptions
-from kollacli.i18n import _
-from kollacli.objects.zones import Zones
+from kollacli.exceptions import CommandError
 
 from cliff.command import Command
 from cliff.lister import Lister
 
 
 def _host_not_found(log, hostname):
-    raise exceptions.CommandError(
+    raise CommandError(
         'ERROR: Host (%s) not found. ' % hostname +
         'Please add it with "host add"')
-
-
-def _zone_not_found(log, zonename):
-    raise exceptions.CommandError(
-        'ERROR: Zone (%s) not found. ' % zonename +
-        'Please add it with "zone add"')
 
 
 class HostAdd(Command):
@@ -49,12 +42,17 @@ class HostAdd(Command):
         return parser
 
     def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.strip()
-        groupname = parsed_args.groupname.strip()
+        try:
+            hostname = parsed_args.hostname.strip()
+            groupname = parsed_args.groupname.strip()
 
-        inventory = Inventory.load()
-        inventory.add_host(hostname, groupname)
-        Inventory.save(inventory)
+            inventory = Inventory.load()
+            inventory.add_host(hostname, groupname)
+            Inventory.save(inventory)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 class HostRemove(Command):
@@ -74,13 +72,18 @@ class HostRemove(Command):
         return parser
 
     def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.strip()
-        groupname = None
-        if parsed_args.groupname:
-            groupname = parsed_args.groupname.strip()
-        inventory = Inventory.load()
-        inventory.remove_host(hostname, groupname)
-        Inventory.save(inventory)
+        try:
+            hostname = parsed_args.hostname.strip()
+            groupname = None
+            if parsed_args.groupname:
+                groupname = parsed_args.groupname.strip()
+            inventory = Inventory.load()
+            inventory.remove_host(hostname, groupname)
+            Inventory.save(inventory)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 class HostList(Lister):
@@ -89,90 +92,21 @@ class HostList(Lister):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        inventory = Inventory.load()
+        try:
+            inventory = Inventory.load()
 
-        hosts = inventory.get_hosts()
-
-        data = []
-        host_groups = inventory.get_host_groups(hosts)
-        if host_groups:
-            for (hostname, groupnames) in host_groups.items():
-                data.append((hostname, groupnames))
-        else:
-            data.append(('', ''))
-        return (('Host Name', 'Groups'), sorted(data))
-
-
-class HostSetzone(Command):
-    """Add a host to a zone"""
-
-    log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
-        parser = super(HostSetzone, self).get_parser(prog_name)
-        parser.add_argument('hostname', metavar='<hostname>', help='host name')
-        parser.add_argument('zone', metavar='[zone]', help='zone name')
-        return parser
-
-    def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.strip()
-        zonename = parsed_args.zone.strip()
-
-        if zonename not in Zones().get_all():
-            _zone_not_found(self.log, zonename)
-            return False
-
-        hosts = Inventory()
-        host = hosts.get_host(hostname)
-        if not host:
-            _host_not_found(self.log, hostname)
-            return False
-
-        host.zone = zonename
-        hosts.save()
-
-
-class HostClearzone(Command):
-    """Clear the zone from a host"""
-
-    log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
-        parser = super(HostClearzone, self).get_parser(prog_name)
-        parser.add_argument('hostname', metavar='<hostname>', help='host name')
-        return parser
-
-    def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.strip()
-
-        hosts = Inventory()
-        host = hosts.get_host(hostname)
-        if not host:
-            _host_not_found(self.log, hostname)
-            return False
-
-        host.zone = ''
-        hosts.save()
-
-
-class HostAddservice(Command):
-    """add service to a host"""
-
-    log = logging.getLogger(__name__)
-
-    def take_action(self, parsed_args):
-        self.log.info(_('host addservice'))
-        self.app.stdout.write(parsed_args)
-
-
-class HostRemoveservice(Command):
-    """Remove service from a host"""
-
-    log = logging.getLogger(__name__)
-
-    def take_action(self, parsed_args):
-        self.log.info(_('host removeservice'))
-        self.app.stdout.write(parsed_args)
+            data = []
+            host_groups = inventory.get_host_groups()
+            if host_groups:
+                for (hostname, groupnames) in host_groups.items():
+                    data.append((hostname, groupnames))
+            else:
+                data.append(('', ''))
+            return (('Host Name', 'Groups'), sorted(data))
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 class HostCheck(Command):
@@ -186,15 +120,20 @@ class HostCheck(Command):
         return parser
 
     def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.strip()
+        try:
+            hostname = parsed_args.hostname.strip()
 
-        inventory = Inventory.load()
-        host = inventory.get_host(hostname)
-        if not host:
-            _host_not_found(self.log, hostname)
-            return False
+            inventory = Inventory.load()
+            host = inventory.get_host(hostname)
+            if not host:
+                _host_not_found(self.log, hostname)
+                return False
 
-        host.check()
+            host.check()
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 class HostInstall(Command):
@@ -209,19 +148,24 @@ class HostInstall(Command):
         return parser
 
     def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.strip()
-        inventory = Inventory.load()
-        host = inventory.get_host(hostname)
-        if not host:
-            _host_not_found(self.log, hostname)
-            return False
+        try:
+            hostname = parsed_args.hostname.strip()
+            inventory = Inventory.load()
+            host = inventory.get_host(hostname)
+            if not host:
+                _host_not_found(self.log, hostname)
+                return False
 
-        if parsed_args.insecure:
-            password = parsed_args.insecure.strip()
-        else:
-            password = getpass.getpass('Root password for %s: ' % hostname)
+            if parsed_args.insecure:
+                password = parsed_args.insecure.strip()
+            else:
+                password = getpass.getpass('Root password for %s: ' % hostname)
 
-        host.install(password)
+            host.install(password)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 class HostUninstall(Command):
@@ -236,15 +180,20 @@ class HostUninstall(Command):
         return parser
 
     def take_action(self, parsed_args):
-        hostname = parsed_args.hostname.strip()
-        inventory = Inventory.load()
-        host = inventory.get_host(hostname)
-        if not host:
-            _host_not_found(self.log, hostname)
-            return False
+        try:
+            hostname = parsed_args.hostname.strip()
+            inventory = Inventory.load()
+            host = inventory.get_host(hostname)
+            if not host:
+                _host_not_found(self.log, hostname)
+                return False
 
-        if parsed_args.insecure:
-            password = parsed_args.insecure.strip()
-        else:
-            password = getpass.getpass('Root password for %s: ' % hostname)
-        host.uninstall(password)
+            if parsed_args.insecure:
+                password = parsed_args.insecure.strip()
+            else:
+                password = getpass.getpass('Root password for %s: ' % hostname)
+            host.uninstall(password)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())

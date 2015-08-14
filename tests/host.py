@@ -66,33 +66,6 @@ class TestFunctional(KollaCliTest):
         msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-#     def test_host_setzone(self):
-#         hosts = self.TestHosts()
-#         hostname = 'host_test1'
-#         ip_addr = '1.1.1.1'
-#         zonename = 'test_zone1'
-#         hosts.add(hostname, ip_addr, zonename)
-#         self.run_client_cmd('zone add %s' % zonename)
-#
-#         self.run_client_cmd('host add %s %s' % (hostname, ip_addr))
-#         self.run_client_cmd('host setzone %s %s' % (hostname, zonename))
-#         msg = self.run_client_cmd('host list')
-#         self._check_cli_output(hosts, msg)
-#
-#         zonename = 'test_zone2'
-#         hosts.add(hostname, ip_addr, zonename)
-#         self.run_client_cmd('zone add %s' % zonename)
-#
-#         self.run_client_cmd('host setzone %s %s' % (hostname, zonename))
-#         msg = self.run_client_cmd('host list')
-#         self._check_cli_output(hosts, msg)
-#
-#         zonename = ''
-#         hosts.add(hostname, ip_addr, zonename)
-#         self.run_client_cmd('host clearzone %s' % hostname)
-#         msg = self.run_client_cmd('host list')
-#         self._check_cli_output(hosts, msg)
-
     def test_host_install(self):
         test_hosts = TestHosts()
         test_hosts.load()
