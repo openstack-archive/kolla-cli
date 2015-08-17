@@ -31,38 +31,37 @@ class TestFunctional(KollaCliTest):
         host2 = 'host_test2'
 
         group1 = 'control'
-        group2 = 'network'
-        group3 = 'compute'
 
         hosts.add(host1)
-        hosts.add_group(host1, group1)
-        self.run_client_cmd('host add %s %s' % (host1, group1))
-        msg = self.run_client_cmd('host list -f json')
-        self._check_cli_output(hosts, msg)
-
-        hosts.add_group(host1, group2)
-        self.run_client_cmd('host add %s %s' % (host1, group2))
-        msg = self.run_client_cmd('host list -f json')
-        self._check_cli_output(hosts, msg)
-
-        hosts.remove_group(host1, group1)
-        self.run_client_cmd('host remove %s %s' % (host1, group1))
+        self.run_client_cmd('host add %s' % host1)
         msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         hosts.add(host2)
-        hosts.add_group(host2, group3)
-        self.run_client_cmd('host add %s %s' % (host2, group3))
+        self.run_client_cmd('host add %s' % host2)
         msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         hosts.remove(host2)
-        self.run_client_cmd('host remove %s %s' % (host2, group3))
+        self.run_client_cmd('host remove %s' % host2)
         msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         hosts.remove(host1)
         self.run_client_cmd('host remove %s' % host1)
+        msg = self.run_client_cmd('host list -f json')
+        self._check_cli_output(hosts, msg)
+
+        # check groups in host list
+        hosts.add(host1)
+        hosts.add_group(host1, group1)
+        self.run_client_cmd('host add %s' % host1)
+        self.run_client_cmd('group addhost %s %s' % (group1, host1))
+        msg = self.run_client_cmd('host list -f json')
+        self._check_cli_output(hosts, msg)
+
+        hosts.remove_group(host1, group1)
+        self.run_client_cmd('group removehost %s %s' % (group1, host1))
         msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
@@ -77,7 +76,7 @@ class TestFunctional(KollaCliTest):
         hostname = test_hosts.get_hostnames()[0]
         pwd = test_hosts.get_password(hostname)
 
-        self.run_client_cmd('host add %s control' % (hostname))
+        self.run_client_cmd('host add %s' % hostname)
 
         # check if host is installed
         msg = self.run_client_cmd('host check %s' % hostname, True)
@@ -109,7 +108,7 @@ class TestFunctional(KollaCliTest):
         The host list cli output looks like this:
 
             $ host list -f json
-            [{"Host Name": "foo", "Groups": ["control", "network"]}]
+            [{"Host": "foo", "Groups": ["control", "network"]}]
         """
         # check for any host in cli output that shouldn't be there
         cli_hosts = json.loads(cli_output)
@@ -117,13 +116,13 @@ class TestFunctional(KollaCliTest):
         exp_hostnames = exp_hosts.get_hostnames()
         if not exp_hostnames:
             if len(cli_hosts) == 1:
-                cli_hostname = cli_hosts[0]['Host Name']
+                cli_hostname = cli_hosts[0]['Host']
                 if not cli_hostname:
                     # both cli and expected hosts are None
                     return
 
         for cli_host in cli_hosts:
-            cli_hostname = cli_host['Host Name']
+            cli_hostname = cli_host['Host']
             self.assertIn(cli_hostname, exp_hostnames,
                           'unexpected host: %s, found in cli output: %s'
                           % (cli_hostname, cli_output))
@@ -132,7 +131,7 @@ class TestFunctional(KollaCliTest):
         for exp_hostname in exp_hosts.get_hostnames():
             exp_host_found = False
             for cli_host in cli_hosts:
-                if exp_hostname == cli_host['Host Name']:
+                if exp_hostname == cli_host['Host']:
                     exp_host_found = True
                     cli_groups = cli_host['Groups']
                     exp_groups = exp_hosts.get_groups(exp_hostname)

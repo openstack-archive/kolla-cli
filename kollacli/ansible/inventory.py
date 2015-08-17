@@ -16,6 +16,7 @@ import jsonpickle
 import logging
 import os
 import shutil
+import traceback
 
 from tempfile import mkstemp
 
@@ -30,40 +31,49 @@ from kollacli.sshutils import ssh_uninstall_host
 
 from kollacli.exceptions import CommandError
 
-INVENTORY_PATH = 'ansible/inventory/inventory.p'
+INVENTORY_PATH = 'ansible/inventory/inventory.json'
 
 COMPUTE_GRP_NAME = 'compute'
 CONTROL_GRP_NAME = 'control'
 NETWORK_GRP_NAME = 'network'
+STORAGE_GRP_NAME = 'storage'
 
 DEPLOY_GROUPS = [COMPUTE_GRP_NAME,
                  CONTROL_GRP_NAME,
                  NETWORK_GRP_NAME,
+                 STORAGE_GRP_NAME,
                  ]
 
-SERVICE_GROUPS = ['mariadb', 'rabbitmq', 'keystone', 'glance',
-                  'nova', 'haproxy', 'neutron']
-
-CONTAINER_GROUPS = ['glance-api', 'glance-registry',
-                    'nova-api', 'nova-conductor', 'nova-consoleauth',
-                    'nova-novncproxy', 'nova-scheduler',
-                    'neutron-server', 'neutron-agents']
+SERVICE_GROUPS = {'cinder':   ['cinder-api', 'cinder-backup',
+                               'cinder-scheduler', 'cinder-volume'],
+                  'glance':   ['glance-api', 'glance-registry'],
+                  'haproxy':  [],
+                  'keystone': [],
+                  'mariadb':  [],
+                  'ndb':      ['ndb-data', 'ndb-mgmt', 'ndb-mysql'],
+                  'neutron':  ['neutron-server', 'neutron-agents'],
+                  'nova':     ['nova-api', 'nova-conductor',
+                               'nova-consoleauth',
+                               'nova-novncproxy', 'nova-scheduler'],
+                  'rabbitmq': [],
+                  }
 
 DEFAULT_HIERARCHY = {
-    CONTROL_GRP_NAME: {
-        'glance':   ['glance-api', 'glance-registry'],
-        'keystone': [],
-        'mariadb':  [],
-        'nova':     ['nova-api', 'nova-conductor', 'nova-consoleauth',
-                     'nova-novncproxy', 'nova-scheduler'],
-        'rabbitmq': [],
-        },
-    NETWORK_GRP_NAME: {
-        'haproxy': [],
-        'neutron': ['neutron-server', 'neutron-agents'],
-        },
-    COMPUTE_GRP_NAME: {
-        },
+    CONTROL_GRP_NAME: [
+        'glance',
+        'keystone',
+        'ndb',
+        'nova',
+        'rabbitmq',
+        ],
+    NETWORK_GRP_NAME: [
+        'haproxy',
+        'neutron',
+        ],
+    COMPUTE_GRP_NAME: [],
+    STORAGE_GRP_NAME: [
+        'cinder',
+        ]
     }
 
 
@@ -234,8 +244,9 @@ class Inventory(object):
                     inventory.upgrade()
             else:
                 inventory = Inventory()
-        except Exception as e:
-            raise Exception('ERROR: loading inventory : %s' % str(e))
+        except Exception:
+            raise Exception('ERROR: loading inventory : %s'
+                            % traceback.format_exc())
         return inventory
 
     @staticmethod
@@ -271,13 +282,13 @@ class Inventory(object):
                     pass
 
     def _create_default_inventory(self):
-        for (deploy_name, services) in DEFAULT_HIERARCHY.items():
+        for (deploy_name, service_names) in DEFAULT_HIERARCHY.items():
             deploy_group = Group(deploy_name)
             # add service groups
-            for (service_name, container_names) in services.items():
+            for service_name in service_names:
                 service_group = Group(service_name)
                 deploy_group.children.append(service_group)
-                for container_name in container_names:
+                for container_name in SERVICE_GROUPS[service_name]:
                     container_group = Group(container_name)
                     service_group.children.append(container_group)
             self._groups[deploy_name] = deploy_group
@@ -305,33 +316,49 @@ class Inventory(object):
             host = self._hosts[hostname]
         return host
 
-    def add_host(self, hostname, groupname):
-        if groupname not in self._groups:
-            raise CommandError('Group name not valid')
+    def add_host(self, hostname, groupname=None):
+        """add host
+
+        if groupname is none, create a new host
+        if group name is not none, add host to group
+        """
+        if groupname and groupname not in self._groups:
+            raise CommandError('Group name (%s) does not exist'
+                               % groupname)
+
+        if groupname and hostname not in self._hosts:
+            raise CommandError('Host name (%s) does not exist'
+                               % hostname)
 
         # create new host if it doesn't exist
-        if hostname not in self._hosts:
-            host = Host(hostname)
+        host = Host(hostname)
+        if not groupname:
             self._hosts[hostname] = host
         else:
-            host = self._hosts[hostname]
-
-        group = self._groups[groupname]
-        group.add_host(host)
+            group = self._groups[groupname]
+            group.add_host(host)
 
     def remove_host(self, hostname, groupname=None):
-        if hostname in self._hosts:
-            host = self._hosts[hostname]
-            groups = self.get_groups(host)
-            group_count = len(groups)
-            for group in groups:
-                if not groupname or groupname == group.name:
-                    group_count -= 1
-                    group.remove_host(host)
+        """remove host
 
-            # if host no longer exists in any group, remove it from inventory
-            if group_count == 0:
-                del self._hosts[hostname]
+        if groupname is none, delete host
+        if group name is not none, remove host from group
+        """
+        if groupname and groupname not in self._groups:
+            raise CommandError('Group name (%s) does not exist'
+                               % groupname)
+
+        if hostname not in self._hosts:
+            return
+
+        host = self._hosts[hostname]
+        groups = self.get_groups(host)
+        for group in groups:
+            if not groupname or groupname == group.name:
+                group.remove_host(host)
+
+        if not groupname:
+            del self._hosts[hostname]
 
     def add_group(self, groupname):
         if groupname not in self._groups:
@@ -372,6 +399,36 @@ class Inventory(object):
             for host in group.get_hosts():
                 group_hosts[group.name].append(host.name)
         return group_hosts
+
+    def add_service(self, servicename, groupname):
+        if groupname not in self._groups:
+            raise CommandError('Group name (%s) does not exist'
+                               % groupname)
+
+        if servicename not in SERVICE_GROUPS.keys():
+            raise CommandError('Service name (%s) does not exist'
+                               % servicename)
+
+        group_services = self.get_group_services()
+        if servicename not in group_services[groupname]:
+            group = self._groups[groupname]
+            group.children.append(Group(servicename))
+
+    def remove_service(self, servicename, groupname):
+        if groupname not in self._groups:
+            raise CommandError('Group name (%s) does not exist'
+                               % groupname)
+
+        if servicename not in SERVICE_GROUPS.keys():
+            raise CommandError('Service name (%s) does not exist'
+                               % servicename)
+
+        group_services = self.get_group_services()
+        if servicename in group_services[groupname]:
+            group = self._groups[groupname]
+            for service in group.children:
+                if service.name == servicename:
+                    group.children.remove(service)
 
     def get_ansible_json(self):
         """generate json inventory for ansible

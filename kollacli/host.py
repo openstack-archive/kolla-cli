@@ -37,17 +37,14 @@ class HostAdd(Command):
         parser = super(HostAdd, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname>',
                             help='host name or ip address')
-        parser.add_argument('groupname', metavar='<groupname>',
-                            help='group name')
         return parser
 
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            groupname = parsed_args.groupname.strip()
 
             inventory = Inventory.load()
-            inventory.add_host(hostname, groupname)
+            inventory.add_host(hostname)
             Inventory.save(inventory)
         except CommandError as e:
             raise e
@@ -56,29 +53,20 @@ class HostAdd(Command):
 
 
 class HostRemove(Command):
-    """Remove host from openstack-kolla
-
-    If a group is specified, the host will be removed from that group.
-    If no group is specified, the host will be removed from all groups.
-    """
+    """Remove host from openstack-kolla"""
 
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
         parser = super(HostRemove, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname>', help='host name')
-        parser.add_argument('groupname', nargs='?',
-                            metavar='<group>', help='group name')
         return parser
 
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            groupname = None
-            if parsed_args.groupname:
-                groupname = parsed_args.groupname.strip()
             inventory = Inventory.load()
-            inventory.remove_host(hostname, groupname)
+            inventory.remove_host(hostname)
             Inventory.save(inventory)
         except CommandError as e:
             raise e
@@ -102,7 +90,7 @@ class HostList(Lister):
                     data.append((hostname, groupnames))
             else:
                 data.append(('', ''))
-            return (('Host Name', 'Groups'), sorted(data))
+            return (('Host', 'Groups'), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:

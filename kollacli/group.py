@@ -67,23 +67,53 @@ class GroupRemove(Command):
             raise Exception(traceback.format_exc())
 
 
-class GroupListservices(Lister):
-    """List all groups and their services"""
-
+class GroupAddhost(Command):
+    """Add host to group"""
     log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(GroupAddhost, self).get_parser(prog_name)
+        parser.add_argument('groupname', metavar='<groupname>',
+                            help='group')
+        parser.add_argument('hostname', metavar='<hostname>',
+                            help='host')
+        return parser
 
     def take_action(self, parsed_args):
         try:
-            inventory = Inventory.load()
+            groupname = parsed_args.groupname.strip()
+            hostname = parsed_args.hostname.strip()
 
-            data = []
-            group_services = inventory.get_group_services()
-            if group_services:
-                for (groupname, servicenames) in group_services.items():
-                    data.append((groupname, servicenames))
-            else:
-                data.append(('', ''))
-            return (('Group Name', 'Services'), sorted(data))
+            inventory = Inventory.load()
+            inventory.add_host(hostname, groupname)
+            Inventory.save(inventory)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
+
+
+class GroupRemovehost(Command):
+    """Remove host group from group"""
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(GroupRemovehost, self).get_parser(prog_name)
+        parser.add_argument('groupname', metavar='<groupname>',
+                            help='group')
+        parser.add_argument('hostname', metavar='<hostname>',
+                            help='host')
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            groupname = parsed_args.groupname.strip()
+            hostname = parsed_args.hostname.strip()
+
+            inventory = Inventory.load()
+            inventory.remove_host(hostname, groupname)
+            Inventory.save(inventory)
         except CommandError as e:
             raise e
         except Exception as e:
@@ -106,7 +136,83 @@ class GroupListhosts(Lister):
                     data.append((groupname, hostnames))
             else:
                 data.append(('', ''))
-            return (('Group Name', 'Hosts'), sorted(data))
+            return (('Group', 'Hosts'), sorted(data))
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
+
+
+class GroupAddservice(Command):
+    """Add service to group"""
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(GroupAddservice, self).get_parser(prog_name)
+        parser.add_argument('groupname', metavar='<groupname>',
+                            help='group')
+        parser.add_argument('servicename', metavar='<servicename>',
+                            help='service')
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            groupname = parsed_args.groupname.strip()
+            servicename = parsed_args.servicename.strip()
+
+            inventory = Inventory.load()
+            inventory.add_service(servicename, groupname)
+            Inventory.save(inventory)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
+
+
+class GroupRemoveservice(Command):
+    """Remove service group from group"""
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(GroupRemoveservice, self).get_parser(prog_name)
+        parser.add_argument('groupname', metavar='<groupname>',
+                            help='group')
+        parser.add_argument('servicename', metavar='<servicename>',
+                            help='service')
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            groupname = parsed_args.groupname.strip()
+            servicename = parsed_args.servicename.strip()
+
+            inventory = Inventory.load()
+            inventory.remove_service(servicename, groupname)
+            Inventory.save(inventory)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
+
+
+class GroupListservices(Lister):
+    """List all groups and their services"""
+
+    log = logging.getLogger(__name__)
+
+    def take_action(self, parsed_args):
+        try:
+            inventory = Inventory.load()
+
+            data = []
+            group_services = inventory.get_group_services()
+            if group_services:
+                for (groupname, servicenames) in group_services.items():
+                    data.append((groupname, servicenames))
+            else:
+                data.append(('', ''))
+            return (('Group', 'Services'), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:
