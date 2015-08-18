@@ -31,6 +31,9 @@ from kollacli.sshutils import ssh_uninstall_host
 
 from kollacli.exceptions import CommandError
 
+ANSIBLE_KEY_FILE = 'ansible_ssh_private_key_file'
+ANSIBLE_SSH_USER = 'ansible_ssh_user'
+
 INVENTORY_PATH = 'ansible/inventory/inventory.json'
 
 COMPUTE_GRP_NAME = 'compute'
@@ -91,6 +94,9 @@ class Host(object):
 
     def get_vars(self):
         return self.vars.copy()
+
+    def set_var(self, name, value):
+        self.vars[name] = value
 
     def upgrade(self):
         pass
@@ -197,6 +203,12 @@ class Group(object):
         if host.name in self._hosts:
             del self._hosts[host.name]
 
+    def add_group(self, groupname):
+        group = Group(groupname)
+        if group not in self.children:
+            self.children.append(group)
+        return group
+
     def get_hosts(self):
         return self._hosts.values()
 
@@ -211,6 +223,9 @@ class Group(object):
 
     def get_vars(self):
         return self.vars.copy()
+
+    def set_var(self, name, value):
+        self.vars[name] = value
 
 
 class Inventory(object):
@@ -283,14 +298,13 @@ class Inventory(object):
 
     def _create_default_inventory(self):
         for (deploy_name, service_names) in DEFAULT_HIERARCHY.items():
-            deploy_group = Group(deploy_name)
+            deploy_group = self.add_group(deploy_name)
+
             # add service groups
             for service_name in service_names:
-                service_group = Group(service_name)
-                deploy_group.children.append(service_group)
+                service_group = deploy_group.add_group(service_name)
                 for container_name in SERVICE_GROUPS[service_name]:
-                    container_group = Group(container_name)
-                    service_group.children.append(container_group)
+                    service_group.add_group(container_name)
             self._groups[deploy_name] = deploy_group
 
     def get_hosts(self):
@@ -363,6 +377,14 @@ class Inventory(object):
     def add_group(self, groupname):
         if groupname not in self._groups:
             self._groups[groupname] = Group(groupname)
+
+        group = self._groups[groupname]
+
+        # set the ssh info for all the servers in the group
+        group.set_var(ANSIBLE_KEY_FILE, utils.get_pk_file())
+        group.set_var(ANSIBLE_SSH_USER, utils.get_admin_user())
+
+        return group
 
     def remove_group(self, groupname):
         if groupname in self._groups:

@@ -41,16 +41,21 @@ class TestFunctional(KollaCliTest):
         'Services': [],
         'Hosts': [],
         }
-    groups = [group1, group2, group3]
+    group4 = {
+        'Group': 'storage',
+        'Services': ['cinder'],
+        'Hosts': [],
+        }
+    groups = [group1, group2, group3, group4]
 
     def test_group_add_remove(self):
-        group4 = {
-            'Group': 'test_group4',
+        group_t1 = {
+            'Group': 'test_group_t1',
             'Services': [],
             'Hosts': [],
             }
-        group5 = {
-            'Group': 'test_group5',
+        group_t2 = {
+            'Group': 'test_group_t2',
             'Services': [],
             'Hosts': [],
             }
@@ -60,20 +65,20 @@ class TestFunctional(KollaCliTest):
         # check default group list
         self.check_group(groups)
 
-        groups.append(group4)
-        self.run_client_cmd('group add %s' % group4['Group'])
+        groups.append(group_t1)
+        self.run_client_cmd('group add %s' % group_t1['Group'])
         self.check_group(groups)
 
-        groups.append(group5)
-        self.run_client_cmd('group add %s' % group5['Group'])
+        groups.append(group_t2)
+        self.run_client_cmd('group add %s' % group_t2['Group'])
         self.check_group(groups)
 
-        self.run_client_cmd('group remove %s' % group5['Group'])
-        groups.remove(group5)
+        self.run_client_cmd('group remove %s' % group_t2['Group'])
+        groups.remove(group_t2)
         self.check_group(groups)
 
-        self.run_client_cmd('group remove %s' % group4['Group'])
-        groups.remove(group4)
+        self.run_client_cmd('group remove %s' % group_t1['Group'])
+        groups.remove(group_t1)
         self.check_group(groups)
 
     def test_group_add_host(self):

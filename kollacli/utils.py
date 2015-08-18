@@ -42,7 +42,7 @@ def get_pk_file():
 
 def get_pk_password():
     # TODO(bmace) what to do here? pull from a file?
-    return ""
+    return None
 
 
 def get_pk_bits():
