@@ -13,6 +13,7 @@
 #    under the License.
 import logging
 import os
+import subprocess
 
 from kollacli.i18n import _
 from kollacli.utils import get_kolla_etc
@@ -27,8 +28,23 @@ class Deploy(Command):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("deploy"))
-        self.app.stdout.write(''.join(parsed_args))
+        kollaHome = get_kolla_home()
+        kollaEtc = get_kolla_etc()
+        self.log.info(kollaHome)
+        commandString = 'ansible-playbook '
+        inventoryString = '-i /home/bmace/devel/openstack-kollaclient/kollacli/ansible/json_generator.py '
+        defaultsString = '-e @' + os.path.join(kollaEtc, 'defaults.yml')
+        globalsString = ' -e @' + os.path.join(kollaEtc, 'globals.yml')
+        passwordsString = ' -e @' + os.path.join(kollaEtc, 'passwords.yml')
+        siteString = ' ' + os.path.join(kollaHome, 'ansible/site.yml')
+        cmd = commandString + inventoryString + defaultsString + globalsString
+        cmd = cmd + passwordsString + siteString
+        self.log.debug('cmd:' + cmd)
+        output, error = subprocess.Popen(cmd.split(' '),
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE).communicate()
+        self.log.info(output)
+        self.log.info(error)
 
 
 class Install(Command):
@@ -38,7 +54,6 @@ class Install(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("install"))
-        self.app.stdout.write(''.join(parsed_args))
 
 
 class List(Command):
@@ -48,7 +63,6 @@ class List(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("list"))
-        self.app.stdout.write(parsed_args)
 
 
 class Start(Command):
@@ -57,18 +71,7 @@ class Start(Command):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        kollaHome = get_kolla_home()
-        kollaEtc = get_kolla_etc()
         self.log.info(_("start"))
-        self.log.info(kollaHome)
-        cmd = 'ansible-playbook -i'
-        cmd = cmd + kollaHome + '/ansible/inventory/all-in-one'
-        cmd = cmd + ' -e @' + kollaEtc + '/kolla/defaults.yml'
-        cmd = cmd + ' -e @' + kollaEtc + '/kolla/globals.yml'
-        cmd = cmd + ' -e @' + kollaEtc + '/kolla/passwords.yml'
-        cmd = cmd + ' ' + kollaHome + '/ansible/site.yml'
-        self.log.info(cmd)
-        os.system(cmd)
 
 
 class Stop(Command):

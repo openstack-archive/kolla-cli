@@ -103,7 +103,7 @@ class AnsibleProperties(object):
                 self.log.debug('removing non-string: %s' % str(value))
                 del contents[key]
                 continue
-            if value.startswith('{{') and value.endswith('}}'):
+            if '{{' in value and '}}' in value:
                 self.log.debug('removing jinja2 value: %s' % value)
                 del contents[key]
         return contents
