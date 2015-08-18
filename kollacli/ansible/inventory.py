@@ -459,14 +459,27 @@ class Inventory(object):
         }
     }
     """
+
         jdict = {}
 
         # process groups
         for group in self.get_groups():
             jdict[group.name] = {}
             jdict[group.name]['hosts'] = group.get_hostnames()
-            jdict[group.name]['children'] = group.get_childnames()
+            jdict[group.name]['children'] = []
             jdict[group.name]['vars'] = group.get_vars()
+
+            for service in group.children:
+                jdict[service.name] = {}
+                jdict[service.name]['hosts'] = service.get_hostnames()
+                jdict[service.name]['children'] = [group.name]
+                jdict[service.name]['vars'] = service.get_vars()
+
+                for container in service.children:
+                    jdict[container.name] = {}
+                    jdict[container.name]['hosts'] = container.get_hostnames()
+                    jdict[container.name]['children'] = [service.name]
+                    jdict[container.name]['vars'] = container.get_vars()
 
         # process hosts vars
         jdict['_meta'] = {}
