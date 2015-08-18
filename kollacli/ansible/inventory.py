@@ -452,6 +452,17 @@ class Inventory(object):
                 if service.name == servicename:
                     group.children.remove(service)
 
+    def get_service_groups(self):
+        """return { servicename : groupnames }"""
+        service_groups = {}
+        group_services = self.get_group_services()
+        for servicename in SERVICE_GROUPS.keys():
+            service_groups[servicename] = []
+            for (groupname, servicenames) in group_services.items():
+                if servicename in servicenames:
+                    service_groups[servicename].append(groupname)
+        return service_groups
+
     def get_ansible_json(self):
         """generate json inventory for ansible
 
