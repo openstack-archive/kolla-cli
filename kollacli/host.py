@@ -75,19 +75,40 @@ class HostRemove(Command):
 
 
 class HostList(Lister):
-    """List all hosts"""
+    """List hosts and their groups
+
+    If a hostname is provided, only list information about that host.
+    """
 
     log = logging.getLogger(__name__)
 
+    def get_parser(self, prog_name):
+        parser = super(HostList, self).get_parser(prog_name)
+        parser.add_argument('hostname', nargs='?', metavar='[hostname]',
+                            help='hostname')
+        return parser
+
     def take_action(self, parsed_args):
         try:
+            hostname = None
+            if parsed_args.hostname:
+                hostname = parsed_args.hostname.strip()
+
             inventory = Inventory.load()
+
+            if hostname:
+                host = inventory.get_host(hostname)
+                if not host:
+                    _host_not_found(self.log, hostname)
 
             data = []
             host_groups = inventory.get_host_groups()
             if host_groups:
-                for (hostname, groupnames) in host_groups.items():
-                    data.append((hostname, groupnames))
+                if hostname:
+                    data.append((hostname, host_groups[hostname]))
+                else:
+                    for (hostname, groupnames) in host_groups.items():
+                        data.append((hostname, groupnames))
             else:
                 data.append(('', ''))
             return (('Host', 'Groups'), sorted(data))
@@ -115,7 +136,6 @@ class HostCheck(Command):
             host = inventory.get_host(hostname)
             if not host:
                 _host_not_found(self.log, hostname)
-                return False
 
             host.check()
         except CommandError as e:

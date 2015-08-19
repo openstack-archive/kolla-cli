@@ -12,10 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import logging
+import traceback
 
+from kollacli.ansible.inventory import Inventory
+from kollacli.exceptions import CommandError
 from kollacli.i18n import _
 
 from cliff.command import Command
+from cliff.lister import Lister
 
 
 class ServiceActivate(Command):
@@ -48,11 +52,24 @@ class ServiceAutodeploy(Command):
         self.app.stdout.write(parsed_args)
 
 
-class ServiceList(Command):
+class ServiceList(Lister):
     "Service List"
 
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("service list"))
-        self.app.stdout.write(parsed_args)
+        try:
+            inventory = Inventory.load()
+
+            data = []
+            service_groups = inventory.get_service_groups()
+            if service_groups:
+                for (servicename, groupnames) in service_groups.items():
+                    data.append((servicename, groupnames))
+            else:
+                data.append(('', ''))
+            return (('Service', 'Groups'), sorted(data))
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
