@@ -246,7 +246,7 @@ class Inventory(object):
     @staticmethod
     def load():
         """load the inventory from a pickle file"""
-        inventory_path = os.path.join(utils.get_client_etc(), INVENTORY_PATH)
+        inventory_path = os.path.join(utils.get_kollacli_etc(), INVENTORY_PATH)
         try:
             if os.path.exists(inventory_path):
                 with open(inventory_path, 'rb') as inv_file:
@@ -267,7 +267,7 @@ class Inventory(object):
     @staticmethod
     def save(inventory):
         """Save the inventory in a pickle file"""
-        inventory_path = os.path.join(utils.get_client_etc(), INVENTORY_PATH)
+        inventory_path = os.path.join(utils.get_kollacli_etc(), INVENTORY_PATH)
         try:
             # the file handle returned from mkstemp must be closed or else
             # if this is called many times you will have an unpleasant

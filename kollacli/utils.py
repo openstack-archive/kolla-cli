@@ -23,20 +23,20 @@ def get_kolla_etc():
     return os.environ.get("KOLLA_ETC", "/etc/kolla/")
 
 
-def get_client_home():
-    return os.environ.get("KOLLA_CLIENT_HOME", "/opt/kollacli/")
+def get_kollacli_home():
+    return os.environ.get("KOLLA_CLI_HOME", "/opt/kollacli/")
 
 
-def get_client_etc():
-    return os.environ.get("KOLLA_CLIENT_ETC", "/etc/kolla/kollacli/")
+def get_kollacli_etc():
+    return os.environ.get("KOLLA_CLI_ETC", "/etc/kolla/kollacli/")
 
 
 def get_admin_user():
-    return os.environ.get("KOLLA_ADMIN_USER", "kolla")
+    return os.environ.get("KOLLA_CLI_ADMIN_USER", "kolla")
 
 
 def get_pk_file():
-    return os.environ.get("KOLLA_CLIENT_PKPATH",
+    return os.environ.get("KOLLA_CLI_PKPATH",
                           "/etc/kolla/kollacli/etc/id_rsa")
 
 
@@ -52,7 +52,7 @@ def get_pk_bits():
 def load_etc_yaml(fileName):
     contents = {}
     try:
-        with open(get_client_etc() + fileName, 'r') as f:
+        with open(get_kollacli_etc() + fileName, 'r') as f:
             contents = yaml.load(f)
     except Exception:
         # TODO(bmace) if file doesn't exist on a load we don't
@@ -62,5 +62,5 @@ def load_etc_yaml(fileName):
 
 
 def save_etc_yaml(fileName, contents):
-    with open(get_client_etc() + fileName, 'w') as f:
+    with open(get_kollacli_etc() + fileName, 'w') as f:
         f.write(yaml.dump(contents))

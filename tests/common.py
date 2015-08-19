@@ -75,13 +75,13 @@ class KollaCliTest(testtools.TestCase):
 
     # PRIVATE FUNCTIONS ----------------------------------------------------
     def _setup_env_var(self):
-        etc_path = utils.get_client_etc()
+        etc_path = utils.get_kollacli_etc()
         if not etc_path.endswith(TEST_SUFFIX):
             etc_path = os.path.join(etc_path, TEST_SUFFIX)
             os.environ[ENV_ETC] = etc_path
 
     def _restore_env_var(self):
-        etc_path = utils.get_client_etc()
+        etc_path = utils.get_kollacli_etc()
         if etc_path.endswith(TEST_SUFFIX):
             etc_path = etc_path.rsplit('/', 1)[0]
             os.environ[ENV_ETC] = etc_path

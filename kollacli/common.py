@@ -18,6 +18,7 @@ import subprocess
 from kollacli.i18n import _
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
+from kollacli.utils import get_kollacli_home
 
 from cliff.command import Command
 
@@ -28,17 +29,19 @@ class Deploy(Command):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        kollaHome = get_kolla_home()
-        kollaEtc = get_kolla_etc()
-        self.log.info(kollaHome)
-        commandString = 'ansible-playbook '
-        inventoryString = '-i /home/bmace/devel/openstack-kollaclient/kollacli/ansible/json_generator.py '
-        defaultsString = '-e @' + os.path.join(kollaEtc, 'defaults.yml')
-        globalsString = ' -e @' + os.path.join(kollaEtc, 'globals.yml')
-        passwordsString = ' -e @' + os.path.join(kollaEtc, 'passwords.yml')
-        siteString = ' ' + os.path.join(kollaHome, 'ansible/site.yml')
-        cmd = commandString + inventoryString + defaultsString + globalsString
-        cmd = cmd + passwordsString + siteString
+        kollacli_home = get_kollacli_home()
+        kolla_home = get_kolla_home()
+        kolla_etc = get_kolla_etc()
+        command_string = 'ansible-playbook '
+        inventory_string = '-i ' + os.path.join(kollacli_home,
+                                               'kollacli/ansible',
+                                               'json_generator.py ')
+        default_string = '-e @' + os.path.join(kolla_etc, 'defaults.yml')
+        globals_string= ' -e @' + os.path.join(kolla_etc, 'globals.yml')
+        passwords_string = ' -e @' + os.path.join(kolla_etc, 'passwords.yml')
+        site_string = ' ' + os.path.join(kolla_home, 'ansible/site.yml')
+        cmd = command_string + inventory_string + default_string + globals_string
+        cmd = cmd + passwords_string + site_string
         self.log.debug('cmd:' + cmd)
         output, error = subprocess.Popen(cmd.split(' '),
                                          stdout=subprocess.PIPE,
