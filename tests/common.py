@@ -46,8 +46,8 @@ class KollaCliTest(testtools.TestCase):
 
         # switch to test path
         self._setup_env_var()
-        etc_path = os.getenv(ENV_ETC)
-        self.log.debug('%s for tests: %s' % (ENV_ETC, etc_path))
+        etc_path = utils.get_kollacli_etc()
+        self.log.debug('etc for tests: %s' % etc_path)
 
         self._set_cmd_prefix()
 
