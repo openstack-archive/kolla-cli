@@ -23,7 +23,7 @@ import testtools
 import kollacli.utils as utils
 
 TEST_SUFFIX = 'test/'
-ENV_ETC = 'KOLLA_CLIENT_ETC'
+ENV_ETC = 'KOLLA_CLI_ETC'
 VENV_PY_PATH = '.venv/bin/python'
 KOLLA_CMD = 'kollacli'
 KOLLA_SHELL_DIR = 'kollacli'
@@ -46,8 +46,8 @@ class KollaCliTest(testtools.TestCase):
 
         # switch to test path
         self._setup_env_var()
-        etc_path = os.getenv('KOLLA_CLIENT_ETC')
-        self.log.debug('$KOLLA_CLIENT_ETC for tests: %s' % etc_path)
+        etc_path = os.getenv(ENV_ETC)
+        self.log.debug('%s for tests: %s' % (ENV_ETC, etc_path))
 
         self._set_cmd_prefix()
 
