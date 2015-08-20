@@ -24,7 +24,7 @@ def get_kolla_etc():
 
 
 def get_kollacli_home():
-    return os.environ.get("KOLLA_CLI_HOME", "/opt/kollacli/")
+    return os.environ.get("KOLLA_CLI_HOME", "/opt/kolla/kollacli/")
 
 
 def get_kollacli_etc():

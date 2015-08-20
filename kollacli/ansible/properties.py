@@ -20,7 +20,7 @@ import yaml
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
 
-DEFAULTS_FILENAME = 'defaults.yml'
+ALLVARS_PATH = 'ansible/group_vars/all.yml'
 GLOBALS_FILENAME = 'globals.yml'
 ANSIBLE_ROLES_PATH = 'ansible/roles'
 ANSIBLE_DEFAULTS_PATH = 'defaults/main.yml'
@@ -28,7 +28,7 @@ ANSIBLE_DEFAULTS_PATH = 'defaults/main.yml'
 
 class AnsibleProperties(object):
     log = logging.getLogger(__name__)
-    _defaults_path = ''
+    _allvars_path = ''
     _globals_path = ''
     _properties = []
     # this is so for any given property
@@ -40,9 +40,9 @@ class AnsibleProperties(object):
         """initialize ansible property information
 
         property information is pulled from the following files:
-        KOLLA_ETC/defaults.yml
         KOLLA_ETC/globals.yml
         KOLLA_ETC/passwords.yml
+        KOLLA_HOME/group_vars/all.yml
         KOLLA_HOME/ansible/roles/<service>/default/main.yml
         """
         kolla_etc = get_kolla_etc()
@@ -50,14 +50,14 @@ class AnsibleProperties(object):
 
         # to add something do property_dict['key'].append('value')
         try:
-            self._defaults_path = os.path.join(kolla_etc, DEFAULTS_FILENAME)
-            with open(self._defaults_path) as defaults_file:
-                defaults_contents = yaml.load(defaults_file)
-                self._file_contents[self._defaults_path] = defaults_contents
-                defaults_contents = self.filter_jinja2(defaults_contents)
-                for key, value in defaults_contents.items():
+            self._allvars_path = os.path.join(kolla_home, ALLVARS_PATH)
+            with open(self._allvars_path) as allvars_file:
+                allvars_contents = yaml.load(allvars_file)
+                self._file_contents[self._allvars_path] = allvars_contents
+                allvars_contents = self.filter_jinja2(allvars_contents)
+                for key, value in allvars_contents.items():
                     ansible_property = AnsibleProperty(key, value,
-                                                       DEFAULTS_FILENAME)
+                                                       'group_vars/all.yml')
                     self._properties.append(ansible_property)
         except Exception as e:
             raise e
@@ -95,7 +95,8 @@ class AnsibleProperties(object):
             raise e
 
     def get_all(self):
-        return self._properties
+        sorted_properties = sorted(self._properties, key=lambda x: x.name)
+        return sorted_properties
 
     def filter_jinja2(self, contents):
         for key, value in contents.items():
