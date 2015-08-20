@@ -16,11 +16,13 @@ import os
 import subprocess
 import traceback
 
+from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.i18n import _
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
 from kollacli.utils import get_kollacli_home
+
 
 from cliff.command import Command
 
@@ -50,9 +52,10 @@ class Deploy(Command):
                    default_string + globals_string)
             cmd = cmd + passwords_string + site_string
             self.log.debug('cmd:' + cmd)
-            output, error = subprocess.Popen(cmd.split(' '),
-                                             stdout=subprocess.PIPE,
-                                             stderr=subprocess.PIPE).communicate()
+            output, error = \
+                subprocess.Popen(cmd.split(' '),
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE).communicate()
             self.log.info(output)
             self.log.info(error)
         except CommandError as e:
@@ -122,3 +125,34 @@ class Dump(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("dump"))
+
+
+class Setdeploy(Command):
+    """Set deploy mode
+
+    Set deploy mode to either local or remote. Local indicates
+    that the openstack deployment will be to the local host.
+    Remote means that the deployment is on remote hosts.
+    """
+    def get_parser(self, prog_name):
+        parser = super(Setdeploy, self).get_parser(prog_name)
+        parser.add_argument('mode', metavar='<mode>',
+                            help='mode=<local, remote>')
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            mode = parsed_args.mode.strip()
+            remote_flag = False
+            if mode == 'remote':
+                remote_flag = True
+            elif mode != 'local':
+                raise CommandError('Invalid deploy mode. Mode must be ' +
+                                   'either "local" or "remote"')
+            inventory = Inventory.load()
+            inventory.set_deploy_mode(remote_flag)
+            Inventory.save(inventory)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())

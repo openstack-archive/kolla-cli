@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from inventory import Inventory
+from kollacli.ansible.inventory import Inventory
 
 
 def main():

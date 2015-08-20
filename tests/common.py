@@ -172,6 +172,7 @@ class TestHosts(object):
     This class can either be used for metadata to hold info about test hosts,
     or can be loaded from a test file for info on actual test host machines.
     """
+    log = logging.getLogger(__name__)
 
     def __init__(self):
         self.info = {}

@@ -174,6 +174,13 @@ def _pre_install_checks(ssh_client, log):
             raise CommandError("ERROR: '%s' failed. Is docker running? : %s"
                                % (cmd, errmsg))
 
+        # check for docker-py
+        cmd = 'python -c "import docker"'
+        msg, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
+        if errmsg:
+            raise CommandError('ERROR: host check failed. ' +
+                               'Is docker-py installed?')
+
 
 def _post_install_checks(net_addr, log):
     try:
