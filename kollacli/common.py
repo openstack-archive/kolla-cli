@@ -14,7 +14,9 @@
 import logging
 import os
 import subprocess
+import traceback
 
+from kollacli.exceptions import CommandError
 from kollacli.i18n import _
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
@@ -29,25 +31,34 @@ class Deploy(Command):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        kollacli_home = get_kollacli_home()
-        kolla_home = get_kolla_home()
-        kolla_etc = get_kolla_etc()
-        command_string = 'ansible-playbook '
-        inventory_string = '-i ' + os.path.join(kollacli_home,
-                                               'kollacli/ansible',
-                                               'json_generator.py ')
-        default_string = '-e @' + os.path.join(kolla_etc, 'defaults.yml')
-        globals_string= ' -e @' + os.path.join(kolla_etc, 'globals.yml')
-        passwords_string = ' -e @' + os.path.join(kolla_etc, 'passwords.yml')
-        site_string = ' ' + os.path.join(kolla_home, 'ansible/site.yml')
-        cmd = command_string + inventory_string + default_string + globals_string
-        cmd = cmd + passwords_string + site_string
-        self.log.debug('cmd:' + cmd)
-        output, error = subprocess.Popen(cmd.split(' '),
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE).communicate()
-        self.log.info(output)
-        self.log.info(error)
+        try:
+            kollacli_home = get_kollacli_home()
+            kolla_home = get_kolla_home()
+            kolla_etc = get_kolla_etc()
+            command_string = 'ansible-playbook '
+            inventory_string = '-i ' + os.path.join(kollacli_home,
+                                                    'kollacli/ansible',
+                                                    'json_generator.py ')
+            default_string = '-e @' + os.path.join(kolla_etc,
+                                                   'defaults.yml')
+            globals_string = ' -e @' + os.path.join(kolla_etc,
+                                                    'globals.yml')
+            passwords_string = ' -e @' + os.path.join(kolla_etc,
+                                                      'passwords.yml')
+            site_string = ' ' + os.path.join(kolla_home, 'ansible/site.yml')
+            cmd = (command_string + inventory_string +
+                   default_string + globals_string)
+            cmd = cmd + passwords_string + site_string
+            self.log.debug('cmd:' + cmd)
+            output, error = subprocess.Popen(cmd.split(' '),
+                                             stdout=subprocess.PIPE,
+                                             stderr=subprocess.PIPE).communicate()
+            self.log.info(output)
+            self.log.info(error)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 class Install(Command):
