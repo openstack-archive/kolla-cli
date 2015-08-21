@@ -23,12 +23,11 @@ from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
 from kollacli.utils import get_kollacli_home
 
-
 from cliff.command import Command
 
 
 class Deploy(Command):
-    "Deploy"
+    """Deploy"""
 
     log = logging.getLogger(__name__)
 
@@ -39,7 +38,7 @@ class Deploy(Command):
             kolla_etc = get_kolla_etc()
             command_string = 'ansible-playbook '
             inventory_string = '-i ' + os.path.join(kollacli_home,
-                                                    'kollacli/ansible',
+                                                    'tools',
                                                     'json_generator.py ')
             globals_string = ' -e @' + os.path.join(kolla_etc,
                                                     'globals.yml')
@@ -48,21 +47,44 @@ class Deploy(Command):
             site_string = ' ' + os.path.join(kolla_home, 'ansible/site.yml')
             cmd = (command_string + inventory_string + globals_string)
             cmd = cmd + passwords_string + site_string
-            self.log.debug('cmd:' + cmd)
-            output, error = \
-                subprocess.Popen(cmd.split(' '),
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE).communicate()
-            self.log.info(output)
-            self.log.info(error)
+
+            if self.log.getEffectiveLevel() == logging.DEBUG:
+                self.log.debug('cmd:' + cmd)
+
+                dbg_gen = os.path.join(kollacli_home, 'tools',
+                                       'json_generator.py ')
+                (inv, _) = \
+                    subprocess.Popen(dbg_gen.split(' '),
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE).communicate()
+                self.log.debug(inv)
+
+            err_flag = self.run_and_peek(cmd)
+            if err_flag:
+                raise Exception('deploy failed')
+
+            self.log.info('deploy succeeded')
         except CommandError as e:
             raise e
         except Exception as e:
             raise Exception(traceback.format_exc())
 
+    def run_and_peek(self, cmd):
+        import pexpect
+        err_flag = False
+        child = pexpect.spawn(cmd)
+        child.maxsize = 1
+        child.timeout = 86400
+        for line in child:
+            self.log.info(line.rstrip())
+        child.close()
+        if child.exitstatus != 0:
+            err_flag = True
+        return err_flag
+
 
 class Install(Command):
-    "Install"
+    """Install"""
 
     log = logging.getLogger(__name__)
 
