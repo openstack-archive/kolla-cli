@@ -33,6 +33,7 @@ from kollacli.exceptions import CommandError
 
 ANSIBLE_KEY_FILE = 'ansible_ssh_private_key_file'
 ANSIBLE_SSH_USER = 'ansible_ssh_user'
+ANSIBLE_CONNECTION = 'ansible_connection'
 
 INVENTORY_PATH = 'ansible/inventory/inventory.json'
 
@@ -41,25 +42,26 @@ CONTROL_GRP_NAME = 'control'
 NETWORK_GRP_NAME = 'network'
 STORAGE_GRP_NAME = 'storage'
 
-DEPLOY_GROUPS = [COMPUTE_GRP_NAME,
-                 CONTROL_GRP_NAME,
-                 NETWORK_GRP_NAME,
-                 STORAGE_GRP_NAME,
-                 ]
+DEPLOY_GROUPS = [
+    COMPUTE_GRP_NAME,
+    CONTROL_GRP_NAME,
+    NETWORK_GRP_NAME,
+    STORAGE_GRP_NAME,
+    ]
 
-SERVICE_GROUPS = {'cinder':     ['cinder-api', 'cinder-backup',
-                                 'cinder-scheduler', 'cinder-volume'],
-                  'glance':     ['glance-api', 'glance-registry'],
-                  'haproxy':    [],
-                  'keystone':   [],
-                  'mariadb':    [],
-                  'ndbcluster': ['ndb-data', 'ndb-mgmt', 'ndb-mysql'],
-                  'neutron':    ['neutron-server', 'neutron-agents'],
-                  'nova':       ['nova-api', 'nova-conductor',
-                                 'nova-consoleauth',
-                                 'nova-novncproxy', 'nova-scheduler'],
-                  'rabbitmq':   [],
-                  }
+SERVICE_GROUPS = {
+    'cinder':     ['cinder-api', 'cinder-backup',
+                   'cinder-scheduler', 'cinder-volume'],
+    'glance':     ['glance-api', 'glance-registry'],
+    'haproxy':    [],
+    'keystone':   [],
+    'mariadb':    [],
+    'ndbcluster': ['ndb-data', 'ndb-mgmt', 'ndb-mysql'],
+    'neutron':    ['neutron-server', 'neutron-agents'],
+    'nova':       ['nova-api', 'nova-conductor', 'nova-consoleauth',
+                   'nova-novncproxy', 'nova-scheduler'],
+    'rabbitmq':   [],
+    }
 
 DEFAULT_HIERARCHY = {
     CONTROL_GRP_NAME: [
@@ -116,6 +118,8 @@ class Host(object):
             ssh_check_host(self.name)
             self.log.info('Host (%s), check succeeded' % self.name)
 
+        except CommandError as e:
+            raise e
         except Exception as e:
             raise Exception(
                 'ERROR: Host (%s), check failed. Reason : %s'
@@ -179,12 +183,12 @@ class Host(object):
         return is_installed
 
 
-class Group(object):
+class HostGroup(object):
     class_version = 1
 
     def __init__(self, name):
         self.name = name
-        self.children = []
+        self.services = []
         self._hosts = {}  # kv = hostname:object
         self._version = 1
         self.vars = {}
@@ -203,11 +207,16 @@ class Group(object):
         if host.name in self._hosts:
             del self._hosts[host.name]
 
-    def add_group(self, groupname):
-        group = Group(groupname)
-        if group not in self.children:
-            self.children.append(group)
-        return group
+    def add_service(self, servicename):
+        service = Service(servicename)
+        if service not in self.services:
+            self.services.append(service)
+        return service
+
+    def remove_service(self, servicename):
+        for service in self.services:
+            if servicename == service.name:
+                self.services.remove(service)
 
     def get_hosts(self):
         return self._hosts.values()
@@ -215,10 +224,10 @@ class Group(object):
     def get_hostnames(self):
         return self._hosts.keys()
 
-    def get_childnames(self):
+    def get_servicenames(self):
         names = []
-        for child in self.children:
-            names.append(child.name)
+        for service in self.services:
+            names.append(service.name)
         return names
 
     def get_vars(self):
@@ -226,6 +235,42 @@ class Group(object):
 
     def set_var(self, name, value):
         self.vars[name] = value
+
+    def clear_var(self, name):
+        if name in self.vars:
+            del self.vars[name]
+
+    def set_remote(self, remote_flag):
+        if remote_flag:
+            # set the ssh info for all the servers in the group
+            self.set_var(ANSIBLE_KEY_FILE, utils.get_pk_file())
+            self.set_var(ANSIBLE_SSH_USER, utils.get_admin_user())
+            self.clear_var(ANSIBLE_CONNECTION)
+        else:
+            # remove ssh info, add local connection type
+            self.set_var(ANSIBLE_CONNECTION, 'local')
+            self.clear_var(ANSIBLE_KEY_FILE)
+            self.clear_var(ANSIBLE_SSH_USER)
+
+
+class Service(object):
+    class_version = 1
+
+    def __init__(self, name):
+        self.name = name
+        self._hosts = {}   # kv = name:object
+        self.containers = SERVICE_GROUPS[name]
+        self.vars = {}
+        self.version = self.__class__.class_version
+
+    def upgrade(self):
+        pass
+
+    def get_hostnames(self):
+        return self._hosts.keys()
+
+    def get_vars(self):
+        return self.vars.copy()
 
 
 class Inventory(object):
@@ -236,6 +281,7 @@ class Inventory(object):
         self._hosts = {}   # kv = name:object
         self.vars = {}
         self.version = self.__class__.class_version
+        self.remote_mode = True
 
         # initialize the inventory to its defaults
         self._create_default_inventory()
@@ -297,15 +343,13 @@ class Inventory(object):
                     pass
 
     def _create_default_inventory(self):
-        for (deploy_name, service_names) in DEFAULT_HIERARCHY.items():
-            deploy_group = self.add_group(deploy_name)
+        for (group_name, service_names) in DEFAULT_HIERARCHY.items():
+            group = self.add_group(group_name)
 
-            # add service groups
+            # add services
             for service_name in service_names:
-                service_group = deploy_group.add_group(service_name)
-                for container_name in SERVICE_GROUPS[service_name]:
-                    service_group.add_group(container_name)
-            self._groups[deploy_name] = deploy_group
+                group.add_service(service_name)
+            self._groups[group_name] = group
 
     def get_hosts(self):
         return self._hosts.values()
@@ -344,6 +388,10 @@ class Inventory(object):
             raise CommandError('Host name (%s) does not exist'
                                % hostname)
 
+        if not groupname and not self.remote_mode and len(self._hosts) >= 1:
+            raise CommandError('Cannot have more than one host when in ' +
+                               'local deploy mode')
+
         # create new host if it doesn't exist
         host = Host(hostname)
         if not groupname:
@@ -376,13 +424,11 @@ class Inventory(object):
 
     def add_group(self, groupname):
         if groupname not in self._groups:
-            self._groups[groupname] = Group(groupname)
+            self._groups[groupname] = HostGroup(groupname)
 
         group = self._groups[groupname]
 
-        # set the ssh info for all the servers in the group
-        group.set_var(ANSIBLE_KEY_FILE, utils.get_pk_file())
-        group.set_var(ANSIBLE_SSH_USER, utils.get_admin_user())
+        group.set_remote(self.remote_mode)
 
         return group
 
@@ -409,8 +455,8 @@ class Inventory(object):
         group_services = {}
         for group in self._groups.values():
             group_services[group.name] = []
-            for child in group.children:
-                group_services[group.name].append(child.name)
+            for service in group.services:
+                group_services[group.name].append(service.name)
         return group_services
 
     def get_group_hosts(self):
@@ -434,7 +480,7 @@ class Inventory(object):
         group_services = self.get_group_services()
         if servicename not in group_services[groupname]:
             group = self._groups[groupname]
-            group.children.append(Group(servicename))
+            group.services.append(Service(servicename))
 
     def remove_service(self, servicename, groupname):
         if groupname not in self._groups:
@@ -445,12 +491,8 @@ class Inventory(object):
             raise CommandError('Service name (%s) does not exist'
                                % servicename)
 
-        group_services = self.get_group_services()
-        if servicename in group_services[groupname]:
-            group = self._groups[groupname]
-            for service in group.children:
-                if service.name == servicename:
-                    group.children.remove(service)
+        group = self._groups[groupname]
+        group.remove_service(servicename)
 
     def get_service_groups(self):
         """return { servicename : groupnames }"""
@@ -462,6 +504,15 @@ class Inventory(object):
                 if servicename in servicenames:
                     service_groups[servicename].append(groupname)
         return service_groups
+
+    def set_deploy_mode(self, remote_flag):
+        if not remote_flag and len(self._hosts) > 1:
+            raise CommandError('Cannot set local deploy mode when multiple ' +
+                               'hosts exist')
+        self.remote_mode = remote_flag
+
+        for group in self._groups.values():
+            group.set_remote(remote_flag)
 
     def get_ansible_json(self):
         """generate json inventory for ansible
@@ -492,33 +543,37 @@ class Inventory(object):
         }
     }
     """
-
         jdict = {}
 
-        # process groups
+        # add hostgroups
         for group in self.get_groups():
             jdict[group.name] = {}
             jdict[group.name]['hosts'] = group.get_hostnames()
             jdict[group.name]['children'] = []
             jdict[group.name]['vars'] = group.get_vars()
 
-            for service in group.children:
-                jdict[service.name] = {}
-                jdict[service.name]['hosts'] = service.get_hostnames()
-                jdict[service.name]['children'] = [group.name]
-                jdict[service.name]['vars'] = service.get_vars()
+        # add services
+        services = []
+        for group in self.get_groups():
+            for service in group.services:
+                if service.name not in jdict:
+                    services.append(service)
+                    jdict[service.name] = {}
+                    jdict[service.name]['vars'] = service.get_vars()
+                    jdict[service.name]['children'] = []
+                if group.name not in jdict[service.name]['children']:
+                    jdict[service.name]['children'].append(group.name)
 
-                for container in service.children:
-                    jdict[container.name] = {}
-                    jdict[container.name]['hosts'] = container.get_hostnames()
-                    jdict[container.name]['children'] = [service.name]
-                    jdict[container.name]['vars'] = container.get_vars()
+        # add containers
+        for service in services:
+            for containername in service.containers:
+                jdict[containername] = {}
+                jdict[containername]['children'] = [service.name]
+                jdict[containername]['vars'] = {}
 
         # process hosts vars
         jdict['_meta'] = {}
         jdict['_meta']['hostvars'] = {}
         for host in self.get_hosts():
             jdict['_meta']['hostvars'][host.name] = host.get_vars()
-
-        # convert to json
-        return json.dumps(jdict, indent=4)
+        return json.dumps(jdict, indent=2)

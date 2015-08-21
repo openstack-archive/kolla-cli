@@ -172,6 +172,7 @@ class TestHosts(object):
     This class can either be used for metadata to hold info about test hosts,
     or can be loaded from a test file for info on actual test host machines.
     """
+    log = logging.getLogger(__name__)
 
     def __init__(self):
         self.info = {}
@@ -206,15 +207,9 @@ class TestHosts(object):
         return self.info[name]['pwd']
 
     def load(self):
-        """load hosts from test_hosts file
-
-        """
-        hosts = None
-        if not os.path.exists(HOSTS_FNAME):
-            self.log.error('test_hosts file not found, are you running ' +
-                           'the tests in the tests directory?')
-            return hosts
-        with open(HOSTS_FNAME, 'r') as f:
+        """load hosts from test_hosts file"""
+        path = self.get_test_hosts_path()
+        with open(path, 'r') as f:
             for line in f:
                 line = line.strip()
                 if not line or line.startswith('#'):
@@ -228,3 +223,17 @@ class TestHosts(object):
                 pwd = tokens[2]
                 self.add(hostname)
                 self.set_password(hostname, pwd)
+
+    def get_test_hosts_path(self):
+        """get test_hosts directory"""
+        path = ''
+        # first check the current directory
+        if os.path.exists(HOSTS_FNAME):
+            path = os.path.join(os.getcwd(), HOSTS_FNAME)
+        else:
+            # check the user's home directory
+            path = os.path.join(os.path.expanduser('~'), HOSTS_FNAME)
+            if not os.path.exists(path):
+                raise Exception('test_hosts file not found in current ' +
+                                'or home directory')
+        return path

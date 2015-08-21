@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright(c) 2015, Oracle and/or its affiliates.  All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -12,29 +13,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import kollacli.utils as utils
+from kollacli.ansible.inventory import Inventory
 
 
-class Zones(object):
-    _zones = []
+def main():
+    """generate json inventory for ansible"""
 
-    def __init__(self):
-        yml = utils.load_etc_yaml('zones.yml')
-        self._zones = yml.keys()
+    inventory = Inventory.load()
+    inv_str = inventory.get_ansible_json()
+    print(inv_str)
 
-    def save(self):
-        info = {}
-        for zone in self._zones:
-            info[zone] = ''
-        utils.save_etc_yaml('zones.yml', info)
 
-    def add_zone(self, zone_name):
-        if zone_name not in self._zones:
-            self._zones.append(zone_name)
-
-    def remove_zone(self, zone_name):
-        if zone_name in self._zones:
-            self._zones.remove(zone_name)
-
-    def get_all(self):
-        return self._zones
+if __name__ == '__main__':
+    main()
