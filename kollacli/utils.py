@@ -16,7 +16,7 @@ import yaml
 
 
 def get_kolla_home():
-    return os.environ.get("KOLLA_HOME", "/opt/kolla/")
+    return os.environ.get("KOLLA_HOME", "/usr/share/kolla/")
 
 
 def get_kolla_etc():
@@ -24,7 +24,7 @@ def get_kolla_etc():
 
 
 def get_kollacli_home():
-    return os.environ.get("KOLLA_CLI_HOME", "/opt/kolla/kollacli/")
+    return os.environ.get("KOLLA_CLI_HOME", "/usr/share/kolla/kollacli/")
 
 
 def get_kollacli_etc():
