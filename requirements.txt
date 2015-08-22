@@ -6,5 +6,6 @@ jsonpickle>=0.9
 oslo.i18n>=1.5.0  # Apache-2.0
 paramiko
 pbr>=0.11,<2.0
+pexpect
 PyYAML
 six>=1.9.0
