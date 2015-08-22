@@ -40,15 +40,12 @@ class Deploy(Command):
             inventory_string = '-i ' + os.path.join(kollacli_home,
                                                     'tools',
                                                     'json_generator.py ')
-            default_string = '-e @' + os.path.join(kolla_etc,
-                                                   'defaults.yml')
             globals_string = ' -e @' + os.path.join(kolla_etc,
                                                     'globals.yml')
             passwords_string = ' -e @' + os.path.join(kolla_etc,
                                                       'passwords.yml')
             site_string = ' ' + os.path.join(kolla_home, 'ansible/site.yml')
-            cmd = (command_string + inventory_string +
-                   default_string + globals_string)
+            cmd = (command_string + inventory_string + globals_string)
             cmd = cmd + passwords_string + site_string
 
             if self.log.getEffectiveLevel() == logging.DEBUG:
