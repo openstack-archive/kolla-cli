@@ -34,6 +34,7 @@ from kollacli.exceptions import CommandError
 ANSIBLE_KEY_FILE = 'ansible_ssh_private_key_file'
 ANSIBLE_SSH_USER = 'ansible_ssh_user'
 ANSIBLE_CONNECTION = 'ansible_connection'
+ANSIBLE_BECOME = 'ansible_become'
 
 INVENTORY_PATH = 'ansible/inventory/inventory.json'
 
@@ -241,6 +242,7 @@ class HostGroup(object):
             del self.vars[name]
 
     def set_remote(self, remote_flag):
+        self.set_var(ANSIBLE_BECOME, 'yes')
         if remote_flag:
             # set the ssh info for all the servers in the group
             self.set_var(ANSIBLE_KEY_FILE, utils.get_pk_file())
