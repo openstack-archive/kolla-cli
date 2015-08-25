@@ -36,7 +36,7 @@ ANSIBLE_SSH_USER = 'ansible_ssh_user'
 ANSIBLE_CONNECTION = 'ansible_connection'
 ANSIBLE_BECOME = 'ansible_become'
 
-INVENTORY_PATH = 'ansible/inventory/inventory.json'
+INVENTORY_PATH = 'ansible/inventory.json'
 
 COMPUTE_GRP_NAME = 'compute'
 CONTROL_GRP_NAME = 'control'
