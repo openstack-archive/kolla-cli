@@ -33,10 +33,16 @@ class Deploy(Command):
 
     def take_action(self, parsed_args):
         try:
+            debug = False
+            flag = ''
+            if self.log.getEffectiveLevel() <= logging.DEBUG:
+                flag = '-vvv'
+                debug = True
+
             kollacli_home = get_kollacli_home()
             kolla_home = get_kolla_home()
             kolla_etc = get_kolla_etc()
-            command_string = 'ansible-playbook '
+            command_string = 'ansible-playbook %s ' % flag
             inventory_string = '-i ' + os.path.join(kollacli_home,
                                                     'tools',
                                                     'json_generator.py ')
@@ -48,7 +54,7 @@ class Deploy(Command):
             cmd = (command_string + inventory_string + globals_string)
             cmd = cmd + passwords_string + site_string
 
-            if self.log.getEffectiveLevel() == logging.DEBUG:
+            if debug:
                 self.log.debug('cmd:' + cmd)
 
                 dbg_gen = os.path.join(kollacli_home, 'tools',
