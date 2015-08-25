@@ -82,6 +82,8 @@ DEFAULT_HIERARCHY = {
         ]
     }
 
+PROTECTED_GROUPS = [COMPUTE_GRP_NAME]
+
 
 class Host(object):
     class_version = 1
@@ -435,6 +437,9 @@ class Inventory(object):
         return group
 
     def remove_group(self, groupname):
+        if groupname in PROTECTED_GROUPS:
+            raise CommandError('Cannot remove %s group. ' % groupname +
+                               'It is required by kolla.')
         if groupname in self._groups:
             del self._groups[groupname]
 
