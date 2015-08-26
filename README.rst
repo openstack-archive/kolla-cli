@@ -12,9 +12,12 @@ The following steps can be used to build / run the kollacli
 * mkdir /usr/share/kolla
 * cp -r openstack-kolla/ansible to /usr/share/kolla
 * mkdir /etc/kolla
+* mkdir /etc/kolla/kollacli
+* mkdir /etc/kolla/kollacli/ansible
 * cp -r openstack-kolla/etc/kolla/* to /etc/kolla
 * mkdir /usr/share/kolla/kollacli
-* mkdir /usr/share/kolla/kollacli/ansible
+* mkdir /usr/share/kolla/kollacli/tools
+* cp openstack-kollaclient/tools/* /usr/share/kolla/kollacli/tools
 * kollacli
 
 At that point you will be dropped into the kollacli shell where
