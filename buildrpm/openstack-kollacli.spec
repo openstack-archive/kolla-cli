@@ -79,7 +79,7 @@ mkdir -p /usr/share/kolla/kollacli
 mkdir -p /usr/share/kolla/kollacli/ansible
 
 # remove unnecessary files
-#rm -fr %{buildroot}%{python_sitelib}/muranoagent/tests/
+#rm -fr %{buildroot}%{python_sitelib}/kolla
 
 
 %clean
