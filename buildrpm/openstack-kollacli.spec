@@ -1,4 +1,4 @@
-# Copyright(c) 2015, Oracle.  All Rights Reserved.
+# Copyright(c) 2015, Oracle and/or its affiliates.  All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -12,11 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
 # Python major version.
 %{expand: %%define pyver %(python -c 'import sys;print(sys.version[0:3])')}
+
 # Package version (OpenStack release) may be not equal to module version
-%define version_internal 0.1.0
+%define version_internal 0.1
+
+# GIT repository base URL
+%define git_base_url git://ca-git.us.oracle.com/
 
 
 Summary:        OpenStack Kolla CLI
@@ -26,24 +29,24 @@ Release:        1%{?dist}
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Url:            https://launchpad.net/kolla
-Source0:        http://ca-git.us.oracle.com/openstack-kollacli.git
-Source1:        http://ca-git.us.oracle.com/openstack-kolla.git
+Source0:        openstack-kollaclient.tar.gz
+Source1:        openstack-kolla.tar.gz
 BuildArch:      noarch
 
 
-Requires: ansible >= 1.9.2
-Requires: babel >= 1.3
-Requires: docker-py >= 1.3.1
-Requires: pexpect >= 2.3
-Requires: python-babel >= 1.3
-Requires: python-cliff >= 1.13.0
-Requires: python-cliff-tablib >= 1.1
-Requires: python-jsonpickle >= 0.9.2
-Requires: python-oslo-i18n >= 1.3.0
-Requires: python-paramiko >= 1.15.1
-Requires: python-pbr >= 0.10
-Requires: python-six >= 1.9.0
-Requires: PyYAML >= 3.10
+Requires:       ansible                 >= 1.9.2
+Requires:       babel                   >= 1.3
+Requires:       docker-py               >= 1.3.1
+Requires:       pexpect                 >= 2.3
+Requires:       python-babel            >= 1.3
+Requires:       python-cliff            >= 1.13.0
+Requires:       python-cliff-tablib     >= 1.1
+Requires:       python-jsonpickle       >= 0.9.2
+Requires:       python-oslo-i18n        >= 1.3.0
+Requires:       python-paramiko         >= 1.15.1
+Requires:       python-pbr              >= 0.10
+Requires:       python-six              >= 1.9.0
+Requires:       PyYAML                  >= 3.10
 
 
 %description
@@ -51,11 +54,39 @@ The KollaCLI simplifies OpenStack Kolla Ansible deployments.
 
 
 %prep
-%setup -q -n openstack-kollacli-%{version}
+for _source in %{SOURCE0} %{SOURCE1}
+do
+  # If the SOURCE is not available we just automagically generate
+  # it from the git repo for 
+  #
+  #   NOTE: THIS IS FOR TESTING ONLY as it always use master
+  #
+  if [[ ! -r ${_source} ]]
+  then
+    _name=$(basename ${_source} | sed 's/.tar.gz$//')
+    _repo=%{git_base_url}${_name}'.git'
+    git archive --format=tar --remote=${_repo} --prefix=${_name}/ --output=${RPM_SOURCE_DIR}/${_name}.tar master
+    gzip ${RPM_SOURCE_DIR}/${_name}.tar
+  fi
+
+  rm -rf ${_name}
+  gzip -dc ${_source} | tar -xvvf -
+  if [ ${?} -ne 0 ]; then
+    exit ${?}
+  fi
+
+  if [[ $(id -u) == 0 ]]
+  then
+    chown -R root.root ${_name}
+    chmod -R a+rX,g-w,o-w ${_name}
+  fi
+done
 
 
 %build
-# generate temporary pkg-info file
+cd $(basename %{SOURCE0} | sed 's/.tar.gz$//')
+
+# Generate a temporary pkg-info file
 PKGINFO_NAME=$(sed -n -e '/^name/ s/name\s=\s//p' setup.cfg)
 PKGINFO_VERSION=$(sed -n -e '/^version/ s/version\s=\s//p' setup.cfg)
 cat > PKG-INFO << __EOF__
@@ -64,22 +95,28 @@ Name: $PKGINFO_NAME
 Version: $PKGINFO_VERSION
 __EOF__
 
-#build package
+# Build the package
 %{__python} setup.py build --force
 
 
 %install
+cd $(basename %{SOURCE0} | sed 's/.tar.gz$//')
+_kolla=${RPM_BUILD_DIR}/$(basename %{SOURCE1} | sed 's/.tar.gz$//')
+
+# Install the package
 %{__python} setup.py install --skip-build --root %{buildroot}
 
-# install the OpenStack Kolla required files
-install -p -D -m 640 %{SOURCE1}/ansible %{buildroot}/usr/share/kolla
-install -p -D -m 640 %{SOURCE1}/etc/kolla %{buildroot}/etc/kolla
+# Create the required directory structures
+mkdir -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
+mkdir -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 
-mkdir -p /usr/share/kolla/kollacli
-mkdir -p /usr/share/kolla/kollacli/ansible
+# Install the LICENSE file
+install -p -D -m 444 LICENSE ${RPM_BUILD_DIR}
 
-# remove unnecessary files
-#rm -fr %{buildroot}%{python_sitelib}/kolla
+# Install the required OpenStack Kolla files
+cp -r ${_kolla}/ansible %{buildroot}/%{_datadir}/kolla/
+cp -r ${_kolla}/etc/kolla/* %{buildroot}/%{_sysconfdir}/kolla/
+cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
 
 
 %clean
@@ -92,6 +129,8 @@ rm -rf %{buildroot}
 %{_bindir}/kollacli
 %{python_sitelib}/kollacli-%{version_internal}-py%{pyver}.egg-info/*
 %{python_sitelib}/kollacli/*
+%{_datadir}/kolla/*
+%config %{_sysconfdir}/kolla/*
 
 
 %changelog
