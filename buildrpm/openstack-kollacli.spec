@@ -31,27 +31,23 @@ Source1:        http://ca-git.us.oracle.com/openstack-kolla.git
 BuildArch:      noarch
 
 
-Requires: docker-engine >= 1.8.1
 Requires: ansible >= 1.9.2
 Requires: babel >= 1.3
+Requires: docker-py >= 1.3.1
+Requires: pexpect >= 2.3
 Requires: python-babel >= 1.3
+Requires: python-cliff >= 1.13.0
 Requires: python-cliff-tablib >= 1.1
-Requires: python-crypto >= 2.6.1
-Requires: python-ecdsa >= 0.11
-Requires: python-extras >= 0.0.3
-Requires: python-fixtures >= 0.3.14
 Requires: python-jsonpickle >= 0.9.2
-Requires: python-mimeparse >= 0.1.4
 Requires: python-oslo-i18n >= 1.3.0
 Requires: python-paramiko >= 1.15.1
-Requires: python-simplejson >= 3.2.0
+Requires: python-pbr >= 0.10
 Requires: python-six >= 1.9.0
-Requires: python-tablib >= 0.10.0
-Requires: python-testtools >= 1.1.0
+Requires: PyYAML >= 3.10
 
 
 %description
-The Kolla Cli 
+The KollaCLI simplifies OpenStack Kolla Ansible deployments.
 
 
 %prep
