@@ -33,11 +33,10 @@ Source0:        openstack-kollaclient.tar.gz
 Source1:        openstack-kolla.tar.gz
 BuildArch:      noarch
 
-
 Requires:       openstack-kolla-ansible >= 0.1
-Requires:       babel                   >= 1.3
+Requires:       babel                   >= 0.9.6
 Requires:       pexpect                 >= 2.3
-Requires:       python-babel            >= 1.3
+Requires:       python-babel            >= 0.9.6
 Requires:       python-cliff            >= 1.13.0
 Requires:       python-cliff-tablib     >= 1.1
 Requires:       python-jsonpickle       >= 0.9.2
@@ -142,10 +141,11 @@ Group:          Applications/System
 Url:            https://launchpad.net/kolla
 
 Requires:       ansible                 >= 1.9.2
+Requires:       python-docker-py        >= 1.3.1
 
 
 %description -n openstack-kolla-ansible
-Ansible playbooks to deploy Kolla in Docker containers.
+Ansible playbooks and support files to deploy Kolla in Docker containers.
 
 
 %files -n openstack-kolla-ansible
