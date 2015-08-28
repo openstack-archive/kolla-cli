@@ -34,9 +34,8 @@ Source1:        openstack-kolla.tar.gz
 BuildArch:      noarch
 
 
-Requires:       ansible                 >= 1.9.2
+Requires:       openstack-kolla-ansible >= 0.1
 Requires:       babel                   >= 1.3
-Requires:       docker-py               >= 1.3.1
 Requires:       pexpect                 >= 2.3
 Requires:       python-babel            >= 1.3
 Requires:       python-cliff            >= 1.13.0
@@ -50,7 +49,7 @@ Requires:       PyYAML                  >= 3.10
 
 
 %description
-The KollaCLI simplifies OpenStack Kolla Ansible deployments.
+The KollaCLI simplifies OpenStack Kolla deployments.
 
 
 %prep
@@ -86,13 +85,13 @@ done
 %build
 cd $(basename %{SOURCE0} | sed 's/.tar.gz$//')
 
-# Generate a temporary pkg-info file
+# Generate a temporary pkg-info file to make pbr happy
 PKGINFO_NAME=$(sed -n -e '/^name/ s/name\s=\s//p' setup.cfg)
 PKGINFO_VERSION=$(sed -n -e '/^version/ s/version\s=\s//p' setup.cfg)
-cat > PKG-INFO << __EOF__
+cat >PKG-INFO <<__EOF__
 Metadata-Version: 1.1
-Name: $PKGINFO_NAME
-Version: $PKGINFO_VERSION
+Name: ${PKGINFO_NAME}
+Version: ${PKGINFO_VERSION}
 __EOF__
 
 # Build the package
@@ -129,11 +128,39 @@ rm -rf %{buildroot}
 %{_bindir}/kollacli
 %{python_sitelib}/kollacli-%{version_internal}-py%{pyver}.egg-info/*
 %{python_sitelib}/kollacli/*
+%{_datadir}/kolla/kollacli/*
+%config %{_sysconfdir}/kolla/kollacli/*
+
+
+
+%package -n     openstack-kolla-ansible
+Summary:        OpenStack Kolla Ansible playbooks and supporting files.
+Version:        0.1
+Release:        1%{?dist}
+License:        Apache License, Version 2.0
+Group:          Applications/System
+Url:            https://launchpad.net/kolla
+
+Requires:       ansible                 >= 1.9.2
+
+
+%description -n openstack-kolla-ansible
+Ansible playbooks to deploy Kolla in Docker containers.
+
+
+%files -n openstack-kolla-ansible
+%defattr(-,root,root)
+%doc LICENSE
 %{_datadir}/kolla/*
+%exclude %{_datadir}/kolla/kollacli
 %config %{_sysconfdir}/kolla/*
+%exclude %{_sysconfdir}/kolla/kollacli
 
 
 %changelog
+* Thu Aug 27 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
+- Split the Kolla Ansible files out into a seperate RPM
+
 * Tue Aug 25 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
 - Initial release
 
