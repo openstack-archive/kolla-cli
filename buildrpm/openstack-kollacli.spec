@@ -42,7 +42,7 @@ Requires:       python-cliff-tablib     >= 1.1
 Requires:       python-jsonpickle       >= 0.9.2
 Requires:       python-oslo-i18n        >= 1.3.0
 Requires:       python-paramiko         >= 1.15.1
-Requires:       python-pbr              >= 0.10
+Requires:       python-pbr              >= 1.3.0
 Requires:       python-six              >= 1.9.0
 Requires:       PyYAML                  >= 3.10
 
