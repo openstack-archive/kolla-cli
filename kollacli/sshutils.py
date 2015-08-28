@@ -19,6 +19,7 @@ from distutils.version import StrictVersion
 
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
+from kollacli.utils import get_install_user
 from kollacli.utils import get_pk_bits
 from kollacli.utils import get_pk_file
 from kollacli.utils import get_pk_password
@@ -73,42 +74,42 @@ def ssh_check_host(net_addr):
 def ssh_install_host(net_addr, password):
     log = logging.getLogger(__name__)
     admin_user = get_admin_user()
+    install_user = get_install_user()
     public_key = ssh_get_public_key()
     ssh_client = None
 
     try:
-        # TODO(bmace) allow setup as some user other than root?
-        ssh_client = ssh_connect(net_addr, 'root', password, False)
+        ssh_client = ssh_connect(net_addr, install_user, password, False)
 
         # before modifying the host, check that it meets requirements
         _pre_install_checks(ssh_client, log)
 
         # add user and also add to docker group
-        cmd = 'useradd -g docker -m %s' % admin_user
+        cmd = 'sudo useradd -m %s' % admin_user
         _exec_ssh_cmd(cmd, ssh_client, log)
 
         # create ssh dir
-        cmd = ('su - %s -c "mkdir /home/%s/.ssh"'
+        cmd = ('sudo su - %s -c "mkdir /home/%s/.ssh"'
                % (admin_user, admin_user))
         _exec_ssh_cmd(cmd, ssh_client, log)
 
         # create authorized_keys file
-        cmd = ('su - %s -c \"touch /home/%s/.ssh/authorized_keys"'
+        cmd = ('sudo su - %s -c \"touch /home/%s/.ssh/authorized_keys"'
                % (admin_user, admin_user))
         _exec_ssh_cmd(cmd, ssh_client, log)
 
         # populate authorized keys file w/ public key
-        cmd = ('su - %s -c "echo \'%s\' > /home/%s/.ssh/authorized_keys"'
+        cmd = ('sudo su - %s -c "echo \'%s\' > /home/%s/.ssh/authorized_keys"'
                % (admin_user, public_key, admin_user))
         _exec_ssh_cmd(cmd, ssh_client, log)
 
         # set appropriate permissions for ssh dir
-        cmd = ('su - %s -c "chmod 0700 /home/%s/.ssh"'
+        cmd = ('sudo su - %s -c "chmod 0700 /home/%s/.ssh"'
                % (admin_user, admin_user))
         _exec_ssh_cmd(cmd, ssh_client, log)
 
         # set appropriate permissions for authorized_keys file
-        cmd = ('su - %s -c "chmod 0740 /home/%s/.ssh/authorized_keys"'
+        cmd = ('sudo su - %s -c "chmod 0740 /home/%s/.ssh/authorized_keys"'
                % (admin_user, admin_user))
         _exec_ssh_cmd(cmd, ssh_client, log)
 
@@ -123,22 +124,23 @@ def ssh_install_host(net_addr, password):
 
 def ssh_uninstall_host(net_addr, password):
     log = logging.getLogger(__name__)
+    install_user = get_install_user()
     admin_user = get_admin_user()
     ssh_client = None
 
     try:
-        ssh_client = ssh_connect(net_addr, 'root', password, False)
+        ssh_client = ssh_connect(net_addr, install_user, password, False)
 
         # delete user, userdel -r isn't used as it will fail removing
         # the non-existent mail files
-        cmd = 'userdel %s' % admin_user
+        cmd = 'sudo userdel %s' % admin_user
         _, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
         if errmsg:
             raise CommandError('ERROR: failed to remove user (%s) : %s'
                                % (admin_user, errmsg))
 
         # remove home directory and files
-        cmd = 'rm -rf /home/%s' % admin_user
+        cmd = 'sudo rm -rf /home/%s' % admin_user
         _exec_ssh_cmd(cmd, ssh_client, log)
         if errmsg:
             raise CommandError('ERROR: failed to remove home directory' +

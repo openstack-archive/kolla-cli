@@ -18,6 +18,7 @@ import traceback
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
+from kollacli.utils import get_install_user
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -158,6 +159,7 @@ class HostInstall(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
+            install_user = get_install_user()
             inventory = Inventory.load()
             host = inventory.get_host(hostname)
             if not host:
@@ -167,7 +169,8 @@ class HostInstall(Command):
             if parsed_args.insecure:
                 password = parsed_args.insecure.strip()
             else:
-                password = getpass.getpass('Root password for %s: ' % hostname)
+                password = getpass.getpass('%s password for %s: ' %
+                                           (install_user, hostname))
 
             host.install(password)
         except CommandError as e:
@@ -190,6 +193,7 @@ class HostUninstall(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
+            install_user = get_install_user()
             inventory = Inventory.load()
             host = inventory.get_host(hostname)
             if not host:
@@ -199,7 +203,8 @@ class HostUninstall(Command):
             if parsed_args.insecure:
                 password = parsed_args.insecure.strip()
             else:
-                password = getpass.getpass('Root password for %s: ' % hostname)
+                password = getpass.getpass('%s password for %s: ' %
+                                           (install_user, hostname))
             host.uninstall(password)
         except CommandError as e:
             raise e
