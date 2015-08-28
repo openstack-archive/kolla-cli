@@ -28,13 +28,6 @@ ANSIBLE_DEFAULTS_PATH = 'defaults/main.yml'
 
 class AnsibleProperties(object):
     log = logging.getLogger(__name__)
-    _allvars_path = ''
-    _globals_path = ''
-    _properties = []
-    # this is so for any given property
-    # we can look up the file it is in easily, to be used for the
-    # property set command
-    _file_contents = {}
 
     def __init__(self):
         """initialize ansible property information
@@ -48,30 +41,38 @@ class AnsibleProperties(object):
         kolla_etc = get_kolla_etc()
         kolla_home = get_kolla_home()
 
+        self.allvars_path = ''
+        self.globals_path = ''
+        self.properties = []
+        # this is so for any given property
+        # we can look up the file it is in easily, to be used for the
+        # property set command
+        self.file_contents = {}
+
         # to add something do property_dict['key'].append('value')
         try:
-            self._allvars_path = os.path.join(kolla_home, ALLVARS_PATH)
-            with open(self._allvars_path) as allvars_file:
+            self.allvars_path = os.path.join(kolla_home, ALLVARS_PATH)
+            with open(self.allvars_path) as allvars_file:
                 allvars_contents = yaml.load(allvars_file)
-                self._file_contents[self._allvars_path] = allvars_contents
+                self.file_contents[self.allvars_path] = allvars_contents
                 allvars_contents = self.filter_jinja2(allvars_contents)
                 for key, value in allvars_contents.items():
                     ansible_property = AnsibleProperty(key, value,
                                                        'group_vars/all.yml')
-                    self._properties.append(ansible_property)
+                    self.properties.append(ansible_property)
         except Exception as e:
             raise e
 
         try:
-            self._globals_path = os.path.join(kolla_etc, GLOBALS_FILENAME)
-            with open(self._globals_path) as globals_file:
+            self.globals_path = os.path.join(kolla_etc, GLOBALS_FILENAME)
+            with open(self.globals_path) as globals_file:
                 globals_contents = yaml.load(globals_file)
-                self._file_contents[self._globals_path] = globals_contents
+                self.file_contents[self.globals_path] = globals_contents
                 globals_contents = self.filter_jinja2(globals_contents)
                 for key, value in globals_contents.items():
                     ansible_property = AnsibleProperty(key, value,
                                                        GLOBALS_FILENAME)
-                    self._properties.append(ansible_property)
+                    self.properties.append(ansible_property)
         except Exception as e:
             raise e
 
@@ -84,19 +85,18 @@ class AnsibleProperties(object):
                 if os.path.isfile(file_name):
                     with open(file_name) as service_file:
                         service_contents = yaml.load(service_file)
-                        self._file_contents[file_name] = service_contents
+                        self.file_contents[file_name] = service_contents
                         service_contents = self.filter_jinja2(service_contents)
                         prop_file_name = service_name + ':main.yml'
                         for key, value in service_contents.items():
                             ansible_property = AnsibleProperty(key, value,
                                                                prop_file_name)
-                            self._properties.append(ansible_property)
+                            self.properties.append(ansible_property)
         except Exception as e:
             raise e
 
     def get_all(self):
-        sorted_properties = sorted(self._properties, key=lambda x: x.name)
-        return sorted_properties
+        return sorted(self.properties, key=lambda x: x.name)
 
     def filter_jinja2(self, contents):
         for key, value in contents.items():
@@ -113,7 +113,7 @@ class AnsibleProperties(object):
         # We only manipulate values in the globals.yml file so look up the key
         # and if it is there, we will parse through the file to replace that
         # line.  if the key doesn't exist we append to the end of the file
-        contents = self._file_contents[self._globals_path]
+        contents = self.file_contents[self.globals_path]
         try:
             if contents is not None:
                 if property_key in contents:
@@ -131,12 +131,10 @@ class AnsibleProperties(object):
         # We only manipulate values in the globals.yml file so if the variable
         # does not exist we will do nothing.  if it does exist we need to find
         # the line and nuke it.
-        contents = self._file_contents[self._globals_path]
+        contents = self.file_contents[self.globals_path]
         if contents is not None:
             if property_key in contents:
                 self._change_property(property_key, None, clear=True)
-                # TODO(bmace) do we want any sort of message if we try to clear
-                # a property that doesn't exist?
 
     def _change_property(self, property_key, property_value, append=False,
                          clear=False):
@@ -146,7 +144,7 @@ class AnsibleProperties(object):
             # file handle leak
             tmp_filehandle, tmp_path = mkstemp()
             with open(tmp_path, 'w') as tmp_file:
-                with open(self._globals_path) as globals_file:
+                with open(self.globals_path) as globals_file:
                     new_line = '%s: "%s"\n' % (property_key, property_value)
                     for line in globals_file:
                         if append is False:
@@ -161,8 +159,8 @@ class AnsibleProperties(object):
                     if append is True:
                         tmp_file.write(new_line)
 
-            os.remove(self._globals_path)
-            move(tmp_path, self._globals_path)
+            os.remove(self.globals_path)
+            move(tmp_path, self.globals_path)
         except Exception as e:
             raise e
         finally:
@@ -185,9 +183,6 @@ class AnsibleProperties(object):
 
 
 class AnsibleProperty(object):
-    name = ''
-    value = ''
-    file_name = ''
 
     def __init__(self, name, value, file_name):
         self.name = name

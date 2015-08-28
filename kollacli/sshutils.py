@@ -152,7 +152,7 @@ def ssh_uninstall_host(net_addr, password):
 
 
 def _pre_install_checks(ssh_client, log):
-        cmd = 'docker --version'
+        cmd = 'sudo docker --version'
         msg, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
         if errmsg:
             raise CommandError("ERROR: '%s' failed. Is docker installed? : %s"
@@ -167,7 +167,7 @@ def _pre_install_checks(ssh_client, log):
                                % (version, msg))
 
         # docker is installed, now check if it is running
-        cmd = 'docker info'
+        cmd = 'sudo docker info'
         _, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
         # docker info can return warning messages in stderr, ignore them
         if errmsg and 'WARNING' not in errmsg:
