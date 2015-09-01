@@ -25,9 +25,8 @@ from kollacli import utils
 
 from kollacli.sshutils import ssh_check_host
 from kollacli.sshutils import ssh_check_keys
-from kollacli.sshutils import ssh_install_host
+from kollacli.sshutils import ssh_setup_host
 from kollacli.sshutils import ssh_keygen
-from kollacli.sshutils import ssh_uninstall_host
 
 from kollacli.exceptions import CommandError
 
@@ -129,38 +128,25 @@ class Host(object):
                 % (self.name, str(e)))
         return True
 
-    def install(self, password):
+    def setup(self, password):
         self._setup_keys()
 
-        # check if already installed
-        if self._is_installed():
-            self.log.info('Install skipped for host (%s), ' % self.name +
-                          'kolla already installed')
+        # check if already setup
+        if self._is_setup():
+            self.log.info('Setup skipped for host (%s), ' % self.name +
+                          'kolla already setup')
             return True
 
-        # not installed- we need to set up the user / remote ssh keys
+        # not setup- we need to set up the user / remote ssh keys
         # using root and the available password
         try:
-            self.log.info('Starting install of host (%s)'
+            self.log.info('Starting setup of host (%s)'
                           % self.name)
-            ssh_install_host(self.name, password)
-            self.log.info('Host (%s) install succeeded' % self.name)
+            ssh_setup_host(self.name, password)
+            self.log.info('Host (%s) setup succeeded' % self.name)
         except Exception as e:
             raise exceptions.CommandError(
-                'ERROR: Host (%s) install failed : %s'
-                % (self.name, str(e)))
-        return True
-
-    def uninstall(self, password):
-        self._setup_keys()
-
-        try:
-            self.log.info('Starting uninstall of host (%s)' % self.name)
-            ssh_uninstall_host(self.name, password)
-            self.log.info('Host (%s) uninstall succeeded' % self.name)
-        except Exception as e:
-            raise exceptions.CommandError(
-                'ERROR: Host (%s) uninstall failed : %s'
+                'ERROR: Host (%s) setup failed : %s'
                 % (self.name, str(e)))
         return True
 
@@ -174,16 +160,16 @@ class Host(object):
                     'ERROR: Error generating ssh keys on local host : %s'
                     % str(e))
 
-    def _is_installed(self):
-        is_installed = False
+    def _is_setup(self):
+        is_setup = False
         try:
             ssh_check_host(self.name)
-            is_installed = True
+            is_setup = True
 
         except Exception as e:
             self.log.debug('%s' % str(e))
             pass
-        return is_installed
+        return is_setup
 
 
 class HostGroup(object):
