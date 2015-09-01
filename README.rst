@@ -17,7 +17,7 @@ The following steps can be used to build / run the kollacli
 * cp -r openstack-kolla/etc/kolla/* to /etc/kolla
 * mkdir /usr/share/kolla/kollacli
 * mkdir /usr/share/kolla/kollacli/tools
-* cp openstack-kollaclient/tools/* /usr/share/kolla/kollacli/tools
+* cp openstack-kollacli/usr/share/kolla/kollacli/tools
 * kollacli
 
 At that point you will be dropped into the kollacli shell where
