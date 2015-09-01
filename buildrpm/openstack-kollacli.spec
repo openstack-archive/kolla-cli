@@ -16,7 +16,7 @@
 %{expand: %%define pyver %(python -c 'import sys;print(sys.version[0:3])')}
 
 # Package version (OpenStack release) may be not equal to module version
-%define version_internal 0.1
+%define kollacli_version_internal   0.1
 
 # GIT repository base URL
 %define git_base_url git://ca-git.us.oracle.com/
@@ -29,7 +29,7 @@ Release:        1%{?dist}
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Url:            https://launchpad.net/kolla
-Source0:        openstack-kollaclient.tar.gz
+Source0:        openstack-kollacli.tar.gz
 Source1:        openstack-kolla.tar.gz
 BuildArch:      noarch
 
@@ -94,12 +94,14 @@ Version: ${PKGINFO_VERSION}
 __EOF__
 
 # Build the package
-%{__python} setup.py build --force
+%{__python} setup.py build
 
 
 %install
-cd $(basename %{SOURCE0} | sed 's/.tar.gz$//')
-_kolla=${RPM_BUILD_DIR}/$(basename %{SOURCE1} | sed 's/.tar.gz$//')
+%define kollacli_dir %(basename %{SOURCE0} | sed 's/.tar.gz$//')
+%define kolla_dir ${RPM_BUILD_DIR}/$(basename %{SOURCE1} | sed 's/.tar.gz$//')
+
+cd %{kollacli_dir}
 
 # Install the package
 %{__python} setup.py install --skip-build --root %{buildroot}
@@ -112,8 +114,8 @@ mkdir -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 install -p -D -m 444 LICENSE ${RPM_BUILD_DIR}
 
 # Install the required OpenStack Kolla files
-cp -r ${_kolla}/ansible %{buildroot}/%{_datadir}/kolla/
-cp -r ${_kolla}/etc/kolla/* %{buildroot}/%{_sysconfdir}/kolla/
+cp -r %{kolla_dir}/ansible %{buildroot}/%{_datadir}/kolla/
+cp -r %{kolla_dir}/etc/kolla/* %{buildroot}/%{_sysconfdir}/kolla/
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
 
 
@@ -125,13 +127,14 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %doc LICENSE
 %{_bindir}/kollacli
-%{python_sitelib}/kollacli-%{version_internal}-py%{pyver}.egg-info/*
+%{python_sitelib}/kollacli-%{kollacli_version_internal}-py%{pyver}.egg-info/*
 %{python_sitelib}/kollacli/*
 %{_datadir}/kolla/kollacli/*
 %config %{_sysconfdir}/kolla/kollacli/*
 
 
 
+# Package the Kolla dependent files
 %package -n     openstack-kolla-ansible
 Summary:        OpenStack Kolla Ansible playbooks and supporting files.
 Version:        0.1
@@ -152,8 +155,8 @@ Ansible playbooks and support files to deploy Kolla in Docker containers.
 %defattr(-,root,root)
 %doc LICENSE
 %{_datadir}/kolla/*
-%exclude %{_datadir}/kolla/kollacli
 %config %{_sysconfdir}/kolla/*
+%exclude %{_datadir}/kolla/kollacli
 %exclude %{_sysconfdir}/kolla/kollacli
 
 
