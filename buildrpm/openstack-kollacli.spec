@@ -32,6 +32,8 @@ Group:          Applications/System
 Url:            https://launchpad.net/kolla
 Source0:        %{name}-%{version}.tar
 BuildArch:      noarch
+BuildRequires:  python                      >= 2.7
+BuildRequires:  python-setuptools           >= 0.9.8
 
 Requires:       openstack-kolla-ansible     >= 0.1.0
 Requires:       babel                       >= 0.9.6
