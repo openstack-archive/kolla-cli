@@ -96,11 +96,11 @@ rm -rf %{buildroot}
 
 
 %files
-%defattr(-,%{kolla_user},%{kolla_group})
-%attr(-,root,%root) LICENSE
+%defattr(-,root,%root)
 %doc LICENSE
+%defattr(-,%{kolla_user},%{kolla_group})
 %{_bindir}/kollacli
-%{python_sitelib}/kollacli-%{kollacli_version_internal}-py%{pyver}.egg-info/*
+%{python_sitelib}/kollacli-*-py%{pyver}.egg-info/*
 %{python_sitelib}/kollacli/*
 %{_datadir}/kolla/kollacli/*
 %config %{_sysconfdir}/kolla/kollacli/*
