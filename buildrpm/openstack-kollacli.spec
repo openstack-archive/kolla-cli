@@ -22,10 +22,6 @@
 %global kolla_user      kolla
 %global kolla_group     %{kolla_user}
 
-# If the env var is set, we will create a new source file from master
-#       THIS IS FOR TESTING ONLY
-%define _git_base_url   git://ca-git.us.oracle.com/
-%define _local_build    %{getenv: RPM_LOCAL_BUILD}
 
 Summary:        OpenStack Kolla CLI
 Name:           openstack-kollacli
@@ -34,7 +30,7 @@ Release:        1%{?dist}
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Url:            https://launchpad.net/kolla
-Source0:        %{name}-%{version}.tar.gz
+Source0:        %{name}-%{version}.tar
 BuildArch:      noarch
 
 Requires:       openstack-kolla-ansible     >= 0.1.0
@@ -56,12 +52,6 @@ The KollaCLI simplifies OpenStack Kolla deployments.
 
 
 %prep
-%if 0%{?_local_build:1}
-    %define _name %{name}-%{version}
-    %define _repo %{_git_base_url}%{name}'.git'
-    %define _git_cmd %(git archive --format=tar --prefix=%{_name}/ --remote=%{_repo} --output=%{S:0} master)
-    %{_git_cmd}
-%endif
 %setup -q -n %{name}-%{version}
 
 
