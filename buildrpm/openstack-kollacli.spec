@@ -18,7 +18,7 @@
 # Package version
 %global package_version 0.1
 
-# Kolla user name and group name
+# Kolla user name and group name (DO NOT CHANGE THESE!)
 %global kolla_user      kolla
 %global kolla_group     %{kolla_user}
 
@@ -34,6 +34,7 @@ Source0:        %{name}-%{version}.tar
 BuildArch:      noarch
 BuildRequires:  python                      >= 2.7
 BuildRequires:  python-setuptools           >= 0.9.8
+BuildRequires:  python-pbr                  >= 1.3.0
 
 Requires:       openstack-kolla-ansible     >= 0.1.0
 Requires:       babel                       >= 0.9.6
@@ -47,6 +48,7 @@ Requires:       python-paramiko             >= 1.15.1
 Requires:       python-pbr                  >= 1.3.0
 Requires:       python-six                  >= 1.9.0
 Requires:       PyYAML                      >= 3.10
+Requires:       /usr/bin/ssh-keygen
 
 
 %description
@@ -76,8 +78,8 @@ __EOF__
 %{__python} setup.py install --skip-build --root %{buildroot}
 
 # Create the required directory structures
-mkdir -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
-mkdir -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
+mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
+mkdir -m 0755 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 
 # Install the required OpenStack Kolla files
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
@@ -88,14 +90,18 @@ rm -rf %{buildroot}
 
 
 %files
-%defattr(-,root,%root)
-%doc LICENSE
-%defattr(-,%{kolla_user},%{kolla_group})
-%{_bindir}/kollacli
-%{python_sitelib}/kollacli-*-py%{pyver}.egg-info/*
-%{python_sitelib}/kollacli/*
-%{_datadir}/kolla/kollacli/*
-%config %{_sysconfdir}/kolla/kollacli/*
+%defattr(-, %{kolla_user}, %{kolla_group})
+%attr(-, root, root) %doc LICENSE
+%attr(-, root, root) %{python_sitelib}
+%attr(755, root, %{kolla_group}) %{_bindir}/kollacli
+%attr(-, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli
+%attr(-, %{kolla_user}, %{kolla_group}) %config %{_sysconfdir}/kolla/kollacli
+
+%pre
+if ! test -f ~%{kolla_user}/.ssh/id_rsa
+then
+    /usr/bin/ssh-keygen -q -t rsa -N '' -f ~%{kolla_user}/.ssh/id_rsa
+fi
 
 
 %changelog
