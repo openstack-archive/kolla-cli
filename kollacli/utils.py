@@ -35,8 +35,8 @@ def get_admin_user():
     return os.environ.get("KOLLA_CLI_ADMIN_USER", "kolla")
 
 
-def get_install_user():
-    return os.environ.get("KOLLA_CLI_INSTALL_USER", "root")
+def get_setup_user():
+    return os.environ.get("KOLLA_CLI_SETUP_USER", "root")
 
 
 def get_pk_file():
