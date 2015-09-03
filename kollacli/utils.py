@@ -41,7 +41,7 @@ def get_install_user():
 
 def get_pk_file():
     return os.environ.get("KOLLA_CLI_PKPATH",
-                          "/etc/kolla/kollacli/id_rsa")
+                          "/etc/kolla/kollacli/keys/id_rsa")
 
 
 def get_pk_password():
