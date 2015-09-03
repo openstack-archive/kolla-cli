@@ -42,7 +42,7 @@ class Deploy(Command):
             kollacli_home = get_kollacli_home()
             kolla_home = get_kolla_home()
             kolla_etc = get_kolla_etc()
-            command_string = 'ansible-playbook %s ' % flag
+            command_string = 'sudo -u kolla ansible-playbook %s ' % flag
             inventory_string = '-i ' + os.path.join(kollacli_home,
                                                     'tools',
                                                     'json_generator.py ')

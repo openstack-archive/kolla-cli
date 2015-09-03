@@ -133,12 +133,13 @@ class HostCheck(Command):
         try:
             hostname = parsed_args.hostname.strip()
 
-            inventory = Inventory.load()
-            host = inventory.get_host(hostname)
-            if not host:
-                _host_not_found(self.log, hostname)
-
-            host.check()
+            self.log.info('check currently disabled, in work')
+#            inventory = Inventory.load()
+#            host = inventory.get_host(hostname)
+#            if not host:
+#                _host_not_found(self.log, hostname)
+#
+#            host.check()
         except CommandError as e:
             raise e
         except Exception as e:

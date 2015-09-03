@@ -24,16 +24,7 @@ from kollacli.utils import get_pk_bits
 from kollacli.utils import get_pk_file
 from kollacli.utils import get_pk_password
 
-MIN_DOCKER_VERSION = '1.7.0'
-
-
-def ssh_check_keys():
-    private_key_path = get_pk_file()
-    public_key_path = private_key_path + ".pub"
-    if os.path.isfile(private_key_path) and os.path.isfile(public_key_path):
-        return True
-    else:
-        return False
+MIN_DOCKER_VERSION = '1.8.1'
 
 
 def ssh_connect(net_addr, username, password, useKeys):
@@ -58,17 +49,17 @@ def ssh_connect(net_addr, username, password, useKeys):
         _close_ssh_client(ssh_client)
         raise e
 
-
-def ssh_check_host(net_addr):
-    log = logging.getLogger(__name__)
-    ssh_client = None
-    try:
-        ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
-        _pre_setup_checks(ssh_client, log)
-        _post_setup_checks(net_addr, log)
-
-    finally:
-        _close_ssh_client(ssh_client)
+#TODO(bmace) check host should be done with ansible
+#def ssh_check_host(net_addr):
+#    log = logging.getLogger(__name__)
+#    ssh_client = None
+#    try:
+#        ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
+#        _pre_setup_checks(ssh_client, log)
+#        _post_setup_checks(net_addr, log)
+#
+#    finally:
+#        _close_ssh_client(ssh_client)
 
 
 def ssh_setup_host(net_addr, password):
@@ -82,15 +73,17 @@ def ssh_setup_host(net_addr, password):
         ssh_client = ssh_connect(net_addr, setup_user, password, False)
 
         # before modifying the host, check that it meets requirements
-        _pre_setup_checks(ssh_client, log)
+        #_pre_setup_checks(ssh_client, log)
+        #TODO(bmace) pre / post checks should be done with ansible
 
         # populate authorized keys file w/ public key
-        cmd = ('sudo su - %s -c "echo \'%s\' >> $HOME/.ssh/authorized_keys"'
-               % (admin_user, public_key, admin_user))
+        cmd = ('sudo su - %s -c "echo \'%s\' >> %s/.ssh/authorized_keys"'
+               % (admin_user, public_key, admin_user,
+                  os.path.expanduser('~kolla')))
         _exec_ssh_cmd(cmd, ssh_client, log)
 
         # verify ssh connection to the new account
-        _post_setup_checks(net_addr, log)
+        #_post_setup_checks(net_addr, log)
 
     except Exception as e:
         raise e
@@ -155,34 +148,6 @@ def _close_ssh_client(ssh_client):
             pass
 
 
-def ssh_keygen():
-    log = logging.getLogger(__name__)
-
-    try:
-        private_key_path = get_pk_file()
-        public_key_path = private_key_path + ".pub"
-        private_key = None
-        private_key_generated = False
-        if os.path.isfile(private_key_path) is False:
-            private_key = paramiko.RSAKey.generate(get_pk_bits())
-            private_key.write_private_key_file(filename=private_key_path,
-                                               password=get_pk_password())
-            private_key_generated = True
-            log.info("generated private key at: " + private_key_path)
-
-        # If the public key exists already, only regenerate it if the private
-        # key has changed
-        if os.path.isfile(public_key_path) is False or private_key_generated:
-            public_key = paramiko.RSAKey(filename=private_key_path,
-                                         password=get_pk_password())
-            with open(public_key_path, 'w') as pubFile:
-                pubFile.write("%s %s" % (public_key.get_name(),
-                                         public_key.get_base64()))
-                log.info("generated public key at: " + public_key_path)
-    except Exception as e:
-        raise e
-
-
 def _exec_ssh_cmd(cmd, ssh_client, log):
     log.debug(cmd)
     _, stdout, stderr = ssh_client.exec_command(cmd, get_pty=True)
@@ -194,13 +159,9 @@ def _exec_ssh_cmd(cmd, ssh_client, log):
     return msg, errmsg
 
 
-def ssh_get_private_key():
-    return paramiko.RSAKey.from_private_key_file(get_pk_file(),
-                                                 get_pk_password())
-
-
 def ssh_get_public_key():
-    with open(get_pk_file() + ".pub", "r") as public_key_file:
+    keyfile_path = os.path.expanduser('~kolla') + '/.ssh/id_rsa.pub'
+    with open(keyfile_path, "r") as public_key_file:
         public_key = public_key_file.read()
         return public_key
     return None
