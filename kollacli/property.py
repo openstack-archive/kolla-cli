@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import logging
+import traceback
 
 from kollacli.ansible import properties
 
@@ -33,11 +34,14 @@ class PropertySet(Command):
         return parser
 
     def take_action(self, parsed_args):
-        property_name = parsed_args.propertyname.strip()
-        property_value = parsed_args.propertyvalue.strip()
+        try:
+            property_name = parsed_args.propertyname.strip()
+            property_value = parsed_args.propertyvalue.strip()
 
-        ansible_properties = properties.AnsibleProperties()
-        ansible_properties.set_property(property_name, property_value)
+            ansible_properties = properties.AnsibleProperties()
+            ansible_properties.set_property(property_name, property_value)
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 class PropertyClear(Command):
@@ -52,10 +56,13 @@ class PropertyClear(Command):
         return parser
 
     def take_action(self, parsed_args):
-        property_name = parsed_args.propertyname.strip()
+        try:
+            property_name = parsed_args.propertyname.strip()
 
-        ansible_properties = properties.AnsibleProperties()
-        ansible_properties.clear_property(property_name)
+            ansible_properties = properties.AnsibleProperties()
+            ansible_properties.clear_property(property_name)
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 class PropertyList(Lister):

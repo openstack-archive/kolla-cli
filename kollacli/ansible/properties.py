@@ -142,45 +142,30 @@ class AnsibleProperties(object):
             # the file handle returned from mkstemp must be closed or else
             # if this is called many times you will have an unpleasant
             # file handle leak
-            tmp_filehandle, tmp_path = mkstemp()
-            with open(tmp_path, 'w') as tmp_file:
-                with open(self.globals_path) as globals_file:
-                    new_line = '%s: "%s"\n' % (property_key, property_value)
-                    for line in globals_file:
-                        if append is False:
-                            if line.startswith(property_key):
-                                if clear:
-                                    line = ''
-                                else:
-                                    line = new_line
-                            tmp_file.write(line)
-                        else:
-                            tmp_file.write(line)
-                    if append is True:
-                        tmp_file.write(new_line)
+            file_contents = []
+            with open(self.globals_path, 'r+') as globals_file:
+                new_line = '%s: "%s"\n' % (property_key, property_value)
+                for line in globals_file:
+                    if append is False:
+                        if line.startswith(property_key):
+                            if clear:
+                                line = ''
+                            else:
+                                line = new_line
+                        file_contents.append(line)
+                    else:
+                        file_contents.append(line)
+                if append is True:
+                    file_contents.append(new_line)
 
-            os.remove(self.globals_path)
-            move(tmp_path, self.globals_path)
+                globals_file.seek(0)
+                globals_file.truncate()
+
+            with open(self.globals_path, 'w') as globals_file:
+                for line in file_contents:
+                    globals_file.write(line)
         except Exception as e:
             raise e
-        finally:
-            try:
-                os.close(tmp_filehandle)
-            except Exception:
-                pass
-
-            if tmp_filehandle is not None:
-                try:
-                    os.close(tmp_filehandle)
-                except Exception:
-                    pass
-
-            if tmp_path is not None:
-                try:
-                    os.remove(tmp_path)
-                except Exception:
-                    pass
-
 
 class AnsibleProperty(object):
 
