@@ -39,11 +39,6 @@ def get_setup_user():
     return os.environ.get("KOLLA_CLI_SETUP_USER", "root")
 
 
-def get_pk_file():
-    return os.environ.get("KOLLA_CLI_PKPATH",
-                          "/etc/kolla/kollacli/keys/id_rsa")
-
-
 def get_pk_password():
     # TODO(bmace) what to do here? pull from a file?
     return None

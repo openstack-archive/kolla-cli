@@ -20,9 +20,9 @@ from distutils.version import StrictVersion
 
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
+from kollacli.utils import get_kollacli_etc
 from kollacli.utils import get_setup_user
 from kollacli.utils import get_pk_bits
-from kollacli.utils import get_pk_file
 from kollacli.utils import get_pk_password
 
 MIN_DOCKER_VERSION = '1.8.1'
@@ -157,7 +157,7 @@ def _exec_ssh_cmd(cmd, ssh_client, log):
 
 
 def ssh_get_public_key():
-    keyfile_path = os.path.expanduser('~kolla') + '/.ssh/id_rsa.pub'
+    keyfile_path = os.path.join(get_kollacli_etc(), 'id_rsa.pub')
     with open(keyfile_path, "r") as public_key_file:
         public_key = public_key_file.read()
         return public_key
