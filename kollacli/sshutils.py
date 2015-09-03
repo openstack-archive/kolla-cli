@@ -14,6 +14,7 @@
 import logging
 import os.path
 import paramiko
+import traceback
 
 from distutils.version import StrictVersion
 
@@ -27,27 +28,24 @@ from kollacli.utils import get_pk_password
 MIN_DOCKER_VERSION = '1.8.1'
 
 
-def ssh_connect(net_addr, username, password, useKeys):
+def ssh_connect(net_addr, username, password):
     log = logging.getLogger(__name__)
     try:
-        logging.getLogger("paramiko").setLevel(logging.WARNING)
+        logging.getLogger('paramiko').setLevel(logging.WARNING)
         ssh_client = paramiko.SSHClient()
-        private_key = ssh_get_private_key()
+#        private_key = ssh_get_private_key()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        log.debug("connecting to addr: " + net_addr +
-                  " user: " + username + " password: " + password +
-                  " useKeys: " + str(useKeys))
-        if useKeys:
-            ssh_client.connect(hostname=net_addr, username=username,
-                               password=password, pkey=private_key)
-        else:
-            ssh_client.connect(hostname=net_addr, username=username,
-                               password=password)
+#        if useKeys:
+#            ssh_client.connect(hostname=net_addr, username=username,
+#                               password=password, pkey=private_key)
+#        else:
+        ssh_client.connect(hostname=net_addr, username=username,
+                           password=password)
 
         return ssh_client
     except Exception as e:
         _close_ssh_client(ssh_client)
-        raise e
+        raise Exception(traceback.format_exc())
 
 #TODO(bmace) check host should be done with ansible
 #def ssh_check_host(net_addr):
@@ -70,7 +68,7 @@ def ssh_setup_host(net_addr, password):
     ssh_client = None
 
     try:
-        ssh_client = ssh_connect(net_addr, setup_user, password, False)
+        ssh_client = ssh_connect(net_addr, setup_user, password)
 
         # before modifying the host, check that it meets requirements
         #_pre_setup_checks(ssh_client, log)
@@ -78,8 +76,7 @@ def ssh_setup_host(net_addr, password):
 
         # populate authorized keys file w/ public key
         cmd = ('sudo su - %s -c "echo \'%s\' >> %s/.ssh/authorized_keys"'
-               % (admin_user, public_key, admin_user,
-                  os.path.expanduser('~kolla')))
+               % (admin_user, public_key, os.path.expanduser('~kolla')))
         _exec_ssh_cmd(cmd, ssh_client, log)
 
         # verify ssh connection to the new account
@@ -124,7 +121,7 @@ def _pre_setup_checks(ssh_client, log):
 
 def _post_setup_checks(net_addr, log):
     try:
-        ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
+        ssh_client = ssh_connect(net_addr, get_admin_user(), '')
 
     except Exception as e:
         raise CommandError("ERROR: remote login failed : %s" % str(e))
