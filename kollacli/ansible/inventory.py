@@ -134,7 +134,7 @@ class Host(object):
 #        return True
 
     def setup(self, password):
-        self._setup_keys()
+#        self._setup_keys()
 
         # check if already setup
 #        if self._is_setup():
