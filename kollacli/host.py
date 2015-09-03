@@ -18,7 +18,7 @@ import traceback
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
-from kollacli.utils import get_install_user
+from kollacli.utils import get_setup_user
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -120,7 +120,7 @@ class HostList(Lister):
 
 
 class HostCheck(Command):
-    """Check if openstack-kolla is installed"""
+    """Check if openstack-kollacli is setup"""
 
     log = logging.getLogger(__name__)
 
@@ -145,13 +145,13 @@ class HostCheck(Command):
             raise Exception(traceback.format_exc())
 
 
-class HostInstall(Command):
-    """Install openstack-kolla on host"""
+class HostSetup(Command):
+    """Setup openstack-kollacli on host"""
 
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(HostInstall, self).get_parser(prog_name)
+        parser = super(HostSetup, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname>', help='hostname')
         parser.add_argument('--insecure', nargs='?', help=argparse.SUPPRESS)
         return parser
@@ -159,7 +159,7 @@ class HostInstall(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            install_user = get_install_user()
+            setup_user = get_setup_user()
             inventory = Inventory.load()
             host = inventory.get_host(hostname)
             if not host:
@@ -170,42 +170,9 @@ class HostInstall(Command):
                 password = parsed_args.insecure.strip()
             else:
                 password = getpass.getpass('%s password for %s: ' %
-                                           (install_user, hostname))
+                                           (setup_user, hostname))
 
-            host.install(password)
-        except CommandError as e:
-            raise e
-        except Exception as e:
-            raise Exception(traceback.format_exc())
-
-
-class HostUninstall(Command):
-    """Uninstall openstack-kolla on host (TODO(snoyes))"""
-
-    log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
-        parser = super(HostUninstall, self).get_parser(prog_name)
-        parser.add_argument('hostname', metavar='<hostname>', help='hostname')
-        parser.add_argument('--insecure', nargs='?', help=argparse.SUPPRESS)
-        return parser
-
-    def take_action(self, parsed_args):
-        try:
-            hostname = parsed_args.hostname.strip()
-            install_user = get_install_user()
-            inventory = Inventory.load()
-            host = inventory.get_host(hostname)
-            if not host:
-                _host_not_found(self.log, hostname)
-                return False
-
-            if parsed_args.insecure:
-                password = parsed_args.insecure.strip()
-            else:
-                password = getpass.getpass('%s password for %s: ' %
-                                           (install_user, hostname))
-            host.uninstall(password)
+            host.setup(password)
         except CommandError as e:
             raise e
         except Exception as e:

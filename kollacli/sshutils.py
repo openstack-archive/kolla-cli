@@ -19,7 +19,7 @@ from distutils.version import StrictVersion
 
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
-from kollacli.utils import get_install_user
+from kollacli.utils import get_setup_user
 from kollacli.utils import get_pk_bits
 from kollacli.utils import get_pk_file
 from kollacli.utils import get_pk_password
@@ -64,57 +64,33 @@ def ssh_check_host(net_addr):
     ssh_client = None
     try:
         ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
-        _pre_install_checks(ssh_client, log)
-        _post_install_checks(net_addr, log)
+        _pre_setup_checks(ssh_client, log)
+        _post_setup_checks(net_addr, log)
 
     finally:
         _close_ssh_client(ssh_client)
 
 
-def ssh_install_host(net_addr, password):
+def ssh_setup_host(net_addr, password):
     log = logging.getLogger(__name__)
     admin_user = get_admin_user()
-    install_user = get_install_user()
+    setup_user = get_setup_user()
     public_key = ssh_get_public_key()
     ssh_client = None
 
     try:
-        ssh_client = ssh_connect(net_addr, install_user, password, False)
+        ssh_client = ssh_connect(net_addr, setup_user, password, False)
 
         # before modifying the host, check that it meets requirements
-        _pre_install_checks(ssh_client, log)
-
-        # add user and also add to docker group
-        cmd = 'sudo useradd -m %s' % admin_user
-        _exec_ssh_cmd(cmd, ssh_client, log)
-
-        # create ssh dir
-        cmd = ('sudo su - %s -c "mkdir /home/%s/.ssh"'
-               % (admin_user, admin_user))
-        _exec_ssh_cmd(cmd, ssh_client, log)
-
-        # create authorized_keys file
-        cmd = ('sudo su - %s -c \"touch /home/%s/.ssh/authorized_keys"'
-               % (admin_user, admin_user))
-        _exec_ssh_cmd(cmd, ssh_client, log)
+        _pre_setup_checks(ssh_client, log)
 
         # populate authorized keys file w/ public key
-        cmd = ('sudo su - %s -c "echo \'%s\' > /home/%s/.ssh/authorized_keys"'
+        cmd = ('sudo su - %s -c "echo \'%s\' >> $HOME/.ssh/authorized_keys"'
                % (admin_user, public_key, admin_user))
         _exec_ssh_cmd(cmd, ssh_client, log)
 
-        # set appropriate permissions for ssh dir
-        cmd = ('sudo su - %s -c "chmod 0700 /home/%s/.ssh"'
-               % (admin_user, admin_user))
-        _exec_ssh_cmd(cmd, ssh_client, log)
-
-        # set appropriate permissions for authorized_keys file
-        cmd = ('sudo su - %s -c "chmod 0740 /home/%s/.ssh/authorized_keys"'
-               % (admin_user, admin_user))
-        _exec_ssh_cmd(cmd, ssh_client, log)
-
         # verify ssh connection to the new account
-        _post_install_checks(net_addr, log)
+        _post_setup_checks(net_addr, log)
 
     except Exception as e:
         raise e
@@ -122,39 +98,8 @@ def ssh_install_host(net_addr, password):
         _close_ssh_client(ssh_client)
 
 
-def ssh_uninstall_host(net_addr, password):
-    log = logging.getLogger(__name__)
-    install_user = get_install_user()
-    admin_user = get_admin_user()
-    ssh_client = None
-
-    try:
-        ssh_client = ssh_connect(net_addr, install_user, password, False)
-
-        # delete user, userdel -r isn't used as it will fail removing
-        # the non-existent mail files
-        cmd = 'sudo userdel %s' % admin_user
-        _, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
-        if errmsg:
-            raise CommandError('ERROR: failed to remove user (%s) : %s'
-                               % (admin_user, errmsg))
-
-        # remove home directory and files
-        cmd = 'sudo rm -rf /home/%s' % admin_user
-        _exec_ssh_cmd(cmd, ssh_client, log)
-        if errmsg:
-            raise CommandError('ERROR: failed to remove home directory' +
-                               ' of user (%s) : %s'
-                               % (admin_user, errmsg))
-
-    except Exception as e:
-        raise e
-    finally:
-        _close_ssh_client(ssh_client)
-
-
-def _pre_install_checks(ssh_client, log):
-        cmd = 'sudo docker --version'
+def _pre_setup_checks(ssh_client, log):
+        cmd = 'docker --version'
         msg, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
         if errmsg:
             raise CommandError("ERROR: '%s' failed. Is docker installed? : %s"
@@ -169,7 +114,7 @@ def _pre_install_checks(ssh_client, log):
                                % (version, msg))
 
         # docker is installed, now check if it is running
-        cmd = 'sudo docker info'
+        cmd = 'docker info'
         _, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
         # docker info can return warning messages in stderr, ignore them
         if errmsg and 'WARNING' not in errmsg:
@@ -184,7 +129,7 @@ def _pre_install_checks(ssh_client, log):
                                'Is docker-py installed?')
 
 
-def _post_install_checks(net_addr, log):
+def _post_setup_checks(net_addr, log):
     try:
         ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
 
@@ -240,7 +185,7 @@ def ssh_keygen():
 
 def _exec_ssh_cmd(cmd, ssh_client, log):
     log.debug(cmd)
-    _, stdout, stderr = ssh_client.exec_command(cmd)
+    _, stdout, stderr = ssh_client.exec_command(cmd, get_pty=True)
     msg = stdout.read()
     errmsg = stderr.read()
     log.debug('%s : %s' % (msg, errmsg))

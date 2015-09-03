@@ -89,15 +89,6 @@ class Deploy(Command):
         return err_flag
 
 
-class Install(Command):
-    """Install"""
-
-    log = logging.getLogger(__name__)
-
-    def take_action(self, parsed_args):
-        self.log.info(_("install"))
-
-
 class List(Command):
     "List"
 
@@ -105,42 +96,6 @@ class List(Command):
 
     def take_action(self, parsed_args):
         self.log.info(_("list"))
-
-
-class Start(Command):
-    "Start"
-
-    log = logging.getLogger(__name__)
-
-    def take_action(self, parsed_args):
-        self.log.info(_("start"))
-
-
-class Stop(Command):
-    "Stop"
-
-    log = logging.getLogger(__name__)
-
-    def take_action(self, parsed_args):
-        self.log.info(_("stop"))
-
-
-class Sync(Command):
-    "Sync"
-
-    log = logging.getLogger(__name__)
-
-    def take_action(self, parsed_args):
-        self.log.info(_("sync"))
-
-
-class Upgrade(Command):
-    "Upgrade"
-
-    log = logging.getLogger(__name__)
-
-    def take_action(self, parsed_args):
-        self.log.info(_("upgrade"))
 
 
 class Dump(Command):
