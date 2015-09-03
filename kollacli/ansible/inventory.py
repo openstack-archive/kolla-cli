@@ -55,21 +55,29 @@ SERVICE_GROUPS = {
                    'cinder-scheduler', 'cinder-volume'],
     'glance':     ['glance-api', 'glance-registry'],
     'haproxy':    [],
+    'heat':       ['heat-api', 'heat-api-cfn', 'heat-engine'],
+    'horizon':    [],
     'keystone':   [],
     'mariadb':    [],
+    'memcached':  [],
     'ndbcluster': ['ndb-data', 'ndb-mgmt', 'ndb-mysql'],
     'neutron':    ['neutron-server', 'neutron-agents'],
     'nova':       ['nova-api', 'nova-conductor', 'nova-consoleauth',
                    'nova-novncproxy', 'nova-scheduler'],
     'rabbitmq':   [],
+    'swift':      ['swift-proxy-server', 'swift-account-server',
+                   'swift-container-server', 'swift-object-server'],
     }
 
 DEFAULT_HIERARCHY = {
     CONTROL_GRP_NAME: [
         'glance',
+        'heat',
+        'horizon',
         'keystone',
         'ndbcluster',
         'nova',
+        'memcached',
         'rabbitmq',
         ],
     NETWORK_GRP_NAME: [
@@ -79,6 +87,7 @@ DEFAULT_HIERARCHY = {
     COMPUTE_GRP_NAME: [],
     STORAGE_GRP_NAME: [
         'cinder',
+        'swift',
         ]
     }
 
