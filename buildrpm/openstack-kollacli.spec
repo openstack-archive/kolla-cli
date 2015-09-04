@@ -109,5 +109,8 @@ fi
 
 
 %changelog
+* Wed Sep  3 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
+- Fixed all the post issues
+
 * Wed Sep  2 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
 - Initial release
