@@ -22,6 +22,7 @@ class TestFunctional(KollaCliTest):
     group1 = {
         'Group': 'control',
         'Services': [
+            'cinder-ctl',
             'glance',
             'heat',
             'horizon',
@@ -46,7 +47,7 @@ class TestFunctional(KollaCliTest):
         }
     group4 = {
         'Group': 'storage',
-        'Services': ['cinder', 'swift'],
+        'Services': ['cinder-data', 'swift'],
         'Hosts': [],
         }
     groups = [group1, group2, group3, group4]

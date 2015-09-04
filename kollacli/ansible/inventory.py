@@ -45,22 +45,22 @@ DEPLOY_GROUPS = [
     ]
 
 SERVICE_GROUPS = {
-    'cinder':     ['cinder-api', 'cinder-backup',
-                   'cinder-scheduler', 'cinder-volume'],
-    'glance':     ['glance-api', 'glance-registry'],
-    'haproxy':    [],
-    'heat':       ['heat-api', 'heat-api-cfn', 'heat-engine'],
-    'horizon':    [],
-    'keystone':   [],
-    'mariadb':    [],
-    'memcached':  [],
-    'ndbcluster': ['ndb-data', 'ndb-mgmt', 'ndb-mysql'],
-    'neutron':    ['neutron-server', 'neutron-agents'],
-    'nova':       ['nova-api', 'nova-conductor', 'nova-consoleauth',
-                   'nova-novncproxy', 'nova-scheduler'],
-    'rabbitmq':   [],
-    'swift':      ['swift-proxy-server', 'swift-account-server',
-                   'swift-container-server', 'swift-object-server'],
+    'cinder-ctl':   ['cinder-api', 'cinder-scheduler'],
+    'cinder-data':  ['cinder-backup', 'cinder-volume'],
+    'glance':       ['glance-api', 'glance-registry'],
+    'haproxy':      [],
+    'heat':         ['heat-api', 'heat-api-cfn', 'heat-engine'],
+    'horizon':      [],
+    'keystone':     [],
+    'mariadb':      [],
+    'memcached':    [],
+    'ndbcluster':   ['ndb-data', 'ndb-mgmt', 'ndb-mysql'],
+    'neutron':      ['neutron-server', 'neutron-agents'],
+    'nova':         ['nova-api', 'nova-conductor', 'nova-consoleauth',
+                     'nova-novncproxy', 'nova-scheduler'],
+    'rabbitmq':      [],
+    'swift':        ['swift-proxy-server', 'swift-account-server',
+                     'swift-container-server', 'swift-object-server'],
     }
 
 DEFAULT_HIERARCHY = {
@@ -73,6 +73,7 @@ DEFAULT_HIERARCHY = {
         'nova',
         'memcached',
         'rabbitmq',
+        'cinder-ctl',
         ],
     NETWORK_GRP_NAME: [
         'haproxy',
@@ -80,7 +81,7 @@ DEFAULT_HIERARCHY = {
         ],
     COMPUTE_GRP_NAME: [],
     STORAGE_GRP_NAME: [
-        'cinder',
+        'cinder-data',
         'swift',
         ]
     }
