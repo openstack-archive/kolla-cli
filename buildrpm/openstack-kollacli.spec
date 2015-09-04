@@ -78,6 +78,7 @@ __EOF__
 %{__python} setup.py install --skip-build --root %{buildroot}
 
 # Create the required directory structures
+mkdir -m 0755 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli
 mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
 mkdir -m 0755 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 
@@ -97,10 +98,13 @@ rm -rf %{buildroot}
 %attr(-, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli
 %attr(-, %{kolla_user}, %{kolla_group}) %config %{_sysconfdir}/kolla/kollacli
 
-%pre
+%post
 if ! test -f ~%{kolla_user}/.ssh/id_rsa
 then
-    /usr/bin/ssh-keygen -q -t rsa -N '' -f ~%{kolla_user}/.ssh/id_rsa
+    sudo -u %{kolla_user} \
+        /usr/bin/ssh-keygen -q -t rsa -N '' -f ~%{kolla_user}/.ssh/id_rsa
+    cp -p ~%{kolla_user}/.ssh/id_rsa.pub %{_sysconfdir}/kolla/kollacli/id_rsa.pub
+    chmod 0440 %{_sysconfdir}/kolla/kollacli/id_rsa.pub
 fi
 
 
