@@ -26,7 +26,7 @@
 Summary:        OpenStack Kolla CLI
 Name:           openstack-kollacli
 Version:        %{package_version}
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Url:            https://launchpad.net/kolla
@@ -48,6 +48,7 @@ Requires:       python-paramiko             >= 1.15.1
 Requires:       python-pbr                  >= 1.3.0
 Requires:       python-six                  >= 1.9.0
 Requires:       PyYAML                      >= 3.10
+
 Requires:       /usr/bin/ssh-keygen
 
 
@@ -109,7 +110,8 @@ fi
 
 
 %changelog
-* Wed Sep  3 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
+* Thu Sep  3 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
+- Fixed day of week
 - Fixed all the post issues
 
 * Wed Sep  2 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
