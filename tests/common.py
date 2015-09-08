@@ -55,9 +55,7 @@ class KollaCliTest(testtools.TestCase):
         self._init_dir(etc_path)
         etc_ansible_path = os.path.join(etc_path, 'ansible/')
         self._init_dir(etc_ansible_path)
-        etc_inventory_path = os.path.join(etc_ansible_path, 'inventory/')
-        self._init_dir(etc_inventory_path)
-        self._init_file(os.path.join(etc_inventory_path, 'inventory.json'))
+        self._init_file(os.path.join(etc_ansible_path, 'inventory.json'))
 
     def tearDown(self):
         self._restore_env_var()
@@ -111,6 +109,8 @@ class KollaCliTest(testtools.TestCase):
     def _init_file(self, filepath):
         if os.path.exists(filepath):
             os.remove(filepath)
+        with open(filepath, 'w') as _:
+            pass
 
     def _init_dir(self, path):
         if not os.path.isdir(path):

@@ -65,7 +65,7 @@ class TestFunctional(KollaCliTest):
         msg = self.run_client_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-    def test_host_install(self):
+    def test_host_setup(self):
         test_hosts = TestHosts()
         test_hosts.load()
 

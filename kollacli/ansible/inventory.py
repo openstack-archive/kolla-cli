@@ -278,11 +278,13 @@ class Inventory(object):
     def load():
         """load the inventory from a pickle file"""
         inventory_path = os.path.join(utils.get_kollacli_etc(), INVENTORY_PATH)
+        data = ''
         try:
             if os.path.exists(inventory_path):
                 with open(inventory_path, 'rb') as inv_file:
                     data = inv_file.read()
 
+            if data:
                 inventory = jsonpickle.decode(data)
 
                 # upgrade version handling
