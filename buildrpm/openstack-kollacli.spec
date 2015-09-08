@@ -26,7 +26,7 @@
 Summary:        OpenStack Kolla CLI
 Name:           openstack-kollacli
 Version:        %{package_version}
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Url:            https://launchpad.net/kolla
@@ -86,9 +86,10 @@ mkdir -m 0755 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 # Install the required OpenStack Kolla files
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
 
-# Create the inventory file
+# Create an empty inventory file
 touch %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
 chmod 664 %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
+
 
 %clean
 rm -rf %{buildroot}
@@ -100,7 +101,8 @@ rm -rf %{buildroot}
 %attr(-, root, root) %{python_sitelib}
 %attr(755, root, %{kolla_group}) %{_bindir}/kollacli
 %attr(-, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli
-%attr(-, %{kolla_user}, %{kolla_group}) %config %{_sysconfdir}/kolla/kollacli
+%attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
+
 
 %post
 if ! test -f ~%{kolla_user}/.ssh/id_rsa
@@ -115,6 +117,7 @@ fi
 %changelog
 * Tue Sep  8 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
 - Added the creation of an empty inventory file to fix the permissions
+- Changed %config to %config(noreplace)
 
 * Thu Sep  3 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
 - Fixed day of week
