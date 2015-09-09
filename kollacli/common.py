@@ -14,6 +14,8 @@
 import logging
 import os
 import subprocess
+import tarfile
+import tempfile
 import traceback
 
 from kollacli.ansible.inventory import Inventory
@@ -21,6 +23,7 @@ from kollacli.exceptions import CommandError
 from kollacli.i18n import _
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
+from kollacli.utils import get_kollacli_etc
 from kollacli.utils import get_kollacli_home
 
 from cliff.command import Command
@@ -99,13 +102,52 @@ class List(Command):
 
 
 class Dump(Command):
-    "Dump"
+    """Dumps configuration data for debugging
 
+    Dumps most files in /etc/kolla and /usr/share/kolla into a
+    tar file so be given to support / development to help with
+    debugging problems.
+    """
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.log.info(_("dump"))
+        try:
+            kolla_home = get_kolla_home()
+            kolla_ansible = os.path.join(kolla_home, 'ansible')
+            kolla_docs = os.path.join(kolla_home, 'docs')
+            kollacli_home = get_kollacli_home()
+            kolla_templates = os.path.join(kolla_home, 'templates')
+            kolla_etc = get_kolla_etc()
+            kolla_config = os.path.join(kolla_etc, 'config')
+            kolla_globals = os.path.join(kolla_etc, 'globals.yml')
+            kollacli_etc = get_kollacli_etc()
+            ketc = 'kolla/etc/'
+            kshare = 'kolla/share/'
+            dump_postfix = '_kollacli_dump.tgz'
+            dump_file = tempfile.mktemp() + dump_postfix
+            with tarfile.open(dump_file, "w:gz") as tar:
+                # Can't blanket add kolla_home because the .ssh dir is
+                # accessible by the kolla user only (not kolla group)
+                tar.add(kolla_ansible, 
+                        arcname=ketc + os.path.basename(kolla_ansible))
+                tar.add(kolla_docs,
+                        arcname=ketc + os.path.basename(kolla_docs))
+                tar.add(kollacli_home, 
+                        arcname=ketc + os.path.basename(kollacli_home))
+                tar.add(kolla_templates,
+                        arcname=ketc + os.path.basename(kolla_templates))
 
+                # Can't blanket add kolla_etc because the passwords.yml
+                # file is accessible by the kolla user only (not kolla group)
+                tar.add(kolla_config,
+                        arcname=kshare + os.path.basename(kolla_config))
+                tar.add(kolla_globals,
+                        arcname=kshare + os.path.basename(kolla_globals))
+                tar.add(kollacli_etc,
+                        arcname=kshare + os.path.basename(kollacli_etc))
+            self.log.info('dump successful to %s' % dump_file)
+        except Exception:
+            raise Exception(traceback.format_exc())
 
 class Setdeploy(Command):
     """Set deploy mode
@@ -134,5 +176,5 @@ class Setdeploy(Command):
             Inventory.save(inventory)
         except CommandError as e:
             raise e
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
