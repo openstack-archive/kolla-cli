@@ -34,7 +34,7 @@ Source0:        %{name}-%{version}.tar
 BuildArch:      noarch
 BuildRequires:  python                      >= 2.7
 BuildRequires:  python-setuptools           >= 0.9.8
-BuildRequires:  python-pbr                  >= 1.6.0
+BuildRequires:  python-pbr                  >= 1.3.0
 
 Requires:       openstack-kolla-ansible     >= 0.1.0
 Requires:       babel                       >= 2.0
