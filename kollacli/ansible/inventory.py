@@ -111,7 +111,7 @@ class Host(object):
         pass
 
     def setup(self, password):
-        # TODO (bmace) should run check before doing setup
+        # TODO(bmace) should run check before doing setup
         # not setup- we need to set up the user / remote ssh keys
         # using root and the available password
         try:
