@@ -40,7 +40,7 @@ class PropertySet(Command):
 
             ansible_properties = properties.AnsibleProperties()
             ansible_properties.set_property(property_name, property_value)
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -61,7 +61,7 @@ class PropertyClear(Command):
 
             ansible_properties = properties.AnsibleProperties()
             ansible_properties.clear_property(property_name)
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 

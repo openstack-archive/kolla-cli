@@ -109,7 +109,7 @@ class KollaCliTest(testtools.TestCase):
     def _init_file(self, filepath):
         if os.path.exists(filepath):
             os.remove(filepath)
-        with open(filepath, 'w') as _:
+        with open(filepath, 'w'):
             pass
 
     def _init_dir(self, path):

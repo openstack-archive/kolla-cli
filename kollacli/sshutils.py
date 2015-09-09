@@ -22,42 +22,41 @@ from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_kollacli_etc
 from kollacli.utils import get_setup_user
-from kollacli.utils import get_pk_bits
-from kollacli.utils import get_pk_password
+# from kollacli.utils import get_pk_bits
+# from kollacli.utils import get_pk_password
 
 MIN_DOCKER_VERSION = '1.8.1'
 
 
 def ssh_connect(net_addr, username, password):
-    log = logging.getLogger(__name__)
     try:
         logging.getLogger('paramiko').setLevel(logging.WARNING)
         ssh_client = paramiko.SSHClient()
-#        private_key = ssh_get_private_key()
+# private_key = ssh_get_private_key()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-#        if useKeys:
-#            ssh_client.connect(hostname=net_addr, username=username,
-#                               password=password, pkey=private_key)
-#        else:
+# if useKeys:
+# ssh_client.connect(hostname=net_addr, username=username,
+# password=password, pkey=private_key)
+# else:
         ssh_client.connect(hostname=net_addr, username=username,
                            password=password)
 
         return ssh_client
-    except Exception as e:
+    except Exception:
         _close_ssh_client(ssh_client)
         raise Exception(traceback.format_exc())
 
-#TODO(bmace) check host should be done with ansible
-#def ssh_check_host(net_addr):
-#    log = logging.getLogger(__name__)
-#    ssh_client = None
-#    try:
-#        ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
-#        _pre_setup_checks(ssh_client, log)
-#        _post_setup_checks(net_addr, log)
+# TODO(bmace) check host should be done with ansible
+# def ssh_check_host(net_addr):
+# log = logging.getLogger(__name__)
+# ssh_client = None
+# try:
+# ssh_client = ssh_connect(net_addr, get_admin_user(), '', True)
+# _pre_setup_checks(ssh_client, log)
+# _post_setup_checks(net_addr, log)
 #
-#    finally:
-#        _close_ssh_client(ssh_client)
+# finally:
+# _close_ssh_client(ssh_client)
 
 
 def ssh_setup_host(net_addr, password):
@@ -71,8 +70,8 @@ def ssh_setup_host(net_addr, password):
         ssh_client = ssh_connect(net_addr, setup_user, password)
 
         # before modifying the host, check that it meets requirements
-        #_pre_setup_checks(ssh_client, log)
-        #TODO(bmace) pre / post checks should be done with ansible
+        # _pre_setup_checks(ssh_client, log)
+        # TODO(bmace) pre / post checks should be done with ansible
 
         # populate authorized keys file w/ public key
         cmd = ('sudo su - %s -c "echo \'%s\' >> %s/.ssh/authorized_keys"'
@@ -80,7 +79,7 @@ def ssh_setup_host(net_addr, password):
         _exec_ssh_cmd(cmd, ssh_client, log)
 
         # verify ssh connection to the new account
-        #_post_setup_checks(net_addr, log)
+        # _post_setup_checks(net_addr, log)
 
     except Exception as e:
         raise e

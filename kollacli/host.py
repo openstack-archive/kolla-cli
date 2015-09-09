@@ -131,9 +131,8 @@ class HostCheck(Command):
 
     def take_action(self, parsed_args):
         try:
-            hostname = parsed_args.hostname.strip()
-
             self.log.info('check currently disabled, in work')
+#            hostname = parsed_args.hostname.strip()
 #            inventory = Inventory.load()
 #            host = inventory.get_host(hostname)
 #            if not host:

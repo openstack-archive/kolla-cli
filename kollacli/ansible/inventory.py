@@ -23,8 +23,8 @@ from tempfile import mkstemp
 from kollacli import exceptions
 from kollacli import utils
 
-from kollacli.sshutils import ssh_setup_host
 from kollacli.exceptions import CommandError
+from kollacli.sshutils import ssh_setup_host
 
 ANSIBLE_SSH_USER = 'ansible_ssh_user'
 ANSIBLE_CONNECTION = 'ansible_connection'
@@ -110,38 +110,35 @@ class Host(object):
     def upgrade(self):
         pass
 
-#TODO(bmace) needs to be updated to use ansible
-#    def check(self):
-#        sshKeysExist = ssh_check_keys()
-#        if not sshKeysExist:
-#            try:
-#                ssh_keygen()
-#            except Exception as e:
-#                raise exceptions.CommandError(
-#                    'ERROR: ssh key generation failed on local host : %s'
-#                    % str(e))
-#
-#        try:
-#            self.log.info('Starting check of host (%s)' % self.name)
-#            ssh_check_host(self.name)
-#            self.log.info('Host (%s), check succeeded' % self.name)
-#
-#        except CommandError as e:
-#            raise e
-#        except Exception as e:
-#            raise Exception(
-#                'ERROR: Host (%s), check failed. Reason : %s'
-#                % (self.name, str(e)))
-#        return True
+# TODO(bmace) needs to be updated to use ansible
+# def check(self):
+# sshKeysExist = ssh_check_keys()
+# if not sshKeysExist:
+# try:
+# ssh_keygen()
+# except Exception as e:
+# raise exceptions.CommandError(
+# 'ERROR: ssh key generation failed on local host : %s'
+# % str(e))
+# try:
+# self.log.info('Starting check of host (%s)' % self.name)
+# ssh_check_host(self.name)
+# self.log.info('Host (%s), check succeeded' % self.name)
+# except CommandError as e:
+# raise e
+# except Exception as e:
+# raise Exception(
+# 'ERROR: Host (%s), check failed. Reason : %s'
+# % (self.name, str(e)))
+# return True
 
     def setup(self, password):
-#        self._setup_keys()
-
+        # self._setup_keys()
         # check if already setup
-#        if self._is_setup():
-#            self.log.info('Setup skipped for host (%s), ' % self.name +
-#                          'kolla already setup')
-#            return True
+        # if self._is_setup():
+        # self.log.info('Setup skipped for host (%s), ' % self.name +
+        # 'kolla already setup')
+        # return True
 
         # not setup- we need to set up the user / remote ssh keys
         # using root and the available password
@@ -156,17 +153,16 @@ class Host(object):
                 % (self.name, str(e)))
         return True
 
-#TODO(bmace) change to use ansible for check
-#    def _is_setup(self):
-#        is_setup = False
-#        try:
-#            ssh_check_host(self.name)
-#            is_setup = True
-#
-#        except Exception as e:
-#            self.log.debug('%s' % str(e))
-#            pass
-#        return is_setup
+# TODO(bmace) change to use ansible for check
+# def _is_setup(self):
+# is_setup = False
+# try:
+# ssh_check_host(self.name)
+# is_setup = True
+# except Exception as e:
+# self.log.debug('%s' % str(e))
+# pass
+# return is_setup
 
 
 class HostGroup(object):

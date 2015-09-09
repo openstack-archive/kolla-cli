@@ -13,8 +13,6 @@
 #    under the License.
 import logging
 import os
-from shutil import move
-from tempfile import mkstemp
 import yaml
 
 from kollacli.utils import get_kolla_etc
@@ -106,7 +104,6 @@ class AnsibleProperties(object):
         for key, value in self.unique_properties.items():
             unique_list.append(value)
         return sorted(unique_list, key=lambda x: x.name)
-        
 
     def filter_jinja2(self, contents):
         for key, value in contents.items():
@@ -176,6 +173,7 @@ class AnsibleProperties(object):
                     globals_file.write(line)
         except Exception as e:
             raise e
+
 
 class AnsibleProperty(object):
 
