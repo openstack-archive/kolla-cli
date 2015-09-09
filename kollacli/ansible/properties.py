@@ -44,37 +44,11 @@ class AnsibleProperties(object):
         self.allvars_path = ''
         self.globals_path = ''
         self.properties = []
+        self.unique_properties = {}
         # this is so for any given property
         # we can look up the file it is in easily, to be used for the
         # property set command
         self.file_contents = {}
-
-        # to add something do property_dict['key'].append('value')
-        try:
-            self.allvars_path = os.path.join(kolla_home, ALLVARS_PATH)
-            with open(self.allvars_path) as allvars_file:
-                allvars_contents = yaml.load(allvars_file)
-                self.file_contents[self.allvars_path] = allvars_contents
-                allvars_contents = self.filter_jinja2(allvars_contents)
-                for key, value in allvars_contents.items():
-                    ansible_property = AnsibleProperty(key, value,
-                                                       'group_vars/all.yml')
-                    self.properties.append(ansible_property)
-        except Exception as e:
-            raise e
-
-        try:
-            self.globals_path = os.path.join(kolla_etc, GLOBALS_FILENAME)
-            with open(self.globals_path) as globals_file:
-                globals_contents = yaml.load(globals_file)
-                self.file_contents[self.globals_path] = globals_contents
-                globals_contents = self.filter_jinja2(globals_contents)
-                for key, value in globals_contents.items():
-                    ansible_property = AnsibleProperty(key, value,
-                                                       GLOBALS_FILENAME)
-                    self.properties.append(ansible_property)
-        except Exception as e:
-            raise e
 
         try:
             start_dir = os.path.join(kolla_home, ANSIBLE_ROLES_PATH)
@@ -92,11 +66,47 @@ class AnsibleProperties(object):
                             ansible_property = AnsibleProperty(key, value,
                                                                prop_file_name)
                             self.properties.append(ansible_property)
+                            self.unique_properties[key] = ansible_property
+        except Exception as e:
+            raise e
+
+        try:
+            self.allvars_path = os.path.join(kolla_home, ALLVARS_PATH)
+            with open(self.allvars_path) as allvars_file:
+                allvars_contents = yaml.load(allvars_file)
+                self.file_contents[self.allvars_path] = allvars_contents
+                allvars_contents = self.filter_jinja2(allvars_contents)
+                for key, value in allvars_contents.items():
+                    ansible_property = AnsibleProperty(key, value,
+                                                       'group_vars/all.yml')
+                    self.properties.append(ansible_property)
+                    self.unique_properties[key] = ansible_property
+        except Exception as e:
+            raise e
+
+        try:
+            self.globals_path = os.path.join(kolla_etc, GLOBALS_FILENAME)
+            with open(self.globals_path) as globals_file:
+                globals_contents = yaml.load(globals_file)
+                self.file_contents[self.globals_path] = globals_contents
+                globals_contents = self.filter_jinja2(globals_contents)
+                for key, value in globals_contents.items():
+                    ansible_property = AnsibleProperty(key, value,
+                                                       GLOBALS_FILENAME)
+                    self.properties.append(ansible_property)
+                    self.unique_properties[key] = ansible_property
         except Exception as e:
             raise e
 
     def get_all(self):
         return sorted(self.properties, key=lambda x: x.name)
+
+    def get_all_unique(self):
+        unique_list = []
+        for key, value in self.unique_properties.items():
+            unique_list.append(value)
+        return sorted(unique_list, key=lambda x: x.name)
+        
 
     def filter_jinja2(self, contents):
         for key, value in contents.items():

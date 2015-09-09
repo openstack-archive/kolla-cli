@@ -72,12 +72,12 @@ class PropertyList(Lister):
 
     def take_action(self, parsed_args):
         ansible_properties = properties.AnsibleProperties()
-        property_list = ansible_properties.get_all()
+        property_list = ansible_properties.get_all_unique()
         data = []
         if property_list:
             for value in property_list:
-                data.append((value.name, value.value, value.file_name))
+                data.append((value.name, value.value))
         else:
-            data.append(('', '', ''))
+            data.append(('', ''))
 
-        return (('Property Name', 'Property Value', 'File'), data)
+        return (('Property Name', 'Property Value'), data)
