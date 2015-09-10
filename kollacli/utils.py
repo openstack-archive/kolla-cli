@@ -63,3 +63,17 @@ def load_etc_yaml(fileName):
 def save_etc_yaml(fileName, contents):
     with open(get_kollacli_etc() + fileName, 'w') as f:
         f.write(yaml.dump(contents))
+
+
+def convert_to_unicode(the_string):
+    """convert string to unicode.
+
+    This is used to fixup extended ascii chars in strings. these chars cause
+    errors in json pickle/unpickle.
+    """
+    uni_string = ''
+    try:
+        uni_string = unicode(the_string)
+    except UnicodeDecodeError:
+        uni_string = the_string.decode('utf-8')
+    return uni_string

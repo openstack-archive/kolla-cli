@@ -15,6 +15,7 @@ import argparse
 import getpass
 import logging
 import traceback
+import utils
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
@@ -43,6 +44,7 @@ class HostAdd(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
+            hostname = utils.convert_to_unicode(hostname)
 
             inventory = Inventory.load()
             inventory.add_host(hostname)
@@ -66,6 +68,7 @@ class HostRemove(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
+            hostname = utils.convert_to_unicode(hostname)
             inventory = Inventory.load()
             inventory.remove_host(hostname)
             Inventory.save(inventory)
@@ -94,6 +97,7 @@ class HostList(Lister):
             hostname = None
             if parsed_args.hostname:
                 hostname = parsed_args.hostname.strip()
+                hostname = utils.convert_to_unicode(hostname)
 
             inventory = Inventory.load()
 
@@ -133,6 +137,7 @@ class HostCheck(Command):
         try:
             self.log.info('check currently disabled, in work')
 #            hostname = parsed_args.hostname.strip()
+#            hostname = utils.convert_to_unicode(hostname)
 #            inventory = Inventory.load()
 #            host = inventory.get_host(hostname)
 #            if not host:
@@ -159,6 +164,7 @@ class HostSetup(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
+            hostname = utils.convert_to_unicode(hostname)
             setup_user = get_setup_user()
             inventory = Inventory.load()
             host = inventory.get_host(hostname)
@@ -171,7 +177,7 @@ class HostSetup(Command):
             else:
                 password = getpass.getpass('%s password for %s: ' %
                                            (setup_user, hostname))
-
+            password = utils.convert_to_unicode(password)
             host.setup(password)
         except CommandError as e:
             raise e

@@ -13,6 +13,7 @@
 #    under the License.
 import logging
 import traceback
+import utils
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
@@ -34,6 +35,7 @@ class GroupAdd(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
+            groupname = utils.convert_to_unicode(groupname)
 
             inventory = Inventory.load()
             inventory.add_group(groupname)
@@ -58,6 +60,7 @@ class GroupRemove(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
+            groupname = utils.convert_to_unicode(groupname)
             inventory = Inventory.load()
             inventory.remove_group(groupname)
             Inventory.save(inventory)
@@ -82,8 +85,9 @@ class GroupAddhost(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
+            groupname = utils.convert_to_unicode(groupname)
             hostname = parsed_args.hostname.strip()
-
+            hostname = utils.convert_to_unicode(hostname)
             inventory = Inventory.load()
             inventory.add_host(hostname, groupname)
             Inventory.save(inventory)
@@ -109,7 +113,9 @@ class GroupRemovehost(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
+            groupname = utils.convert_to_unicode(groupname)
             hostname = parsed_args.hostname.strip()
+            hostname = utils.convert_to_unicode(hostname)
 
             inventory = Inventory.load()
             inventory.remove_host(hostname, groupname)
@@ -158,7 +164,9 @@ class GroupAddservice(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
+            groupname = utils.convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
+            servicename = utils.convert_to_unicode(servicename)
 
             inventory = Inventory.load()
             inventory.add_service(servicename, groupname)
@@ -185,7 +193,9 @@ class GroupRemoveservice(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
+            groupname = utils.convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
+            servicename = utils.convert_to_unicode(servicename)
 
             inventory = Inventory.load()
             inventory.remove_service(servicename, groupname)

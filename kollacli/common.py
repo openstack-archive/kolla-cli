@@ -128,11 +128,11 @@ class Dump(Command):
             with tarfile.open(dump_file, "w:gz") as tar:
                 # Can't blanket add kolla_home because the .ssh dir is
                 # accessible by the kolla user only (not kolla group)
-                tar.add(kolla_ansible, 
+                tar.add(kolla_ansible,
                         arcname=ketc + os.path.basename(kolla_ansible))
                 tar.add(kolla_docs,
                         arcname=ketc + os.path.basename(kolla_docs))
-                tar.add(kollacli_home, 
+                tar.add(kollacli_home,
                         arcname=ketc + os.path.basename(kollacli_home))
                 tar.add(kolla_templates,
                         arcname=ketc + os.path.basename(kolla_templates))
@@ -148,6 +148,7 @@ class Dump(Command):
             self.log.info('dump successful to %s' % dump_file)
         except Exception:
             raise Exception(traceback.format_exc())
+
 
 class Setdeploy(Command):
     """Set deploy mode
