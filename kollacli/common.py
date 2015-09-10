@@ -25,6 +25,7 @@ from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
 from kollacli.utils import get_kollacli_etc
 from kollacli.utils import get_kollacli_home
+from kollacli.utils import run_cmd
 
 from cliff.command import Command
 
@@ -68,7 +69,7 @@ class Deploy(Command):
                                      stderr=subprocess.PIPE).communicate()
                 self.log.debug(inv)
 
-            err_flag = self.run_and_peek(cmd)
+            err_flag, _ = run_cmd(cmd, True)
             if err_flag:
                 raise Exception('deploy failed')
 
@@ -77,19 +78,6 @@ class Deploy(Command):
             raise e
         except Exception as e:
             raise Exception(traceback.format_exc())
-
-    def run_and_peek(self, cmd):
-        import pexpect
-        err_flag = False
-        child = pexpect.spawn(cmd)
-        child.maxsize = 1
-        child.timeout = 86400
-        for line in child:
-            self.log.info(line.rstrip())
-        child.close()
-        if child.exitstatus != 0:
-            err_flag = True
-        return err_flag
 
 
 class List(Command):

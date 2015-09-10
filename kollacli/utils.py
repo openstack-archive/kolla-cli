@@ -11,8 +11,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import logging
 import os
 import yaml
+import pexpect
+import string
 
 
 def get_kolla_home():
@@ -77,3 +80,21 @@ def convert_to_unicode(the_string):
     except UnicodeDecodeError:
         uni_string = the_string.decode('utf-8')
     return uni_string
+
+
+def run_cmd(cmd, print_output=True):
+    log = logging.getLogger(__name__)
+    err_flag = False
+    child = pexpect.spawn(cmd)
+    child.maxsize = 1
+    child.timeout = 86400
+    output = []
+    for line in child:
+        outline = line.rstrip()
+        output.append(outline)
+        if print_output:
+            log.info(outline)
+    child.close()
+    if child.exitstatus != 0:
+        err_flag = True
+    return err_flag, '\n'.join(output)

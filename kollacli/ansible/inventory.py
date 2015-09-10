@@ -25,6 +25,7 @@ from kollacli import utils
 
 from kollacli.exceptions import CommandError
 from kollacli.sshutils import ssh_setup_host
+from kollacli.utils import get_kollacli_home
 
 ANSIBLE_SSH_USER = 'ansible_ssh_user'
 ANSIBLE_CONNECTION = 'ansible_connection'
@@ -125,6 +126,22 @@ class Host(object):
                 % (self.name, str(e)))
         return True
 
+    def check(self):
+        kollacli_home = get_kollacli_home()
+        command_string = 'sudo -u kolla ansible '
+        inventory_string = '-i ' + os.path.join(kollacli_home,
+                           'tools', 'json_generator.py')
+        ping_string = ' %s %s' % (self.name, '-m ping')
+        cmd = (command_string + inventory_string + ping_string)
+
+        err_flag, output = utils.run_cmd(cmd, False)
+        if err_flag:
+            raise exceptions.CommandError(
+                'ERROR: Host (%s) check failed : %s'
+                % (self.name, str(output)))
+        else:
+            self.log.info('Host (%s) check succeeded' % self.name)
+        return True
 
 class HostGroup(object):
     class_version = 1

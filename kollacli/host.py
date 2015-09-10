@@ -135,15 +135,14 @@ class HostCheck(Command):
 
     def take_action(self, parsed_args):
         try:
-            self.log.info('check currently disabled, in work')
-#            hostname = parsed_args.hostname.strip()
-#            hostname = utils.convert_to_unicode(hostname)
-#            inventory = Inventory.load()
-#            host = inventory.get_host(hostname)
-#            if not host:
-#                _host_not_found(self.log, hostname)
-#
-#            host.check()
+            hostname = parsed_args.hostname.strip()
+            hostname = utils.convert_to_unicode(hostname)
+            inventory = Inventory.load()
+            host = inventory.get_host(hostname)
+            if not host:
+                _host_not_found(self.log, hostname)
+
+            host.check()
         except CommandError as e:
             raise e
         except Exception as e:
