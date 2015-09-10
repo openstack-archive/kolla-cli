@@ -66,6 +66,7 @@ SERVICE_GROUPS = {
 DEFAULT_HIERARCHY = {
     CONTROL_GRP_NAME: [
         'glance',
+        'haproxy',
         'heat',
         'horizon',
         'keystone',
@@ -76,7 +77,6 @@ DEFAULT_HIERARCHY = {
         'cinder-ctl',
         ],
     NETWORK_GRP_NAME: [
-        'haproxy',
         'neutron',
         ],
     COMPUTE_GRP_NAME: [],

@@ -24,6 +24,7 @@ class TestFunctional(KollaCliTest):
         'Services': [
             'cinder-ctl',
             'glance',
+            'haproxy',
             'heat',
             'horizon',
             'keystone',
@@ -36,7 +37,6 @@ class TestFunctional(KollaCliTest):
     group2 = {
         'Group': 'network',
         'Services': [
-            'haproxy',
             'neutron'],
         'Hosts': [],
         }
