@@ -173,7 +173,7 @@ class HostSetup(Command):
 
             check_ok = host.check(True)
             if check_ok:
-                self.log.info('Skipping setup of host (%s) as check is ok'       
+                self.log.info('Skipping setup of host (%s) as check is ok'
                               % host.name)
                 return True
 
