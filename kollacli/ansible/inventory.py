@@ -153,7 +153,6 @@ class HostGroup(object):
         self.name = name
         self.services = []
         self._hosts = {}  # kv = hostname:object
-        self._version = 1
         self.vars = {}
         self.version = self.__class__.class_version
 
@@ -249,7 +248,23 @@ class Inventory(object):
         self._create_default_inventory()
 
     def upgrade(self):
-        pass
+        if self.version == 1:
+            """
+            # upgrading from v1 to v2
+            # insert upgrade handler here...
+            #
+            # here's an example of renaming 'glance' service to 'glance2'
+            groups = self.get_groups()
+            for group in groups:
+                for service in group.services:
+                    if service.name == 'glance':
+                        service.name = 'glance2'
+                        break
+            """
+
+        # update version and save upgraded inventory file
+        self.version = self.class_version
+        Inventory.save(self)
 
     @staticmethod
     def load():
