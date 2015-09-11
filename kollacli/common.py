@@ -122,8 +122,9 @@ class Dump(Command):
                         arcname=ketc + os.path.basename(kolla_docs))
                 tar.add(kollacli_home,
                         arcname=ketc + os.path.basename(kollacli_home))
-                tar.add(kolla_templates,
-                        arcname=ketc + os.path.basename(kolla_templates))
+                if os.path.isdir(kolla_templates):
+                    tar.add(kolla_templates,
+                            arcname=ketc + os.path.basename(kolla_templates))
 
                 # Can't blanket add kolla_etc because the passwords.yml
                 # file is accessible by the kolla user only (not kolla group)

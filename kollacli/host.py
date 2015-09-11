@@ -171,6 +171,12 @@ class HostSetup(Command):
                 _host_not_found(self.log, hostname)
                 return False
 
+            check_ok = host.check(True)
+            if check_ok:
+                self.log.info('Skipping setup of host (%s) as check is ok'       
+                              % host.name)
+                return True
+
             if parsed_args.insecure:
                 password = parsed_args.insecure.strip()
             else:

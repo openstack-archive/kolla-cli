@@ -121,6 +121,9 @@ class Host(object):
             self.log.info('Starting setup of host (%s)'
                           % self.name)
             ssh_setup_host(self.name, password)
+            check_ok = self.check(True)
+            if not check_ok:
+                raise Exception('Post setup check failed')
             self.log.info('Host (%s) setup succeeded' % self.name)
         except Exception as e:
             raise exceptions.CommandError(
@@ -128,7 +131,7 @@ class Host(object):
                 % (self.name, e))
         return True
 
-    def check(self):
+    def check(self, result_only=False):
         kollacli_home = get_kollacli_home()
         command_string = 'sudo -u kolla ansible '
         inventory_string = '-i ' + os.path.join(kollacli_home,
@@ -138,11 +141,15 @@ class Host(object):
 
         err_flag, output = utils.run_cmd(cmd, False)
         if err_flag:
-            raise exceptions.CommandError(
-                'ERROR: Host (%s) check failed : %s'
-                % (self.name, output))
+            if result_only:
+                return False
+            else:
+                raise exceptions.CommandError(
+                    'ERROR: Host (%s) check failed : %s'
+                    % (self.name, output))
         else:
-            self.log.info('Host (%s) check succeeded' % self.name)
+            if not result_only:
+                self.log.info('Host (%s) check succeeded' % self.name)
         return True
 
 
