@@ -125,14 +125,14 @@ class Host(object):
         except Exception as e:
             raise exceptions.CommandError(
                 'ERROR: Host (%s) setup failed : %s'
-                % (self.name, str(e)))
+                % (self.name, e))
         return True
 
     def check(self):
         kollacli_home = get_kollacli_home()
         command_string = 'sudo -u kolla ansible '
         inventory_string = '-i ' + os.path.join(kollacli_home,
-                           'tools', 'json_generator.py')
+                                                'tools', 'json_generator.py')
         ping_string = ' %s %s' % (self.name, '-m ping')
         cmd = (command_string + inventory_string + ping_string)
 
@@ -140,10 +140,11 @@ class Host(object):
         if err_flag:
             raise exceptions.CommandError(
                 'ERROR: Host (%s) check failed : %s'
-                % (self.name, str(output)))
+                % (self.name, output))
         else:
             self.log.info('Host (%s) check succeeded' % self.name)
         return True
+
 
 class HostGroup(object):
     class_version = 1
@@ -292,7 +293,7 @@ class Inventory(object):
             shutil.copyfile(tmp_path, inventory_path)
             os.remove(tmp_path)
         except Exception as e:
-            raise Exception('ERROR: saving inventory : %s' % str(e))
+            raise Exception('ERROR: saving inventory : %s' % e)
         finally:
             try:
                 os.close(tmp_filehandle)

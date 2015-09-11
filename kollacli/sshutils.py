@@ -100,14 +100,14 @@ def _post_setup_checks(net_addr, log):
         ssh_client = ssh_connect(net_addr, get_admin_user(), '')
 
     except Exception as e:
-        raise CommandError("ERROR: remote login failed : %s" % str(e))
+        raise CommandError("ERROR: remote login failed : %s" % e)
 
     try:
         # a basic test
         ssh_client.exec_command('ls')
 
     except Exception as e:
-        raise CommandError("ERROR: remote command 'ls' failed : %s" % str(e))
+        raise CommandError("ERROR: remote command 'ls' failed : %s" % e)
 
     finally:
         _close_ssh_client(ssh_client)

@@ -13,9 +13,8 @@
 #    under the License.
 import logging
 import os
-import yaml
 import pexpect
-import string
+import yaml
 
 
 def get_kolla_home():
