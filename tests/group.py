@@ -28,9 +28,10 @@ class TestFunctional(KollaCliTest):
             'heat',
             'horizon',
             'keystone',
-            'ndbcluster',
             'nova',
             'memcached',
+            'murano',
+            'mysql',
             'rabbitmq'],
         'Hosts': [],
         }
