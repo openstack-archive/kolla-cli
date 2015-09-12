@@ -23,7 +23,7 @@ class KollaCli(App):
 
     def __init__(self):
         super(KollaCli, self).__init__(
-            description='Command-Line Client for StackForge Kolla',
+            description='Command-Line Client for OpenStack Kolla',
             version='0.1',
             command_manager=CommandManager('kolla.cli'),
             )
