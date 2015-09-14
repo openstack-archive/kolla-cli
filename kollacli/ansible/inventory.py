@@ -283,7 +283,7 @@ class Inventory(object):
                 with open(inventory_path, 'rb') as inv_file:
                     data = inv_file.read()
 
-            if data:
+            if data.strip():
                 inventory = jsonpickle.decode(data)
 
                 # upgrade version handling
@@ -380,11 +380,15 @@ class Inventory(object):
 
         # create new host if it doesn't exist
         host = Host(hostname)
-        if not groupname:
+        if hostname not in self.get_hostnames():
+            # a new host is being added to the inventory
             self._hosts[hostname] = host
-        else:
+
+        # a host is to be added to an existing group
+        elif groupname:
             group = self._groups[groupname]
-            group.add_host(host)
+            if hostname not in group.get_hostnames():
+                group.add_host(host)
 
     def remove_host(self, hostname, groupname=None):
         """remove host
@@ -409,6 +413,12 @@ class Inventory(object):
             del self._hosts[hostname]
 
     def add_group(self, groupname):
+
+        # Group names cannot overlap with service names:
+        if groupname in SERVICE_GROUPS:
+            raise CommandError('ERROR: Invalid group name. A service name '
+                               'cannot be used for a group name.')
+
         if groupname not in self._groups:
             self._groups[groupname] = HostGroup(groupname)
 
@@ -430,19 +440,20 @@ class Inventory(object):
 
         if hosts is none, return all groups in inventory
         """
-        if not host:
-            return self._groups.values()
-
         groups = []
-        for group in self._groups.values():
-            if host.name in group.get_hostnames():
-                groups.append(group)
+        if not host:
+            groups = self._groups.values()
+
+        else:
+            for group in self._groups.values():
+                if host.name in group.get_hostnames():
+                    groups.append(group)
         return groups
 
     def get_group_services(self):
         """return { groupname : [servicenames] }"""
         group_services = {}
-        for group in self._groups.values():
+        for group in self.get_groups():
             group_services[group.name] = []
             for service in group.services:
                 group_services[group.name].append(service.name)
@@ -451,7 +462,7 @@ class Inventory(object):
     def get_group_hosts(self):
         """return { groupname : [hostnames] }"""
         group_hosts = {}
-        for group in self._groups.values():
+        for group in self.get_groups():
             group_hosts[group.name] = []
             for host in group.get_hosts():
                 group_hosts[group.name].append(host.name)
@@ -500,7 +511,7 @@ class Inventory(object):
                                'hosts exist')
         self.remote_mode = remote_flag
 
-        for group in self._groups.values():
+        for group in self.get_groups():
             group.set_remote(remote_flag)
 
     def get_ansible_json(self):
@@ -559,6 +570,14 @@ class Inventory(object):
                 jdict[containername] = {}
                 jdict[containername]['children'] = [service.name]
                 jdict[containername]['vars'] = {}
+
+        # temporaily create group containing all hosts. this is needed for
+        # ansible commands that are performed on hosts not yet in groups.
+        group = self.add_group('__RESERVED__')
+        jdict[group.name] = {}
+        jdict[group.name]['hosts'] = self.get_hostnames()
+        jdict[group.name]['vars'] = group.get_vars()
+        self.remove_group(group.name)
 
         # process hosts vars
         jdict['_meta'] = {}

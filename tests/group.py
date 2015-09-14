@@ -134,7 +134,7 @@ class TestFunctional(KollaCliTest):
         groupname = group['Group']
         services = group['Services']
 
-        service1 = 'ndbcluster'
+        service1 = 'mysql'
         service2 = 'rabbitmq'
 
         services.append(service1)
@@ -167,7 +167,7 @@ class TestFunctional(KollaCliTest):
             group listservices -f json:
                 [{"Group Name": "compute", "Services": []},
                 {"Group Name": "control",
-                    "Services": ["glance", "keystone", "ndbcluster",
+                    "Services": ["glance", "keystone", "mysql",
                         "nova", "rabbitmq"]},
                 {"Group Name": "network", "Services": ["haproxy", "neutron"]}]
         """

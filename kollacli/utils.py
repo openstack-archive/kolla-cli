@@ -84,16 +84,20 @@ def convert_to_unicode(the_string):
 def run_cmd(cmd, print_output=True):
     log = logging.getLogger(__name__)
     err_flag = False
-    child = pexpect.spawn(cmd)
-    child.maxsize = 1
-    child.timeout = 86400
     output = []
-    for line in child:
-        outline = line.rstrip()
-        output.append(outline)
-        if print_output:
-            log.info(outline)
-    child.close()
-    if child.exitstatus != 0:
+    try:
+        child = pexpect.spawn(cmd)
+        child.maxsize = 1
+        child.timeout = 86400
+        for line in child:
+            outline = line.rstrip()
+            output.append(outline)
+            if print_output:
+                log.info(outline)
+        child.close()
+        if child.exitstatus != 0:
+            err_flag = True
+    except Exception as e:
         err_flag = True
-    return err_flag, '\n'.join(output)
+        output.append('%s' % e)
+    return err_flag, output

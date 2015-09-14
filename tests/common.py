@@ -33,6 +33,7 @@ HOSTS_FNAME = 'test_hosts'
 
 class KollaCliTest(testtools.TestCase):
 
+    saved_kolla_etc = ''
     cmd_prefix = ''
     log = logging.getLogger(__name__)
 
@@ -73,16 +74,12 @@ class KollaCliTest(testtools.TestCase):
 
     # PRIVATE FUNCTIONS ----------------------------------------------------
     def _setup_env_var(self):
-        etc_path = utils.get_kollacli_etc()
-        if not etc_path.endswith(TEST_SUFFIX):
-            etc_path = os.path.join(etc_path, TEST_SUFFIX)
-            os.environ[ENV_ETC] = etc_path
+        """set kolla etc to user's home directory"""
+        self.saved_kolla_etc = utils.get_kollacli_etc()
+        os.environ[ENV_ETC] = os.path.expanduser('~')
 
     def _restore_env_var(self):
-        etc_path = utils.get_kollacli_etc()
-        if etc_path.endswith(TEST_SUFFIX):
-            etc_path = etc_path.rsplit('/', 1)[0]
-            os.environ[ENV_ETC] = etc_path
+        os.environ[ENV_ETC] = self.saved_kolla_etc
 
     def _run_command(self, cmd):
         # self.log.debug('run cmd: %s' % cmd)
@@ -207,7 +204,12 @@ class TestHosts(object):
         return self.info[name]['pwd']
 
     def load(self):
-        """load hosts from test_hosts file"""
+        """load hosts from test_hosts file
+
+        format of file is:
+        hostname1 password1
+        hostname2 password2
+        """
         path = self.get_test_hosts_path()
         with open(path, 'r') as f:
             for line in f:
@@ -216,11 +218,11 @@ class TestHosts(object):
                     continue
 
                 tokens = line.split()
-                if len(tokens) != 3:
-                    raise Exception('%s expected 3 params on line: %s'
+                if len(tokens) != 2:
+                    raise Exception('%s expected 2 params on line: %s'
                                     % (HOSTS_FNAME, line))
                 hostname = tokens[0]
-                pwd = tokens[2]
+                pwd = tokens[1]
                 self.add(hostname)
                 self.set_password(hostname, pwd)
 
