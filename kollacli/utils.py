@@ -101,3 +101,44 @@ def run_cmd(cmd, print_output=True):
         err_flag = True
         output.append('%s' % e)
     return err_flag, output
+
+
+def change_property(file_path, property_key, property_value, clear=False):
+    """change property with a file
+
+    file_path:         path to property file
+    property_key:      property name
+    property value:    property value
+    clear:             flag to remove property
+
+    If clear and property doesn't exists, nothing is done.
+    If not clear, and key is not found, the new property will be appended.
+    If not clear, and key is found, edit property in place
+    """
+    try:
+        file_contents = []
+        with open(file_path, 'r+') as property_file:
+            new_line = '%s: "%s"\n' % (property_key, property_value)
+            property_key_found = False
+            for line in property_file:
+                if line[0:len(property_key)] == property_key:
+                    property_key_found = True
+                    if clear:
+                        # clear existing property
+                        line = ''
+                    else:
+                        # edit existing property
+                        line = new_line
+                file_contents.append(line)
+            if not property_key_found and not clear:
+                # add new property to file
+                file_contents.append(new_line)
+
+            property_file.seek(0)
+            property_file.truncate()
+
+        with open(file_path, 'w') as property_file:
+            for line in file_contents:
+                property_file.write(line)
+    except Exception as e:
+        raise e

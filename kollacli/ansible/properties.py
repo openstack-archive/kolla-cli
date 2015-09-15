@@ -17,6 +17,7 @@ import yaml
 
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
+from kollacli.utils import change_property
 
 ALLVARS_PATH = 'ansible/group_vars/all.yml'
 GLOBALS_FILENAME = 'globals.yml'
@@ -101,7 +102,7 @@ class AnsibleProperties(object):
 
     def get_all_unique(self):
         unique_list = []
-        for key, value in self.unique_properties.items():
+        for _, value in self.unique_properties.items():
             unique_list.append(value)
         return sorted(unique_list, key=lambda x: x.name)
 
@@ -120,17 +121,9 @@ class AnsibleProperties(object):
         # We only manipulate values in the globals.yml file so look up the key
         # and if it is there, we will parse through the file to replace that
         # line.  if the key doesn't exist we append to the end of the file
-        contents = self.file_contents[self.globals_path]
         try:
-            if contents is not None:
-                if property_key in contents:
-                    self._change_property(property_key, property_value)
-                else:
-                    self._change_property(property_key, property_value,
-                                          append=True)
-            else:
-                self._change_property(property_key, property_value,
-                                      append=True)
+            change_property(self.globals_path, property_key,
+                            property_value, clear=False)
         except Exception as e:
             raise e
 
@@ -138,39 +131,8 @@ class AnsibleProperties(object):
         # We only manipulate values in the globals.yml file so if the variable
         # does not exist we will do nothing.  if it does exist we need to find
         # the line and nuke it.
-        contents = self.file_contents[self.globals_path]
-        if contents is not None:
-            if property_key in contents:
-                self._change_property(property_key, None, clear=True)
-
-    def _change_property(self, property_key, property_value, append=False,
-                         clear=False):
         try:
-            # the file handle returned from mkstemp must be closed or else
-            # if this is called many times you will have an unpleasant
-            # file handle leak
-            file_contents = []
-            with open(self.globals_path, 'r+') as globals_file:
-                new_line = '%s: "%s"\n' % (property_key, property_value)
-                for line in globals_file:
-                    if append is False:
-                        if line.startswith(property_key):
-                            if clear:
-                                line = ''
-                            else:
-                                line = new_line
-                        file_contents.append(line)
-                    else:
-                        file_contents.append(line)
-                if append is True:
-                    file_contents.append(new_line)
-
-                globals_file.seek(0)
-                globals_file.truncate()
-
-            with open(self.globals_path, 'w') as globals_file:
-                for line in file_contents:
-                    globals_file.write(line)
+            change_property(property_key, None, clear=True)
         except Exception as e:
             raise e
 
