@@ -57,16 +57,19 @@ SERVICE_GROUPS = {
     'memcached':    [],
     'murano':       ['murano-api', 'murano-engine'],
     'mysql':        ['ndb-data', 'ndb-mgmt', 'ndb-mysql'],
-    'neutron':      ['neutron-server', 'neutron-agents'],
+    'neutron-ctl':  ['neutron-server'],
+    'neutron-data': ['neutron-agents'],
     'nova':         ['nova-api', 'nova-conductor', 'nova-consoleauth',
                      'nova-novncproxy', 'nova-scheduler'],
     'rabbitmq':     [],
-    'swift':        ['swift-proxy-server', 'swift-account-server',
+    'swift-ctl':    ['swift-proxy-server'],
+    'swift-data':   ['swift-account-server',
                      'swift-container-server', 'swift-object-server'],
     }
 
 DEFAULT_HIERARCHY = {
     CONTROL_GRP_NAME: [
+        'cinder-ctl',
         'glance',
         'haproxy',
         'heat',
@@ -76,16 +79,17 @@ DEFAULT_HIERARCHY = {
         'memcached',
         'murano',
         'mysql',
+        'neutron-ctl',
         'rabbitmq',
-        'cinder-ctl',
+        'swift-ctl',
         ],
     NETWORK_GRP_NAME: [
-        'neutron',
+        'neutron-data',
         ],
     COMPUTE_GRP_NAME: [],
     STORAGE_GRP_NAME: [
         'cinder-data',
-        'swift',
+        'swift-data',
         ]
     }
 
