@@ -37,11 +37,10 @@ class Deploy(Command):
 
     def take_action(self, parsed_args):
         try:
-            debug = False
             flag = ''
-            if self.log.getEffectiveLevel() <= logging.DEBUG:
+            # verbose levels: 1=not verbose, 2=more verbose
+            if self.app.options.verbose_level > 1:
                 flag = '-vvv'
-                debug = True
 
             kollacli_home = get_kollacli_home()
             kolla_home = get_kolla_home()
@@ -58,16 +57,19 @@ class Deploy(Command):
             cmd = (command_string + inventory_string + globals_string)
             cmd = cmd + passwords_string + site_string
 
-            if debug:
+            if self.app.options.verbose_level > 1:
+                # log the ansible command
                 self.log.debug('cmd:' + cmd)
 
-                dbg_gen = os.path.join(kollacli_home, 'tools',
-                                       'json_generator.py ')
-                (inv, _) = \
-                    subprocess.Popen(dbg_gen.split(' '),
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE).communicate()
-                self.log.debug(inv)
+                if self.app.options.verbose_level > 2:
+                    # log the inventory
+                    dbg_gen = os.path.join(kollacli_home, 'tools',
+                                           'json_generator.py ')
+                    (inv, _) = \
+                        subprocess.Popen(dbg_gen.split(' '),
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE).communicate()
+                    self.log.debug(inv)
 
             err_flag, _ = run_cmd(cmd, True)
             if err_flag:
