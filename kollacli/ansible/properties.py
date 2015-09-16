@@ -15,9 +15,9 @@ import logging
 import os
 import yaml
 
+from kollacli.utils import change_property
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
-from kollacli.utils import change_property
 
 ALLVARS_PATH = 'ansible/group_vars/all.yml'
 GLOBALS_FILENAME = 'globals.yml'

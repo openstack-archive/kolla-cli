@@ -82,6 +82,15 @@ def convert_to_unicode(the_string):
 
 
 def run_cmd(cmd, print_output=True):
+    """run a system command
+
+    return:
+    - err_flag: False=command succeeded
+                True=command failed
+    - output:   [List of strings]
+                if error, provides error information
+                if success, provides command output
+    """
     log = logging.getLogger(__name__)
     err_flag = False
     output = []
@@ -111,9 +120,10 @@ def change_property(file_path, property_key, property_value, clear=False):
     property value:    property value
     clear:             flag to remove property
 
-    If clear and property doesn't exists, nothing is done.
+    If clear, and property exists, remove it from the property file.
+    If clear, and property doesn't exists, nothing is done.
     If not clear, and key is not found, the new property will be appended.
-    If not clear, and key is found, edit property in place
+    If not clear, and key is found, edit property in place.
     """
     try:
         file_contents = []

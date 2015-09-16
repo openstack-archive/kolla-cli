@@ -18,6 +18,22 @@ import sys
 from kollacli import utils
 
 
+def _print_pwd_keys(path):
+    pwd_keys = ''
+    prefix = ''
+    with open(path, 'r') as pwd_file:
+        for line in pwd_file:
+            if line.startswith('#'):
+                # skip commented lines
+                continue
+            if ':' in line:
+                pwd_key = line.split(':')[0]
+                pwd_keys = pwd_keys + prefix + pwd_key
+                prefix = ','
+
+    print(pwd_keys)
+
+
 def main():
     """edit password in passwords.yml file
 
@@ -26,9 +42,9 @@ def main():
     -k key   # key of password
     -v value # value of password
     -c       # flag to clear the password
-    -l       # return a csv string of the existing keys
+    -l       # print to stdout a csv string of the existing keys
     """
-    opts, _ = getopt.getopt(sys.argv[1:], 'p:k:v:cal')
+    opts, _ = getopt.getopt(sys.argv[1:], 'p:k:v:cl')
     path = ''
     pwd_key = ''
     pwd_value = ''
@@ -47,11 +63,11 @@ def main():
             list_flag = True
 
     if list_flag:
-        # return the password keys
-        pass
+        # print the password keys
+        _print_pwd_keys(path)
     else:
         # edit a password
-        utils.change_property(path, pwd_key, pwd_value, clear=clear_flag)
+        utils.change_property(path, pwd_key, pwd_value, clear_flag)
 
 
 if __name__ == '__main__':
