@@ -26,16 +26,7 @@ def set_password(pwd_key, pwd_value):
     If the password name exists, it will be changed.
     If it doesn't exist, a new password will be added.
     """
-    editor_path = os.path.join(utils.get_kollacli_home(),
-                               'tools',
-                               PWD_EDITOR_FILENAME)
-
-    pwd_file_path = os.path.join(utils.get_kolla_etc(),
-                                 PWDS_FILENAME)
-
-    cmd = 'sudo %s -p %s -k %s -v %s' % (editor_path, pwd_file_path,
-                                         pwd_key, pwd_value)
-
+    cmd = '%s -k %s -v %s' % (_get_cmd_prefix(), pwd_key, pwd_value)
     err, output = utils.run_cmd(cmd, print_output=False)
     if err:
         raise CommandError(output)
@@ -46,16 +37,7 @@ def clear_password(pwd_key):
 
     if the password exists, it will be removed from the passwords file
     """
-    editor_path = os.path.join(utils.get_kollacli_home(),
-                               'tools',
-                               PWD_EDITOR_FILENAME)
-
-    pwd_file_path = os.path.join(utils.get_kolla_etc(),
-                                 PWDS_FILENAME)
-
-    cmd = 'sudo %s -p %s -k %s -c' % (editor_path, pwd_file_path,
-                                      pwd_key)
-
+    cmd = '%s -k %s -c' % (_get_cmd_prefix(), pwd_key)
     err, output = utils.run_cmd(cmd, print_output=False)
     if err:
         raise CommandError(output)
@@ -63,15 +45,7 @@ def clear_password(pwd_key):
 
 def get_password_names():
     """return a list of password names"""
-    editor_path = os.path.join(utils.get_kollacli_home(),
-                               'tools',
-                               PWD_EDITOR_FILENAME)
-
-    pwd_file_path = os.path.join(utils.get_kolla_etc(),
-                                 PWDS_FILENAME)
-
-    cmd = 'sudo %s -p %s -l' % (editor_path, pwd_file_path)
-
+    cmd = '%s -l' % (_get_cmd_prefix())
     err, output = utils.run_cmd(cmd, print_output=False)
     if err:
         raise CommandError(output)
@@ -80,3 +54,14 @@ def get_password_names():
     if output and ',' in output[0]:
         pwd_names = output[0].split(',')
     return pwd_names
+
+
+def _get_cmd_prefix():
+    editor_path = os.path.join(utils.get_kollacli_home(),
+                               'tools',
+                               PWD_EDITOR_FILENAME)
+    pwd_file_path = os.path.join(utils.get_kolla_etc(),
+                                 PWDS_FILENAME)
+    user = utils.get_admin_user()
+    prefix = 'sudo -u %s %s -p %s ' % (user, editor_path, pwd_file_path)
+    return prefix
