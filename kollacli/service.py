@@ -20,8 +20,8 @@ from kollacli.exceptions import CommandError
 from cliff.lister import Lister
 
 
-class ServiceList(Lister):
-    """Service List"""
+class ServiceListGroups(Lister):
+    """List services and their groups"""
 
     log = logging.getLogger(__name__)
 
@@ -37,6 +37,29 @@ class ServiceList(Lister):
             else:
                 data.append(('', ''))
             return (('Service', 'Groups'), sorted(data))
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
+
+
+class ServiceList(Lister):
+    """List services and their sub-services"""
+
+    log = logging.getLogger(__name__)
+
+    def take_action(self, parsed_args):
+        try:
+            inventory = Inventory.load()
+
+            data = []
+            service_subsvcs = inventory.get_service_sub_services()
+            if service_subsvcs:
+                for (servicename, sub_svcname) in service_subsvcs.items():
+                    data.append((servicename, sub_svcname))
+            else:
+                data.append(('', ''))
+            return (('Service', 'Sub-Services'), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:

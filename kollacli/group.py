@@ -13,10 +13,10 @@
 #    under the License.
 import logging
 import traceback
-import utils
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
+from kollacli import utils
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -169,7 +169,7 @@ class GroupAddservice(Command):
             servicename = utils.convert_to_unicode(servicename)
 
             inventory = Inventory.load()
-            inventory.add_service(servicename, groupname)
+            inventory.add_group_to_service(groupname, servicename)
             Inventory.save(inventory)
         except CommandError as e:
             raise e
@@ -198,7 +198,7 @@ class GroupRemoveservice(Command):
             servicename = utils.convert_to_unicode(servicename)
 
             inventory = Inventory.load()
-            inventory.remove_service(servicename, groupname)
+            inventory.remove_group_from_service(groupname, servicename)
             Inventory.save(inventory)
         except CommandError as e:
             raise e
@@ -219,7 +219,7 @@ class GroupListservices(Lister):
             group_services = inventory.get_group_services()
             if group_services:
                 for (groupname, servicenames) in group_services.items():
-                    data.append((groupname, servicenames))
+                    data.append((groupname, sorted(servicenames)))
             else:
                 data.append(('', ''))
             return (('Group', 'Services'), sorted(data))
