@@ -26,7 +26,7 @@
 Summary:        OpenStack Kolla CLI
 Name:           openstack-kollacli
 Version:        %{package_version}
-Release:        4%{?dist}
+Release:        10%{?dist}
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Url:            https://launchpad.net/kolla
@@ -81,14 +81,14 @@ __EOF__
 # Create the required directory structures
 mkdir -m 0755 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli
 mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
-mkdir -m 0755 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
+mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 
 # Install the required OpenStack Kolla files
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
 
 # Create an empty inventory file
 touch %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
-chmod 664 %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
+chmod 0664 %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
 
 
 %clean
@@ -100,7 +100,9 @@ rm -rf %{buildroot}
 %attr(-, root, root) %doc LICENSE
 %attr(-, root, root) %{python_sitelib}
 %attr(755, root, %{kolla_group}) %{_bindir}/kollacli
-%attr(-, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli
+%attr(550, %{kolla_user}, %{kolla_group}) %dir %{_datadir}/kolla/kollacli/tools
+%attr(555, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/json*
+%attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/passwd*
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
 
 
@@ -112,9 +114,33 @@ then
     cp -p ~%{kolla_user}/.ssh/id_rsa.pub %{_sysconfdir}/kolla/kollacli/id_rsa.pub
     chmod 0440 %{_sysconfdir}/kolla/kollacli/id_rsa.pub
 fi
+/usr/bin/kollacli complete >/etc/bash_completion.d/kollacli 2>/dev/null
+
+# Update the sudoers file
+if ! grep -q 'kollacli/tools/passwd_editor' /etc/sudoers.d/%{kolla_user}
+then
+    sed -i \
+        '/^Cmnd_Alias.*KOLLA_CMDS/ s:$:, %{_datadir}/kolla/kollacli/tools/passwd_editor.py:'\
+        /etc/sudoers.d/%{kolla_user}
+fi
+
+
+%postun
+case "$*" in
+    0)
+        rm -f /etc/bash_completion.d/kollacli
+    ;;
+    *)
+        ## Nothing for update
+    ;;
+esac
 
 
 %changelog
+* Wed Sep 16 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
+- Added the bash completion setup
+- Added code to augment the kolla sudo file for the password mgmt piece
+
 * Tue Sep  8 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
 - Updated dependencies
 - Added the creation of an empty inventory file to fix the permissions
