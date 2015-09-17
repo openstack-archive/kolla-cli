@@ -1,0 +1,9 @@
+---
+- hosts: '{{ hosts }}'
+  tasks:
+    - name: stop kolla containers
+      shell: '{{ item }}'
+      ignore_errors: yes
+      with_items:
+        - docker stop $(docker ps -a | grep ol-openstack | awk '{print $1}')
+        - docker rm $(docker ps -a | grep ol-openstack | awk '{print $1}')
