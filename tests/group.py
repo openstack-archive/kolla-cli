@@ -22,23 +22,28 @@ class TestFunctional(KollaCliTest):
     group1 = {
         'Group': 'control',
         'Services': [
-            'cinder-ctl',
-            'glance',
+            'cinder-api', 'cinder-scheduler',
+            'glance-api', 'glance-registry',
             'haproxy',
-            'heat',
+            'heat-api', 'heat-api-cfn', 'heat-engine',
             'horizon',
             'keystone',
-            'nova',
+            'mariadb',
             'memcached',
-            'murano',
-            'mysqlcluster',
-            'rabbitmq'],
+            'murano-api', 'murano-engine',
+            'mysqlcluster-api', 'mysqlcluster-mgmt',
+            'neutron-server',
+            'nova-api', 'nova-conductor', 'nova-consoleauth',
+            'nova-novncproxy', 'nova-scheduler',
+            'rabbitmq',
+            'swift-proxy-server',
+            ],
         'Hosts': [],
         }
     group2 = {
         'Group': 'network',
         'Services': [
-            'neutron'],
+            'neutron-agents'],
         'Hosts': [],
         }
     group3 = {
@@ -48,10 +53,19 @@ class TestFunctional(KollaCliTest):
         }
     group4 = {
         'Group': 'storage',
-        'Services': ['cinder-data', 'swift'],
+        'Services': [
+            'cinder-backup', 'cinder-volume',
+            'swift-account-server', 'swift-container-server',
+            'swift-object-server'
+            ],
         'Hosts': [],
         }
-    groups = [group1, group2, group3, group4]
+    group5 = {
+        'Group': 'database',
+        'Services': ['mysqlcluster-ndb'],
+        'Hosts': [],
+        }
+    groups = [group1, group2, group3, group4, group5]
 
     def test_group_add_remove(self):
         group_t1 = {
@@ -134,7 +148,7 @@ class TestFunctional(KollaCliTest):
         groupname = group['Group']
         services = group['Services']
 
-        service1 = 'mysqlcluster'
+        service1 = 'horizon'
         service2 = 'rabbitmq'
 
         services.append(service1)
@@ -176,7 +190,8 @@ class TestFunctional(KollaCliTest):
         cli_groups = json.loads(msg)
         self.assertEqual(len(cli_groups), len(groups),
                          '# of groups in cli not equal to expected groups.' +
-                         '\nexpected: %s, \ncli: %s' % (groups, cli_groups))
+                         '\n\nexpected: %s, \n\ncli: %s'
+                         % (groups, cli_groups))
 
         for cli_group in cli_groups:
             cli_hosts = cli_group['Hosts']
@@ -188,12 +203,12 @@ class TestFunctional(KollaCliTest):
                 self.assertEqual(len(cli_hosts), len(group_hosts),
                                  'Group: %s. # of hosts in cli ' % group_name +
                                  'not equal to expected hosts, ' +
-                                 '\nexpected: %s, \ncli: %s'
+                                 '\n\nexpected: %s, \n\ncli: %s'
                                  % (group_hosts, cli_hosts))
                 for group_host in group_hosts:
                     self.assertIn(group_host, cli_hosts,
                                   'Group: %s' % group_name +
-                                  '\nexpected_hosts: %s, \nnot in cli: %s '
+                                  '\n\nexpected_hosts: %s, \n\nnot in cli: %s '
                                   % (group_host, cli_hosts))
 
         # check services in group

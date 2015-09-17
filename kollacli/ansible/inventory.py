@@ -37,17 +37,19 @@ COMPUTE_GRP_NAME = 'compute'
 CONTROL_GRP_NAME = 'control'
 NETWORK_GRP_NAME = 'network'
 STORAGE_GRP_NAME = 'storage'
+DATABASE_GRP_NAME = 'database'
 
 DEPLOY_GROUPS = [
     COMPUTE_GRP_NAME,
     CONTROL_GRP_NAME,
     NETWORK_GRP_NAME,
     STORAGE_GRP_NAME,
+    DATABASE_GRP_NAME,
     ]
 
-SERVICE_GROUPS = {
-    'cinder-ctl':   ['cinder-api', 'cinder-scheduler'],
-    'cinder-data':  ['cinder-backup', 'cinder-volume'],
+SERVICES = {
+    'cinder':       ['cinder-api', 'cinder-scheduler', 'cinder-backup',
+                     'cinder-volume'],
     'glance':       ['glance-api', 'glance-registry'],
     'haproxy':      [],
     'heat':         ['heat-api', 'heat-api-cfn', 'heat-engine'],
@@ -58,42 +60,43 @@ SERVICE_GROUPS = {
     'murano':       ['murano-api', 'murano-engine'],
     'mysqlcluster': ['mysqlcluster-api', 'mysqlcluster-mgmt',
                      'mysqlcluster-ndb'],
-    'neutron-ctl':  ['neutron-server'],
-    'neutron-data': ['neutron-agents'],
+    'neutron':      ['neutron-server', 'neutron-agents'],
     'nova':         ['nova-api', 'nova-conductor', 'nova-consoleauth',
                      'nova-novncproxy', 'nova-scheduler'],
     'rabbitmq':     [],
-    'swift-ctl':    ['swift-proxy-server'],
-    'swift-data':   ['swift-account-server',
+    'swift':        ['swift-proxy-server', 'swift-account-server',
                      'swift-container-server', 'swift-object-server'],
     }
 
-DEFAULT_HIERARCHY = {
-    CONTROL_GRP_NAME: [
-        'cinder-ctl',
-        'glance',
-        'haproxy',
-        'heat',
-        'horizon',
-        'keystone',
-        'nova',
-        'memcached',
-        'murano',
-        'mysqlcluster',
-        'neutron-ctl',
-        'rabbitmq',
-        'swift-ctl',
-        ],
-    NETWORK_GRP_NAME: [
-        'neutron-data',
-        ],
-    COMPUTE_GRP_NAME: [],
-    STORAGE_GRP_NAME: [
-        'cinder-data',
-        'swift-data',
-        ]
+DEFAULT_GROUPS = {
+    'cinder':                   CONTROL_GRP_NAME,
+    'glance':                   CONTROL_GRP_NAME,
+    'haproxy':                  CONTROL_GRP_NAME,
+    'heat':                     CONTROL_GRP_NAME,
+    'horizon':                  CONTROL_GRP_NAME,
+    'keystone':                 CONTROL_GRP_NAME,
+    'mariadb':                  CONTROL_GRP_NAME,
+    'memcached':                CONTROL_GRP_NAME,
+    'murano':                   CONTROL_GRP_NAME,
+    'mysqlcluster':             CONTROL_GRP_NAME,
+    'neutron':                  NETWORK_GRP_NAME,
+    'nova':                     CONTROL_GRP_NAME,
+    'rabbitmq':                 CONTROL_GRP_NAME,
+    'swift':                    CONTROL_GRP_NAME,
     }
 
+DEFAULT_OVERRIDES = {
+    'cinder-backup':            STORAGE_GRP_NAME,
+    'cinder-volume':            STORAGE_GRP_NAME,
+    'mysqlcluster-ndb':         DATABASE_GRP_NAME,
+    'neutron-server':           CONTROL_GRP_NAME,
+    'swift-account-server':     STORAGE_GRP_NAME,
+    'swift-container-server':   STORAGE_GRP_NAME,
+    'swift-object-server':      STORAGE_GRP_NAME,
+    }
+
+
+# these groups cannot be deleted, they are required by kolla
 PROTECTED_GROUPS = [COMPUTE_GRP_NAME]
 
 
@@ -163,8 +166,7 @@ class HostGroup(object):
 
     def __init__(self, name):
         self.name = name
-        self.services = []
-        self._hosts = {}  # kv = hostname:object
+        self.hostnames = []
         self.vars = {}
         self.version = self.__class__.class_version
 
@@ -172,37 +174,15 @@ class HostGroup(object):
         pass
 
     def add_host(self, host):
-        if host.name not in self._hosts:
-            self._hosts[host.name] = host
-        else:
-            host = self._hosts[host.name]
+        if host.name not in self.hostnames:
+            self.hostnames.append(host.name)
 
     def remove_host(self, host):
-        if host.name in self._hosts:
-            del self._hosts[host.name]
-
-    def add_service(self, servicename):
-        service = Service(servicename)
-        if service not in self.services:
-            self.services.append(service)
-        return service
-
-    def remove_service(self, servicename):
-        for service in self.services:
-            if servicename == service.name:
-                self.services.remove(service)
-
-    def get_hosts(self):
-        return self._hosts.values()
+        if host.name in self.hostnames:
+            self.hostnames.remove(host.name)
 
     def get_hostnames(self):
-        return self._hosts.keys()
-
-    def get_servicenames(self):
-        names = []
-        for service in self.services:
-            names.append(service.name)
-        return names
+        return self.hostnames
 
     def get_vars(self):
         return self.vars.copy()
@@ -231,16 +211,58 @@ class Service(object):
 
     def __init__(self, name):
         self.name = name
-        self._hosts = {}   # kv = name:object
-        self.containers = SERVICE_GROUPS[name]
-        self.vars = {}
+        self._sub_servicenames = []
+        self._groupnames = []
+        self._vars = {}
         self.version = self.__class__.class_version
 
     def upgrade(self):
         pass
 
-    def get_hostnames(self):
-        return self._hosts.keys()
+    def add_groupname(self, groupname):
+        if groupname not in self._groupnames:
+            self._groupnames.append(groupname)
+
+    def remove_groupname(self, groupname):
+        if groupname in self._groupnames:
+            self._groupnames.remove(groupname)
+
+    def get_groupnames(self):
+        return self._groupnames
+
+    def get_sub_servicenames(self):
+        return self._sub_servicenames
+
+    def add_sub_servicename(self, sub_servicename):
+        if sub_servicename not in self._sub_servicenames:
+            self._sub_servicenames.append(sub_servicename)
+
+    def get_vars(self):
+        return self._vars.copy()
+
+
+class SubService(object):
+    class_version = 1
+
+    def __init__(self, name):
+        self.name = name
+        self._groupnames = []
+        self._vars = {}
+        self.version = self.__class__.class_version
+
+    def upgrade(self):
+        pass
+
+    def add_groupname(self, groupname):
+        if groupname not in self._groupnames:
+            self._groupnames.append(groupname)
+
+    def remove_groupname(self, groupname):
+        if groupname in self._groupnames:
+            self._groupnames.remove(groupname)
+
+    def get_groupnames(self):
+        return self._groupnames
 
     def get_vars(self):
         return self.vars.copy()
@@ -250,8 +272,10 @@ class Inventory(object):
     class_version = 1
 
     def __init__(self):
-        self._groups = {}  # kv = name:object
-        self._hosts = {}   # kv = name:object
+        self._groups = {}           # kv = name:object
+        self._hosts = {}            # kv = name:object
+        self._services = {}         # kv = name:object
+        self._sub_services = {}     # kv = name:object
         self.vars = {}
         self.version = self.__class__.class_version
         self.remote_mode = True
@@ -334,13 +358,26 @@ class Inventory(object):
                     pass
 
     def _create_default_inventory(self):
-        for (group_name, service_names) in DEFAULT_HIERARCHY.items():
-            group = self.add_group(group_name)
 
-            # add services
-            for service_name in service_names:
-                group.add_service(service_name)
-            self._groups[group_name] = group
+        # create the default groups
+        for groupname in DEPLOY_GROUPS:
+            self.add_group(groupname)
+
+        # create the default services/sub_services & their default groups
+        for svcname in SERVICES:
+            svc = self.create_service(svcname)
+            default_grpname = DEFAULT_GROUPS[svcname]
+            svc.add_groupname(default_grpname)
+            sub_svcnames = SERVICES[svcname]
+            if sub_svcnames:
+                for sub_svcname in sub_svcnames:
+                    # create a subservice
+                    sub_svc = self.create_sub_service(sub_svcname)
+                    svc.add_sub_servicename(sub_svcname)
+                    if sub_svc.name not in DEFAULT_OVERRIDES:
+                        sub_svc.add_groupname(default_grpname)
+                    else:
+                        sub_svc.add_groupname(DEFAULT_OVERRIDES[sub_svc.name])
 
     def get_hosts(self):
         return self._hosts.values()
@@ -420,7 +457,7 @@ class Inventory(object):
     def add_group(self, groupname):
 
         # Group names cannot overlap with service names:
-        if groupname in SERVICE_GROUPS:
+        if groupname in SERVICES:
             raise CommandError('ERROR: Invalid group name. A service name '
                                'cannot be used for a group name.')
 
@@ -456,12 +493,32 @@ class Inventory(object):
         return groups
 
     def get_group_services(self):
-        """return { groupname : [servicenames] }"""
+        """get groups and their instantiated services
+
+        Instantiated services are those services which can be deployed
+        on a host.
+
+        It can either be:
+        1. a service that has no sub-services
+        2. a sub-service
+
+        return { groupname: [instantiated_servicenames] }
+        """
+
         group_services = {}
+
         for group in self.get_groups():
             group_services[group.name] = []
-            for service in group.services:
-                group_services[group.name].append(service.name)
+
+        for svc in self.get_services():
+            if not svc.get_sub_servicenames():
+                for groupname in svc.get_groupnames():
+                    group_services[groupname].append(svc.name)
+            else:
+                for sub_svcname in svc.get_sub_servicenames():
+                    sub_svc = self.get_sub_service(sub_svcname)
+                    for groupname in sub_svc.get_groupnames():
+                        group_services[groupname].append(sub_svc.name)
         return group_services
 
     def get_group_hosts(self):
@@ -469,46 +526,98 @@ class Inventory(object):
         group_hosts = {}
         for group in self.get_groups():
             group_hosts[group.name] = []
-            for host in group.get_hosts():
-                group_hosts[group.name].append(host.name)
+            for hostname in group.get_hostnames():
+                group_hosts[group.name].append(hostname)
         return group_hosts
 
-    def add_service(self, servicename, groupname):
-        if groupname not in self._groups:
-            raise CommandError('Group name (%s) does not exist'
-                               % groupname)
+    def create_service(self, servicename):
+        if servicename not in self._services:
+            service = Service(servicename)
+            self._services[servicename] = service
+        return self._services[servicename]
 
-        if servicename not in SERVICE_GROUPS.keys():
-            raise CommandError('Service name (%s) does not exist'
-                               % servicename)
+    def delete_service(self, servicename):
+        if servicename in self._services:
+            del self._services[servicename]
 
-        group_services = self.get_group_services()
-        if servicename not in group_services[groupname]:
-            group = self._groups[groupname]
-            group.services.append(Service(servicename))
+    def get_services(self):
+        return self._services.values()
 
-    def remove_service(self, servicename, groupname):
-        if groupname not in self._groups:
-            raise CommandError('Group name (%s) does not exist'
-                               % groupname)
+    def get_service(self, servicename):
+        return self._services[servicename]
 
-        if servicename not in SERVICE_GROUPS.keys():
-            raise CommandError('Service name (%s) does not exist'
-                               % servicename)
+    def add_group_to_service(self, groupname, servicename):
+        service = self.get_service(servicename)
+        if service:
+            service.add_groupname(groupname)
+        else:
+            sub_service = self.get_sub_service(servicename)
+            if sub_service:
+                sub_service.add_groupname(groupname)
+            else:
+                raise CommandError('Service (%s) not found' % servicename)
 
-        group = self._groups[groupname]
-        group.remove_service(servicename)
+    def remove_group_from_service(self, groupname, servicename):
+        service = self.get_service(servicename)
+        if service:
+            service.remove_groupname(groupname)
+        else:
+            sub_service = self.get_sub_service(servicename)
+            if sub_service:
+                sub_service.remove_groupname(groupname)
+            else:
+                raise CommandError('Service (%s) not found' % servicename)
+
+    def create_sub_service(self, sub_servicename):
+        if sub_servicename not in self._sub_services:
+            sub_service = SubService(sub_servicename)
+            self._sub_services[sub_servicename] = sub_service
+        return self._sub_services[sub_servicename]
+
+    def delete_sub_service(self, sub_servicename):
+        if sub_servicename in self._sub_services:
+            del self._sub_services[sub_servicename]
+
+    def get_sub_services(self):
+        return self._sub_services.values()
+
+    def get_sub_service(self, sub_servicename):
+        return self._sub_services[sub_servicename]
+
+    def get_service_sub_services(self):
+        """get services and their sub_services
+
+        return { servicename: [sub_servicenames] }
+        """
+        svc_sub_svcs = {}
+        for service in self.get_services():
+            svc_sub_svcs[service.name] = []
+            svc_sub_svcs[service.name].extend(service.get_sub_servicenames())
+        return svc_sub_svcs
 
     def get_service_groups(self):
-        """return { servicename : groupnames }"""
-        service_groups = {}
-        group_services = self.get_group_services()
-        for servicename in SERVICE_GROUPS.keys():
-            service_groups[servicename] = []
-            for (groupname, servicenames) in group_services.items():
-                if servicename in servicenames:
-                    service_groups[servicename].append(groupname)
-        return service_groups
+        """set instantiated services and their groups
+
+        Instantiated services are those services which can be deployed
+        on a host.
+
+        It can either be:
+        1. a service that has no sub-services
+        2. a sub-service
+
+        return { instantiated_servicename: [groupnames] }
+        """
+        inst_svcs = {}
+        for svc in self.get_services():
+            if not svc.get_sub_servicenames():
+                inst_svcs[svc.name] = []
+                inst_svcs[svc.name].extend(svc.get_groupnames())
+            else:
+                for sub_svcname in svc.get_sub_servicenames():
+                    sub_svc = self.get_sub_service(sub_svcname)
+                    inst_svcs[sub_svcname] = []
+                    inst_svcs[sub_svcname].extend(sub_svc.get_groupnames())
+        return inst_svcs
 
     def set_deploy_mode(self, remote_flag):
         if not remote_flag and len(self._hosts) > 1:
@@ -557,26 +666,17 @@ class Inventory(object):
             jdict[group.name]['children'] = []
             jdict[group.name]['vars'] = group.get_vars()
 
-        # add services
-        services = []
-        for group in self.get_groups():
-            for service in group.services:
-                if service.name not in jdict:
-                    services.append(service)
-                    jdict[service.name] = {}
-                    jdict[service.name]['vars'] = service.get_vars()
-                    jdict[service.name]['children'] = []
-                if group.name not in jdict[service.name]['children']:
-                    jdict[service.name]['children'].append(group.name)
+        # add top-level services and what groups they are in
+        for service in self.get_services():
+            jdict[service.name] = {}
+            jdict[service.name]['children'] = service.get_groupnames()
 
-        # add containers
-        for service in services:
-            for containername in service.containers:
-                jdict[containername] = {}
-                jdict[containername]['children'] = [service.name]
-                jdict[containername]['vars'] = {}
+        # add sub-services and their groups
+        for sub_svc in self.get_sub_services():
+            jdict[sub_svc.name] = {}
+            jdict[sub_svc.name]['children'] = sub_svc.get_groupnames()
 
-        # temporaily create group containing all hosts. this is needed for
+        # temporarily create group containing all hosts. this is needed for
         # ansible commands that are performed on hosts not yet in groups.
         group = self.add_group('__RESERVED__')
         jdict[group.name] = {}
