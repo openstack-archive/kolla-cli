@@ -22,6 +22,7 @@ from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.i18n import _
 from kollacli.utils import convert_to_unicode
+from kollacli.utils import get_admin_user
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
 from kollacli.utils import get_kollacli_etc
@@ -46,7 +47,9 @@ class Deploy(Command):
             kollacli_home = get_kollacli_home()
             kolla_home = get_kolla_home()
             kolla_etc = get_kolla_etc()
-            command_string = 'sudo -u kolla ansible-playbook %s ' % flag
+            admin_user = get_admin_user()
+            command_string = 'sudo -u %s ansible-playbook %s ' % (admin_user,
+                             flag)
             inventory_string = '-i ' + os.path.join(kollacli_home,
                                                     'tools',
                                                     'json_generator.py ')
@@ -188,14 +191,14 @@ class Stop(Command):
 
     def take_action(self, parsed_args):
         try:
-            hostname = 'all' 
+            hostname = 'all'
             if parsed_args.hostname:
                 hostname = parsed_args.hostname.strip()
                 hostname = convert_to_unicode(hostname)
 
             inventory = Inventory.load()
 
-            if hostname != None and hostname != 'all':
+            if hostname != 'all':
                 host = inventory.get_host(hostname)
                 if not host:
                     raise CommandError(
@@ -208,7 +211,9 @@ class Stop(Command):
                 flag = '-vvv'
 
             kollacli_home = get_kollacli_home()
-            command_string = 'sudo -u kolla ansible-playbook %s ' % flag
+            admin_user = get_admin_user()
+            command_string = 'sudo -u %s ansible-playbook %s ' % (admin_user,
+                             flag)
             inventory_string = '-i ' + os.path.join(kollacli_home,
                                                     'tools',
                                                     'json_generator.py ')
