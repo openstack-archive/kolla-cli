@@ -105,7 +105,6 @@ class Dump(Command):
             kolla_home = get_kolla_home()
             kolla_ansible = os.path.join(kolla_home, 'ansible')
             kolla_docs = os.path.join(kolla_home, 'docs')
-            kollacli_home = get_kollacli_home()
             kolla_templates = os.path.join(kolla_home, 'templates')
             kolla_etc = get_kolla_etc()
             kolla_config = os.path.join(kolla_etc, 'config')
@@ -113,17 +112,16 @@ class Dump(Command):
             kollacli_etc = get_kollacli_etc()
             ketc = 'kolla/etc/'
             kshare = 'kolla/share/'
-            dump_postfix = '_kollacli_dump.tgz'
-            dump_file = tempfile.mktemp() + dump_postfix
-            with tarfile.open(dump_file, "w:gz") as tar:
+            fd, dump_path = tempfile.mkstemp(prefix='kollacli_dump_',
+                                             suffix='.tgz')
+            os.close(fd)  # avoid fd leak
+            with tarfile.open(dump_path, 'w:gz') as tar:
                 # Can't blanket add kolla_home because the .ssh dir is
                 # accessible by the kolla user only (not kolla group)
                 tar.add(kolla_ansible,
                         arcname=ketc + os.path.basename(kolla_ansible))
                 tar.add(kolla_docs,
                         arcname=ketc + os.path.basename(kolla_docs))
-                tar.add(kollacli_home,
-                        arcname=ketc + os.path.basename(kollacli_home))
                 if os.path.isdir(kolla_templates):
                     tar.add(kolla_templates,
                             arcname=ketc + os.path.basename(kolla_templates))
@@ -136,7 +134,7 @@ class Dump(Command):
                         arcname=kshare + os.path.basename(kolla_globals))
                 tar.add(kollacli_etc,
                         arcname=kshare + os.path.basename(kollacli_etc))
-            self.log.info('dump successful to %s' % dump_file)
+            self.log.info('dump successful to %s' % dump_path)
         except Exception:
             raise Exception(traceback.format_exc())
 
