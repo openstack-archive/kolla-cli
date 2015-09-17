@@ -82,9 +82,11 @@ __EOF__
 mkdir -m 0755 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli
 mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
+mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 
 # Install the required OpenStack Kolla files
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
+cp -r ansible/* %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 
 # Create an empty inventory file
 touch %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
@@ -103,6 +105,7 @@ rm -rf %{buildroot}
 %attr(550, %{kolla_user}, %{kolla_group}) %dir %{_datadir}/kolla/kollacli/tools
 %attr(555, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/json*
 %attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/passwd*
+%attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
 
 
@@ -137,6 +140,10 @@ esac
 
 
 %changelog
+* Thu Sep 17 2015 - Borne Mace <borne.mace@oracle.com>
+- Added the ansible directory under /usr/share/kolla/kollacli
+- Added code to copy the kollacli specific playbooks into that directory
+
 * Wed Sep 16 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
 - Added the bash completion setup
 - Added code to augment the kolla sudo file for the password mgmt piece
