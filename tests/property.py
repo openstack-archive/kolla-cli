@@ -20,7 +20,7 @@ class TestFunctional(KollaCliTest):
 
     def test_property_set_clear(self):
         # test list
-        msg = self.run_client_cmd('property list')
+        msg = self.run_cli_cmd('property list')
         key = 'openstack_release'
         value = 'latest'
         ok = self._property_value_exists(key, value, msg)
@@ -29,8 +29,8 @@ class TestFunctional(KollaCliTest):
         # test append
         key = 'TeStKeY'
         value = 'TeStVaLuE'
-        self.run_client_cmd('property set %s %s' % (key, value))
-        msg = self.run_client_cmd('property list')
+        self.run_cli_cmd('property set %s %s' % (key, value))
+        msg = self.run_cli_cmd('property list')
         ok = self._property_value_exists(key, value, msg)
         self.assertTrue(ok, 'set failed property not in output: %s, %s' %
                         (key, value))
@@ -38,8 +38,8 @@ class TestFunctional(KollaCliTest):
         # test modify existing
         key = 'TeStKeY'
         value = 'TeStVaLuE2'
-        self.run_client_cmd('property set %s %s' % (key, value))
-        msg = self.run_client_cmd('property list')
+        self.run_cli_cmd('property set %s %s' % (key, value))
+        msg = self.run_cli_cmd('property list')
         ok = self._property_value_exists(key, value, msg)
         self.assertTrue(ok, 'set failed property not in output: %s, %s' %
                         (key, value))
@@ -47,8 +47,8 @@ class TestFunctional(KollaCliTest):
         # test clear
         key = 'TeStKeY'
         value = 'TeStVaLuE2'
-        self.run_client_cmd('property clear %s' % key)
-        msg = self.run_client_cmd('property list')
+        self.run_cli_cmd('property clear %s' % key)
+        msg = self.run_cli_cmd('property list')
         ok = self._property_value_exists(key, value, msg)
         self.assertFalse(ok, 'clear failed property in output: %s, %s' %
                          (key, value))

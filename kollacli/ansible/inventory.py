@@ -220,8 +220,14 @@ class Service(object):
         pass
 
     def add_groupname(self, groupname):
-        if groupname not in self._groupnames:
-            self._groupnames.append(groupname)
+        if not self.get_sub_servicenames():
+            if groupname not in self._groupnames:
+                self._groupnames.append(groupname)
+        else:
+            raise CommandError('This service (%s) ' % self.name +
+                               'cannot be associated to a '
+                               'group. Only its sub-services can be ' +
+                               'associated to a group.')
 
     def remove_groupname(self, groupname):
         if groupname in self._groupnames:
@@ -367,7 +373,6 @@ class Inventory(object):
         for svcname in SERVICES:
             svc = self.create_service(svcname)
             default_grpname = DEFAULT_GROUPS[svcname]
-            svc.add_groupname(default_grpname)
             sub_svcnames = SERVICES[svcname]
             if sub_svcnames:
                 for sub_svcname in sub_svcnames:
@@ -378,6 +383,8 @@ class Inventory(object):
                         sub_svc.add_groupname(default_grpname)
                     else:
                         sub_svc.add_groupname(DEFAULT_OVERRIDES[sub_svc.name])
+            else:
+                svc.add_groupname(default_grpname)
 
     def get_hosts(self):
         return self._hosts.values()
@@ -457,7 +464,7 @@ class Inventory(object):
     def add_group(self, groupname):
 
         # Group names cannot overlap with service names:
-        if groupname in SERVICES:
+        if groupname in self._services or groupname in self._sub_services:
             raise CommandError('ERROR: Invalid group name. A service name '
                                'cannot be used for a group name.')
 
@@ -544,29 +551,32 @@ class Inventory(object):
         return self._services.values()
 
     def get_service(self, servicename):
-        return self._services[servicename]
+        service = None
+        try:
+            service = self._services[servicename]
+        except KeyError:
+            pass
+        return service
 
     def add_group_to_service(self, groupname, servicename):
-        service = self.get_service(servicename)
-        if service:
+        if servicename in self._services:
+            service = self.get_service(servicename)
             service.add_groupname(groupname)
-        else:
-            sub_service = self.get_sub_service(servicename)
-            if sub_service:
+        elif servicename in self._sub_services:
+                sub_service = self.get_sub_service(servicename)
                 sub_service.add_groupname(groupname)
-            else:
-                raise CommandError('Service (%s) not found' % servicename)
+        else:
+            raise CommandError('Service (%s) not found' % servicename)
 
     def remove_group_from_service(self, groupname, servicename):
-        service = self.get_service(servicename)
-        if service:
+        if servicename in self._services:
+            service = self.get_service(servicename)
             service.remove_groupname(groupname)
-        else:
-            sub_service = self.get_sub_service(servicename)
-            if sub_service:
+        elif servicename in self._sub_services:
+                sub_service = self.get_sub_service(servicename)
                 sub_service.remove_groupname(groupname)
-            else:
-                raise CommandError('Service (%s) not found' % servicename)
+        else:
+            raise CommandError('Service (%s) not found' % servicename)
 
     def create_sub_service(self, sub_servicename):
         if sub_servicename not in self._sub_services:
@@ -582,7 +592,12 @@ class Inventory(object):
         return self._sub_services.values()
 
     def get_sub_service(self, sub_servicename):
-        return self._sub_services[sub_servicename]
+        sub_service = None
+        try:
+            sub_service = self._sub_services[sub_servicename]
+        except KeyError:
+            pass
+        return sub_service
 
     def get_service_sub_services(self):
         """get services and their sub_services

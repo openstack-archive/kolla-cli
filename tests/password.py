@@ -20,7 +20,7 @@ class TestFunctional(KollaCliTest):
 
     def test_password_set_clear(self):
         # test list
-        msg = self.run_client_cmd('password list')
+        msg = self.run_cli_cmd('password list')
         key = 'database_password'
         value = '-'
         ok = self._password_value_exists(key, value, msg)
@@ -30,8 +30,8 @@ class TestFunctional(KollaCliTest):
         # test append
         key = 'TeStKeY'
         value = '-'
-        self.run_client_cmd('password set %s --insecure %s' % (key, value))
-        msg = self.run_client_cmd('password list')
+        self.run_cli_cmd('password set %s --insecure %s' % (key, value))
+        msg = self.run_cli_cmd('password list')
         ok = self._password_value_exists(key, value, msg)
         self.assertTrue(ok, 'set new password failed. Password ' +
                         '(%s/%s) not in output: %s'
@@ -40,8 +40,8 @@ class TestFunctional(KollaCliTest):
         # test modify existing
         key = 'TeStKeY'
         value = '-'
-        self.run_client_cmd('password set %s --insecure %s' % (key, value))
-        msg = self.run_client_cmd('password list')
+        self.run_cli_cmd('password set %s --insecure %s' % (key, value))
+        msg = self.run_cli_cmd('password list')
         ok = self._password_value_exists(key, value, msg)
         self.assertTrue(ok, 'set modify password failed. Password ' +
                         '(%s/%s) not in output: %s' %
@@ -50,8 +50,8 @@ class TestFunctional(KollaCliTest):
         # test clear
         key = 'TeStKeY'
         value = '-'
-        self.run_client_cmd('password clear %s' % key)
-        msg = self.run_client_cmd('password list')
+        self.run_cli_cmd('password clear %s' % key)
+        msg = self.run_cli_cmd('password list')
         ok = self._password_value_exists(key, value, msg)
         self.assertFalse(ok, 'clear password failed. Password ' +
                          '(%s/%s) not in output: %s' %

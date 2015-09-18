@@ -62,7 +62,7 @@ class KollaCliTest(testtools.TestCase):
         self._restore_env_var()
         super(KollaCliTest, self).tearDown()
 
-    def run_client_cmd(self, cmd, expect_error=False):
+    def run_cli_cmd(self, cmd, expect_error=False):
         full_cmd = ('%s %s' % (self.cmd_prefix, cmd))
         self.log.debug('running command: %s' % cmd)
         (retval, msg) = self._run_command(full_cmd)
@@ -71,6 +71,9 @@ class KollaCliTest(testtools.TestCase):
             self.assertEqual(0, retval, ('command failed: (%s), cmd: %s'
                                          % (msg, full_cmd)))
         return msg
+
+    def run_remote_cmd(self, cmd, testhost):
+        pass
 
     # PRIVATE FUNCTIONS ----------------------------------------------------
     def _setup_env_var(self):
@@ -155,7 +158,7 @@ class KollaCliTest(testtools.TestCase):
             if os.path.exists(shell_path) and os.path.exists(python_path):
                 self.cmd_prefix = '%s %s ' % (python_path, shell_path)
 
-                self.run_client_cmd('host add -h')
+                self.run_cli_cmd('host add -h')
                 self.log.info('successfully ran command in venv environment')
                 return
 
