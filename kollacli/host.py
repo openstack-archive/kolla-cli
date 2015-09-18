@@ -14,12 +14,17 @@
 import argparse
 import getpass
 import logging
+import os
 import traceback
 import utils
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
+from kollacli.utils import convert_to_unicode
+from kollacli.utils import get_kollacli_home
+from kollacli.utils import get_admin_user
 from kollacli.utils import get_setup_user
+from kollacli.utils import run_cmd
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -52,6 +57,80 @@ class HostAdd(Command):
         except CommandError as e:
             raise e
         except Exception as e:
+            raise Exception(traceback.format_exc())
+
+class HostDestroy(Command):
+    """Destroy
+
+    Stops and removes all kolla related docker containers on either the
+    specified host or if no host is specified, on all hosts.
+    """
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(HostDestroy, self).get_parser(prog_name)
+        parser.add_argument('hostname', nargs='?', metavar='[hostname]',
+                            help='host name or ip address')
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            hostname = 'all'
+            if parsed_args.hostname:
+                hostname = parsed_args.hostname.strip()
+                hostname = convert_to_unicode(hostname)
+
+            inventory = Inventory.load()
+
+            if hostname != 'all':
+                host = inventory.get_host(hostname)
+                if not host:
+                    raise CommandError(
+                            'ERROR: Host (%s) not found. ' % hostname +
+                            'Please add it with "host add"')
+
+            flag = ''
+            # verbose levels: 1=not verbose, 2=more verbose
+            if self.app.options.verbose_level > 1:
+                flag = '-vvv'
+
+            kollacli_home = get_kollacli_home()
+            admin_user = get_admin_user()
+            command_string = ('sudo -u %s ansible-playbook %s '
+                              % (admin_user, flag))
+            inventory_string = '-i ' + os.path.join(kollacli_home,
+                                                    'tools',
+                                                    'json_generator.py ')
+            playbook_string = ' ' + os.path.join(kollacli_home,
+                                                 'ansible/host_destroy.yml')
+            envvar_string = ' --extra-vars "hosts="' + hostname + '"'
+            cmd = command_string + inventory_string
+            cmd = cmd + playbook_string + envvar_string
+            print_output = False
+
+            if self.app.options.verbose_level > 1:
+                # log the ansible command
+                self.log.debug('cmd:' + cmd)
+                print_output = True
+
+                if self.app.options.verbose_level > 2:
+                    # log the inventory
+                    dbg_gen = os.path.join(kollacli_home, 'tools',
+                                           'json_generator.py ')
+                    (inv, _) = \
+                        subprocess.Popen(dbg_gen.split(' '),
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE).communicate()
+                    self.log.debug(inv)
+
+            err_flag, _ = run_cmd(cmd, print_output)
+            if err_flag:
+                raise Exception('destroy failed')
+
+            self.log.info('destroy succeeded')
+        except CommandError as e:
+            raise e
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
