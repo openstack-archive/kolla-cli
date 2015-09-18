@@ -48,8 +48,8 @@ class Deploy(Command):
             kolla_home = get_kolla_home()
             kolla_etc = get_kolla_etc()
             admin_user = get_admin_user()
-            command_string = 'sudo -u %s ansible-playbook %s ' % (admin_user,
-                             flag)
+            command_string = ('sudo -u %s ansible-playbook %s '
+                              % (admin_user, flag))
             inventory_string = '-i ' + os.path.join(kollacli_home,
                                                     'tools',
                                                     'json_generator.py ')
@@ -173,6 +173,7 @@ class Setdeploy(Command):
         except Exception:
             raise Exception(traceback.format_exc())
 
+
 class Stop(Command):
     """Stop
 
@@ -210,8 +211,8 @@ class Stop(Command):
 
             kollacli_home = get_kollacli_home()
             admin_user = get_admin_user()
-            command_string = 'sudo -u %s ansible-playbook %s ' % (admin_user,
-                             flag)
+            command_string = ('sudo -u %s ansible-playbook %s '
+                              % (admin_user, flag))
             inventory_string = '-i ' + os.path.join(kollacli_home,
                                                     'tools',
                                                     'json_generator.py ')
@@ -246,4 +247,3 @@ class Stop(Command):
             raise e
         except Exception:
             raise Exception(traceback.format_exc())
-
