@@ -221,6 +221,7 @@ class Service(object):
 
     def add_groupname(self, groupname):
         if not self.get_sub_servicenames():
+            # this service has no sub-services
             if groupname not in self._groupnames:
                 self._groupnames.append(groupname)
         else:
@@ -384,6 +385,8 @@ class Inventory(object):
                     else:
                         sub_svc.add_groupname(DEFAULT_OVERRIDES[sub_svc.name])
             else:
+                # this service has no sub-services, so it can be
+                # associated to a group.
                 svc.add_groupname(default_grpname)
 
     def get_hosts(self):
