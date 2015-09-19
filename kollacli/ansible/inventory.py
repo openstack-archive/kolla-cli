@@ -220,15 +220,7 @@ class Service(object):
         pass
 
     def add_groupname(self, groupname):
-        if not self.get_sub_servicenames():
-            # this service has no sub-services
-            if groupname not in self._groupnames:
-                self._groupnames.append(groupname)
-        else:
-            raise CommandError('This service (%s) ' % self.name +
-                               'cannot be associated to a '
-                               'group. Only its sub-services can be ' +
-                               'associated to a group.')
+        self._groupnames.append(groupname)
 
     def remove_groupname(self, groupname):
         if groupname in self._groupnames:
@@ -253,7 +245,11 @@ class SubService(object):
 
     def __init__(self, name):
         self.name = name
+
+        # groups and parent services are mutually exclusive
         self._groupnames = []
+        self._parent_servicename = None
+
         self._vars = {}
         self.version = self.__class__.class_version
 
@@ -263,13 +259,27 @@ class SubService(object):
     def add_groupname(self, groupname):
         if groupname not in self._groupnames:
             self._groupnames.append(groupname)
+            self._parent_servicename = None
 
     def remove_groupname(self, groupname):
         if groupname in self._groupnames:
             self._groupnames.remove(groupname)
+        if not self._groupnames:
+            # no groups left, re-associate to the parent
+            for servicename in SERVICES:
+                if self.name in SERVICES[servicename]:
+                    self.set_parent_servicename(servicename)
+                    break
 
     def get_groupnames(self):
         return self._groupnames
+
+    def set_parent_servicename(self, parent_svc_name):
+        self._parent_servicename = parent_svc_name
+        self._groupnames = []
+
+    def get_parent_service_name(self):
+        return self._parent_servicename
 
     def get_vars(self):
         return self.vars.copy()
@@ -374,20 +384,16 @@ class Inventory(object):
         for svcname in SERVICES:
             svc = self.create_service(svcname)
             default_grpname = DEFAULT_GROUPS[svcname]
+            svc.add_groupname(default_grpname)
             sub_svcnames = SERVICES[svcname]
             if sub_svcnames:
                 for sub_svcname in sub_svcnames:
                     # create a subservice
-                    sub_svc = self.create_sub_service(sub_svcname)
                     svc.add_sub_servicename(sub_svcname)
-                    if sub_svc.name not in DEFAULT_OVERRIDES:
-                        sub_svc.add_groupname(default_grpname)
-                    else:
+                    sub_svc = self.create_sub_service(sub_svcname)
+                    sub_svc.set_parent_servicename(svc.name)
+                    if sub_svc.name in DEFAULT_OVERRIDES:
                         sub_svc.add_groupname(DEFAULT_OVERRIDES[sub_svc.name])
-            else:
-                # this service has no sub-services, so it can be
-                # associated to a group.
-                svc.add_groupname(default_grpname)
 
     def get_hosts(self):
         return self._hosts.values()
@@ -487,6 +493,12 @@ class Inventory(object):
         if groupname in self._groups:
             del self._groups[groupname]
 
+    def get_group(self, groupname):
+        group = None
+        if groupname in self._groups:
+            group = self._group[groupname]
+        return group
+
     def get_groups(self, host=None):
         """return all groups containing host
 
@@ -503,16 +515,9 @@ class Inventory(object):
         return groups
 
     def get_group_services(self):
-        """get groups and their instantiated services
+        """get groups and their services
 
-        Instantiated services are those services which can be deployed
-        on a host.
-
-        It can either be:
-        1. a service that has no sub-services
-        2. a sub-service
-
-        return { groupname: [instantiated_servicenames] }
+        return { groupname: [servicenames] }
         """
 
         group_services = {}
@@ -521,14 +526,11 @@ class Inventory(object):
             group_services[group.name] = []
 
         for svc in self.get_services():
-            if not svc.get_sub_servicenames():
-                for groupname in svc.get_groupnames():
-                    group_services[groupname].append(svc.name)
-            else:
-                for sub_svcname in svc.get_sub_servicenames():
-                    sub_svc = self.get_sub_service(sub_svcname)
-                    for groupname in sub_svc.get_groupnames():
-                        group_services[groupname].append(sub_svc.name)
+            for groupname in svc.get_groupnames():
+                group_services[groupname].append(svc.name)
+        for sub_svc in self.get_sub_services():
+            for groupname in sub_svc.get_groupnames():
+                group_services[groupname].append(sub_svc.name)
         return group_services
 
     def get_group_hosts(self):
@@ -555,13 +557,13 @@ class Inventory(object):
 
     def get_service(self, servicename):
         service = None
-        try:
+        if servicename in self._services:
             service = self._services[servicename]
-        except KeyError:
-            pass
         return service
 
     def add_group_to_service(self, groupname, servicename):
+        if groupname not in self._groups:
+            raise CommandError('Group (%s) not found.' % groupname)
         if servicename in self._services:
             service = self.get_service(servicename)
             service.add_groupname(groupname)
@@ -569,9 +571,11 @@ class Inventory(object):
                 sub_service = self.get_sub_service(servicename)
                 sub_service.add_groupname(groupname)
         else:
-            raise CommandError('Service (%s) not found' % servicename)
+            raise CommandError('Service (%s) not found.' % servicename)
 
     def remove_group_from_service(self, groupname, servicename):
+        if groupname not in self._groups:
+            raise CommandError('Group (%s) not found.' % groupname)
         if servicename in self._services:
             service = self.get_service(servicename)
             service.remove_groupname(groupname)
@@ -579,7 +583,7 @@ class Inventory(object):
                 sub_service = self.get_sub_service(servicename)
                 sub_service.remove_groupname(groupname)
         else:
-            raise CommandError('Service (%s) not found' % servicename)
+            raise CommandError('Service (%s) not found.' % servicename)
 
     def create_sub_service(self, sub_servicename):
         if sub_servicename not in self._sub_services:
@@ -596,10 +600,8 @@ class Inventory(object):
 
     def get_sub_service(self, sub_servicename):
         sub_service = None
-        try:
+        if sub_servicename in self._sub_services:
             sub_service = self._sub_services[sub_servicename]
-        except KeyError:
-            pass
         return sub_service
 
     def get_service_sub_services(self):
@@ -614,28 +616,20 @@ class Inventory(object):
         return svc_sub_svcs
 
     def get_service_groups(self):
-        """set instantiated services and their groups
+        """set services and their groups
 
-        Instantiated services are those services which can be deployed
-        on a host.
-
-        It can either be:
-        1. a service that has no sub-services
-        2. a sub-service
-
-        return { instantiated_servicename: [groupnames] }
+        return { servicename: ([groupnames], inherit=True/False/None) }
         """
-        inst_svcs = {}
+        svc_groups = {}
         for svc in self.get_services():
-            if not svc.get_sub_servicenames():
-                inst_svcs[svc.name] = []
-                inst_svcs[svc.name].extend(svc.get_groupnames())
+            svc_groups[svc.name] = (svc.get_groupnames(), None)
+        for sub_svc in self.get_sub_services():
+            parent_svcname = sub_svc.get_parent_service_name()
+            if parent_svcname:
+                svc_groups[sub_svc.name] = ('', True)
             else:
-                for sub_svcname in svc.get_sub_servicenames():
-                    sub_svc = self.get_sub_service(sub_svcname)
-                    inst_svcs[sub_svcname] = []
-                    inst_svcs[sub_svcname].extend(sub_svc.get_groupnames())
-        return inst_svcs
+                svc_groups[sub_svc.name] = (sub_svc.get_groupnames(), False)
+        return svc_groups
 
     def set_deploy_mode(self, remote_flag):
         if not remote_flag and len(self._hosts) > 1:
@@ -692,7 +686,12 @@ class Inventory(object):
         # add sub-services and their groups
         for sub_svc in self.get_sub_services():
             jdict[sub_svc.name] = {}
-            jdict[sub_svc.name]['children'] = sub_svc.get_groupnames()
+            groupnames = sub_svc.get_groupnames()
+            if groupnames:
+                jdict[sub_svc.name]['children'] = sub_svc.get_groupnames()
+            else:
+                jdict[sub_svc.name]['children'] = \
+                    sub_svc.get_parent_service_name()
 
         # temporarily create group containing all hosts. this is needed for
         # ansible commands that are performed on hosts not yet in groups.
