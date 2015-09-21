@@ -12,14 +12,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 """Command-line interface to Kolla"""
-
+import logging
+import os
 import sys
 
 from cliff.app import App
 from cliff.commandmanager import CommandManager
 
+from kollacli.ansible.inventory import INVENTORY_PATH
+from kollacli.utils import get_kollacli_etc
+
 
 class KollaCli(App):
+    log = logging.getLogger(__name__)
 
     def __init__(self):
         super(KollaCli, self).__init__(
@@ -30,12 +35,22 @@ class KollaCli(App):
         self.dump_stack_trace = True
 
     def prepare_to_run_command(self, cmd):
-        self.LOG.debug('prepare_to_run_command %s', cmd.__class__.__name__)
+        inventory_path = os.path.join(get_kollacli_etc(),
+                                      INVENTORY_PATH)
+        inventory_file = None
+        try:
+            inventory_file = open(inventory_path, 'r+')
+        except Exception:
+            raise Exception('ERROR: permission denied to run kollacli' +
+                            ', add this user to the kolla group')
+        finally:
+            if inventory_file != None and inventory_file.close == False:
+                inventory_file.close()
 
     def clean_up(self, cmd, result, err):
-        self.LOG.debug('clean_up %s', cmd.__class__.__name__)
+        self.log.debug('clean_up %s', cmd.__class__.__name__)
         if err:
-            self.LOG.debug('error: %s', err)
+            self.log.debug('error: %s', err)
 
 
 def main(argv=sys.argv[1:]):
