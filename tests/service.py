@@ -25,8 +25,8 @@ from kollacli.ansible.inventory import SERVICES
 class TestFunctional(KollaCliTest):
 
     def test_service_lists(self):
-        """
-        $ kollacli service list
+        """$ kollacli service list
+
         +--------------+-----------------------------------------------------+
         | Service      | Sub-Services                                        |
         +--------------+-----------------------------------------------------+
@@ -51,8 +51,8 @@ class TestFunctional(KollaCliTest):
                             'not found in ' +
                             '\n\ncli_services: %s' % cli_services)
 
-        """
-        $ kollacli service listgroups
+        """$ kollacli service listgroups
+
         +------------------------+-------------------------+-----------+
         | Service                | Groups                  | Inherited |
         +------------------------+-------------------------+-----------+
