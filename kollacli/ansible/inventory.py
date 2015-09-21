@@ -75,7 +75,7 @@ DEFAULT_GROUPS = {
     'heat':                     CONTROL_GRP_NAME,
     'horizon':                  CONTROL_GRP_NAME,
     'keystone':                 CONTROL_GRP_NAME,
-    'mariadb':                  '',
+    'mariadb':                  None,
     'memcached':                CONTROL_GRP_NAME,
     'murano':                   CONTROL_GRP_NAME,
     'mysqlcluster':             CONTROL_GRP_NAME,
@@ -220,7 +220,8 @@ class Service(object):
         pass
 
     def add_groupname(self, groupname):
-        self._groupnames.append(groupname)
+        if groupname is not None:
+            self._groupnames.append(groupname)
 
     def remove_groupname(self, groupname):
         if groupname in self._groupnames:
