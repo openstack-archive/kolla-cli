@@ -16,8 +16,75 @@ import traceback
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
+from kollacli import utils
 
+from cliff.command import Command
 from cliff.lister import Lister
+
+
+class ServiceAddGroup(Command):
+    """Add group to service
+
+    Associated the service to a group. If this is a sub-service,
+    the inherit flag will be cleared.
+    """
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(ServiceAddGroup, self).get_parser(prog_name)
+        parser.add_argument('servicename', metavar='<servicename>',
+                            help='service')
+        parser.add_argument('groupname', metavar='<groupname>',
+                            help='group')
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            groupname = parsed_args.groupname.strip()
+            groupname = utils.convert_to_unicode(groupname)
+            servicename = parsed_args.servicename.strip()
+            servicename = utils.convert_to_unicode(servicename)
+
+            inventory = Inventory.load()
+
+            inventory.add_group_to_service(groupname, servicename)
+
+            Inventory.save(inventory)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
+
+
+class ServiceRemoveGroup(Command):
+    """Remove group from service"""
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(ServiceRemoveGroup, self).get_parser(prog_name)
+        parser.add_argument('servicename', metavar='<servicename>',
+                            help='service')
+        parser.add_argument('groupname', metavar='<groupname>',
+                            help='group')
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            groupname = parsed_args.groupname.strip()
+            groupname = utils.convert_to_unicode(groupname)
+            servicename = parsed_args.servicename.strip()
+            servicename = utils.convert_to_unicode(servicename)
+
+            inventory = Inventory.load()
+
+            inventory.remove_group_from_service(groupname, servicename)
+
+            Inventory.save(inventory)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 class ServiceListGroups(Lister):
@@ -32,11 +99,17 @@ class ServiceListGroups(Lister):
             data = []
             service_groups = inventory.get_service_groups()
             if service_groups:
-                for (servicename, groupnames) in service_groups.items():
-                    data.append((servicename, groupnames))
+                for (servicename, (groupnames, inherit)) \
+                        in service_groups.items():
+                    inh_str = 'yes'
+                    if inherit is None:
+                        inh_str = '-'
+                    elif inherit is False:
+                        inh_str = 'no'
+                    data.append((servicename, groupnames, inh_str))
             else:
                 data.append(('', ''))
-            return (('Service', 'Groups'), sorted(data))
+            return (('Service', 'Groups', 'Inherited'), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:

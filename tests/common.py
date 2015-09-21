@@ -62,7 +62,7 @@ class KollaCliTest(testtools.TestCase):
         self._restore_env_var()
         super(KollaCliTest, self).tearDown()
 
-    def run_client_cmd(self, cmd, expect_error=False):
+    def run_cli_cmd(self, cmd, expect_error=False):
         full_cmd = ('%s %s' % (self.cmd_prefix, cmd))
         self.log.debug('running command: %s' % cmd)
         (retval, msg) = self._run_command(full_cmd)
@@ -71,6 +71,9 @@ class KollaCliTest(testtools.TestCase):
             self.assertEqual(0, retval, ('command failed: (%s), cmd: %s'
                                          % (msg, full_cmd)))
         return msg
+
+    def run_remote_cmd(self, cmd, testhost):
+        pass
 
     # PRIVATE FUNCTIONS ----------------------------------------------------
     def _setup_env_var(self):
@@ -155,12 +158,61 @@ class KollaCliTest(testtools.TestCase):
             if os.path.exists(shell_path) and os.path.exists(python_path):
                 self.cmd_prefix = '%s %s ' % (python_path, shell_path)
 
-                self.run_client_cmd('host add -h')
+                self.run_cli_cmd('host add -h')
                 self.log.info('successfully ran command in venv environment')
                 return
 
         self.assertEqual(0, 1,
                          'no kollacli shell command found. Aborting tests')
+
+    def get_default_groups(self):
+        group1 = {
+            'Group': 'control',
+            'Services': [
+                'cinder',
+                'glance',
+                'haproxy',
+                'heat',
+                'horizon',
+                'keystone',
+                'mariadb',
+                'memcached',
+                'murano',
+                'mysqlcluster',
+                'neutron-server',
+                'nova',
+                'rabbitmq',
+                'swift',
+                ],
+            'Hosts': [],
+        }
+        group2 = {
+            'Group': 'network',
+            'Services': [
+                'neutron'],
+            'Hosts': [],
+            }
+        group3 = {
+            'Group': 'compute',
+            'Services': [],
+            'Hosts': [],
+            }
+        group4 = {
+            'Group': 'storage',
+            'Services': [
+                'cinder-backup', 'cinder-volume',
+                'swift-account-server', 'swift-container-server',
+                'swift-object-server'
+                ],
+            'Hosts': [],
+            }
+        group5 = {
+            'Group': 'database',
+            'Services': ['mysqlcluster-ndb'],
+            'Hosts': [],
+            }
+        groups = [group1, group2, group3, group4, group5]
+        return groups
 
 
 class TestHosts(object):

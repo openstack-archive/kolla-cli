@@ -15,6 +15,7 @@ import argparse
 import getpass
 import logging
 import os
+import subprocess
 import traceback
 import utils
 
@@ -58,6 +59,7 @@ class HostAdd(Command):
             raise e
         except Exception as e:
             raise Exception(traceback.format_exc())
+
 
 class HostDestroy(Command):
     """Destroy

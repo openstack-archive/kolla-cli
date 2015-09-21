@@ -21,7 +21,6 @@ import traceback
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.i18n import _
-from kollacli.utils import convert_to_unicode
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home

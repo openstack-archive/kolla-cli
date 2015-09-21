@@ -24,7 +24,7 @@ class TestFunctional(KollaCliTest):
     def test_host_add_remove(self):
         hosts = TestHosts()
 
-        msg = self.run_client_cmd('host list -f json')
+        msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         host1 = 'host_test1'
@@ -33,36 +33,36 @@ class TestFunctional(KollaCliTest):
         group1 = 'control'
 
         hosts.add(host1)
-        self.run_client_cmd('host add %s' % host1)
-        msg = self.run_client_cmd('host list -f json')
+        self.run_cli_cmd('host add %s' % host1)
+        msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         hosts.add(host2)
-        self.run_client_cmd('host add %s' % host2)
-        msg = self.run_client_cmd('host list -f json')
+        self.run_cli_cmd('host add %s' % host2)
+        msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         hosts.remove(host2)
-        self.run_client_cmd('host remove %s' % host2)
-        msg = self.run_client_cmd('host list -f json')
+        self.run_cli_cmd('host remove %s' % host2)
+        msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         hosts.remove(host1)
-        self.run_client_cmd('host remove %s' % host1)
-        msg = self.run_client_cmd('host list -f json')
+        self.run_cli_cmd('host remove %s' % host1)
+        msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         # check groups in host list
         hosts.add(host1)
         hosts.add_group(host1, group1)
-        self.run_client_cmd('host add %s' % host1)
-        self.run_client_cmd('group addhost %s %s' % (group1, host1))
-        msg = self.run_client_cmd('host list -f json')
+        self.run_cli_cmd('host add %s' % host1)
+        self.run_cli_cmd('group addhost %s %s' % (group1, host1))
+        msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         hosts.remove_group(host1, group1)
-        self.run_client_cmd('group removehost %s %s' % (group1, host1))
-        msg = self.run_client_cmd('host list -f json')
+        self.run_cli_cmd('group removehost %s %s' % (group1, host1))
+        msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
     def test_host_setup(self):
@@ -76,29 +76,29 @@ class TestFunctional(KollaCliTest):
         hostname = test_hosts.get_hostnames()[0]
         pwd = test_hosts.get_password(hostname)
 
-        self.run_client_cmd('host add %s' % hostname)
+        self.run_cli_cmd('host add %s' % hostname)
 
         # check if host is installed
-        msg = self.run_client_cmd('host check %s' % hostname, True)
+        msg = self.run_cli_cmd('host check %s' % hostname, True)
         if 'ERROR:' not in msg:
             # host is installed, uninstall it
-            self.run_client_cmd('host uninstall %s --insecure %s'
-                                % (hostname, pwd))
-            msg = self.run_client_cmd('host check %s' % hostname, True)
+            self.run_cli_cmd('host uninstall %s --insecure %s'
+                             % (hostname, pwd))
+            msg = self.run_cli_cmd('host check %s' % hostname, True)
             self.assertIn('ERROR:', msg, 'Uninstall failed on host: (%s)'
                           % hostname)
 
         # install the host
-        self.run_client_cmd('host install %s --insecure %s'
-                            % (hostname, pwd))
-        msg = self.run_client_cmd('host check %s' % hostname, True)
+        self.run_cli_cmd('host install %s --insecure %s'
+                         % (hostname, pwd))
+        msg = self.run_cli_cmd('host check %s' % hostname, True)
         self.assertNotIn('ERROR:', msg, 'Install failed on host: (%s)'
                          % hostname)
 
         # uninstall the host
-        self.run_client_cmd('host uninstall %s --insecure %s'
-                            % (hostname, pwd))
-        msg = self.run_client_cmd('host check %s' % hostname, True)
+        self.run_cli_cmd('host uninstall %s --insecure %s'
+                         % (hostname, pwd))
+        msg = self.run_cli_cmd('host check %s' % hostname, True)
         self.assertIn('ERROR:', msg, 'Uninstall failed on host: (%s)'
                       % hostname)
 

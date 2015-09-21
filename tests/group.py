@@ -19,55 +19,10 @@ import unittest
 
 
 class TestFunctional(KollaCliTest):
-    group1 = {
-        'Group': 'control',
-        'Services': [
-            'cinder-api', 'cinder-scheduler',
-            'glance-api', 'glance-registry',
-            'haproxy',
-            'heat-api', 'heat-api-cfn', 'heat-engine',
-            'horizon',
-            'keystone',
-            'mariadb',
-            'memcached',
-            'murano-api', 'murano-engine',
-            'mysqlcluster-api', 'mysqlcluster-mgmt',
-            'neutron-server',
-            'nova-api', 'nova-conductor', 'nova-consoleauth',
-            'nova-novncproxy', 'nova-scheduler',
-            'rabbitmq',
-            'swift-proxy-server',
-            ],
-        'Hosts': [],
-        }
-    group2 = {
-        'Group': 'network',
-        'Services': [
-            'neutron-agents'],
-        'Hosts': [],
-        }
-    group3 = {
-        'Group': 'compute',
-        'Services': [],
-        'Hosts': [],
-        }
-    group4 = {
-        'Group': 'storage',
-        'Services': [
-            'cinder-backup', 'cinder-volume',
-            'swift-account-server', 'swift-container-server',
-            'swift-object-server'
-            ],
-        'Hosts': [],
-        }
-    group5 = {
-        'Group': 'database',
-        'Services': ['mysqlcluster-ndb'],
-        'Hosts': [],
-        }
-    groups = [group1, group2, group3, group4, group5]
 
     def test_group_add_remove(self):
+        groups = self.get_default_groups()
+
         group_t1 = {
             'Group': 'test_group_t1',
             'Services': [],
@@ -79,29 +34,27 @@ class TestFunctional(KollaCliTest):
             'Hosts': [],
             }
 
-        groups = list(self.groups)
-
         # check default group list
         self.check_group(groups)
 
         groups.append(group_t1)
-        self.run_client_cmd('group add %s' % group_t1['Group'])
+        self.run_cli_cmd('group add %s' % group_t1['Group'])
         self.check_group(groups)
 
         groups.append(group_t2)
-        self.run_client_cmd('group add %s' % group_t2['Group'])
+        self.run_cli_cmd('group add %s' % group_t2['Group'])
         self.check_group(groups)
 
-        self.run_client_cmd('group remove %s' % group_t2['Group'])
+        self.run_cli_cmd('group remove %s' % group_t2['Group'])
         groups.remove(group_t2)
         self.check_group(groups)
 
-        self.run_client_cmd('group remove %s' % group_t1['Group'])
+        self.run_cli_cmd('group remove %s' % group_t1['Group'])
         groups.remove(group_t1)
         self.check_group(groups)
 
     def test_group_add_host(self):
-        groups = list(self.groups)
+        groups = self.get_default_groups()
 
         host1 = 'test_host1'
         host2 = 'test_host2'
@@ -115,28 +68,28 @@ class TestFunctional(KollaCliTest):
         groupname = group['Group']
         hosts = group['Hosts']
 
-        self.run_client_cmd('host add %s' % host1)
+        self.run_cli_cmd('host add %s' % host1)
 
         hosts.append(host1)
-        self.run_client_cmd('group addhost %s %s' % (groupname, host1))
+        self.run_cli_cmd('group addhost %s %s' % (groupname, host1))
         self.check_group(groups)
 
-        self.run_client_cmd('host add %s' % host2)
+        self.run_cli_cmd('host add %s' % host2)
 
         hosts.append(host2)
-        self.run_client_cmd('group addhost %s %s' % (groupname, host2))
+        self.run_cli_cmd('group addhost %s %s' % (groupname, host2))
         self.check_group(groups)
 
-        self.run_client_cmd('group removehost %s %s' % (groupname, host2))
+        self.run_cli_cmd('group removehost %s %s' % (groupname, host2))
         hosts.remove(host2)
         self.check_group(groups)
 
-        self.run_client_cmd('group removehost %s %s' % (groupname, host1))
+        self.run_cli_cmd('group removehost %s %s' % (groupname, host1))
         hosts.remove(host1)
         self.check_group(groups)
 
-    def test_group_add_service(self):
-        groups = list(self.groups)
+    def test_add_group_to_service(self):
+        groups = self.get_default_groups()
 
         group_name = 'compute'
 
@@ -148,24 +101,24 @@ class TestFunctional(KollaCliTest):
         groupname = group['Group']
         services = group['Services']
 
-        service1 = 'horizon'
-        service2 = 'rabbitmq'
+        service1 = 'keystone'
+        service2 = 'heat-api'
 
         services.append(service1)
-        self.run_client_cmd('group addservice %s %s' % (groupname, service1))
+        self.run_cli_cmd('service addgroup %s %s' % (service1, groupname))
         self.check_group(groups)
 
         services.append(service2)
-        self.run_client_cmd('group addservice %s %s' % (groupname, service2))
+        self.run_cli_cmd('service addgroup %s %s' % (service2, groupname))
         self.check_group(groups)
 
-        self.run_client_cmd('group removeservice %s %s'
-                            % (groupname, service2))
+        self.run_cli_cmd('service removegroup %s %s'
+                         % (service2, groupname))
         services.remove(service2)
         self.check_group(groups)
 
-        self.run_client_cmd('group removeservice %s %s'
-                            % (groupname, service1))
+        self.run_cli_cmd('service removegroup %s %s'
+                         % (service1, groupname))
         services.remove(service1)
         self.check_group(groups)
 
@@ -186,7 +139,7 @@ class TestFunctional(KollaCliTest):
                 {"Group Name": "network", "Services": ["haproxy", "neutron"]}]
         """
         # check hosts in groups
-        msg = self.run_client_cmd('group listhosts -f json')
+        msg = self.run_cli_cmd('group listhosts -f json')
         cli_groups = json.loads(msg)
         self.assertEqual(len(cli_groups), len(groups),
                          '# of groups in cli not equal to expected groups.' +
@@ -212,7 +165,7 @@ class TestFunctional(KollaCliTest):
                                   % (group_host, cli_hosts))
 
         # check services in group
-        msg = self.run_client_cmd('group listservices -f json')
+        msg = self.run_cli_cmd('group listservices -f json')
         cli_groups = json.loads(msg)
 
         for cli_group in cli_groups:
