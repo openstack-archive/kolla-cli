@@ -75,7 +75,7 @@ DEFAULT_GROUPS = {
     'heat':                     CONTROL_GRP_NAME,
     'horizon':                  CONTROL_GRP_NAME,
     'keystone':                 CONTROL_GRP_NAME,
-    'mariadb':                  CONTROL_GRP_NAME,
+    'mariadb':                  '',
     'memcached':                CONTROL_GRP_NAME,
     'murano':                   CONTROL_GRP_NAME,
     'mysqlcluster':             CONTROL_GRP_NAME,
@@ -691,7 +691,7 @@ class Inventory(object):
                 jdict[sub_svc.name]['children'] = sub_svc.get_groupnames()
             else:
                 jdict[sub_svc.name]['children'] = \
-                    sub_svc.get_parent_service_name()
+                    [sub_svc.get_parent_service_name()]
 
         # temporarily create group containing all hosts. this is needed for
         # ansible commands that are performed on hosts not yet in groups.
