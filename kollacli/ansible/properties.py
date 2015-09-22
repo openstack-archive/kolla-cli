@@ -100,6 +100,13 @@ class AnsibleProperties(object):
     def get_all(self):
         return sorted(self.properties, key=lambda x: x.name)
 
+    def get_property(self, property_name):
+        prop_val = None
+        if property_name in self.unique_properties:
+            prop = self.unique_properties[property_name]
+            prop_val = prop.value
+        return prop_val
+
     def get_all_unique(self):
         unique_list = []
         for _, value in self.unique_properties.items():

@@ -22,8 +22,8 @@ import utils
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.utils import convert_to_unicode
-from kollacli.utils import get_kollacli_home
 from kollacli.utils import get_admin_user
+from kollacli.utils import get_kollacli_home
 from kollacli.utils import get_setup_user
 from kollacli.utils import run_cmd
 
@@ -33,7 +33,7 @@ from cliff.lister import Lister
 
 def _host_not_found(log, hostname):
     raise CommandError(
-        'ERROR: Host (%s) not found. ' % hostname +
+        'Host (%s) not found. ' % hostname +
         'Please add it with "host add"')
 
 
@@ -87,9 +87,8 @@ class HostDestroy(Command):
             if hostname != 'all':
                 host = inventory.get_host(hostname)
                 if not host:
-                    raise CommandError(
-                            'ERROR: Host (%s) not found. ' % hostname +
-                            'Please add it with "host add"')
+                    raise CommandError('Host (%s) not found. ' % hostname +
+                                       'Please add it with "host add"')
 
             flag = ''
             # verbose levels: 1=not verbose, 2=more verbose

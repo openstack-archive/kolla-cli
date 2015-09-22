@@ -133,7 +133,7 @@ class Host(object):
             self.log.info('Host (%s) setup succeeded' % self.name)
         except Exception as e:
             raise exceptions.CommandError(
-                'ERROR: Host (%s) setup failed : %s'
+                'Host (%s) setup failed : %s'
                 % (self.name, e))
         return True
 
@@ -151,7 +151,7 @@ class Host(object):
                 return False
             else:
                 raise exceptions.CommandError(
-                    'ERROR: Host (%s) check failed : %s'
+                    'Host (%s) check failed : %s'
                     % (self.name, output))
         else:
             if not result_only:
@@ -337,8 +337,8 @@ class Inventory(object):
             else:
                 inventory = Inventory()
         except Exception:
-            raise Exception('ERROR: loading inventory : %s'
-                            % traceback.format_exc())
+            raise CommandError('loading inventory failed: %s'
+                               % traceback.format_exc())
         return inventory
 
     @staticmethod
@@ -360,7 +360,7 @@ class Inventory(object):
             shutil.copyfile(tmp_path, inventory_path)
             os.remove(tmp_path)
         except Exception as e:
-            raise Exception('ERROR: saving inventory : %s' % e)
+            raise CommandError('saving inventory failed: %s' % e)
         finally:
             try:
                 os.close(tmp_filehandle)
@@ -473,7 +473,7 @@ class Inventory(object):
 
         # Group names cannot overlap with service names:
         if groupname in self._services or groupname in self._sub_services:
-            raise CommandError('ERROR: Invalid group name. A service name '
+            raise CommandError('Invalid group name. A service name '
                                'cannot be used for a group name.')
 
         if groupname not in self._groups:

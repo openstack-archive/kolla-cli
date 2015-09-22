@@ -20,6 +20,7 @@ from cliff.app import App
 from cliff.commandmanager import CommandManager
 
 from kollacli.ansible.inventory import INVENTORY_PATH
+from kollacli.exceptions import CommandError
 from kollacli.utils import get_kollacli_etc
 
 
@@ -41,10 +42,10 @@ class KollaCli(App):
         try:
             inventory_file = open(inventory_path, 'r+')
         except Exception:
-            raise Exception('ERROR: permission denied to run kollacli' +
-                            ', add this user to the kolla group')
+            raise CommandError('permission denied to run kollacli' +
+                               ', add this user to the kolla group')
         finally:
-            if inventory_file != None and inventory_file.close == False:
+            if inventory_file and inventory_file.close is False:
                 inventory_file.close()
 
     def clean_up(self, cmd, result, err):

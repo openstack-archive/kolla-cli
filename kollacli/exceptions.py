@@ -15,4 +15,6 @@
 
 
 class CommandError(Exception):
-    pass
+    def __init__(self, message, *args):
+        message = 'ERROR: %s' % message
+        super(CommandError, self).__init__(message, *args)

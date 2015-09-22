@@ -68,15 +68,15 @@ def _pre_setup_checks(ssh_client, log):
         cmd = 'docker --version'
         msg, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
         if errmsg:
-            raise CommandError("ERROR: '%s' failed. Is docker installed? : %s"
+            raise CommandError("'%s' failed. Is docker installed? : %s"
                                % (cmd, errmsg))
         if 'Docker version' not in msg:
-            raise CommandError("ERROR: '%s' failed. Is docker installed? : %s"
+            raise CommandError("'%s' failed. Is docker installed? : %s"
                                % (cmd, msg))
 
         version = msg.split('version ')[1].split(',')[0]
         if StrictVersion(version) < StrictVersion(MIN_DOCKER_VERSION):
-            raise CommandError('ERROR: docker version (%s) below minimum (%s)'
+            raise CommandError('docker version (%s) below minimum (%s)'
                                % (version, msg))
 
         # docker is installed, now check if it is running
@@ -84,14 +84,14 @@ def _pre_setup_checks(ssh_client, log):
         _, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
         # docker info can return warning messages in stderr, ignore them
         if errmsg and 'WARNING' not in errmsg:
-            raise CommandError("ERROR: '%s' failed. Is docker running? : %s"
+            raise CommandError("'%s' failed. Is docker running? : %s"
                                % (cmd, errmsg))
 
         # check for docker-py
         cmd = 'python -c "import docker"'
         msg, errmsg = _exec_ssh_cmd(cmd, ssh_client, log)
         if errmsg:
-            raise CommandError('ERROR: host check failed. ' +
+            raise CommandError('host check failed. ' +
                                'Is docker-py installed?')
 
 
@@ -100,14 +100,14 @@ def _post_setup_checks(net_addr, log):
         ssh_client = ssh_connect(net_addr, get_admin_user(), '')
 
     except Exception as e:
-        raise CommandError("ERROR: remote login failed : %s" % e)
+        raise CommandError("remote login failed : %s" % e)
 
     try:
         # a basic test
         ssh_client.exec_command('ls')
 
     except Exception as e:
-        raise CommandError("ERROR: remote command 'ls' failed : %s" % e)
+        raise CommandError("remote command 'ls' failed : %s" % e)
 
     finally:
         _close_ssh_client(ssh_client)

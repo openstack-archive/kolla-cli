@@ -19,6 +19,7 @@ import tempfile
 import traceback
 
 from kollacli.ansible.inventory import Inventory
+from kollacli.ansible.properties import AnsibleProperties
 from kollacli.exceptions import CommandError
 from kollacli.i18n import _
 from kollacli.utils import get_admin_user
@@ -37,6 +38,7 @@ class Deploy(Command):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
+        self._run_rules()
         try:
             flag = ''
             # verbose levels: 1=not verbose, 2=more verbose
@@ -83,6 +85,26 @@ class Deploy(Command):
             raise e
         except Exception as e:
             raise Exception(traceback.format_exc())
+
+    def _run_rules(self):
+        # check that object.ring.gz is in /etc/kolla/config/swift if
+        # swift is enabled
+        expected_files = ['account.ring.gz',
+                          'container.ring.gz',
+                          'object.ring.gz']
+        properties = AnsibleProperties()
+        is_enabled = properties.get_property('enable_swift')
+        if is_enabled == 'yes':
+            path_pre = os.path.join(get_kolla_etc(), 'config', 'swift')
+            for expected_file in expected_files:
+                path = os.path.join(path_pre, expected_file)
+                if not os.path.isfile(path):
+                    msg = ('Deploy failed. ' +
+                           'Swift is enabled but ring buffers have ' +
+                           'not yet been set up. Please see the ' +
+                           'documentation for swift configuration ' +
+                           'instructions.')
+                    raise CommandError(msg)
 
 
 class List(Command):

@@ -175,7 +175,6 @@ class KollaCliTest(testtools.TestCase):
                 'heat',
                 'horizon',
                 'keystone',
-                'mariadb',
                 'memcached',
                 'murano',
                 'mysqlcluster',
