@@ -72,7 +72,7 @@ class HostDestroy(Command):
     def get_parser(self, prog_name):
         parser = super(HostDestroy, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname | all>',
-                            help='host name or ip address')
+                            help='host name or ip address or "all"')
         return parser
 
     def take_action(self, parsed_args):
@@ -85,8 +85,7 @@ class HostDestroy(Command):
                 inventory = Inventory.load()
                 host = inventory.get_host(hostname)
                 if not host:
-                    raise CommandError('Host (%s) not found. ' % hostname +
-                                       'Please add it with "host add"')
+                    _host_not_found(self.log, hostname)
 
             flag = ''
             # verbose levels: 1=not verbose, 2=more verbose
