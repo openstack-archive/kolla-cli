@@ -71,20 +71,18 @@ class HostDestroy(Command):
 
     def get_parser(self, prog_name):
         parser = super(HostDestroy, self).get_parser(prog_name)
-        parser.add_argument('hostname', nargs='?', metavar='[hostname]',
+        parser.add_argument('hostname', metavar='<hostname | all>',
                             help='host name or ip address')
         return parser
 
     def take_action(self, parsed_args):
         try:
-            hostname = 'all'
-            if parsed_args.hostname:
-                hostname = parsed_args.hostname.strip()
-                hostname = convert_to_unicode(hostname)
-
-            inventory = Inventory.load()
+            hostname = ''
+            hostname = parsed_args.hostname.strip()
+            hostname = convert_to_unicode(hostname)
 
             if hostname != 'all':
+                inventory = Inventory.load()
                 host = inventory.get_host(hostname)
                 if not host:
                     raise CommandError('Host (%s) not found. ' % hostname +
@@ -95,6 +93,7 @@ class HostDestroy(Command):
             if self.app.options.verbose_level > 1:
                 flag = '-vvv'
 
+            self.log.info('please be patient as this may take a while.')
             kollacli_home = get_kollacli_home()
             admin_user = get_admin_user()
             command_string = ('sudo -u %s ansible-playbook %s '
