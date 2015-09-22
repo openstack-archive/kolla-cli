@@ -87,7 +87,7 @@ class Deploy(Command):
             raise Exception(traceback.format_exc())
 
     def _run_rules(self):
-        # check that object.ring.gz is in /etc/kolla/config/swift if
+        # check that ring files are in /etc/kolla/config/swift if
         # swift is enabled
         expected_files = ['account.ring.gz',
                           'container.ring.gz',
@@ -159,9 +159,31 @@ class Dump(Command):
                         arcname=kshare + os.path.basename(kolla_globals))
                 tar.add(kollacli_etc,
                         arcname=kshare + os.path.basename(kollacli_etc))
+                self._get_cli_list_info(tar)
             self.log.info('dump successful to %s' % dump_path)
         except Exception:
             raise Exception(traceback.format_exc())
+
+    def _get_cli_list_info(self, tar):
+        fd, path = tempfile.mkstemp(suffix='.tmp')
+        os.close(fd)
+        with open(path, 'w') as tmp_file:
+            cmds = ['service listgroups',
+                    'service list',
+                    'group listservices',
+                    'group listhosts',
+                    'host list',
+                    'property list',
+                    'password list']
+            for cmd in cmds:
+                _, output = run_cmd('kollacli ' + cmd, False)
+                tmp_file.write('\n\n$ %s\n' % cmd)
+                for line in output:
+                    tmp_file.write(line + '\n')
+
+        tar.add(path, arcname=os.path.join('kolla', 'cli_list_output'))
+        os.remove(path)
+        return
 
 
 class Setdeploy(Command):
