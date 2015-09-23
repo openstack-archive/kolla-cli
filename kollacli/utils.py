@@ -33,6 +33,10 @@ def get_kollacli_etc():
     return os.environ.get("KOLLA_CLI_ETC", "/etc/kolla/kollacli/")
 
 
+def get_kolla_log_dir():
+    return '/var/log/kolla/'
+
+
 def get_admin_user():
     return os.environ.get("KOLLA_CLI_ADMIN_USER", "kolla")
 
@@ -90,6 +94,9 @@ def run_cmd(cmd, print_output=True):
     - output:   [List of strings]
                 if error, provides error information
                 if success, provides command output
+
+    If the command is an ansible playbook command, record the
+    output in an ansible log file.
     """
     log = logging.getLogger(__name__)
     err_flag = False

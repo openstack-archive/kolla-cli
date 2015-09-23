@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 """Command-line interface to Kolla"""
+import grp
 import logging
 import os
 import sys
@@ -21,7 +22,26 @@ from cliff.commandmanager import CommandManager
 
 from kollacli.ansible.inventory import INVENTORY_PATH
 from kollacli.exceptions import CommandError
+from kollacli.utils import get_admin_user
+from kollacli.utils import get_kolla_log_dir
 from kollacli.utils import get_kollacli_etc
+
+
+class KollaRotatingFileHandler(logging.handlers.RotatingFileHandler):
+    """Rotating file handler, but with kolla group permissions"""
+
+    def doRollover(self):
+        """Override base class method"""
+        # Rotate the file first.
+        logging.handlers.RotatingFileHandler.doRollover(self)
+
+        #  get kolla admin gid
+        group = grp.getgrnam(get_admin_user())
+        gid = group.gr_gid
+
+        # change file permissions and set group to kolla admin group
+        os.chmod(self.baseFilename, 0o760)
+        os.chown(self.baseFilename, -1, gid)
 
 
 class KollaCli(App):
@@ -33,7 +53,14 @@ class KollaCli(App):
             version='0.1',
             command_manager=CommandManager('kolla.cli'),
             )
+
+        self.rotating_log_dir = get_kolla_log_dir()
+        self.max_bytes = 500000
+        self.backup_count = 4
+
         self.dump_stack_trace = True
+
+        self.add_rotational_log()
 
     def prepare_to_run_command(self, cmd):
         inventory_path = os.path.join(get_kollacli_etc(),
@@ -52,6 +79,16 @@ class KollaCli(App):
         self.log.debug('clean_up %s', cmd.__class__.__name__)
         if err:
             self.log.debug('error: %s', err)
+
+    def add_rotational_log(self):
+        root_logger = logging.getLogger('')
+        rotate_handler = KollaRotatingFileHandler(
+            self.rotating_log_file, maxBytes=self.max_bytes,
+            backupCount=self.backup_count)
+        formatter = logging.Formatter(self.LOG_FILE_MESSAGE_FORMAT)
+        rotate_handler.setFormatter(formatter)
+        rotate_handler.setLevel(logging.INFO)
+        root_logger.addHandler(rotate_handler)
 
 
 def main(argv=sys.argv[1:]):
