@@ -5,5 +5,5 @@
       shell: '{{ item }}'
       ignore_errors: yes
       with_items:
-        - docker stop $(docker ps -a | grep ol-openstack | awk '{print $1}')
-        - docker rm $(docker ps -a | grep ol-openstack | awk '{print $1}')
+        - docker stop $(docker ps -a | grep '{{ prefix }}' | awk '{print $1}')
+        - docker rm $(docker ps -a | grep '{{ prefix }}' | awk '{print $1}')
