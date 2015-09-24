@@ -85,11 +85,8 @@ mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 
 # Create a kolla log directory and initial log file
-mkdir -m 0770 -p /var/log/kolla
-chown %{kolla_group}:%{kolla_user} /var/log/kolla
-touch /var/log/kolla/kolla.log
-chmod 0760 /var/log/kolla/kolla.log
-chown %{kolla_user}:%{kolla_group} /var/log/kolla/kolla.log
+mkdir -m 0770 -p %{buildroot}/%{_var}/log/kolla
+touch %{buildroot}/%{_var}/log/kolla/kolla.log
 
 # Install the required OpenStack Kolla files
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
@@ -113,6 +110,8 @@ rm -rf %{buildroot}
 %attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/passwd*
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
+%attr(770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
+%attr(660, %{kolla_user}, %{kolla_group}) %{_var}/log/kolla/kolla.log
 
 %post
 if ! test -f ~%{kolla_user}/.ssh/id_rsa
