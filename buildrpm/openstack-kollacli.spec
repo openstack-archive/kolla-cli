@@ -84,6 +84,10 @@ mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 
+# Create a kolla log directory and initial log file
+mkdir -m 0770 -p %{buildroot}/%{_var}/log/kolla
+touch %{buildroot}/%{_var}/log/kolla/kolla.log
+
 # Install the required OpenStack Kolla files
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
 cp -r ansible/* %{buildroot}/%{_datadir}/kolla/kollacli/ansible
@@ -91,7 +95,6 @@ cp -r ansible/* %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 # Create an empty inventory file
 touch %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
 chmod 0664 %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
-
 
 %clean
 rm -rf %{buildroot}
@@ -107,7 +110,8 @@ rm -rf %{buildroot}
 %attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/passwd*
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
-
+%attr(770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
+%attr(660, %{kolla_user}, %{kolla_group}) %{_var}/log/kolla/kolla.log
 
 %post
 if ! test -f ~%{kolla_user}/.ssh/id_rsa
@@ -140,6 +144,9 @@ esac
 
 
 %changelog
+* Thu Sep 24 2015 - Steve Noyes <steve.noyes@oracle.com>
+- Added kolla log dir under /var/log/
+
 * Thu Sep 17 2015 - Borne Mace <borne.mace@oracle.com>
 - Added the ansible directory under /usr/share/kolla/kollacli
 - Added code to copy the kollacli specific playbooks into that directory

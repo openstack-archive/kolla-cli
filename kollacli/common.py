@@ -25,6 +25,7 @@ from kollacli.i18n import _
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
+from kollacli.utils import get_kolla_log_dir
 from kollacli.utils import get_kollacli_etc
 from kollacli.utils import get_kollacli_home
 from kollacli.utils import run_cmd
@@ -128,6 +129,7 @@ class Dump(Command):
     def take_action(self, parsed_args):
         try:
             kolla_home = get_kolla_home()
+            kolla_logs = get_kolla_log_dir()
             kolla_ansible = os.path.join(kolla_home, 'ansible')
             kolla_docs = os.path.join(kolla_home, 'docs')
             kolla_templates = os.path.join(kolla_home, 'templates')
@@ -159,29 +161,42 @@ class Dump(Command):
                         arcname=kshare + os.path.basename(kolla_globals))
                 tar.add(kollacli_etc,
                         arcname=kshare + os.path.basename(kollacli_etc))
-                self._get_cli_list_info(tar)
+
+                # add kolla log files
+                if os.path.isdir(kolla_logs):
+                    tar.add(kolla_logs)
+
+                # add output of various commands
+                self._add_cmd_info(tar)
+
             self.log.info('dump successful to %s' % dump_path)
         except Exception:
             raise Exception(traceback.format_exc())
 
-    def _get_cli_list_info(self, tar):
+    def _add_cmd_info(self, tar):
+        # run all the kollacli list commands
+        cmds = ['kollacli service listgroups',
+                'kollacli service list',
+                'kollacli group listservices',
+                'kollacli group listhosts',
+                'kollacli host list',
+                'kollacli property list',
+                'kollacli password list']
+
+        # collect the json inventory output
+        json_cmd = os.path.join(get_kollacli_home(), 'tools',
+                                'json_generator.py')
+        cmds.append(json_cmd)
         fd, path = tempfile.mkstemp(suffix='.tmp')
         os.close(fd)
         with open(path, 'w') as tmp_file:
-            cmds = ['service listgroups',
-                    'service list',
-                    'group listservices',
-                    'group listhosts',
-                    'host list',
-                    'property list',
-                    'password list']
             for cmd in cmds:
-                _, output = run_cmd('kollacli ' + cmd, False)
+                _, output = run_cmd(cmd, False)
                 tmp_file.write('\n\n$ %s\n' % cmd)
                 for line in output:
                     tmp_file.write(line + '\n')
 
-        tar.add(path, arcname=os.path.join('kolla', 'cli_list_output'))
+        tar.add(path, arcname=os.path.join('kolla', 'cmds_output'))
         os.remove(path)
         return
 
