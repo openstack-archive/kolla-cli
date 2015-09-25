@@ -12,7 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 """Command-line interface to Kolla"""
-import grp
 import logging
 import os
 import sys
@@ -22,26 +21,8 @@ from cliff.commandmanager import CommandManager
 
 from kollacli.ansible.inventory import INVENTORY_PATH
 from kollacli.exceptions import CommandError
-from kollacli.utils import get_admin_user
 from kollacli.utils import get_kolla_log_dir
 from kollacli.utils import get_kollacli_etc
-
-
-class KollaRotatingFileHandler(logging.handlers.RotatingFileHandler):
-    """Rotating file handler, but with kolla group permissions"""
-
-    def doRollover(self):
-        """Override base class method"""
-        # Rotate the file first.
-        logging.handlers.RotatingFileHandler.doRollover(self)
-
-        #  get kolla admin gid
-        group = grp.getgrnam(get_admin_user())
-        gid = group.gr_gid
-
-        # change file permissions and set group to kolla admin group
-        os.chmod(self.baseFilename, 0o760)
-        os.chown(self.baseFilename, -1, gid)
 
 
 class KollaCli(App):
@@ -82,8 +63,9 @@ class KollaCli(App):
 
     def add_rotational_log(self):
         root_logger = logging.getLogger('')
-        rotate_handler = KollaRotatingFileHandler(
-            self.rotating_log_dir, maxBytes=self.max_bytes,
+        rotate_handler = logging.handlers.RotatingFileHandler(
+            os.path.join(self.rotating_log_dir, 'kolla.log'),
+            maxBytes=self.max_bytes,
             backupCount=self.backup_count)
         formatter = logging.Formatter(self.LOG_FILE_MESSAGE_FORMAT)
         rotate_handler.setFormatter(formatter)

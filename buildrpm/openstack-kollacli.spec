@@ -84,9 +84,8 @@ mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 
-# Create a kolla log directory and initial log file
+# Create a kolla log directory
 mkdir -m 0770 -p %{buildroot}/%{_var}/log/kolla
-touch %{buildroot}/%{_var}/log/kolla/kolla.log
 
 # Install the required OpenStack Kolla files
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
@@ -110,10 +109,11 @@ rm -rf %{buildroot}
 %attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/passwd*
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
-%attr(770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
-%attr(660, %{kolla_user}, %{kolla_group}) %{_var}/log/kolla/kolla.log
+%attr(2770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
 
 %post
+sudo -u %{kolla_user} setfacl -m d:g:%{kolla_group}:rw %{_var}/log/kolla
+
 if ! test -f ~%{kolla_user}/.ssh/id_rsa
 then
     sudo -u %{kolla_user} \
@@ -144,6 +144,9 @@ esac
 
 
 %changelog
+* Fri Sep 25 2015 - Steve Noyes <steve.noyes@oracle.com>
+- added sticky bits and acl to simplify logging permissions
+
 * Thu Sep 24 2015 - Steve Noyes <steve.noyes@oracle.com>
 - Added kolla log dir under /var/log/
 
