@@ -20,6 +20,7 @@ import traceback
 import utils
 
 from kollacli.ansible.inventory import Inventory
+from kollacli.ansible import properties
 from kollacli.exceptions import CommandError
 from kollacli.utils import convert_to_unicode
 from kollacli.utils import get_admin_user
@@ -93,6 +94,12 @@ class HostDestroy(Command):
                 flag = '-vvv'
 
             self.log.info('please be patient as this may take a while.')
+            ansible_properties = properties.AnsibleProperties()
+            base_distro = \
+                    ansible_properties.get_property('kolla_base_distro')
+            install_type = \
+                    ansible_properties.get_property('kolla_install_type')
+            container_prefix = base_distro + '-' + install_type
             kollacli_home = get_kollacli_home()
             admin_user = get_admin_user()
             command_string = ('sudo -u %s ansible-playbook %s '
@@ -102,9 +109,10 @@ class HostDestroy(Command):
                                                     'json_generator.py ')
             playbook_string = ' ' + os.path.join(kollacli_home,
                                                  'ansible/host_destroy.yml')
-            envvar_string = ' --extra-vars "hosts="' + hostname + '"'
+            extra_vars_string = ' --extra-vars \"hosts=' + hostname + \
+                                ' prefix=' + container_prefix + '\"'
             cmd = command_string + inventory_string
-            cmd = cmd + playbook_string + envvar_string
+            cmd = cmd + playbook_string + extra_vars_string
             print_output = False
 
             if self.app.options.verbose_level > 1:

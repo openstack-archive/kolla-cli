@@ -139,7 +139,8 @@ class AnsibleProperties(object):
         # does not exist we will do nothing.  if it does exist we need to find
         # the line and nuke it.
         try:
-            change_property(property_key, None, clear=True)
+            change_property(self.globals_path, property_key,
+                            None, clear=True)
         except Exception as e:
             raise e
 
