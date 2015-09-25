@@ -83,7 +83,8 @@ class KollaCli(App):
     def add_rotational_log(self):
         root_logger = logging.getLogger('')
         rotate_handler = KollaRotatingFileHandler(
-            self.rotating_log_dir, maxBytes=self.max_bytes,
+            os.path.join(self.rotating_log_dir, 'kolla.log'),
+            maxBytes=self.max_bytes,
             backupCount=self.backup_count)
         formatter = logging.Formatter(self.LOG_FILE_MESSAGE_FORMAT)
         rotate_handler.setFormatter(formatter)
