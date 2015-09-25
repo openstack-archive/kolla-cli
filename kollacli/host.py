@@ -96,9 +96,9 @@ class HostDestroy(Command):
             self.log.info('please be patient as this may take a while.')
             ansible_properties = properties.AnsibleProperties()
             base_distro = \
-                    ansible_properties.get_property('kolla_base_distro')
+                ansible_properties.get_property('kolla_base_distro')
             install_type = \
-                    ansible_properties.get_property('kolla_install_type')
+                ansible_properties.get_property('kolla_install_type')
             container_prefix = base_distro + '-' + install_type
             kollacli_home = get_kollacli_home()
             admin_user = get_admin_user()
