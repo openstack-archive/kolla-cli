@@ -108,15 +108,6 @@ class Deploy(Command):
                     raise CommandError(msg)
 
 
-class List(Command):
-    "List"
-
-    log = logging.getLogger(__name__)
-
-    def take_action(self, parsed_args):
-        self.log.info(_("list"))
-
-
 class Dump(Command):
     """Dumps configuration data for debugging
 
