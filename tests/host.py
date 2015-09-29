@@ -76,42 +76,26 @@ class TestFunctional(KollaCliTest):
 
         hostname = test_hosts.get_hostnames()[0]
 
-        # remove kolla user and certs from host
+        key_path = '/usr/share/kolla/.ssh/authorized_keys'
         test_hosts.run_remote_cmd(
-            'yum --assumeyes remove openstack-kolla-preinstall', hostname)
-
-        # ansible may keep the kolla account tied up for up to 60 seconds
-        time_out = time.time() + 75
-        while time.time() < time_out:
-            msg = test_hosts.run_remote_cmd(
-                'userdel -r kolla', hostname)
-            if 'currently used by process' in msg:
-                self.log.info('waiting for kolla acct to free up...')
-                time.sleep(10)
-            else:
-                break
-
-        self.assertNotIn('currently used by process', msg,
-                         'kolla user acct not deleted!:  % msg')
+            'cat /dev/null > %s' % key_path, hostname)
 
         pwd = test_hosts.get_password(hostname)
 
         self.run_cli_cmd('host add %s' % hostname)
 
         # check if host is not set-up
-        msg = self.run_cli_cmd('host check %s' % hostname, True)
-        self.assertIn('ERROR:', msg,
-                      'kolla account still exists host after ' +
-                      'uninstall: (%s)' % hostname)
+        timeout = time.time() + 75
+        while time.time <= timeout:
+            msg = self.run_cli_cmd('host check %s' % hostname, True)
+            if 'ERROR:' not in msg:
+                self.log.info('waiting for ansible ssh session to timeout')
+                time.sleep(10)
+            break
 
-        # install the preinstall pkg on the remote host
-        test_hosts.run_remote_cmd(
-            'yum --assumeyes install openstack-kolla-preinstall', hostname)
-
-        msg = self.run_cli_cmd('host check %s' % hostname, True)
-        self.assertIn('ERROR:', msg,
-                      'kolla account is accessible prior ' +
-                      'to setup: (%s)' % hostname)
+        self.assertLessEqual(time.time(), timeout,
+                             'check succeeded after key removal' +
+                             '(%s)' % hostname)
 
         # setup the host
         self.run_cli_cmd('host setup %s --insecure %s'
