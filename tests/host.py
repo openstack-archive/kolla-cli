@@ -16,6 +16,7 @@ from common import KollaCliTest
 from common import TestHosts
 
 import json
+import time
 import unittest
 
 
@@ -74,33 +75,50 @@ class TestFunctional(KollaCliTest):
             return
 
         hostname = test_hosts.get_hostnames()[0]
+
+        # remove kolla user and certs from host
+        test_hosts.run_remote_cmd(
+            'yum --assumeyes remove openstack-kolla-preinstall', hostname)
+
+        # ansible may keep the kolla account tied up for up to 60 seconds
+        time_out = time.time() + 75
+        while time.time() < time_out:
+            msg = test_hosts.run_remote_cmd(
+                'userdel -r kolla', hostname)
+            if 'currently used by process' in msg:
+                self.log.info('waiting for kolla acct to free up...')
+                time.sleep(10)
+            else:
+                break
+
+        self.assertNotIn('currently used by process', msg,
+                         'kolla user acct not deleted!:  % msg')
+
         pwd = test_hosts.get_password(hostname)
 
         self.run_cli_cmd('host add %s' % hostname)
 
-        # check if host is installed
+        # check if host is not set-up
         msg = self.run_cli_cmd('host check %s' % hostname, True)
-        if 'ERROR:' not in msg:
-            # host is installed, uninstall it
-            self.run_cli_cmd('host uninstall %s --insecure %s'
-                             % (hostname, pwd))
-            msg = self.run_cli_cmd('host check %s' % hostname, True)
-            self.assertIn('ERROR:', msg, 'Uninstall failed on host: (%s)'
-                          % hostname)
+        self.assertIn('ERROR:', msg,
+                      'kolla account still exists host after ' +
+                      'uninstall: (%s)' % hostname)
 
-        # install the host
-        self.run_cli_cmd('host install %s --insecure %s'
+        # install the preinstall pkg on the remote host
+        test_hosts.run_remote_cmd(
+            'yum --assumeyes install openstack-kolla-preinstall', hostname)
+
+        msg = self.run_cli_cmd('host check %s' % hostname, True)
+        self.assertIn('ERROR:', msg,
+                      'kolla account is accessible prior ' +
+                      'to setup: (%s)' % hostname)
+
+        # setup the host
+        self.run_cli_cmd('host setup %s --insecure %s'
                          % (hostname, pwd))
         msg = self.run_cli_cmd('host check %s' % hostname, True)
-        self.assertNotIn('ERROR:', msg, 'Install failed on host: (%s)'
-                         % hostname)
-
-        # uninstall the host
-        self.run_cli_cmd('host uninstall %s --insecure %s'
-                         % (hostname, pwd))
-        msg = self.run_cli_cmd('host check %s' % hostname, True)
-        self.assertIn('ERROR:', msg, 'Uninstall failed on host: (%s)'
-                      % hostname)
+        self.assertNotIn('ERROR:', msg, 'Check after setup failed on ' +
+                         'host: (%s)' % hostname)
 
     def _check_cli_output(self, exp_hosts, cli_output):
         """Verify cli data against model data

@@ -14,6 +14,8 @@
 #
 import logging
 import os
+import pxssh
+import shutil
 import subprocess
 import sys
 import traceback
@@ -72,14 +74,26 @@ class KollaCliTest(testtools.TestCase):
                                          % (msg, full_cmd)))
         return msg
 
-    def run_remote_cmd(self, cmd, testhost):
-        pass
-
     # PRIVATE FUNCTIONS ----------------------------------------------------
     def _setup_env_var(self):
-        """set kolla etc to user's home directory"""
+        """copy kolla etc to user's home directory
+
+        avoids unittests changing anything in /etc/kolla
+        """
         self.saved_kolla_etc = utils.get_kollacli_etc()
-        os.environ[ENV_ETC] = os.path.expanduser('~')
+        user_dir = os.path.expanduser('~')
+
+        test_etc_dir = os.path.join(user_dir, 'test_kolla_etc')
+
+        # remove test etc if it exists
+        try:
+            shutil.rmtree(test_etc_dir)
+        except OSError:
+            pass
+
+        # copy over /etc/kolla to test_etc
+        shutil.copytree(self.saved_kolla_etc, test_etc_dir)
+        os.environ[ENV_ETC] = test_etc_dir
 
     def _restore_env_var(self):
         os.environ[ENV_ETC] = self.saved_kolla_etc
@@ -248,6 +262,12 @@ class TestHosts(object):
     def get_hostnames(self):
         return self.info.keys()
 
+    def set_username(self, name, username):
+        self.info[name]['username'] = username
+
+    def get_username(self, name):
+        return self.info[name]['username']
+
     def set_password(self, name, password):
         self.info[name]['pwd'] = password
 
@@ -269,13 +289,15 @@ class TestHosts(object):
                     continue
 
                 tokens = line.split()
-                if len(tokens) != 2:
-                    raise Exception('%s expected 2 params on line: %s'
+                if len(tokens) != 3:
+                    raise Exception('%s expected 3 params on line: %s'
                                     % (HOSTS_FNAME, line))
                 hostname = tokens[0]
-                pwd = tokens[1]
+                username = tokens[1]
+                pwd = tokens[2]
                 self.add(hostname)
                 self.set_password(hostname, pwd)
+                self.set_username(hostname, username)
 
     def get_test_hosts_path(self):
         """get test_hosts directory"""
@@ -290,3 +312,16 @@ class TestHosts(object):
                 raise Exception('test_hosts file not found in current ' +
                                 'or home directory')
         return path
+
+    def run_remote_cmd(self, cmd, hostname):
+        pwd = self.get_password(hostname)
+        username = self.get_username(hostname)
+        session = pxssh.pxssh()
+        session.login(hostname, username, pwd)
+        self.log.info('host: %s, run remote cmd: %s' % (hostname, cmd))
+        session.sendline(cmd)
+        session.prompt()
+        out = session.before
+        self.log.info(out)
+        session.logout()
+        return out
