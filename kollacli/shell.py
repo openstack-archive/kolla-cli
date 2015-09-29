@@ -12,8 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 """Command-line interface to Kolla"""
-import getpass
-import grp
 import logging
 import os
 import sys
