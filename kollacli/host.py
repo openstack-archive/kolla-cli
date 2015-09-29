@@ -102,7 +102,7 @@ class HostDestroy(Command):
             container_prefix = base_distro + '-' + install_type
             kollacli_home = get_kollacli_home()
             admin_user = get_admin_user()
-            command_string = ('sudo -u %s ansible-playbook %s '
+            command_string = ('/usr/bin/sudo -u %s ansible-playbook %s '
                               % (admin_user, flag))
             inventory_string = '-i ' + os.path.join(kollacli_home,
                                                     'tools',

@@ -44,8 +44,9 @@ class KollaCli(App):
         try:
             inventory_file = open(inventory_path, 'r+')
         except Exception:
-            raise CommandError('permission denied to run kollacli' +
-                               ', add this user to the kolla group')
+            raise CommandError('Permission denied to run the kollacli.' +
+                               '\nPlease add user to the kolla group and ' +
+                               'then log out and back in.')
         finally:
             if inventory_file and inventory_file.close is False:
                 inventory_file.close()
