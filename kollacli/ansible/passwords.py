@@ -63,5 +63,6 @@ def _get_cmd_prefix():
     pwd_file_path = os.path.join(utils.get_kolla_etc(),
                                  PWDS_FILENAME)
     user = utils.get_admin_user()
-    prefix = 'sudo -u %s %s -p %s ' % (user, editor_path, pwd_file_path)
+    prefix = '/usr/bin/sudo -u %s %s -p %s ' % (user,
+                                                editor_path, pwd_file_path)
     return prefix

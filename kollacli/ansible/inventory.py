@@ -139,7 +139,7 @@ class Host(object):
 
     def check(self, result_only=False):
         kollacli_home = get_kollacli_home()
-        command_string = 'sudo -u kolla ansible '
+        command_string = '/usr/bin/sudo -u kolla ansible '
         inventory_string = '-i ' + os.path.join(kollacli_home,
                                                 'tools', 'json_generator.py')
         ping_string = ' %s %s' % (self.name, '-m ping')

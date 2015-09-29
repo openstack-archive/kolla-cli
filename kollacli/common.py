@@ -21,7 +21,6 @@ import traceback
 from kollacli.ansible.inventory import Inventory
 from kollacli.ansible.properties import AnsibleProperties
 from kollacli.exceptions import CommandError
-from kollacli.i18n import _
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
@@ -50,7 +49,7 @@ class Deploy(Command):
             kolla_home = get_kolla_home()
             kolla_etc = get_kolla_etc()
             admin_user = get_admin_user()
-            command_string = ('sudo -u %s ansible-playbook %s '
+            command_string = ('/usr/bin/sudo -u %s ansible-playbook %s '
                               % (admin_user, flag))
             inventory_string = '-i ' + os.path.join(kollacli_home,
                                                     'tools',
@@ -106,15 +105,6 @@ class Deploy(Command):
                            'documentation for swift configuration ' +
                            'instructions.')
                     raise CommandError(msg)
-
-
-class List(Command):
-    "List"
-
-    log = logging.getLogger(__name__)
-
-    def take_action(self, parsed_args):
-        self.log.info(_("list"))
 
 
 class Dump(Command):

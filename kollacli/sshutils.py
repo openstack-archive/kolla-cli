@@ -53,7 +53,8 @@ def ssh_setup_host(net_addr, password):
         # TODO(bmace) pre / post checks should be done with ansible
 
         # populate authorized keys file w/ public key
-        cmd = ('sudo su - %s -c "echo \'%s\' >> %s/.ssh/authorized_keys"'
+        cmd = ('/usr/bin/sudo su - %s -c "echo \'%s\' >> %s/.ssh/' +
+               'authorized_keys"'
                % (admin_user, public_key, os.path.expanduser('~kolla')))
         _exec_ssh_cmd(cmd, ssh_client, log)
 
