@@ -12,10 +12,10 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+import json
 import logging
 import os
 import pxssh
-import shutil
 import subprocess
 import sys
 import traceback
@@ -25,12 +25,11 @@ import testtools
 import kollacli.utils as utils
 
 TEST_SUFFIX = 'test/'
-ENV_ETC = 'KOLLA_CLI_ETC'
 VENV_PY_PATH = '.venv/bin/python'
 KOLLA_CMD = 'kollacli'
 KOLLA_SHELL_DIR = 'kollacli'
 
-HOSTS_FNAME = 'test_hosts'
+CFG_FNAME = 'test_config.json'
 
 
 class KollaCliTest(testtools.TestCase):
@@ -48,7 +47,6 @@ class KollaCliTest(testtools.TestCase):
                       % self._testMethodName)
 
         # switch to test path
-        self._setup_env_var()
         etc_path = utils.get_kollacli_etc()
         self.log.debug('etc for tests: %s' % etc_path)
 
@@ -60,14 +58,10 @@ class KollaCliTest(testtools.TestCase):
         self._init_dir(etc_ansible_path)
         self._init_file(os.path.join(etc_ansible_path, 'inventory.json'))
 
-    def tearDown(self):
-        self._restore_env_var()
-        super(KollaCliTest, self).tearDown()
-
     def run_cli_cmd(self, cmd, expect_error=False):
         full_cmd = ('%s %s' % (self.cmd_prefix, cmd))
         self.log.debug('running command: %s' % cmd)
-        (retval, msg) = self._run_command(full_cmd)
+        (retval, msg) = self.run_command(full_cmd)
 
         if not expect_error:
             self.assertEqual(0, retval, ('command failed: (%s), cmd: %s'
@@ -75,30 +69,11 @@ class KollaCliTest(testtools.TestCase):
         return msg
 
     # PRIVATE FUNCTIONS ----------------------------------------------------
-    def _setup_env_var(self):
-        """copy kolla etc to user's home directory
+    def run_command(self, cmd):
+        """run bash command
 
-        avoids unittests changing anything in /etc/kolla
+        return (retval, msg)
         """
-        self.saved_kolla_etc = utils.get_kollacli_etc()
-        user_dir = os.path.expanduser('~')
-
-        test_etc_dir = os.path.join(user_dir, 'test_kolla_etc')
-
-        # remove test etc if it exists
-        try:
-            shutil.rmtree(test_etc_dir)
-        except OSError:
-            pass
-
-        # copy over /etc/kolla to test_etc
-        shutil.copytree(self.saved_kolla_etc, test_etc_dir)
-        os.environ[ENV_ETC] = test_etc_dir
-
-    def _restore_env_var(self):
-        os.environ[ENV_ETC] = self.saved_kolla_etc
-
-    def _run_command(self, cmd):
         # self.log.debug('run cmd: %s' % cmd)
         retval = 0
         msg = ''
@@ -143,10 +118,10 @@ class KollaCliTest(testtools.TestCase):
             version in virtualenv and the tests will have to be run
             from the tests directory.
         """
-        (_, msg) = self._run_command('which python')
+        (_, msg) = self.run_command('which python')
         self.log.debug('starting with python: %s' % msg.strip())
         self.cmd_prefix = KOLLA_CMD
-        (retval, msg) = self._run_command('%s host add -h' % self.cmd_prefix)
+        (retval, msg) = self.run_command('%s host add -h' % self.cmd_prefix)
         if retval == 0:
             self.log.debug('%s found, will use as the test command'
                            % KOLLA_CMD)
@@ -228,7 +203,7 @@ class KollaCliTest(testtools.TestCase):
         return groups
 
 
-class TestHosts(object):
+class TestConfig(object):
     """host systems for testing
 
     This class can either be used for metadata to hold info about test hosts,
@@ -237,83 +212,83 @@ class TestHosts(object):
     log = logging.getLogger(__name__)
 
     def __init__(self):
-        self.info = {}
+        self.hosts_info = {}
+        self.predeploy_cmds = []
 
-    def remove(self, name):
-        del self.info[name]
+    def remove_host(self, name):
+        del self.hosts_info[name]
 
-    def add(self, name):
-        if name not in self.info:
-            self.info[name] = {'groups': [],
-                               'pwd': '',
-                               }
+    def add_host(self, name):
+        if name not in self.hosts_info:
+            self.hosts_info[name] = {
+                'groups': [], 'pwd': '', }
 
     def get_groups(self, name):
-        return self.info[name]['groups']
+        return self.hosts_info[name]['groups']
 
     def add_group(self, name, group):
-        if group not in self.info[name]['groups']:
-            self.info[name]['groups'].append(group)
+        if group not in self.hosts_info[name]['groups']:
+            self.hosts_info[name]['groups'].append(group)
 
     def remove_group(self, name, group):
-        if group in self.info[name]['groups']:
-            self.info[name]['groups'].remove(group)
+        if group in self.hosts_info[name]['groups']:
+            self.hosts_info[name]['groups'].remove(group)
 
     def get_hostnames(self):
-        return self.info.keys()
+        return self.hosts_info.keys()
 
     def set_username(self, name, username):
-        self.info[name]['username'] = username
+        self.hosts_info[name]['username'] = username
 
     def get_username(self, name):
-        return self.info[name]['username']
+        return self.hosts_info[name]['username']
 
     def set_password(self, name, password):
-        self.info[name]['pwd'] = password
+        self.hosts_info[name]['pwd'] = password
 
     def get_password(self, name):
-        return self.info[name]['pwd']
+        return self.hosts_info[name]['pwd']
+
+    def get_predeploy_cmds(self):
+        return self.predeploy_cmds
 
     def load(self):
-        """load hosts from test_hosts file
+        """load hosts from test_config.json file
 
-        format of file is:
-        hostname1 password1
-        hostname2 password2
         """
-        path = self.get_test_hosts_path()
-        with open(path, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
+        path = self.get_test_config_path()
+        with open(path, 'r+') as cfg_file:
+            test_cfg = json.load(cfg_file)
 
-                tokens = line.split()
-                if len(tokens) != 3:
-                    raise Exception('%s expected 3 params on line: %s'
-                                    % (HOSTS_FNAME, line))
-                hostname = tokens[0]
-                username = tokens[1]
-                pwd = tokens[2]
-                self.add(hostname)
-                self.set_password(hostname, pwd)
-                self.set_username(hostname, username)
+        host_info = test_cfg['hosts']
+        for hostname in host_info:
+            uname = host_info[hostname]['uname']
+            pwd = host_info[hostname]['pwd']
+            self.add_host(hostname)
+            self.set_password(hostname, pwd)
+            self.set_username(hostname, uname)
 
-    def get_test_hosts_path(self):
-        """get test_hosts directory"""
+        self.predeploy_cmds = test_cfg['predeploy_cmds']
+
+    def get_test_config_path(self):
+        """get test_config directory"""
         path = ''
         # first check the current directory
-        if os.path.exists(HOSTS_FNAME):
-            path = os.path.join(os.getcwd(), HOSTS_FNAME)
+        if os.path.exists(CFG_FNAME):
+            path = os.path.join(os.getcwd(), CFG_FNAME)
         else:
             # check the user's home directory
-            path = os.path.join(os.path.expanduser('~'), HOSTS_FNAME)
+            path = os.path.join(os.path.expanduser('~'), CFG_FNAME)
             if not os.path.exists(path):
-                raise Exception('test_hosts file not found in current ' +
+                raise Exception('%s not found in current ' % CFG_FNAME +
                                 'or home directory')
         return path
 
     def run_remote_cmd(self, cmd, hostname):
+        """run remote command on host
+
+        return output from command
+        """
         pwd = self.get_password(hostname)
         username = self.get_username(hostname)
         session = pxssh.pxssh()

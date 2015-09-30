@@ -13,7 +13,7 @@
 #   under the License.
 #
 from common import KollaCliTest
-from common import TestHosts
+from common import TestConfig
 
 import json
 import time
@@ -23,7 +23,7 @@ import unittest
 class TestFunctional(KollaCliTest):
 
     def test_host_add_remove(self):
-        hosts = TestHosts()
+        hosts = TestConfig()
 
         msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
@@ -33,28 +33,28 @@ class TestFunctional(KollaCliTest):
 
         group1 = 'control'
 
-        hosts.add(host1)
+        hosts.add_host(host1)
         self.run_cli_cmd('host add %s' % host1)
         msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-        hosts.add(host2)
+        hosts.add_host(host2)
         self.run_cli_cmd('host add %s' % host2)
         msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-        hosts.remove(host2)
+        hosts.remove_host(host2)
         self.run_cli_cmd('host remove %s' % host2)
         msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
-        hosts.remove(host1)
+        hosts.remove_host(host1)
         self.run_cli_cmd('host remove %s' % host1)
         msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
         # check groups in host list
-        hosts.add(host1)
+        hosts.add_host(host1)
         hosts.add_group(host1, group1)
         self.run_cli_cmd('host add %s' % host1)
         self.run_cli_cmd('group addhost %s %s' % (group1, host1))
@@ -67,20 +67,21 @@ class TestFunctional(KollaCliTest):
         self._check_cli_output(hosts, msg)
 
     def test_host_setup(self):
-        test_hosts = TestHosts()
-        test_hosts.load()
+        test_config = TestConfig()
+        test_config.load()
 
-        if not test_hosts:
-            self.log.info('no test_hosts file found, skipping test')
+        if not test_config.get_hostnames():
+            self.log.info('no hosts found in test_config.json file, ' +
+                          'skipping test')
             return
 
-        hostname = test_hosts.get_hostnames()[0]
+        hostname = test_config.get_hostnames()[0]
 
         key_path = '/usr/share/kolla/.ssh/authorized_keys'
-        test_hosts.run_remote_cmd(
+        test_config.run_remote_cmd(
             'cat /dev/null > %s' % key_path, hostname)
 
-        pwd = test_hosts.get_password(hostname)
+        pwd = test_config.get_password(hostname)
 
         self.run_cli_cmd('host add %s' % hostname)
 

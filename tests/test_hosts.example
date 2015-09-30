@@ -1,7 +1,0 @@
-# This is an example file for defining hosts that can be used in the
-# unit tests. The file should be named "test_hosts" and is located
-# in this directory.
-#
-# Example:
-host_1 username1 password1
-host_2 username2 password2
