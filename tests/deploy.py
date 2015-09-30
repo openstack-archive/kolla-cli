@@ -17,6 +17,7 @@ from common import KollaCliTest
 from kollacli.ansible import inventory
 
 import json
+import os
 import unittest
 
 JSON_GENPATH = '/usr/share/kolla/kollacli/tools/json_generator.py'
@@ -72,6 +73,16 @@ class TestFunctional(KollaCliTest):
         # test will start with no hosts in the inventory
         # deploy will throw an exception if it fails
         self.run_cli_cmd('deploy')
+
+        # quick check of kollacli dump
+        # dump successful to /tmp/kollacli_dump_Umxu6d.tgz
+        msg = self.run_cli_cmd('dump')
+        self.assertIn('/', msg, 'path not found in dump output: %s' % msg)
+
+        dump_path = '/' + msg.strip().split('/', 1)[1]
+        is_file = os.path.isfile(dump_path)
+        self.assertTrue(is_file,
+                        'dump file not found at %s' % dump_path)
 
 
 if __name__ == '__main__':
