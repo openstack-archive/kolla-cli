@@ -107,6 +107,7 @@ rm -rf %{buildroot}
 %attr(550, %{kolla_user}, %{kolla_group}) %dir %{_datadir}/kolla/kollacli/tools
 %attr(555, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/json*
 %attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/passwd*
+%attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/log_*
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
 %attr(2770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
