@@ -112,12 +112,13 @@ rm -rf %{buildroot}
 %attr(2770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
 
 %post
-sudo -u %{kolla_user} setfacl -m d:g:%{kolla_group}:rw %{_var}/log/kolla
+setfacl -m d:g:%{kolla_group}:rw %{_var}/log/kolla
 
 if ! test -f ~%{kolla_user}/.ssh/id_rsa
 then
-    sudo -u %{kolla_user} \
-        /usr/bin/ssh-keygen -q -t rsa -N '' -f ~%{kolla_user}/.ssh/id_rsa
+    runuser -m -s /bin/bash -c \
+        "/usr/bin/ssh-keygen -q -t rsa -N '' -f ~%{kolla_user}/.ssh/id_rsa" \
+        %{kolla_user}
     cp -p ~%{kolla_user}/.ssh/id_rsa.pub %{_sysconfdir}/kolla/kollacli/id_rsa.pub
     chmod 0440 %{_sysconfdir}/kolla/kollacli/id_rsa.pub
 fi
@@ -144,6 +145,9 @@ esac
 
 
 %changelog
+* Thu Oct 01 2015 - Steve Noyes <steve.noyes@oracle.com>
+- replace sudo command with runuser
+
 * Fri Sep 25 2015 - Steve Noyes <steve.noyes@oracle.com>
 - added sticky bits and acl to simplify logging permissions
 
