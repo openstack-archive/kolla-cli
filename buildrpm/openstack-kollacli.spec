@@ -120,9 +120,14 @@ then
     runuser -m -s /bin/bash -c \
         "/usr/bin/ssh-keygen -q -t rsa -N '' -f ~%{kolla_user}/.ssh/id_rsa" \
         %{kolla_user}
+fi
+
+if ! test -f %{_sysconfdir}/kolla/kollacli/id_rsa.pub
+then
     cp -p ~%{kolla_user}/.ssh/id_rsa.pub %{_sysconfdir}/kolla/kollacli/id_rsa.pub
     chmod 0440 %{_sysconfdir}/kolla/kollacli/id_rsa.pub
 fi
+
 /usr/bin/kollacli complete >/etc/bash_completion.d/kollacli 2>/dev/null
 
 # Update the sudoers file
@@ -146,6 +151,9 @@ esac
 
 
 %changelog
+* Fri Oct  2 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
+- Allow user to precreate the ssh keys
+
 * Thu Oct 01 2015 - Steve Noyes <steve.noyes@oracle.com>
 - replace sudo command with runuser
 
