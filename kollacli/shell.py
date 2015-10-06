@@ -40,7 +40,7 @@ class KollaCli(App):
                                       INVENTORY_PATH)
         if os.path.isfile(inventory_path) is False:
             raise CommandError('Required file ' + inventory_path +
-                               'does not exist.\n' +
+                               ' does not exist.\n' +
                                'Please re-install the kollacli ' +
                                'to recreate the file.')
 
