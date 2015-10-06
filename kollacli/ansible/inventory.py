@@ -218,7 +218,7 @@ class Service(object):
         pass
 
     def add_groupname(self, groupname):
-        if groupname is not None:
+        if groupname is not None and groupname not in self._groupnames:
             self._groupnames.append(groupname)
 
     def remove_groupname(self, groupname):
