@@ -38,6 +38,12 @@ class KollaCli(App):
         # check that current user is in the kolla group
         inventory_path = os.path.join(get_kollacli_etc(),
                                       INVENTORY_PATH)
+        if os.path.isfile(inventory_path) is False:
+            raise CommandError('Required file ' + inventory_path +
+                               'does not exist.\n' +
+                               'Please re-install the kollacli ' +
+                               'to recreate the file.')
+
         inventory_file = None
         try:
             inventory_file = open(inventory_path, 'r+')
