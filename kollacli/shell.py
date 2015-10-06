@@ -38,11 +38,10 @@ class KollaCli(App):
         # check that current user is in the kolla group
         inventory_path = os.path.join(get_kollacli_etc(),
                                       INVENTORY_PATH)
+        errString = 'Required file %s does not exist.\n' + \
+                    'Please re-install the kollacli to recreate the file.'
         if os.path.isfile(inventory_path) is False:
-            raise CommandError('Required file ' + inventory_path +
-                               ' does not exist.\n' +
-                               'Please re-install the kollacli ' +
-                               'to recreate the file.')
+            raise CommandError(errString % inventory_path)
 
         inventory_file = None
         try:
@@ -59,7 +58,7 @@ class KollaCli(App):
         self.max_bytes = 500000
         self.backup_count = 4
 
-        self.dump_stack_trace = True
+        self.dump_stack_trace = False
 
         self.add_rotational_log()
 
