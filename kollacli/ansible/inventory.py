@@ -489,6 +489,14 @@ class Inventory(object):
         if groupname in PROTECTED_GROUPS:
             raise CommandError('Cannot remove %s group. ' % groupname +
                                'It is required by kolla.')
+
+        # remove group from services & subservices
+        for service in self._services.values():
+            service.remove_groupname(groupname)
+
+        for subservice in self._sub_services.values():
+            subservice.remove_groupname(groupname)
+
         if groupname in self._groups:
             del self._groups[groupname]
 

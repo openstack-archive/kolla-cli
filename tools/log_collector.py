@@ -20,9 +20,9 @@ import tarfile
 import tempfile
 
 from kollacli.ansible.inventory import Inventory
+from kollacli.ansible import properties
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_kollacli_home
-from kollacli.ansible import properties
 
 
 def run_ansible_cmd(cmd, host):
@@ -63,7 +63,7 @@ def add_logdata_to_tar(logdata, tar, host, cname, cid):
     os.remove(tmp_path)
 
 
-def get_containers(host):
+def get_containers(host, tar):
     """return dict {id:name}"""
     cmd = '/bin/docker ps -a'
     out = run_ansible_cmd(cmd, host)
@@ -82,18 +82,27 @@ def get_containers(host):
     # typically this prefix will be "ol-openstack-"
     container_prefix = base_distro + '-' + install_type + '-'
 
+    # add ps output to tar
+    add_logdata_to_tar(out, tar, host, 'docker', 'ps')
+
+    # process ps output
     containers = {}
+    valid_found = False
     lines = out.split('\n')
     for line in lines:
         if container_prefix not in line:
             # skip non-kolla containers
             continue
+        valid_found = True
         tokens = line.split()
         cid = tokens[0]
         image = tokens[1]
         name = image.split(container_prefix)[1]
         name = name.split(':')[0]
         containers[cid] = name
+    if not valid_found:
+        print('no containers with %s in image name found on %s'
+              % (container_prefix, host))
     return containers
 
 
@@ -109,7 +118,7 @@ def add_container_log(cid, cname, host, tar):
 
 
 def add_logs_from_host(host, tar):
-    containers = get_containers(host)
+    containers = get_containers(host, tar)
     if containers:
         for (cid, cname) in containers.items():
             add_container_log(cid, cname, host, tar)

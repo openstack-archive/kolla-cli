@@ -232,6 +232,14 @@ class TestFunctional(KollaCliTest):
                          % service +
                          'is not "yes"')
 
+        test_group = 'testgroup'
+        self.run_cli_cmd('group add %s' % test_group)
+        self.run_cli_cmd('service addgroup cinder %s' % test_group)
+        self.run_cli_cmd('group remove %s' % test_group)
+        msg = self.run_cli_cmd('service listgroups -f json')
+        self.assertNotIn(test_group, msg,
+                         'Group: %s, still listed in services: %s'
+                         % test_group, msg)
 
 if __name__ == '__main__':
     unittest.main()
