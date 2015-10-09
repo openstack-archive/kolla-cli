@@ -17,6 +17,7 @@ import logging
 import os
 import shutil
 import traceback
+import yaml
 
 from tempfile import mkstemp
 
@@ -286,7 +287,10 @@ class SubService(object):
 
 class Inventory(object):
     class_version = 1
+    """class version history
 
+    1: initial release
+    """
     def __init__(self):
         self._groups = {}           # kv = name:object
         self._hosts = {}            # kv = name:object
@@ -300,22 +304,12 @@ class Inventory(object):
         self._create_default_inventory()
 
     def upgrade(self):
-        if self.version == 1:
-            """
-            # upgrading from v1 to v2
-            # insert upgrade handler here...
-            #
-            # here's an example of renaming 'glance' service to 'glance2'
-            groups = self.get_groups()
-            for group in groups:
-                for service in group.services:
-                    if service.name == 'glance':
-                        service.name = 'glance2'
-                        break
-            """
+        if self.version <= 1:
+            # upgrade from v1
+            pass
 
-        # update version and save upgraded inventory file
-        self.version = self.class_version
+        # update the version and save upgraded inventory file
+        self.version = self.__class__.class_version
         Inventory.save(self)
 
     @staticmethod
@@ -399,17 +393,6 @@ class Inventory(object):
 
     def get_hostnames(self):
         return self._hosts.keys()
-
-    def get_host_groups(self):
-        """return { hostname : groupnames }"""
-
-        host_groups = {}
-        for host in self._hosts.values():
-            host_groups[host.name] = []
-            groups = self.get_groups(host)
-            for group in groups:
-                host_groups[host.name].append(group.name)
-        return host_groups
 
     def get_host(self, hostname):
         host = None
@@ -503,8 +486,11 @@ class Inventory(object):
     def get_group(self, groupname):
         group = None
         if groupname in self._groups:
-            group = self._group[groupname]
+            group = self._groups[groupname]
         return group
+
+    def get_groupnames(self):
+        return self._groups.keys()
 
     def get_groups(self, host=None):
         """return all groups containing host
@@ -520,6 +506,17 @@ class Inventory(object):
                 if host.name in group.get_hostnames():
                     groups.append(group)
         return groups
+
+    def get_host_groups(self):
+        """return { hostname : groupnames }"""
+
+        host_groups = {}
+        for host in self._hosts.values():
+            host_groups[host.name] = []
+            groups = self.get_groups(host)
+            for group in groups:
+                host_groups[host.name].append(group.name)
+        return host_groups
 
     def get_group_services(self):
         """get groups and their services
@@ -647,8 +644,13 @@ class Inventory(object):
         for group in self.get_groups():
             group.set_remote(remote_flag)
 
-    def get_ansible_json(self):
+    def get_ansible_json(self, filter_path=None):
         """generate json inventory for ansible
+
+        The hosts and groups added to the json output for ansible will be
+        filtered by the hostnames and groupnames in the deploy filters.
+        This allows a more targeted deploy to a specific set of hosts or
+        groups.
 
         typical ansible json format:
         {
@@ -678,10 +680,18 @@ class Inventory(object):
     """
         jdict = {}
 
+        # get the filters from the filters file (if it exists)
+        deploy_hostnames, deploy_groupnames = \
+            self._get_deploy_objects(filter_path)
+
         # add hostgroups
         for group in self.get_groups():
             jdict[group.name] = {}
-            jdict[group.name]['hosts'] = group.get_hostnames()
+            jdict[group.name]['hosts'] = []
+
+            if group.name in deploy_groupnames:
+                jdict[group.name]['hosts'] = \
+                    self._filter_hosts(group.get_hostnames(), deploy_hostnames)
             jdict[group.name]['children'] = []
             jdict[group.name]['vars'] = group.get_vars()
 
@@ -695,8 +705,10 @@ class Inventory(object):
             jdict[sub_svc.name] = {}
             groupnames = sub_svc.get_groupnames()
             if groupnames:
-                jdict[sub_svc.name]['children'] = sub_svc.get_groupnames()
+                # sub-service is associated with a group(s)
+                jdict[sub_svc.name]['children'] = groupnames
             else:
+                # sub-service is associated with parent service
                 jdict[sub_svc.name]['children'] = \
                     [sub_svc.get_parent_service_name()]
 
@@ -704,13 +716,66 @@ class Inventory(object):
         # ansible commands that are performed on hosts not yet in groups.
         group = self.add_group('__RESERVED__')
         jdict[group.name] = {}
-        jdict[group.name]['hosts'] = self.get_hostnames()
+        jdict[group.name]['hosts'] = deploy_hostnames
         jdict[group.name]['vars'] = group.get_vars()
         self.remove_group(group.name)
 
         # process hosts vars
         jdict['_meta'] = {}
         jdict['_meta']['hostvars'] = {}
-        for host in self.get_hosts():
-            jdict['_meta']['hostvars'][host.name] = host.get_vars()
+        for hostname in deploy_hostnames:
+            host = self.get_host(hostname)
+            jdict['_meta']['hostvars'][hostname] = host.get_vars()
         return json.dumps(jdict, indent=2)
+
+    def _filter_hosts(self, initial_hostnames, deploy_hostnames):
+        """filter out hosts not in deploy hosts"""
+        filtered_hostnames = []
+        for hostname in deploy_hostnames:
+            if hostname in initial_hostnames:
+                filtered_hostnames.append(hostname)
+        return filtered_hostnames
+
+    def _get_deploy_objects(self, filter_path):
+        """get deploy hosts and groups from filter file
+
+        return hostnames, groupnames
+        """
+        # the default is all groups, all hosts
+
+        if filter_path:
+            with open(filter_path, 'r') as filter_file:
+                filters = yaml.load(filter_file.read())
+
+                deploy_groupnames = \
+                    self._get_filtered_objects(filters, 'deploy_groups')
+                deploy_hostnames = \
+                    self._get_filtered_objects(filters, 'deploy_hosts')
+        else:
+            deploy_groupnames = self.get_groupnames()
+            deploy_hostnames = self.get_hostnames()
+
+        return deploy_hostnames, deploy_groupnames
+
+    def _get_filtered_objects(self, filters, key):
+        # default is all hosts, all groups
+        deploy_names = []
+        if key == 'deploy_groups':
+            object_type = 'group'
+            deploy_names = self.get_groupnames()
+        elif key == 'deploy_hosts':
+            object_type = 'host'
+            deploy_names = self.get_hostnames()
+        else:
+            raise(CommandError('%s is not a valid key type'
+                               % key))
+        if key in filters:
+            names = filters[key]
+            if names:
+                # validate names
+                for name in names:
+                    if name not in deploy_names:
+                        raise(CommandError('%s is not a valid %s name'
+                                           % (name, object_type)))
+                deploy_names = names
+        return deploy_names

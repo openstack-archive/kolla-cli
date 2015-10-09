@@ -49,6 +49,9 @@ class TestFunctional(KollaCliTest):
         for group in inventory.DEPLOY_GROUPS:
             self.run_cli_cmd('group addhost %s %s' % (group, hostname))
 
+        # destroy services, initialize server
+        self.run_cli_cmd('host destroy %s' % hostname)
+
         # disable most services so the test is quicker
         for disabled_service in DISABLED_SERVICES:
             self.run_cli_cmd('property set enable_%s no' % disabled_service)

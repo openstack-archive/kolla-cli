@@ -21,8 +21,8 @@ class TestFunctional(KollaCliTest):
     def test_property_set_clear(self):
         # test list
         msg = self.run_cli_cmd('property list')
-        key = 'openstack_release'
-        value = 'latest'
+        key = 'kolla_base_distro'
+        value = 'ol'
         ok = self._property_value_exists(key, value, msg)
         self.assertTrue(ok, 'property not in output: %s, %s' % (key, value))
 
