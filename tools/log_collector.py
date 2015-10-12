@@ -24,6 +24,8 @@ from kollacli.ansible import properties
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_kollacli_home
 
+tar_file_descr = None
+
 
 def run_ansible_cmd(cmd, host):
     # sudo -u kolla ansible ol7-c4 -i
@@ -53,17 +55,17 @@ def run_ansible_cmd(cmd, host):
     return out
 
 
-def add_logdata_to_tar(logdata, tar, host, cname, cid):
+def add_logdata_to_tar(logdata, host, cname, cid):
     print('Adding container log %s:%s(%s)' % (host, cname, cid))
     fd, tmp_path = tempfile.mkstemp()
     os.close(fd)  # avoid fd leak
     with open(tmp_path, 'w') as tmpfile:
         tmpfile.write(logdata)
-    tar.add(tmp_path, arcname='/%s/%s_%s.log' % (host, cname, cid))
+    tar_file_descr.add(tmp_path, arcname='/%s/%s_%s.log' % (host, cname, cid))
     os.remove(tmp_path)
 
 
-def get_containers(host, tar):
+def get_containers(host):
     """return dict {id:name}"""
     cmd = '/bin/docker ps -a'
     out = run_ansible_cmd(cmd, host)
@@ -83,7 +85,7 @@ def get_containers(host, tar):
     container_prefix = base_distro + '-' + install_type + '-'
 
     # add ps output to tar
-    add_logdata_to_tar(out, tar, host, 'docker', 'ps')
+    add_logdata_to_tar(out, host, 'docker', 'ps')
 
     # process ps output
     containers = {}
@@ -106,7 +108,7 @@ def get_containers(host, tar):
     return containers
 
 
-def add_container_log(cid, cname, host, tar):
+def add_container_log(cid, cname, host):
     cmd = '/bin/docker logs %s' % cid
     out = run_ansible_cmd(cmd, host)
     if out:
@@ -114,14 +116,14 @@ def add_container_log(cid, cname, host, tar):
         header = ('Host: %s, Container: %s, id: %s\n'
                   % (host, cname, cid))
         out = header + out
-        add_logdata_to_tar(out, tar, host, cname, cid)
+        add_logdata_to_tar(out, host, cname, cid)
 
 
-def add_logs_from_host(host, tar):
-    containers = get_containers(host, tar)
+def add_logs_from_host(host):
+    containers = get_containers(host)
     if containers:
         for (cid, cname) in containers.items():
-            add_container_log(cid, cname, host, tar)
+            add_container_log(cid, cname, host)
 
 
 def main():
@@ -129,6 +131,8 @@ def main():
 
     $ command is $ log_collector.py <all | host1[,host2,host3...]>
     """
+    global tar_file_descr
+
     help_msg = 'Usage: log_collector.py <all | host1[,host2,host3...]>'
     hosts = []
     if len(sys.argv) == 2:
@@ -150,14 +154,31 @@ def main():
         sys.exit(1)
 
     # open tar file for storing logs
-    fd, tar_path = tempfile.mkstemp(prefix='kolla_docker_logs_',
+    fd, tar_path = tempfile.mkstemp(prefix='kolla_support_logs_',
                                     suffix='.tgz')
     os.close(fd)  # avoid fd leak
 
-    with tarfile.open(tar_path, 'w:gz') as tar:
+    with tarfile.open(tar_path, 'w:gz') as tar_file_descr:
+        # gather dump output from kollacli
+        print('Getting kollacli logs')
+        # cliff prints log output to stderr
+        (_, err) = subprocess.Popen('kollacli dump'.split(),
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE).communicate()
+        if '/' in err:
+            dump_path = '/' + err.strip().split('/', 1)[1]
+            if os.path.isfile(dump_path):
+                tar_file_descr.add(dump_path)
+                os.remove(dump_path)
+            else:
+                print('ERROR: No kolla dump output file at %s' % dump_path)
+        else:
+            print('ERROR: No path found in dump command output: %s' % err)
+
+        # gather logs from selected hosts
         for host in hosts:
             print('Getting docker logs from host: %s' % host)
-            add_logs_from_host(host, tar)
+            add_logs_from_host(host)
     print('Log collection complete. Logs are at %s' % tar_path)
 
 if __name__ == '__main__':
