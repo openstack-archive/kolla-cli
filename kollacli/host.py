@@ -20,6 +20,7 @@ import traceback
 import utils
 
 from kollacli.ansible.inventory import Inventory
+from kollacli.ansible.playbook import AnsiblePlaybook
 from kollacli.ansible import properties
 from kollacli.exceptions import CommandError
 from kollacli.utils import convert_to_unicode
@@ -88,11 +89,6 @@ class HostDestroy(Command):
                 if not host:
                     _host_not_found(self.log, hostname)
 
-            flag = ''
-            # verbose levels: 1=not verbose, 2=more verbose
-            if self.app.options.verbose_level > 1:
-                flag = '-vvv'
-
             self.log.info('please be patient as this may take a while.')
             ansible_properties = properties.AnsibleProperties()
             base_distro = \
@@ -101,43 +97,17 @@ class HostDestroy(Command):
                 ansible_properties.get_property('kolla_install_type')
             container_prefix = base_distro + '-' + install_type
             kollacli_home = get_kollacli_home()
-            admin_user = get_admin_user()
-            command_string = ('/usr/bin/sudo -u %s ansible-playbook %s '
-                              % (admin_user, flag))
-            inventory_string = '-i ' + os.path.join(kollacli_home,
-                                                    'tools',
-                                                    'json_generator.py ')
-            playbook_string = ' ' + os.path.join(kollacli_home,
+            playbook = AnsiblePlaybook()
+            playbook.playbook_path = os.path.join(kollacli_home,
                                                  'ansible/host_destroy.yml')
-            extra_vars_string = ' --extra-vars \"hosts=' + hostname + \
-                                ' prefix=' + container_prefix + '\"'
-            cmd = command_string + inventory_string
-            cmd = cmd + playbook_string + extra_vars_string
-            print_output = False
-
-            if self.app.options.verbose_level > 1:
-                # log the ansible command
-                self.log.debug('cmd:' + cmd)
-                print_output = True
-
-                if self.app.options.verbose_level > 2:
-                    # log the inventory
-                    dbg_gen = os.path.join(kollacli_home, 'tools',
-                                           'json_generator.py ')
-                    (inv, _) = \
-                        subprocess.Popen(dbg_gen.split(' '),
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE).communicate()
-                    self.log.debug(inv)
-
-            err_flag, _ = run_cmd(cmd, print_output)
-            if err_flag:
-                raise Exception('destroy failed')
-
-            self.log.info('destroy succeeded')
+            playbook.extra_vars = ' --extra-vars \"hosts=' + hostname + \
+                                  ' prefix=' + container_prefix + '\"'
+            playbook.print_output = False
+            playbook.verbose_level = self.app.options.verbose_level
+            playbook.run()
         except CommandError as e:
             raise e
-        except Exception:
+        except Exception as e:
             raise Exception(traceback.format_exc())
 
 

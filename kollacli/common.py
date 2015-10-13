@@ -19,6 +19,7 @@ import tempfile
 import traceback
 
 from kollacli.ansible.inventory import Inventory
+from kollacli.ansible.playbook import AnsiblePlaybook
 from kollacli.ansible.properties import AnsibleProperties
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
@@ -39,52 +40,13 @@ class Deploy(Command):
 
     def take_action(self, parsed_args):
         self._run_rules()
-        try:
-            flag = ''
-            # verbose levels: 1=not verbose, 2=more verbose
-            if self.app.options.verbose_level > 1:
-                flag = '-vvv'
 
-            kollacli_home = get_kollacli_home()
-            kolla_home = get_kolla_home()
-            kolla_etc = get_kolla_etc()
-            admin_user = get_admin_user()
-            command_string = ('/usr/bin/sudo -u %s ansible-playbook %s '
-                              % (admin_user, flag))
-            inventory_string = '-i ' + os.path.join(kollacli_home,
-                                                    'tools',
-                                                    'json_generator.py ')
-            globals_string = ' -e @' + os.path.join(kolla_etc,
-                                                    'globals.yml')
-            passwords_string = ' -e @' + os.path.join(kolla_etc,
-                                                      'passwords.yml')
-            site_string = ' ' + os.path.join(kolla_home, 'ansible/site.yml')
-            cmd = (command_string + inventory_string + globals_string)
-            cmd = cmd + passwords_string + site_string
-
-            if self.app.options.verbose_level > 1:
-                # log the ansible command
-                self.log.debug('cmd:' + cmd)
-
-                if self.app.options.verbose_level > 2:
-                    # log the inventory
-                    dbg_gen = os.path.join(kollacli_home, 'tools',
-                                           'json_generator.py ')
-                    (inv, _) = \
-                        subprocess.Popen(dbg_gen.split(' '),
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE).communicate()
-                    self.log.debug(inv)
-
-            err_flag, _ = run_cmd(cmd, True)
-            if err_flag:
-                raise Exception('deploy failed')
-
-            self.log.info('deploy succeeded')
-        except CommandError as e:
-            raise e
-        except Exception as e:
-            raise Exception(traceback.format_exc())
+        playbook = AnsiblePlaybook()
+        kolla_home = get_kolla_home()
+        playbook.playbook_path = os.path.join(kolla_home,
+                                              'ansible/site.yml')
+        playbook.verbose_level = self.app.options.verbose_level
+        playbook.run()
 
     def _run_rules(self):
         # check that ring files are in /etc/kolla/config/swift if
