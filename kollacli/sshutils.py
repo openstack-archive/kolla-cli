@@ -39,10 +39,11 @@ def ssh_connect(net_addr, username, password):
         raise Exception(traceback.format_exc())
 
 
-def ssh_setup_host(net_addr, password):
+def ssh_setup_host(net_addr, password, setup_user=None):
     log = logging.getLogger(__name__)
     admin_user = get_admin_user()
-    setup_user = get_setup_user()
+    if setup_user is None:
+        setup_user = get_setup_user()
     public_key = ssh_get_public_key()
     ssh_client = None
 

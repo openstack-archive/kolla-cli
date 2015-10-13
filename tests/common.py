@@ -12,13 +12,13 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-import json
 import logging
 import os
 import pxssh
 import subprocess
 import sys
 import traceback
+import yaml
 
 import testtools
 
@@ -29,7 +29,7 @@ VENV_PY_PATH = '.venv/bin/python'
 KOLLA_CMD = 'kollacli'
 KOLLA_SHELL_DIR = 'kollacli'
 
-CFG_FNAME = 'test_config.json'
+CFG_FNAME = 'test_config.yml'
 
 
 class KollaCliTest(testtools.TestCase):
@@ -258,12 +258,14 @@ class TestConfig(object):
         """
         path = self.get_test_config_path()
         with open(path, 'r+') as cfg_file:
-            test_cfg = json.load(cfg_file)
+            yml_data = cfg_file.read()
 
-        host_info = test_cfg['hosts']
-        for hostname in host_info:
-            uname = host_info[hostname]['uname']
-            pwd = host_info[hostname]['pwd']
+        test_cfg = yaml.load(yml_data)
+
+        hosts_info = test_cfg['hosts']
+        for hostname, host_info in hosts_info.items():
+            uname = host_info['uname']
+            pwd = host_info['pwd']
             self.add_host(hostname)
             self.set_password(hostname, pwd)
             self.set_username(hostname, uname)
