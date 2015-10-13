@@ -16,8 +16,12 @@ from common import KollaCliTest
 from common import TestConfig
 
 import json
+import os
 import time
 import unittest
+import yaml
+
+TEST_YML_FNAME = 'unittest_hosts_setup.yml'
 
 
 class TestFunctional(KollaCliTest):
@@ -105,6 +109,64 @@ class TestFunctional(KollaCliTest):
         self.assertNotIn('ERROR:', msg, 'Check after setup failed on ' +
                          'host: (%s)' % hostname)
 
+    def test_hosts_setup(self):
+        """test multi-host setup"""
+        test_config = TestConfig()
+        test_config.load()
+
+        if not test_config.get_hostnames():
+            self.log.info('no hosts found in test_config.json file, ' +
+                          'skipping test')
+            return
+
+        yml_path = self.get_yml_path()
+        hostnames = test_config.get_hostnames()
+        for hostname in hostnames:
+            self.run_cli_cmd('host add %s' % hostname)
+
+        # test all hosts, success path
+        use_uname = False
+        yml_dict = {}
+        for hostname in hostnames:
+            yml_dict[hostname] = {}
+            password = test_config.get_password(hostname)
+            if use_uname:
+                yml_dict[hostname]['uname'] = 'root'
+            use_uname = not use_uname
+            yml_dict[hostname]['password'] = password
+        self.write_yml(yml_dict)
+        msg = self.run_cli_cmd('host setup --file %s' % yml_path)
+        self.log.info(msg)
+
+        # failure paths
+
+        # no hostname and no file spec
+        msg = self.run_cli_cmd('host setup', True)
+        self.assertIn('ERROR', msg, 'No command params did not error')
+
+        # hostname and file spec both present
+        msg = self.run_cli_cmd('host setup -f zzzzz hostname', True)
+        self.assertIn('ERROR', msg, '2 params did not error')
+
+        # non-existent file
+        msg = self.run_cli_cmd('host setup -f !INVALID_FILE_PATH!', True)
+        self.assertIn('ERROR', msg, 'Non-existent yml file did not error')
+
+        # empty file
+        self.write_yml({})
+        msg = self.run_cli_cmd('host setup -f %s' % yml_path, True)
+        self.assertIn('ERROR', msg, 'Empty yml file did not error')
+
+        # non-existent host
+        self.write_yml({'NOT_HOSTNAME': {'password': '123'}})
+        msg = self.run_cli_cmd('host setup -f %s' % yml_path, True)
+        self.assertIn('ERROR', msg, 'non-existent host did not error')
+
+        # no password for host
+        self.write_yml({hostnames[0]: {'uname': 'name'}})
+        msg = self.run_cli_cmd('host setup -f %s' % yml_path, True)
+        self.assertIn('ERROR', msg, 'no password for host did not error')
+
     def _check_cli_output(self, exp_hosts, cli_output):
         """Verify cli data against model data
 
@@ -144,6 +206,14 @@ class TestFunctional(KollaCliTest):
                             'hostname: %s not in cli output: \n%s'
                             % (exp_hostname, cli_output))
 
+    def write_yml(self, yml_dict):
+        yml = yaml.dump(yml_dict)
+        with open(self.get_yml_path(), 'w') as yml_file:
+            yml_file.write(yml)
+
+    def get_yml_path(self):
+        home = os.path.expanduser('~')
+        return os.path.join(home, TEST_YML_FNAME)
 
 if __name__ == '__main__':
     unittest.main()

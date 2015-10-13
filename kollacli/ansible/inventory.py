@@ -120,14 +120,14 @@ class Host(object):
     def upgrade(self):
         pass
 
-    def setup(self, password):
+    def setup(self, password, uname=None):
         # TODO(bmace) should run check before doing setup
         # not setup- we need to set up the user / remote ssh keys
         # using root and the available password
         try:
             self.log.info('Starting setup of host (%s)'
                           % self.name)
-            ssh_setup_host(self.name, password)
+            ssh_setup_host(self.name, password, uname)
             check_ok = self.check(True)
             if not check_ok:
                 raise Exception('Post setup check failed')
@@ -287,6 +287,9 @@ class SubService(object):
 
 class Inventory(object):
     class_version = 1
+
+    log = logging.getLogger(__name__)
+
     """class version history
 
     1: initial release
@@ -451,6 +454,42 @@ class Inventory(object):
 
         if not groupname:
             del self._hosts[hostname]
+
+    def setup_hosts(self, hosts_info):
+        """setup multiple hosts
+
+        hosts_info is a dict of format:
+        {'hostname1': {
+            'password': password
+            'uname': user_name
+            }
+        }
+        The uname entry is optional.
+        """
+        failed_hosts = {}
+        for hostname, host_info in hosts_info.items():
+            host = self.get_host(hostname)
+            if not host:
+                failed_hosts[hostname] = "Host doesn't exist"
+                continue
+            if not host_info or 'password' not in host_info:
+                failed_hosts[hostname] = 'No password in yml file'
+                continue
+            passwd = host_info['password']
+            uname = None
+            if 'uname' in host_info:
+                uname = host_info['uname']
+            try:
+                host.setup(passwd, uname)
+            except Exception as e:
+                failed_hosts[hostname] = '%s' % e
+        if failed_hosts:
+            summary = '\n'
+            for hostname, err in failed_hosts.items():
+                summary = summary + '- %s: %s\n' % (hostname, err)
+            raise CommandError('Not all hosts were set up: %s' % summary)
+        else:
+            self.log.info('All hosts were successfully set up')
 
     def add_group(self, groupname):
 
