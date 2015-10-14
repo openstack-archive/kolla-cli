@@ -16,8 +16,8 @@ import jsonpickle
 import logging
 import os
 import shutil
+import tempfile
 import traceback
-import yaml
 
 from tempfile import mkstemp
 
@@ -683,7 +683,7 @@ class Inventory(object):
         for group in self.get_groups():
             group.set_remote(remote_flag)
 
-    def get_ansible_json(self, filter_path=None):
+    def get_ansible_json(self, inventory_filter=None):
         """generate json inventory for ansible
 
         The hosts and groups added to the json output for ansible will be
@@ -719,9 +719,14 @@ class Inventory(object):
     """
         jdict = {}
 
-        # get the filters from the filters file (if it exists)
-        deploy_hostnames, deploy_groupnames = \
-            self._get_deploy_objects(filter_path)
+        # if no filter provided, use all groups, all hosts
+        deploy_hostnames = self.get_hostnames()
+        deploy_groupnames = self.get_groupnames()
+        if inventory_filter:
+            if 'deploy_hosts' in inventory_filter:
+                deploy_hostnames = inventory_filter['deploy_hosts']
+            if 'deploy_groups' in inventory_filter:
+                deploy_groupnames = inventory_filter['deploy_groups']
 
         # add hostgroups
         for group in self.get_groups():
@@ -765,7 +770,7 @@ class Inventory(object):
         for hostname in deploy_hostnames:
             host = self.get_host(hostname)
             jdict['_meta']['hostvars'][hostname] = host.get_vars()
-        return json.dumps(jdict, indent=2)
+        return json.dumps(jdict)
 
     def _filter_hosts(self, initial_hostnames, deploy_hostnames):
         """filter out hosts not in deploy hosts"""
@@ -775,46 +780,23 @@ class Inventory(object):
                 filtered_hostnames.append(hostname)
         return filtered_hostnames
 
-    def _get_deploy_objects(self, filter_path):
-        """get deploy hosts and groups from filter file
+    def create_json_gen_file(self, inventory_filter=None):
+        """create json inventory file using filter ({})
 
-        return hostnames, groupnames
+        return path to filtered json generator file
         """
-        # the default is all groups, all hosts
+        json_out = self.get_ansible_json(inventory_filter)
 
-        if filter_path:
-            with open(filter_path, 'r') as filter_file:
-                filters = yaml.load(filter_file.read())
+        fd, json_gen_path = tempfile.mkstemp(prefix='kollacli_json_gen_',
+                                             suffix='.py')
+        os.close(fd)  # avoid fd leak
 
-                deploy_groupnames = \
-                    self._get_filtered_objects(filters, 'deploy_groups')
-                deploy_hostnames = \
-                    self._get_filtered_objects(filters, 'deploy_hosts')
-        else:
-            deploy_groupnames = self.get_groupnames()
-            deploy_hostnames = self.get_hostnames()
+        with open(json_gen_path, 'w') as json_gen_file:
+            json_gen_file.write('#!/usr/bin/env python\n')
+            # the quotes here are significant. The json_out has double quotes
+            # embedded in it so single quotes are needed to wrap it.
+            json_gen_file.write("print('%s')" % json_out)
 
-        return deploy_hostnames, deploy_groupnames
-
-    def _get_filtered_objects(self, filters, key):
-        # default is all hosts, all groups
-        deploy_names = []
-        if key == 'deploy_groups':
-            object_type = 'group'
-            deploy_names = self.get_groupnames()
-        elif key == 'deploy_hosts':
-            object_type = 'host'
-            deploy_names = self.get_hostnames()
-        else:
-            raise(CommandError('%s is not a valid key type'
-                               % key))
-        if key in filters:
-            names = filters[key]
-            if names:
-                # validate names
-                for name in names:
-                    if name not in deploy_names:
-                        raise(CommandError('%s is not a valid %s name'
-                                           % (name, object_type)))
-                deploy_names = names
-        return deploy_names
+        # set executable by group
+        os.chmod(json_gen_path, 0o550)
+        return json_gen_path

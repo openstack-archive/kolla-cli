@@ -14,13 +14,12 @@
 #
 from common import KollaCliTest
 
-from kollacli.ansible import inventory
+from kollacli.ansible.inventory import Inventory
+from kollacli.ansible.inventory import SERVICES
 
 import json
 import os
 import unittest
-
-JSON_GENPATH = '/usr/share/kolla/kollacli/tools/json_generator.py'
 
 
 class TestFunctional(KollaCliTest):
@@ -31,7 +30,11 @@ class TestFunctional(KollaCliTest):
         host1 = 'host_test1'
         self.run_cli_cmd('host add %s' % host1)
 
-        (retval, msg) = self.run_command(JSON_GENPATH)
+        inventory = Inventory.load()
+
+        path = inventory.create_json_gen_file()
+        (retval, msg) = self.run_command(path)
+        os.remove(path)
         self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
 
         self.assertNotEqual('', msg, 'json generator returned no data: %s'
@@ -40,7 +43,7 @@ class TestFunctional(KollaCliTest):
         self.assertIn(host1, msg, '%s not in json_gen output: %s'
                       % (host1, msg))
 
-        for service, subservices in inventory.SERVICES.items():
+        for service, subservices in SERVICES.items():
             self.assertIn(service, msg, '%s not in json_gen output: %s'
                           % (service, msg))
             for subservice in subservices:
@@ -48,8 +51,10 @@ class TestFunctional(KollaCliTest):
                               % (subservice, msg))
 
         # verify that json output is valid. This will throw if invalid json
-        json.loads(msg)
-
+        try:
+            json.loads(msg)
+        except Exception:
+            self.assertTrue(False, 'invalid json: %s' % msg)
         remote_msg = '"ansible_ssh_user": "kolla"'
         local_msg = '"ansible_connection": "local"'
 
@@ -61,13 +66,67 @@ class TestFunctional(KollaCliTest):
 
         # verify that setdeploy remote worked:
         self.run_cli_cmd('setdeploy remote')
-        (retval, msg) = self.run_command(JSON_GENPATH)
+        inventory = Inventory.load()
+        path = inventory.create_json_gen_file()
+        (retval, msg) = self.run_command(path)
+        os.remove(path)
         self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
 
         self.assertIn(remote_msg, msg, '%s not in remote json_gen output: %s'
                       % (remote_msg, msg))
         self.assertNotIn(local_msg, msg, '%s in remote json_gen output: %s'
                          % (local_msg, msg))
+
+    def test_json_filtering(self):
+
+        hosts = ['host_test1', 'host_test2', 'host_test3']
+        groups = ['control', 'network', 'storage']
+
+        for host in hosts:
+            self.run_cli_cmd('host add %s' % host)
+            for group in groups:
+                self.run_cli_cmd('group addhost %s %s' % (group, host))
+
+        inventory = Inventory.load()
+
+        # filter by host- include all hosts
+        inv_filter = {'deploy_hosts': hosts}
+        path = inventory.create_json_gen_file(inv_filter)
+        self.log.info('run command: %s' % path)
+        (retval, msg) = self.run_command(path)
+        os.remove(path)
+        self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
+
+        self.check_json(msg, groups, hosts, groups, hosts)
+
+        # filter by host- to first host
+        included_host = hosts[0]
+        inv_filter = {'deploy_hosts': [included_host]}
+        path = inventory.create_json_gen_file(inv_filter)
+        self.log.info('run command: %s' % path)
+        (retval, msg) = self.run_command(path)
+        os.remove(path)
+        self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
+        self.check_json(msg, groups, hosts, groups, [included_host])
+
+        # filter by group- include all groups
+        inv_filter = {'deploy_groups': groups}
+        path = inventory.create_json_gen_file(inv_filter)
+        self.log.info('run command: %s' % path)
+        (retval, msg) = self.run_command(path)
+        os.remove(path)
+        self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
+        self.check_json(msg, groups, hosts, groups, hosts)
+
+        # filter by group- to first group
+        included_group = groups[0]
+        inv_filter = {'deploy_groups': [included_group]}
+        path = inventory.create_json_gen_file(inv_filter)
+        self.log.info('run command: %s' % path)
+        (retval, msg) = self.run_command(path)
+        os.remove(path)
+        self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
+        self.check_json(msg, groups, hosts, [included_group], hosts)
 
     def test_simple_deploy(self):
         # test will start with no hosts in the inventory
@@ -83,6 +142,20 @@ class TestFunctional(KollaCliTest):
         is_file = os.path.isfile(dump_path)
         self.assertTrue(is_file,
                         'dump file not found at %s' % dump_path)
+
+    def check_json(self, msg, groups, hosts, included_groups, included_hosts):
+        err_msg = ('included groups: %s\n' % included_groups +
+                   'included hosts: %s\n' % included_hosts)
+        inv_dict = json.loads(msg)
+        for group in groups:
+            group_hosts = inv_dict[group]['hosts']
+            for host in hosts:
+                if group in included_groups and host in included_hosts:
+                    self.assertIn(host, group_hosts, err_msg +
+                                  '%s not in %s' % (host, group_hosts))
+                else:
+                    self.assertNotIn(host, group_hosts, err_msg +
+                                     '%s still in %s' % (host, group_hosts))
 
 
 if __name__ == '__main__':

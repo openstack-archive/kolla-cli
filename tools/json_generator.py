@@ -13,17 +13,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from kollacli.ansible.inventory import Inventory
-import sys
 
 
 def main():
     """generate json inventory for ansible"""
-
-    filter_path = None
-    if len(sys.argv) > 1:
-        filter_path = sys.argv[1]
     inventory = Inventory.load()
-    inv_str = inventory.get_ansible_json(filter_path)
+    inv_str = inventory.get_ansible_json()
     print(inv_str)
 
 
