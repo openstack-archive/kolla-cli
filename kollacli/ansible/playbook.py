@@ -14,20 +14,14 @@
 import logging
 import os
 import subprocess
-import tarfile
-import tempfile
 import traceback
 
-from kollacli.ansible.inventory import Inventory
-from kollacli.ansible.properties import AnsibleProperties
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_kolla_etc
-from kollacli.utils import get_kolla_home
-from kollacli.utils import get_kolla_log_dir
-from kollacli.utils import get_kollacli_etc
 from kollacli.utils import get_kollacli_home
 from kollacli.utils import run_cmd
+
 
 class AnsiblePlaybook(object):
     playbook_path = ''
@@ -50,8 +44,6 @@ class AnsiblePlaybook(object):
                 flag = '-vvv'
 
             kollacli_home = get_kollacli_home()
-            kolla_home = get_kolla_home()
-            kolla_etc = get_kolla_etc()
             admin_user = get_admin_user()
             command_string = ('/usr/bin/sudo -u %s ansible-playbook %s'
                               % (admin_user, flag))
@@ -82,16 +74,16 @@ class AnsiblePlaybook(object):
                     dbg_gen = os.path.join(kollacli_home, 'tools',
                                            'json_generator.py')
                     (inv, _) = \
-                            subprocess.Popen(dbg_gen.split(' '),
-                                             stdout=subprocess.PIPE,
-                                             stderr=subprocess.PIPE).communicate()
+                        subprocess.Popen(dbg_gen.split(' '),
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE).communicate()
                     self.log.debug(inv)
 
             err_flag, _ = run_cmd(cmd, self.print_output)
             if err_flag:
-                raise Exception('failure')
+                raise Exception('Failure')
 
-            self.log.info('success')
+            self.log.info('Success')
         except CommandError as e:
             raise e
         except Exception as e:

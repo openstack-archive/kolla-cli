@@ -15,7 +15,6 @@ import argparse
 import getpass
 import logging
 import os
-import subprocess
 import traceback
 import utils
 import yaml
@@ -25,10 +24,8 @@ from kollacli.ansible.playbook import AnsiblePlaybook
 from kollacli.ansible import properties
 from kollacli.exceptions import CommandError
 from kollacli.utils import convert_to_unicode
-from kollacli.utils import get_admin_user
 from kollacli.utils import get_kollacli_home
 from kollacli.utils import get_setup_user
-from kollacli.utils import run_cmd
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -100,7 +97,7 @@ class HostDestroy(Command):
             kollacli_home = get_kollacli_home()
             playbook = AnsiblePlaybook()
             playbook.playbook_path = os.path.join(kollacli_home,
-                                                 'ansible/host_destroy.yml')
+                                                  'ansible/host_destroy.yml')
             playbook.extra_vars = ' --extra-vars \"hosts=' + hostname + \
                                   ' prefix=' + container_prefix + '\"'
             playbook.print_output = False

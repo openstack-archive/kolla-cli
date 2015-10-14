@@ -13,7 +13,6 @@
 #    under the License.
 import logging
 import os
-import subprocess
 import tarfile
 import tempfile
 import traceback
@@ -22,7 +21,6 @@ from kollacli.ansible.inventory import Inventory
 from kollacli.ansible.playbook import AnsiblePlaybook
 from kollacli.ansible.properties import AnsibleProperties
 from kollacli.exceptions import CommandError
-from kollacli.utils import get_admin_user
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
 from kollacli.utils import get_kolla_log_dir
