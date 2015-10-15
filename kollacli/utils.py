@@ -103,6 +103,10 @@ def run_cmd(cmd, print_output=True):
     output = []
     try:
         child = pexpect.spawn(cmd)
+        index = child.expect([pexpect.EOF, '[sudo] password'])
+        if index == 1:
+            raise Exception(
+                'Insufficient permissions to run command "%s"' % cmd)
         child.maxsize = 1
         child.timeout = 86400
         for line in child:
@@ -110,12 +114,15 @@ def run_cmd(cmd, print_output=True):
             output.append(outline)
             if print_output:
                 log.info(outline)
-        child.close()
-        if child.exitstatus != 0:
-            err_flag = True
+
     except Exception as e:
         err_flag = True
         output.append('%s' % e)
+    finally:
+        if child:
+            child.close()
+            if child.exitstatus != 0:
+                err_flag = True
     return err_flag, output
 
 
