@@ -36,15 +36,38 @@ class Deploy(Command):
 
     log = logging.getLogger(__name__)
 
-    def take_action(self, parsed_args):
-        self._run_rules()
+    def get_parser(self, prog_name):
+        parser = super(Deploy, self).get_parser(prog_name)
+        parser.add_argument('--hosts', nargs='?',
+                            metavar='<host_list>',
+                            help='deployment host list')
+        parser.add_argument('--groups', nargs='?',
+                            metavar='<group_list>',
+                            help='deployment group list')
+        return parser
 
-        playbook = AnsiblePlaybook()
-        kolla_home = get_kolla_home()
-        playbook.playbook_path = os.path.join(kolla_home,
-                                              'ansible/site.yml')
-        playbook.verbose_level = self.app.options.verbose_level
-        playbook.run()
+    def take_action(self, parsed_args):
+        try:
+            if parsed_args.hosts and parsed_args.groups:
+                raise CommandError('Hosts and Groups arguments cannot both ' +
+                                   'be present at the same time.')
+
+            self._run_rules()
+
+            playbook = AnsiblePlaybook()
+            kolla_home = get_kolla_home()
+            playbook.playbook_path = os.path.join(kolla_home,
+                                                  'ansible/site.yml')
+            if parsed_args.hosts:
+                playbook.hosts = parsed_args.hosts.split(',')
+            if parsed_args.groups:
+                playbook.groups = parsed_args.groups.split(',')
+            playbook.verbose_level = self.app.options.verbose_level
+            playbook.run()
+        except CommandError as e:
+            raise e
+        except Exception:
+            raise Exception(traceback.format_exc())
 
     def _run_rules(self):
         # check that ring files are in /etc/kolla/config/swift if

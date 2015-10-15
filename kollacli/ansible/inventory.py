@@ -769,7 +769,8 @@ class Inventory(object):
         jdict['_meta']['hostvars'] = {}
         for hostname in deploy_hostnames:
             host = self.get_host(hostname)
-            jdict['_meta']['hostvars'][hostname] = host.get_vars()
+            if host:
+                jdict['_meta']['hostvars'][hostname] = host.get_vars()
         return json.dumps(jdict)
 
     def _filter_hosts(self, initial_hostnames, deploy_hostnames):
@@ -798,5 +799,5 @@ class Inventory(object):
             json_gen_file.write("print('%s')" % json_out)
 
         # set executable by group
-        os.chmod(json_gen_path, 0o550)
+        os.chmod(json_gen_path, 0o555)
         return json_gen_path

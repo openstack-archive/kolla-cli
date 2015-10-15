@@ -16,10 +16,10 @@ import os
 import subprocess
 import traceback
 
+from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_kolla_etc
-from kollacli.utils import get_kollacli_home
 from kollacli.utils import run_cmd
 
 
@@ -30,12 +30,15 @@ class AnsiblePlaybook(object):
     include_passwords = True
     print_output = True
     verbose_level = 0
+    hosts = None
+    groups = None
 
     log = logging.getLogger(__name__)
 
     def run(self):
         globals_string = None
         password_string = None
+        inventory_path = None
         cmd = ''
         try:
             flag = ''
@@ -43,13 +46,18 @@ class AnsiblePlaybook(object):
             if self.verbose_level > 1:
                 flag = '-vvv'
 
-            kollacli_home = get_kollacli_home()
             admin_user = get_admin_user()
             command_string = ('/usr/bin/sudo -u %s ansible-playbook %s'
                               % (admin_user, flag))
-            inventory_string = '-i ' + os.path.join(kollacli_home,
-                                                    'tools',
-                                                    'json_generator.py')
+            inventory = Inventory.load()
+            inventory_filter = {}
+            if self.hosts:
+                inventory_filter['deploy_hosts'] = self.hosts
+            elif self.groups:
+                inventory_filter['deploy_groups'] = self.groups
+
+            inventory_path = inventory.create_json_gen_file(inventory_filter)
+            inventory_string = '-i ' + inventory_path
             cmd = (command_string + ' ' + inventory_string)
 
             if self.include_globals:
@@ -71,8 +79,7 @@ class AnsiblePlaybook(object):
 
                 if self.verbose_level > 2:
                     # log the inventory
-                    dbg_gen = os.path.join(kollacli_home, 'tools',
-                                           'json_generator.py')
+                    dbg_gen = os.path.join(inventory_path)
                     (inv, _) = \
                         subprocess.Popen(dbg_gen.split(' '),
                                          stdout=subprocess.PIPE,
@@ -86,8 +93,11 @@ class AnsiblePlaybook(object):
             self.log.info('Success')
         except CommandError as e:
             raise e
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
+        finally:
+            if inventory_path:
+                os.remove(inventory_path)
 
     def _get_globals_path(self):
         kolla_etc = get_kolla_etc()
