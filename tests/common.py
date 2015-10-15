@@ -43,7 +43,7 @@ class KollaCliTest(testtools.TestCase):
 
         logging.basicConfig(stream=sys.stderr)
         self.log.setLevel(logging.DEBUG)
-        self.log.info('Starting test: %s *************************************'
+        self.log.info('\nStarting test: %s ***********************************'
                       % self._testMethodName)
 
         # switch to test path
