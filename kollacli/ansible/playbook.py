@@ -52,8 +52,18 @@ class AnsiblePlaybook(object):
             inventory = Inventory.load()
             inventory_filter = {}
             if self.hosts:
+                for hostname in self.hosts:
+                    host = inventory.get_host(hostname)
+                    if not host:
+                        raise CommandError(
+                            'Host (%s) not found. ' % hostname)
                 inventory_filter['deploy_hosts'] = self.hosts
             elif self.groups:
+                for groupname in self.groups:
+                    group = inventory.get_group(groupname)
+                    if not group:
+                        raise CommandError(
+                            'Group (%s) not found. ' % groupname)
                 inventory_filter['deploy_groups'] = self.groups
 
             inventory_path = inventory.create_json_gen_file(inventory_filter)
@@ -79,7 +89,7 @@ class AnsiblePlaybook(object):
 
                 if self.verbose_level > 2:
                     # log the inventory
-                    dbg_gen = os.path.join(inventory_path)
+                    dbg_gen = inventory_path
                     (inv, _) = \
                         subprocess.Popen(dbg_gen.split(' '),
                                          stdout=subprocess.PIPE,
