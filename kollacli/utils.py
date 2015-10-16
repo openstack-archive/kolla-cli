@@ -14,7 +14,10 @@
 import logging
 import os
 import pexpect
+import tempfile
 import yaml
+
+from lockfile import LockFile
 
 
 def get_kolla_home():
@@ -98,19 +101,22 @@ def run_cmd(cmd, print_output=True):
     If the command is an ansible playbook command, record the
     output in an ansible log file.
     """
+    pwd_prompt = '[sudo] password'
     log = logging.getLogger(__name__)
     err_flag = False
     output = []
     try:
         child = pexpect.spawn(cmd)
-        index = child.expect([pexpect.EOF, '[sudo] password'])
-        if index == 1:
+        sniff = child.read(len(pwd_prompt))
+        if sniff == pwd_prompt:
+            output.append(sniff + '\n')
             raise Exception(
                 'Insufficient permissions to run command "%s"' % cmd)
         child.maxsize = 1
         child.timeout = 86400
         for line in child:
-            outline = line.rstrip()
+            outline = sniff + line.rstrip()
+            sniff = ''
             output.append(outline)
             if print_output:
                 log.info(outline)
@@ -140,29 +146,61 @@ def change_property(file_path, property_key, property_value, clear=False):
     If not clear, and key is found, edit property in place.
     """
     try:
-        file_contents = []
-        with open(file_path, 'r+') as property_file:
-            new_line = '%s: "%s"\n' % (property_key, property_value)
-            property_key_found = False
-            for line in property_file:
-                if line[0:len(property_key)] == property_key:
-                    property_key_found = True
-                    if clear:
-                        # clear existing property
-                        line = ''
-                    else:
-                        # edit existing property
-                        line = new_line
-                file_contents.append(line)
-            if not property_key_found and not clear:
-                # add new property to file
-                file_contents.append(new_line)
+        new_contents = []
+        read_data = sync_read_file(file_path)
+        lines = read_data.split('\n')
+        new_line = '%s: "%s"\n' % (property_key, property_value)
+        property_key_found = False
+        for line in lines:
+            if line[0:len(property_key)] == property_key:
+                property_key_found = True
+                if clear:
+                    # clear existing property
+                    line = ''
+                else:
+                    # edit existing property
+                    line = new_line
+            new_contents.append(line + '\n')
+        if not property_key_found and not clear:
+            # add new property to file
+            new_contents.append(new_line)
 
-            property_file.seek(0)
-            property_file.truncate()
+        write_data = ''.join(new_contents)
+        sync_write_file(file_path, write_data)
 
-        with open(file_path, 'w') as property_file:
-            for line in file_contents:
-                property_file.write(line)
     except Exception as e:
         raise e
+
+
+def sync_read_file(path, mode='r'):
+    """synchronously read file
+
+    return file data
+    """
+    # lock is in /tmp to avoid permission issues
+    lpath = os.path.join(tempfile.gettempdir(), os.path.basename(path))
+    lock = LockFile(lpath)
+    try:
+        lock.acquire(True)
+        with open(path, mode) as data_file:
+            data = data_file.read()
+    except Exception as e:
+        raise e
+    finally:
+        lock.release()
+    return data
+
+
+def sync_write_file(path, data, mode='w'):
+    """synchronously write file"""
+    # lock is in /tmp to avoid permission issues
+    lpath = os.path.join(tempfile.gettempdir(), os.path.basename(path))
+    lock = LockFile(lpath)
+    try:
+        lock.acquire(True)
+        with open(path, mode) as data_file:
+            data_file.write(data)
+    except Exception as e:
+        raise e
+    finally:
+        lock.release()

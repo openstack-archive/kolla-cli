@@ -15,11 +15,8 @@ import json
 import jsonpickle
 import logging
 import os
-import shutil
 import tempfile
 import traceback
-
-from tempfile import mkstemp
 
 from kollacli import exceptions
 from kollacli import utils
@@ -322,8 +319,7 @@ class Inventory(object):
         data = ''
         try:
             if os.path.exists(inventory_path):
-                with open(inventory_path, 'rb') as inv_file:
-                    data = inv_file.read()
+                data = utils.sync_read_file(inventory_path)
 
             if data.strip():
                 inventory = jsonpickle.decode(data)
@@ -343,32 +339,14 @@ class Inventory(object):
         """Save the inventory in a pickle file"""
         inventory_path = os.path.join(utils.get_kollacli_etc(), INVENTORY_PATH)
         try:
-            # the file handle returned from mkstemp must be closed or else
-            # if this is called many times you will have an unpleasant
-            # file handle leak
-            tmp_filehandle, tmp_path = mkstemp()
-
             # multiple trips thru json to render a readable inventory file
             data = jsonpickle.encode(inventory)
             data_str = json.loads(data)
             pretty_data = json.dumps(data_str, indent=4)
-            with open(tmp_path, 'w') as tmp_file:
-                tmp_file.write(pretty_data)
-            shutil.copyfile(tmp_path, inventory_path)
-            os.remove(tmp_path)
+            utils.sync_write_file(inventory_path, pretty_data)
+
         except Exception as e:
             raise CommandError('saving inventory failed: %s' % e)
-        finally:
-            try:
-                os.close(tmp_filehandle)
-            except Exception:
-                pass
-
-            if tmp_filehandle is not None:
-                try:
-                    os.close(tmp_filehandle)
-                except Exception:
-                    pass
 
     def _create_default_inventory(self):
 

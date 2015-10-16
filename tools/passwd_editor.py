@@ -21,15 +21,15 @@ from kollacli import utils
 def _print_pwd_keys(path):
     pwd_keys = ''
     prefix = ''
-    with open(path, 'r') as pwd_file:
-        for line in pwd_file:
-            if line.startswith('#'):
-                # skip commented lines
-                continue
-            if ':' in line:
-                pwd_key = line.split(':')[0]
-                pwd_keys = pwd_keys + prefix + pwd_key
-                prefix = ','
+    pwd_data = utils.sync_read_file(path)
+    for line in pwd_data.split('\n'):
+        if line.startswith('#'):
+            # skip commented lines
+            continue
+        if ':' in line:
+            pwd_key = line.split(':')[0]
+            pwd_keys = ''.join([pwd_keys, prefix, pwd_key])
+            prefix = ','
 
     print(pwd_keys)
 
