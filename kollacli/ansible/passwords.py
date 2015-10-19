@@ -51,8 +51,8 @@ def get_password_names():
         raise CommandError('%s %s' % (err_msg, output))
 
     pwd_names = []
-    if output and ',' in output[0]:
-        pwd_names = output[0].split(',')
+    if output and ',' in output:
+        pwd_names = output.strip().split(',')
     return pwd_names
 
 

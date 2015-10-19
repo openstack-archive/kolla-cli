@@ -11,13 +11,16 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import contextlib
 import logging
 import os
 import pexpect
-import tempfile
 import yaml
 
-from lockfile import LockFile
+from oslo_concurrency import lockutils
+
+# pool of semaphores for intra-process locks
+semaphores = lockutils.Semaphores()
 
 
 def get_kolla_home():
@@ -94,8 +97,7 @@ def run_cmd(cmd, print_output=True):
     return:
     - err_msg:  empty string=command succeeded
                 not None=command failed
-    - output:   [List of strings]
-                collects all the output of the run command
+    - output:   string: all the output of the run command
 
     If the command is an ansible playbook command, record the
     output in an ansible log file.
@@ -103,12 +105,12 @@ def run_cmd(cmd, print_output=True):
     pwd_prompt = '[sudo] password'
     log = logging.getLogger(__name__)
     err_msg = ''
-    output = []
+    output = ''
     try:
         child = pexpect.spawn(cmd)
         sniff = child.read(len(pwd_prompt))
         if sniff == pwd_prompt:
-            output.append(sniff + '\n')
+            output = sniff + '\n'
             raise Exception(
                 'Insufficient permissions to run command "%s"' % cmd)
         child.maxsize = 1
@@ -116,7 +118,7 @@ def run_cmd(cmd, print_output=True):
         for line in child:
             outline = sniff + line.rstrip()
             sniff = ''
-            output.append(outline)
+            output = ''.join([output, outline, '\n'])
             if print_output:
                 log.info(outline)
 
@@ -175,30 +177,37 @@ def sync_read_file(path, mode='r'):
 
     return file data
     """
-    # lock is in /tmp to avoid permission issues
-    lpath = os.path.join(tempfile.gettempdir(), os.path.basename(path))
-    lock = LockFile(lpath)
-    try:
-        lock.acquire(True)
-        with open(path, mode) as data_file:
-            data = data_file.read()
-    except Exception as e:
-        raise e
-    finally:
-        lock.release()
+    _lock(path)
+    with open(path, mode) as data_file:
+        data = data_file.read()
     return data
 
 
 def sync_write_file(path, data, mode='w'):
     """synchronously write file"""
-    # lock is in /tmp to avoid permission issues
-    lpath = os.path.join(tempfile.gettempdir(), os.path.basename(path))
-    lock = LockFile(lpath)
-    try:
-        lock.acquire(True)
-        with open(path, mode) as data_file:
-            data_file.write(data)
-    except Exception as e:
-        raise e
-    finally:
-        lock.release()
+    _lock(path)
+    with open(path, mode) as data_file:
+        data_file.write(data)
+
+
+@contextlib.contextmanager
+def _lock(lock_path, delay=0.01):
+    """Context based lock
+
+    This function yields an InterProcessLock instance.
+
+    :param lock_path: The path in which to store external lock files.  For
+      external locking to work properly, this must be the same for all
+      references to the lock.
+
+    :param delay: Delay between acquisition attempts (in seconds).
+    """
+    name = lock_path.replace('/', '_')
+    int_lock = lockutils.internal_lock(name, semaphores)
+    with int_lock:
+        ext_lock = lockutils.external_lock(name, '', lock_path)
+        ext_lock.acquire(delay=delay)
+        try:
+            yield ext_lock
+        finally:
+            ext_lock.release()

@@ -35,7 +35,6 @@ BuildArch:      noarch
 BuildRequires:  python                      >= 2.7
 BuildRequires:  python-setuptools           >= 0.9.8
 BuildRequires:  python-pbr                  >= 1.3.0
-
 Requires:       openstack-kolla-ansible     >= 0.1.0
 Requires:       babel                       >= 2.0
 Requires:       pexpect                     >= 2.3
@@ -43,6 +42,7 @@ Requires:       python-babel                >= 2.0
 Requires:       python-cliff                >= 1.13.0
 Requires:       python-cliff-tablib         >= 1.1
 Requires:       python-jsonpickle           >= 0.9.2
+Requires:       python-oslo-concurrency     >= 2.8
 Requires:       python-oslo-i18n            >= 2.5.0
 Requires:       python-paramiko             >= 1.15.1
 Requires:       python-pbr                  >= 1.6.0
