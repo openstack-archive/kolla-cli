@@ -45,9 +45,9 @@ class Deploy(Command):
         parser.add_argument('--groups', nargs='?',
                             metavar='<group_list>',
                             help='deployment group list')
-        parser.add_argument('--tags', nargs='?',
-                            metavar='<tag_list>',
-                            help='deployment tag list')
+        parser.add_argument('--services', nargs='?',
+                            metavar='<service_list>',
+                            help='deployment service list')
         return parser
 
     def take_action(self, parsed_args):
@@ -70,10 +70,10 @@ class Deploy(Command):
                 group_list = parsed_args.groups.strip()
                 group_list = convert_to_unicode(group_list)
                 playbook.groups = group_list.split(',')
-            if parsed_args.tags:
-                tag_list = parsed_args.tags.strip()
+            if parsed_args.services:
+                tag_list = parsed_args.services.strip()
                 tag_list = convert_to_unicode(tag_list)
-                playbook.tags = tag_list.split(',')
+                playbook.services = tag_list.split(',')
 
             playbook.verbose_level = self.app.options.verbose_level
             playbook.run()

@@ -96,6 +96,7 @@ class AnsiblePlaybook(object):
                             'Service (%s) not found. ' % service)
                     if not first:
                         service_string = service_string + ','
+                    else:
                         first = False
                     service_string = service_string + service
                 cmd = (cmd + ' --tags ' + service_string)
