@@ -143,14 +143,14 @@ class Host(object):
         ping_string = ' %s %s' % (self.name, '-m ping')
         cmd = (command_string + inventory_string + ping_string)
 
-        err_flag, output = utils.run_cmd(cmd, False)
-        if err_flag:
+        err_msg, output = utils.run_cmd(cmd, False)
+        if err_msg:
             if result_only:
                 return False
             else:
                 raise exceptions.CommandError(
-                    'Host (%s) check failed : %s'
-                    % (self.name, output))
+                    'Host (%s) check failed : %s %s'
+                    % (self.name, err_msg, output))
         else:
             if not result_only:
                 self.log.info('Host (%s) check succeeded' % self.name)

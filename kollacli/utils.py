@@ -92,18 +92,17 @@ def run_cmd(cmd, print_output=True):
     """run a system command
 
     return:
-    - err_flag: False=command succeeded
-                True=command failed
+    - err_msg:  empty string=command succeeded
+                not None=command failed
     - output:   [List of strings]
-                if error, provides error information
-                if success, provides command output
+                collects all the output of the run command
 
     If the command is an ansible playbook command, record the
     output in an ansible log file.
     """
     pwd_prompt = '[sudo] password'
     log = logging.getLogger(__name__)
-    err_flag = False
+    err_msg = ''
     output = []
     try:
         child = pexpect.spawn(cmd)
@@ -122,14 +121,13 @@ def run_cmd(cmd, print_output=True):
                 log.info(outline)
 
     except Exception as e:
-        err_flag = True
-        output.append('%s' % e)
+        err_msg = '%s' % e
     finally:
         if child:
             child.close()
             if child.exitstatus != 0:
-                err_flag = True
-    return err_flag, output
+                err_msg = 'Command Failed %s' % err_msg
+    return err_msg, output
 
 
 def change_property(file_path, property_key, property_value, clear=False):

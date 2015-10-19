@@ -177,8 +177,10 @@ class Dump(Command):
         os.close(fd)
         with open(path, 'w') as tmp_file:
             for cmd in cmds:
-                _, output = run_cmd(cmd, False)
+                err_msg, output = run_cmd(cmd, False)
                 tmp_file.write('\n\n$ %s\n' % cmd)
+                if err_msg:
+                    tmp_file.write('Error message: %s\n' % err_msg)
                 for line in output:
                     tmp_file.write(line + '\n')
 
