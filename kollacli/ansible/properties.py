@@ -18,6 +18,7 @@ import yaml
 from kollacli.utils import change_property
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
+from kollacli.utils import sync_read_file
 
 ALLVARS_PATH = 'ansible/group_vars/all.yml'
 GLOBALS_FILENAME = 'globals.yml'
@@ -85,15 +86,15 @@ class AnsibleProperties(object):
 
         try:
             self.globals_path = os.path.join(kolla_etc, GLOBALS_FILENAME)
-            with open(self.globals_path) as globals_file:
-                globals_contents = yaml.load(globals_file)
-                self.file_contents[self.globals_path] = globals_contents
-                globals_contents = self.filter_jinja2(globals_contents)
-                for key, value in globals_contents.items():
-                    ansible_property = AnsibleProperty(key, value,
-                                                       GLOBALS_FILENAME)
-                    self.properties.append(ansible_property)
-                    self.unique_properties[key] = ansible_property
+            globals_data = sync_read_file(self.globals_path)
+            globals_contents = yaml.load(globals_data)
+            self.file_contents[self.globals_path] = globals_contents
+            globals_contents = self.filter_jinja2(globals_contents)
+            for key, value in globals_contents.items():
+                ansible_property = AnsibleProperty(key, value,
+                                                   GLOBALS_FILENAME)
+                self.properties.append(ansible_property)
+                self.unique_properties[key] = ansible_property
         except Exception as e:
             raise e
 

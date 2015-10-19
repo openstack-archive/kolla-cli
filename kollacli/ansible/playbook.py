@@ -114,9 +114,10 @@ class AnsiblePlaybook(object):
                                          stderr=subprocess.PIPE).communicate()
                     self.log.debug(inv)
 
-            err_flag, _ = run_cmd(cmd, self.print_output)
+            err_flag, msg = run_cmd(cmd, self.print_output)
             if err_flag:
-                raise Exception('Failure')
+                raise CommandError('Ansible command failed \n%s\n%s'
+                                   % (cmd, msg))
 
             self.log.info('Success')
         except CommandError as e:
