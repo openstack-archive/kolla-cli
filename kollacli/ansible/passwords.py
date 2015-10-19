@@ -27,9 +27,9 @@ def set_password(pwd_key, pwd_value):
     If it doesn't exist, a new password will be added.
     """
     cmd = '%s -k %s -v %s' % (_get_cmd_prefix(), pwd_key, pwd_value)
-    err, output = utils.run_cmd(cmd, print_output=False)
-    if err:
-        raise CommandError(output)
+    err_msg, output = utils.run_cmd(cmd, print_output=False)
+    if err_msg:
+        raise CommandError('%s %s' % (err_msg, output))
 
 
 def clear_password(pwd_key):
@@ -38,17 +38,17 @@ def clear_password(pwd_key):
     if the password exists, it will be removed from the passwords file
     """
     cmd = '%s -k %s -c' % (_get_cmd_prefix(), pwd_key)
-    err, output = utils.run_cmd(cmd, print_output=False)
-    if err:
-        raise CommandError(output)
+    err_msg, output = utils.run_cmd(cmd, print_output=False)
+    if err_msg:
+        raise CommandError('%s %s' % (err_msg, output))
 
 
 def get_password_names():
     """return a list of password names"""
     cmd = '%s -l' % (_get_cmd_prefix())
-    err, output = utils.run_cmd(cmd, print_output=False)
-    if err:
-        raise CommandError(output)
+    err_msg, output = utils.run_cmd(cmd, print_output=False)
+    if err_msg:
+        raise CommandError('%s %s' % (err_msg, output))
 
     pwd_names = []
     if output and ',' in output[0]:
