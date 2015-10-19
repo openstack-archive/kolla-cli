@@ -28,12 +28,12 @@ class AnsiblePlaybook(object):
     extra_vars = ''
     include_globals = True
     include_passwords = True
+    flush_cache = True
     print_output = True
-    serial = False
     verbose_level = 0
     hosts = None
     groups = None
-    tags = None
+    services = None
 
     log = logging.getLogger(__name__)
 
@@ -82,24 +82,26 @@ class AnsiblePlaybook(object):
 
             cmd = (cmd + ' ' + self.playbook_path)
 
-            if self.extra_vars or self.serial:
-                extra_vars = ''
-                if self.extra_vars:
-                    extra_vars = (extra_vars + self.extra_vars)
-                if self.serial:
-                    extra_vars = (extra_vars + ' serial=1')
+            if self.extra_vars:
                 cmd = (cmd + ' --extra-vars \"' +
-                       extra_vars + '\"')
+                       self.extra_vars + '\"')
 
-            if self.tags:
-                tag_string = ''
+            if self.services:
+                service_string = ''
                 first = True
-                for tag in self.tags:
+                for service in self.services:
+                    valid_service = inventory.get_service(service)
+                    if not valid_service:
+                        raise CommandError(
+                            'Service (%s) not found. ' % service)
                     if not first:
-                        tag_string = tag_string + ','
+                        service_string = service_string + ','
                         first = False
-                    tag_string = tag_string + tag
-                cmd = (cmd + ' --tags ' + tag_string)
+                    service_string = service_string + service
+                cmd = (cmd + ' --tags ' + service_string)
+
+            if self.flush_cache:
+                cmd = (cmd + ' --flush-cache')
 
             if self.verbose_level > 1:
                 # log the ansible command

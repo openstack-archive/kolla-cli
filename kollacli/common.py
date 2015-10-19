@@ -48,8 +48,6 @@ class Deploy(Command):
         parser.add_argument('--tags', nargs='?',
                             metavar='<tag_list>',
                             help='deployment tag list')
-        parser.add_argument('--serial', action='store_true',
-                            help='deploy serially')
         return parser
 
     def take_action(self, parsed_args):
@@ -76,8 +74,6 @@ class Deploy(Command):
                 tag_list = parsed_args.tags.strip()
                 tag_list = convert_to_unicode(tag_list)
                 playbook.tags = tag_list.split(',')
-            if parsed_args.serial:
-                playbook.serial = True
 
             playbook.verbose_level = self.app.options.verbose_level
             playbook.run()
