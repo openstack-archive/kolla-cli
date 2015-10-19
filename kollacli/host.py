@@ -98,8 +98,8 @@ class HostDestroy(Command):
             playbook = AnsiblePlaybook()
             playbook.playbook_path = os.path.join(kollacli_home,
                                                   'ansible/host_destroy.yml')
-            playbook.extra_vars = ' --extra-vars \"hosts=' + hostname + \
-                                  ' prefix=' + container_prefix + '\"'
+            playbook.extra_vars = 'hosts=' + hostname + \
+                                  ' prefix=' + container_prefix
             playbook.print_output = False
             playbook.verbose_level = self.app.options.verbose_level
             playbook.run()

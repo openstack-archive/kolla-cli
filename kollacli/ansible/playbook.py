@@ -29,9 +29,11 @@ class AnsiblePlaybook(object):
     include_globals = True
     include_passwords = True
     print_output = True
+    serial = False
     verbose_level = 0
     hosts = None
     groups = None
+    tags = None
 
     log = logging.getLogger(__name__)
 
@@ -80,8 +82,24 @@ class AnsiblePlaybook(object):
 
             cmd = (cmd + ' ' + self.playbook_path)
 
-            if self.extra_vars:
-                cmd = (cmd + ' ' + self.extra_vars)
+            if self.extra_vars or self.serial:
+                extra_vars = ''
+                if self.extra_vars:
+                    extra_vars = (extra_vars + self.extra_vars)
+                if self.serial:
+                    extra_vars = (extra_vars + ' serial=1')
+                cmd = (cmd + ' --extra-vars \"' +
+                       extra_vars + '\"')
+
+            if self.tags:
+                tag_string = ''
+                first = True
+                for tag in self.tags:
+                    if not first:
+                        tag_string = tag_string + ','
+                        first = False
+                    tag_string = tag_string + tag
+                cmd = (cmd + ' --tags ' + tag_string)
 
             if self.verbose_level > 1:
                 # log the ansible command
