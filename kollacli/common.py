@@ -21,6 +21,7 @@ from kollacli.ansible.inventory import Inventory
 from kollacli.ansible.playbook import AnsiblePlaybook
 from kollacli.ansible.properties import AnsibleProperties
 from kollacli.exceptions import CommandError
+from kollacli.utils import convert_to_unicode
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import get_kolla_home
 from kollacli.utils import get_kolla_log_dir
@@ -44,6 +45,9 @@ class Deploy(Command):
         parser.add_argument('--groups', nargs='?',
                             metavar='<group_list>',
                             help='deployment group list')
+        parser.add_argument('--services', nargs='?',
+                            metavar='<service_list>',
+                            help='deployment service list')
         return parser
 
     def take_action(self, parsed_args):
@@ -59,9 +63,18 @@ class Deploy(Command):
             playbook.playbook_path = os.path.join(kolla_home,
                                                   'ansible/site.yml')
             if parsed_args.hosts:
-                playbook.hosts = parsed_args.hosts.split(',')
+                host_list = parsed_args.hosts.strip()
+                host_list = convert_to_unicode(host_list)
+                playbook.hosts = host_list.split(',')
             if parsed_args.groups:
-                playbook.groups = parsed_args.groups.split(',')
+                group_list = parsed_args.groups.strip()
+                group_list = convert_to_unicode(group_list)
+                playbook.groups = group_list.split(',')
+            if parsed_args.services:
+                tag_list = parsed_args.services.strip()
+                tag_list = convert_to_unicode(tag_list)
+                playbook.services = tag_list.split(',')
+
             playbook.verbose_level = self.app.options.verbose_level
             playbook.run()
         except CommandError as e:
