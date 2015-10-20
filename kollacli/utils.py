@@ -43,6 +43,10 @@ def get_kolla_log_dir():
     return '/var/log/kolla/'
 
 
+def get_kolla_log_file_size():
+    return os.environ.get('KOLLA_LOG_FILE_SIZE', 500000)
+
+
 def get_admin_user():
     return os.environ.get("KOLLA_CLI_ADMIN_USER", "kolla")
 

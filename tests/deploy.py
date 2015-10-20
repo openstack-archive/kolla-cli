@@ -142,6 +142,7 @@ class TestFunctional(KollaCliTest):
         is_file = os.path.isfile(dump_path)
         self.assertTrue(is_file,
                         'dump file not found at %s' % dump_path)
+        os.remove(dump_path)
 
     def check_json(self, msg, groups, hosts, included_groups, included_hosts):
         err_msg = ('included groups: %s\n' % included_groups +

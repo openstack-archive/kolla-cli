@@ -22,6 +22,7 @@ from cliff.commandmanager import CommandManager
 from kollacli.ansible.inventory import INVENTORY_PATH
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_kolla_log_dir
+from kollacli.utils import get_kolla_log_file_size
 from kollacli.utils import get_kollacli_etc
 
 
@@ -55,7 +56,7 @@ class KollaCli(App):
                 inventory_file.close()
 
         self.rotating_log_dir = get_kolla_log_dir()
-        self.max_bytes = 500000
+        self.max_bytes = get_kolla_log_file_size()
         self.backup_count = 4
 
         self.dump_stack_trace = False
