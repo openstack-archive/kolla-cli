@@ -110,6 +110,7 @@ def run_cmd(cmd, print_output=True):
     log = logging.getLogger(__name__)
     err_msg = ''
     output = ''
+    child = None
     try:
         child = pexpect.spawn(cmd)
         sniff = child.read(len(pwd_prompt))

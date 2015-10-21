@@ -34,6 +34,7 @@ class AnsiblePlaybook(object):
     hosts = None
     groups = None
     services = None
+    serial = False
 
     log = logging.getLogger(__name__)
 
@@ -82,9 +83,17 @@ class AnsiblePlaybook(object):
 
             cmd = (cmd + ' ' + self.playbook_path)
 
-            if self.extra_vars:
+            if self.extra_vars or self.serial:
+                extra_vars = ''
+                if self.extra_vars:
+                    extra_vars = extra_vars + self.extra_vars
+                if self.extra_vars and self.serial:
+                    extra_vars = extra_vars + ' '
+                if self.serial:
+                    extra_vars = extra_vars + 'serial_var=1'
+
                 cmd = (cmd + ' --extra-vars \"' +
-                       self.extra_vars + '\"')
+                       extra_vars + '\"')
 
             if self.services:
                 service_string = ''

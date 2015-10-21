@@ -48,6 +48,7 @@ class Deploy(Command):
         parser.add_argument('--services', nargs='?',
                             metavar='<service_list>',
                             help='deployment service list')
+        parser.add_argument('--serial', action='store_true')
         return parser
 
     def take_action(self, parsed_args):
@@ -74,6 +75,8 @@ class Deploy(Command):
                 tag_list = parsed_args.services.strip()
                 tag_list = convert_to_unicode(tag_list)
                 playbook.services = tag_list.split(',')
+            if parsed_args.serial:
+                playbook.serial = True
 
             playbook.verbose_level = self.app.options.verbose_level
             playbook.run()
