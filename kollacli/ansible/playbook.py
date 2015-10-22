@@ -86,11 +86,11 @@ class AnsiblePlaybook(object):
             if self.extra_vars or self.serial:
                 extra_vars = ''
                 if self.extra_vars:
-                    extra_vars = extra_vars + self.extra_vars
-                if self.extra_vars and self.serial:
-                    extra_vars = extra_vars + ' '
+                    extra_vars = self.extra_vars
+                    if self.serial:
+                        extra_vars += ' '
                 if self.serial:
-                    extra_vars = extra_vars + 'serial_var=1'
+                    extra_vars += 'serial_var=1'
 
                 cmd = (cmd + ' --extra-vars \"' +
                        extra_vars + '\"')

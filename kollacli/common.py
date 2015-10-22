@@ -48,7 +48,8 @@ class Deploy(Command):
         parser.add_argument('--services', nargs='?',
                             metavar='<service_list>',
                             help='deployment service list')
-        parser.add_argument('--serial', action='store_true')
+        parser.add_argument('--serial', action='store_true',
+                            help='deploy serially')
         return parser
 
     def take_action(self, parsed_args):
