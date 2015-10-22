@@ -73,6 +73,8 @@ class HostDestroy(Command):
         parser = super(HostDestroy, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname | all>',
                             help='host name or ip address or "all"')
+        parser.add_argument('--stop', action='store_true',
+                            help='stop rather than kill')
         return parser
 
     def take_action(self, parsed_args):
@@ -87,6 +89,10 @@ class HostDestroy(Command):
                 if not host:
                     _host_not_found(self.log, hostname)
 
+            destroy_type = 'kill'
+            if parsed_args.stop:
+                destroy_type = 'stop'
+
             self.log.info('please be patient as this may take a while.')
             ansible_properties = properties.AnsibleProperties()
             base_distro = \
@@ -99,7 +105,8 @@ class HostDestroy(Command):
             playbook.playbook_path = os.path.join(kollacli_home,
                                                   'ansible/host_destroy.yml')
             playbook.extra_vars = 'hosts=' + hostname + \
-                                  ' prefix=' + container_prefix
+                                  ' prefix=' + container_prefix + \
+                                  ' destroy_type=' + destroy_type
             playbook.print_output = False
             playbook.verbose_level = self.app.options.verbose_level
             playbook.run()
