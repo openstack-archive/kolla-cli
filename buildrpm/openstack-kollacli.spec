@@ -105,7 +105,6 @@ rm -rf %{buildroot}
 %attr(-, root, root) %{python_sitelib}
 %attr(755, root, %{kolla_group}) %{_bindir}/kollacli
 %attr(550, %{kolla_user}, %{kolla_group}) %dir %{_datadir}/kolla/kollacli/tools
-%attr(555, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/json*
 %attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/passwd*
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/log_*
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
@@ -138,6 +137,11 @@ then
         /etc/sudoers.d/%{kolla_user}
 fi
 
+# remove obsolete json_generator script
+if test -f %{_datadir}/kolla/kollacli/tools/json_generator.py
+then
+    rm -f %{_datadir}/kolla/kollacli/tools/json_generator.py
+fi
 
 %postun
 case "$*" in
@@ -151,6 +155,9 @@ esac
 
 
 %changelog
+* Mon Oct 26 2015 - Steve Noyes <steve.noyes@oracle.com>
+- Remove obsolete json_generator
+
 * Fri Oct  2 2015 - Wiekus Beukes <wiekus.beukes@oracle.com>
 - Allow user to precreate the ssh keys
 
