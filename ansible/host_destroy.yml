@@ -5,5 +5,5 @@
       shell: '{{ item }}'
       ignore_errors: yes
       with_items:
-        - docker kill $(docker ps -a | grep '{{ prefix }}' | awk '{print $1}')
+        - docker '{{ destroy_type | default("kill") }}' $(docker ps -a | grep '{{ prefix }}' | awk '{print $1}')
         - docker rm $(docker ps -a | grep '{{ prefix }}' | awk '{print $1}')
