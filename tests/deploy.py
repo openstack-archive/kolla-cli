@@ -128,11 +128,14 @@ class TestFunctional(KollaCliTest):
         self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
         self.check_json(msg, groups, hosts, [included_group], hosts)
 
-    def test_simple_deploy(self):
+    def test_deploy(self):
         # test will start with no hosts in the inventory
         # deploy will throw an exception if it fails
         self.run_cli_cmd('deploy')
+        self.run_cli_cmd('deploy --serial')
+        self.run_cli_cmd('deploy --groups=control')
 
+    def test_dump(self):
         # quick check of kollacli dump
         # dump successful to /tmp/kollacli_dump_Umxu6d.tgz
         msg = self.run_cli_cmd('dump')

@@ -20,11 +20,11 @@ from kollacli.ansible import inventory
 import unittest
 
 DISABLED_SERVICES = [
-    'cinder', 'glance', 'haproxy', 'heat',
+    'cinder', 'glance', 'haproxy', 'heat', 'rabbitmq'
     'horizon', 'keystone', 'murano', 'neutron', 'nova',
     ]
 ENABLED_SERVICES = [
-    'mysqlcluster', 'rabbitmq',
+    'mysqlcluster'
     ]
 
 
@@ -81,8 +81,8 @@ class TestFunctional(KollaCliTest):
                           'is not running on host: %s ' % hostname +
                           'after deploy.')
 
-        # destroy services
-        self.run_cli_cmd('host destroy %s' % hostname)
+        # destroy services (via --stop flag)
+        self.run_cli_cmd('host destroy %s --stop' % hostname)
 
         docker_ps = test_config.run_remote_cmd('docker ps', hostname)
         for disabled_service in DISABLED_SERVICES:
