@@ -27,6 +27,8 @@ ENABLED_SERVICES = [
     'mysqlcluster'
     ]
 
+UNKNOWN_HOST = 'Name or service not known'
+
 
 class TestFunctional(KollaCliTest):
 
@@ -34,23 +36,41 @@ class TestFunctional(KollaCliTest):
         test_config = TestConfig()
         test_config.load()
 
-        if not test_config:
-            self.log.info('no test_config file found, skipping test')
-            return
-
         # add host to inventory
-        hostname = test_config.get_hostnames()[0]
-        pwd = test_config.get_password(hostname)
+        hostnames = test_config.get_hostnames()
+        if hostnames:
+            hostname = test_config.get_hostnames()[0]
+            is_physical_host = True
+            pwd = test_config.get_password(hostname)
+        else:
+            # No physical hosts in config, use a non-existent host.
+            # This will generate expected exceptions in all host access
+            # commands.
+            hostname = 'test_deploy_host1'
+            is_physical_host = False
+            pwd = 'test_pwd'
+
         self.run_cli_cmd('host add %s' % hostname)
-        self.run_cli_cmd('host setup %s --insecure %s'
-                         % (hostname, pwd))
+
+        try:
+            self.run_cli_cmd('host setup %s --insecure %s'
+                             % (hostname, pwd))
+        except Exception as e:
+            self.assertFalse(is_physical_host, 'host setup exception: %s' % e)
+            self.assertIn(UNKNOWN_HOST, '%s' % e,
+                          'Unexpected exception in host setup: %s' % e)
 
         # add host to all deploy groups
         for group in inventory.DEPLOY_GROUPS:
             self.run_cli_cmd('group addhost %s %s' % (group, hostname))
 
         # destroy services, initialize server
-        self.run_cli_cmd('host destroy %s' % hostname)
+        try:
+            self.run_cli_cmd('host destroy %s' % hostname)
+        except Exception as e:
+            self.assertFalse(is_physical_host, '1st destroy exception: %s' % e)
+            self.assertIn(UNKNOWN_HOST, '%s' % e,
+                          'Unexpected exception in 1st destroy: %s' % e)
 
         # disable most services so the test is quicker
         for disabled_service in DISABLED_SERVICES:
@@ -64,38 +84,50 @@ class TestFunctional(KollaCliTest):
             self.run_cli_cmd('%s' % predeploy_cmd)
 
         # deploy limited services openstack
-        msg = self.run_cli_cmd('deploy -v')
-        self.log.info(msg)
+        try:
+            msg = self.run_cli_cmd('deploy -v')
+            self.log.info(msg)
+        except Exception as e:
+            self.assertFalse(is_physical_host, 'deploy exception: %s' % e)
+            self.assertIn(UNKNOWN_HOST, '%s' % e,
+                          'Unexpected exception in deploy: %s' % e)
 
-        docker_ps = test_config.run_remote_cmd('docker ps', hostname)
-        docker_ps = docker_ps.replace('\r', '\n')
-        for disabled_service in DISABLED_SERVICES:
-            self.assertNotIn(disabled_service, docker_ps,
-                             'disabled service: %s ' % disabled_service +
-                             'is running on host: %s ' % hostname +
-                             'after deploy.')
+        if is_physical_host:
+            docker_ps = test_config.run_remote_cmd('docker ps', hostname)
+            docker_ps = docker_ps.replace('\r', '\n')
+            for disabled_service in DISABLED_SERVICES:
+                self.assertNotIn(disabled_service, docker_ps,
+                                 'disabled service: %s ' % disabled_service +
+                                 'is running on host: %s ' % hostname +
+                                 'after deploy.')
 
-        for enabled_service in ENABLED_SERVICES:
-            self.assertIn(enabled_service, docker_ps,
-                          'enabled service: %s ' % enabled_service +
-                          'is not running on host: %s ' % hostname +
-                          'after deploy.')
+            for enabled_service in ENABLED_SERVICES:
+                self.assertIn(enabled_service, docker_ps,
+                              'enabled service: %s ' % enabled_service +
+                              'is not running on host: %s ' % hostname +
+                              'after deploy.')
 
         # destroy services (via --stop flag)
-        self.run_cli_cmd('host destroy %s --stop' % hostname)
+        try:
+            self.run_cli_cmd('host destroy %s --stop' % hostname)
+        except Exception as e:
+            self.assertFalse(is_physical_host, '2nd destroy exception: %s' % e)
+            self.assertIn(UNKNOWN_HOST, '%s' % e,
+                          'Unexpected exception in 2nd destroy: %s' % e)
 
-        docker_ps = test_config.run_remote_cmd('docker ps', hostname)
-        for disabled_service in DISABLED_SERVICES:
-            self.assertNotIn(disabled_service, docker_ps,
-                             'disabled service: %s ' % disabled_service +
-                             'is running on host: %s ' % hostname +
-                             'after destroy.')
+        if is_physical_host:
+            docker_ps = test_config.run_remote_cmd('docker ps', hostname)
+            for disabled_service in DISABLED_SERVICES:
+                self.assertNotIn(disabled_service, docker_ps,
+                                 'disabled service: %s ' % disabled_service +
+                                 'is running on host: %s ' % hostname +
+                                 'after destroy.')
 
-        for enabled_service in ENABLED_SERVICES:
-            self.assertNotIn(enabled_service, docker_ps,
-                             'enabled service: %s ' % enabled_service +
-                             'is still running on host: %s ' % hostname +
-                             'after destroy.')
+            for enabled_service in ENABLED_SERVICES:
+                self.assertNotIn(enabled_service, docker_ps,
+                                 'enabled service: %s ' % enabled_service +
+                                 'is still running on host: %s ' % hostname +
+                                 'after destroy.')
 
     def tearDown(self):
         # re-enabled disabled services

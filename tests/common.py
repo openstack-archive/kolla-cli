@@ -263,12 +263,13 @@ class TestConfig(object):
         test_cfg = yaml.load(yml_data)
 
         hosts_info = test_cfg['hosts']
-        for hostname, host_info in hosts_info.items():
-            uname = host_info['uname']
-            pwd = host_info['pwd']
-            self.add_host(hostname)
-            self.set_password(hostname, pwd)
-            self.set_username(hostname, uname)
+        if hosts_info:
+            for hostname, host_info in hosts_info.items():
+                uname = host_info['uname']
+                pwd = host_info['pwd']
+                self.add_host(hostname)
+                self.set_password(hostname, pwd)
+                self.set_username(hostname, uname)
 
         self.predeploy_cmds = test_cfg['predeploy_cmds']
 
