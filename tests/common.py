@@ -96,8 +96,6 @@ class KollaCliTest(testtools.TestCase):
         return (retval, msg)
 
     def _init_file(self, filepath):
-        if os.path.exists(filepath):
-            os.remove(filepath)
         with open(filepath, 'w'):
             pass
 

@@ -11,16 +11,14 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import contextlib
 import logging
 import os
 import pexpect
+import pwd
+import tempfile
 import yaml
 
-from oslo_concurrency import lockutils
-
-# pool of semaphores for intra-process locks
-semaphores = lockutils.Semaphores()
+from fasteners import InterProcessLock
 
 
 def get_kolla_home():
@@ -41,6 +39,14 @@ def get_kollacli_etc():
 
 def get_kolla_log_dir():
     return '/var/log/kolla/'
+
+
+def get_admin_uids():
+    """get uid and gid of admin user"""
+    user_info = pwd.getpwnam(get_admin_user())
+    uid = user_info.pw_uid
+    gid = user_info.pw_gid
+    return uid, gid
 
 
 def get_kolla_log_file_size():
@@ -182,37 +188,39 @@ def sync_read_file(path, mode='r'):
 
     return file data
     """
-    _lock(path)
-    with open(path, mode) as data_file:
-        data = data_file.read()
+    lock = get_lock(path)
+    try:
+        lock.acquire(blocking=True, timeout=120)
+        with open(path, mode) as data_file:
+            data = data_file.read()
+    except Exception as e:
+        raise e
+    finally:
+        lock.release()
     return data
 
 
 def sync_write_file(path, data, mode='w'):
     """synchronously write file"""
-    _lock(path)
-    with open(path, mode) as data_file:
-        data_file.write(data)
+    lock = get_lock(path)
+    try:
+        lock.acquire(blocking=True, timeout=120)
+        with open(path, mode) as data_file:
+            data_file.write(data)
+    except Exception as e:
+        raise e
+    finally:
+        lock.release()
 
 
-@contextlib.contextmanager
-def _lock(lock_path, delay=0.01):
-    """Context based lock
-
-    This function yields an InterProcessLock instance.
-
-    :param lock_path: The path in which to store external lock files.  For
-      external locking to work properly, this must be the same for all
-      references to the lock.
-
-    :param delay: Delay between acquisition attempts (in seconds).
-    """
-    name = lock_path.replace('/', '_')
-    int_lock = lockutils.internal_lock(name, semaphores)
-    with int_lock:
-        ext_lock = lockutils.external_lock(name, '', lock_path)
-        ext_lock.acquire(delay=delay)
-        try:
-            yield ext_lock
-        finally:
-            ext_lock.release()
+def get_lock(path):
+    fname = 'kollacli_' + os.path.basename(path) + '.lock'
+    lock_path = os.path.join(tempfile.gettempdir(), fname)
+    if not os.path.isfile(lock_path):
+        # lock doesn't exit. create it and set owned by kolla group
+        with open(lock_path, 'a') as _:
+            pass
+        _, gid = get_admin_uids()
+        os.chown(lock_path, -1, gid)
+    lock = InterProcessLock(lock_path)
+    return lock
