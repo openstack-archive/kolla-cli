@@ -41,6 +41,7 @@ Requires:       pexpect                     >= 2.3
 Requires:       python-babel                >= 2.0
 Requires:       python-cliff                >= 1.13.0
 Requires:       python-cliff-tablib         >= 1.1
+Requires:       python-fasteners            >= 0.13.0
 Requires:       python-jsonpickle           >= 0.9.2
 Requires:       python-oslo-concurrency     >= 2.8
 Requires:       python-oslo-i18n            >= 2.5.0
@@ -155,6 +156,9 @@ esac
 
 
 %changelog
+* Tue Nov 03 2015 - Borne Mace <borne.mace@oracle.com>
+- Added python-fasteners requirement
+
 * Mon Oct 26 2015 - Steve Noyes <steve.noyes@oracle.com>
 - Remove obsolete json_generator
 
