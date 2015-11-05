@@ -154,12 +154,6 @@ esac
 
 
 %changelog
-* Wed Nov 03 2015 - Borne Mace <borne.mace@oracle.com>
-- Removed python-fasteners requirement
-
-* Tue Nov 03 2015 - Borne Mace <borne.mace@oracle.com>
-- Added python-fasteners requirement
-
 * Mon Oct 26 2015 - Steve Noyes <steve.noyes@oracle.com>
 - Remove obsolete json_generator
 
