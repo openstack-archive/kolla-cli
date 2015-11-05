@@ -199,11 +199,10 @@ class HostCheck(Command):
             hostname = parsed_args.hostname.strip()
             hostname = utils.convert_to_unicode(hostname)
             inventory = Inventory.load()
-            host = inventory.get_host(hostname)
-            if not host:
+            if not inventory.get_host(hostname):
                 _host_not_found(self.log, hostname)
 
-            host.check()
+            inventory.check_host(hostname)
         except CommandError as e:
             raise e
         except Exception as e:
@@ -243,14 +242,13 @@ class HostSetup(Command):
                 # single host setup
                 hostname = parsed_args.hostname.strip()
                 hostname = utils.convert_to_unicode(hostname)
-                host = inventory.get_host(hostname)
-                if not host:
+                if not inventory.get_host(hostname):
                     _host_not_found(self.log, hostname)
 
-                check_ok = host.check(True)
+                check_ok = inventory.check_host(hostname, True)
                 if check_ok:
                     self.log.info('Skipping setup of host (%s) as check is ok'
-                                  % host.name)
+                                  % hostname)
                     return True
 
                 if parsed_args.insecure:
@@ -260,7 +258,7 @@ class HostSetup(Command):
                     password = getpass.getpass('%s password for %s: ' %
                                                (setup_user, hostname))
                 password = utils.convert_to_unicode(password)
-                host.setup(password)
+                inventory.setup_host(hostname, password)
 
         except CommandError as e:
             raise e

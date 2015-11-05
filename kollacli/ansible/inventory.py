@@ -23,7 +23,7 @@ from kollacli import utils
 
 from kollacli.exceptions import CommandError
 from kollacli.sshutils import ssh_setup_host
-from kollacli.utils import get_kollacli_home
+from kollacli.utils import get_admin_user
 
 ANSIBLE_SSH_USER = 'ansible_ssh_user'
 ANSIBLE_CONNECTION = 'ansible_connection'
@@ -116,45 +116,6 @@ class Host(object):
 
     def upgrade(self):
         pass
-
-    def setup(self, password, uname=None):
-        # TODO(bmace) should run check before doing setup
-        # not setup- we need to set up the user / remote ssh keys
-        # using root and the available password
-        try:
-            self.log.info('Starting setup of host (%s)'
-                          % self.name)
-            ssh_setup_host(self.name, password, uname)
-            check_ok = self.check(True)
-            if not check_ok:
-                raise Exception('Post setup check failed')
-            self.log.info('Host (%s) setup succeeded' % self.name)
-        except Exception as e:
-            raise exceptions.CommandError(
-                'Host (%s) setup failed : %s'
-                % (self.name, e))
-        return True
-
-    def check(self, result_only=False):
-        kollacli_home = get_kollacli_home()
-        command_string = '/usr/bin/sudo -u kolla ansible '
-        inventory_string = '-i ' + os.path.join(kollacli_home,
-                                                'tools', 'json_generator.py')
-        ping_string = ' %s %s' % (self.name, '-m ping')
-        cmd = (command_string + inventory_string + ping_string)
-
-        err_msg, output = utils.run_cmd(cmd, False)
-        if err_msg:
-            if result_only:
-                return False
-            else:
-                raise exceptions.CommandError(
-                    'Host (%s) check failed : %s %s'
-                    % (self.name, err_msg, output))
-        else:
-            if not result_only:
-                self.log.info('Host (%s) check succeeded' % self.name)
-        return True
 
 
 class HostGroup(object):
@@ -458,7 +419,7 @@ class Inventory(object):
             if 'uname' in host_info:
                 uname = host_info['uname']
             try:
-                host.setup(passwd, uname)
+                self.setup_host(hostname, passwd, uname)
             except Exception as e:
                 failed_hosts[hostname] = '%s' % e
         if failed_hosts:
@@ -468,6 +429,48 @@ class Inventory(object):
             raise CommandError('Not all hosts were set up: %s' % summary)
         else:
             self.log.info('All hosts were successfully set up')
+
+    def setup_host(self, hostname, password, uname=None):
+        try:
+            self.log.info('Starting setup of host (%s)'
+                          % hostname)
+            ssh_setup_host(hostname, password, uname)
+            check_ok = self.check_host(hostname, True)
+            if not check_ok:
+                raise Exception('Post setup check failed')
+            self.log.info('Host (%s) setup succeeded' % hostname)
+        except Exception as e:
+            raise exceptions.CommandError(
+                'Host (%s) setup failed : %s'
+                % (hostname, e))
+        return True
+
+    def check_host(self, hostname, result_only=False):
+        command_string = '/usr/bin/sudo -u %s ansible ' % get_admin_user()
+        gen_file_path = self.create_json_gen_file()
+        err_msg = None
+        output = None
+        try:
+            inventory_string = '-i ' + gen_file_path
+            ping_string = ' %s %s' % (hostname, '-m ping')
+            cmd = (command_string + inventory_string + ping_string)
+            err_msg, output = utils.run_cmd(cmd, False)
+        except Exception as e:
+            raise e
+        finally:
+            if gen_file_path:
+                os.remove(gen_file_path)
+        if err_msg:
+            if result_only:
+                return False
+            else:
+                raise exceptions.CommandError(
+                    'Host (%s) check failed : %s %s'
+                    % (hostname, err_msg, output))
+        else:
+            if not result_only:
+                self.log.info('Host (%s) check succeeded' % hostname)
+        return True
 
     def add_group(self, groupname):
 
