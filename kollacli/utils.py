@@ -11,14 +11,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import fcntl
 import logging
 import os
 import pexpect
 import pwd
-import tempfile
 import yaml
-
-from fasteners import InterProcessLock
 
 
 def get_kolla_home():
@@ -188,39 +186,20 @@ def sync_read_file(path, mode='r'):
 
     return file data
     """
-    lock = get_lock(path)
     try:
-        lock.acquire(blocking=True, timeout=120)
         with open(path, mode) as data_file:
+            fcntl.flock(data_file, fcntl.LOCK_EX)
             data = data_file.read()
     except Exception as e:
         raise e
-    finally:
-        lock.release()
     return data
 
 
 def sync_write_file(path, data, mode='w'):
     """synchronously write file"""
-    lock = get_lock(path)
     try:
-        lock.acquire(blocking=True, timeout=120)
         with open(path, mode) as data_file:
+            fcntl.flock(data_file, fcntl.LOCK_EX)
             data_file.write(data)
     except Exception as e:
         raise e
-    finally:
-        lock.release()
-
-
-def get_lock(path):
-    fname = 'kollacli_' + os.path.basename(path) + '.lock'
-    lock_path = os.path.join(tempfile.gettempdir(), fname)
-    if not os.path.isfile(lock_path):
-        # lock doesn't exit. create it and set owned by kolla group
-        with open(lock_path, 'a') as _:
-            pass
-        _, gid = get_admin_uids()
-        os.chown(lock_path, -1, gid)
-    lock = InterProcessLock(lock_path)
-    return lock
