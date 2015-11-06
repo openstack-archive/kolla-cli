@@ -16,7 +16,6 @@ import getpass
 import logging
 import os
 import traceback
-import utils
 import yaml
 
 from kollacli.ansible.inventory import Inventory
@@ -50,7 +49,7 @@ class HostAdd(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            hostname = utils.convert_to_unicode(hostname)
+            hostname = convert_to_unicode(hostname)
 
             inventory = Inventory.load()
             inventory.add_host(hostname)
@@ -129,7 +128,7 @@ class HostRemove(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            hostname = utils.convert_to_unicode(hostname)
+            hostname = convert_to_unicode(hostname)
             inventory = Inventory.load()
             inventory.remove_host(hostname)
             Inventory.save(inventory)
@@ -158,7 +157,7 @@ class HostList(Lister):
             hostname = None
             if parsed_args.hostname:
                 hostname = parsed_args.hostname.strip()
-                hostname = utils.convert_to_unicode(hostname)
+                hostname = convert_to_unicode(hostname)
 
             inventory = Inventory.load()
 
@@ -197,7 +196,7 @@ class HostCheck(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            hostname = utils.convert_to_unicode(hostname)
+            hostname = convert_to_unicode(hostname)
             inventory = Inventory.load()
             if not inventory.get_host(hostname):
                 _host_not_found(self.log, hostname)
@@ -241,7 +240,7 @@ class HostSetup(Command):
             else:
                 # single host setup
                 hostname = parsed_args.hostname.strip()
-                hostname = utils.convert_to_unicode(hostname)
+                hostname = convert_to_unicode(hostname)
                 if not inventory.get_host(hostname):
                     _host_not_found(self.log, hostname)
 
@@ -257,7 +256,7 @@ class HostSetup(Command):
                     setup_user = get_setup_user()
                     password = getpass.getpass('%s password for %s: ' %
                                                (setup_user, hostname))
-                password = utils.convert_to_unicode(password)
+                password = convert_to_unicode(password)
                 inventory.setup_host(hostname, password)
 
         except CommandError as e:
