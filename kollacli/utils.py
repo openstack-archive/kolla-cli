@@ -16,7 +16,12 @@ import logging
 import os
 import pexpect
 import pwd
+import six
+import sys
 import yaml
+
+from kollacli.exceptions import CommandError
+from oslo_utils.encodeutils import safe_decode
 
 
 def get_kolla_home():
@@ -48,7 +53,14 @@ def get_admin_uids():
 
 
 def get_kolla_log_file_size():
-    return os.environ.get('KOLLA_LOG_FILE_SIZE', 500000)
+    envvar = 'KOLLA_LOG_FILE_SIZE'
+    size_str = os.environ.get(envvar, '500000')
+    try:
+        size = int(size_str)
+    except Exception:
+        raise CommandError('Environmental variable ' +
+                           '(%s) is not an integer' % (envvar, size_str))
+    return size
 
 
 def get_admin_user():
@@ -85,18 +97,41 @@ def save_etc_yaml(fileName, contents):
         f.write(yaml.dump(contents))
 
 
+def get_ansible_command(playbook=False):
+    """get a python2 ansible command
+
+    Ansible cannot run yet with python3. If the current default
+    python is py3, prefix the ansible command with a py2
+    interpreter.
+    """
+    cmd = 'ansible'
+    if playbook:
+        cmd = 'ansible-playbook'
+    if sys.version_info[0] >= 3:
+        # running with py3, find a py2 interpreter for ansible
+        py2_path = None
+        usr_bin = os.path.join('/', 'usr', 'bin')
+        for file in os.listdir(usr_bin):
+            if (file.startswith('python2.') and
+                    os.path.isfile(os.path.join(usr_bin, file))):
+                suffix = file.split('.')[1]
+                if suffix.isdigit():
+                    py2_path = os.path.join(usr_bin, file)
+                    break
+        if py2_path is None:
+            raise Exception('ansible-playbook requires python2 and no '
+                            'python2 interpreter found in %s' % usr_bin)
+        cmd = '%s %s' % (py2_path, os.path.join(usr_bin, cmd))
+    return cmd
+
+
 def convert_to_unicode(the_string):
     """convert string to unicode.
 
     This is used to fixup extended ascii chars in strings. these chars cause
     errors in json pickle/unpickle.
     """
-    uni_string = ''
-    try:
-        uni_string = unicode(the_string)
-    except UnicodeDecodeError:
-        uni_string = the_string.decode('utf-8')
-    return uni_string
+    return six.u(the_string)
 
 
 def run_cmd(cmd, print_output=True):
@@ -118,6 +153,7 @@ def run_cmd(cmd, print_output=True):
     try:
         child = pexpect.spawn(cmd)
         sniff = child.read(len(pwd_prompt))
+        sniff = safe_decode(sniff)
         if sniff == pwd_prompt:
             output = sniff + '\n'
             raise Exception(
@@ -125,6 +161,7 @@ def run_cmd(cmd, print_output=True):
         child.maxsize = 1
         child.timeout = 86400
         for line in child:
+            line = safe_decode(line)
             outline = sniff + line.rstrip()
             sniff = ''
             output = ''.join([output, outline, '\n'])
