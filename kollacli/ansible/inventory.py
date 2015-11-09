@@ -24,6 +24,7 @@ from kollacli import utils
 from kollacli.exceptions import CommandError
 from kollacli.sshutils import ssh_setup_host
 from kollacli.utils import get_admin_user
+from kollacli.utils import get_ansible_command
 
 ANSIBLE_SSH_USER = 'ansible_ssh_user'
 ANSIBLE_CONNECTION = 'ansible_connection'
@@ -334,7 +335,7 @@ class Inventory(object):
         return self._hosts.values()
 
     def get_hostnames(self):
-        return self._hosts.keys()
+        return list(self._hosts.keys())
 
     def get_host(self, hostname):
         host = None
@@ -446,7 +447,8 @@ class Inventory(object):
         return True
 
     def check_host(self, hostname, result_only=False):
-        command_string = '/usr/bin/sudo -u %s ansible ' % get_admin_user()
+        command_string = '/usr/bin/sudo -u %s %s ' % \
+            (get_admin_user(), get_ansible_command())
         gen_file_path = self.create_json_gen_file()
         err_msg = None
         output = None
@@ -510,7 +512,7 @@ class Inventory(object):
         return group
 
     def get_groupnames(self):
-        return self._groups.keys()
+        return list(self._groups.keys())
 
     def get_groups(self, host=None):
         """return all groups containing host

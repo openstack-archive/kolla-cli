@@ -111,12 +111,12 @@ def get_ansible_command(playbook=False):
         # running with py3, find a py2 interpreter for ansible
         py2_path = None
         usr_bin = os.path.join('/', 'usr', 'bin')
-        for file in os.listdir(usr_bin):
-            if (file.startswith('python2.') and
-                    os.path.isfile(os.path.join(usr_bin, file))):
+        for fname in os.listdir(usr_bin):
+            if (fname.startswith('python2.') and
+                    os.path.isfile(os.path.join(usr_bin, fname))):
                 suffix = file.split('.')[1]
                 if suffix.isdigit():
-                    py2_path = os.path.join(usr_bin, file)
+                    py2_path = os.path.join(usr_bin, fname)
                     break
         if py2_path is None:
             raise Exception('ansible-playbook requires python2 and no '
