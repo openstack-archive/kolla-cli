@@ -17,10 +17,11 @@ import os
 import pxssh
 import subprocess
 import sys
+import testtools
 import traceback
 import yaml
 
-import testtools
+from oslo_utils.encodeutils import safe_decode
 
 import kollacli.utils as utils
 
@@ -47,6 +48,7 @@ class KollaCliTest(testtools.TestCase):
                       % self._testMethodName)
 
         # switch to test path
+        self.log.info('running python: %s/%s' % (sys.executable, sys.version))
         etc_path = utils.get_kollacli_etc()
         self.log.debug('etc for tests: %s' % etc_path)
 
@@ -86,11 +88,12 @@ class KollaCliTest(testtools.TestCase):
             msg = e.output
 
         except Exception as e:
-            retval = e.errno
+            retval = -1
             msg = ('Unexpected exception: %s, cmd: %s'
                    % (traceback.format_exc(), cmd))
 
         # the py dev debugger adds a string at the line start, remove it
+        msg = safe_decode(msg)
         if msg.startswith('pydev debugger'):
             msg = msg.split('\n', 1)[1]
         return (retval, msg)
@@ -233,7 +236,7 @@ class TestConfig(object):
             self.hosts_info[name]['groups'].remove(group)
 
     def get_hostnames(self):
-        return self.hosts_info.keys()
+        return list(self.hosts_info.keys())
 
     def set_username(self, name, username):
         self.hosts_info[name]['username'] = username
@@ -298,6 +301,7 @@ class TestConfig(object):
         session.sendline(cmd)
         session.prompt()
         out = session.before
+        out = safe_decode(out)
         self.log.info(out)
         session.logout()
         return out
