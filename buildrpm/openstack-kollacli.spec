@@ -43,7 +43,7 @@ Requires:       python-cliff                >= 1.13.0
 Requires:       python-cliff-tablib         >= 1.1
 Requires:       python-jsonpickle           >= 0.9.2
 Requires:       python-oslo-i18n            >= 2.5.0
-Requires:       python-oslo-utils           !=2.6.0, >=2.4.0
+Requires:       python-oslo-utils           >= 2.4.0
 Requires:       python-paramiko             >= 1.15.1
 Requires:       python-pbr                  >= 1.6.0
 Requires:       python-six                  >= 1.9.0
@@ -51,6 +51,7 @@ Requires:       PyYAML                      >= 3.10
 
 Requires:       /usr/bin/ssh-keygen
 
+Conflicts:      python-oslo-utils           = 2.6.0
 
 %description
 The KollaCLI simplifies OpenStack Kolla deployments.
