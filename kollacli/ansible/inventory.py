@@ -782,5 +782,5 @@ class Inventory(object):
             json_gen_file.write("print('%s')" % json_out)
 
         # set executable by group
-        os.chmod(json_gen_path, 0o555)
+        os.chmod(json_gen_path, 0o555)  # nosec
         return json_gen_path

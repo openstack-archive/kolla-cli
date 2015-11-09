@@ -107,7 +107,7 @@ def _post_setup_checks(net_addr, log):
 
     try:
         # a basic test
-        ssh_client.exec_command('ls')
+        ssh_client.exec_command('ls')  # nosec
 
     except Exception as e:
         raise CommandError("remote command 'ls' failed : %s" % e)
@@ -120,13 +120,13 @@ def _close_ssh_client(ssh_client):
     if ssh_client:
         try:
             ssh_client.close()
-        except Exception:
+        except Exception:  # nosec
             pass
 
 
 def _exec_ssh_cmd(cmd, ssh_client, log):
     log.debug(cmd)
-    _, stdout, stderr = ssh_client.exec_command(cmd, get_pty=True)
+    _, stdout, stderr = ssh_client.exec_command(cmd, get_pty=True)  # nosec
     msg = stdout.read()
     errmsg = stderr.read()
     log.debug('%s : %s' % (msg, errmsg))

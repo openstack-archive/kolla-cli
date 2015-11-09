@@ -58,7 +58,7 @@ class AnsibleProperties(object):
                                          ANSIBLE_DEFAULTS_PATH)
                 if os.path.isfile(file_name):
                     with open(file_name) as service_file:
-                        service_contents = yaml.load(service_file)
+                        service_contents = yaml.safe_load(service_file)
                         self.file_contents[file_name] = service_contents
                         service_contents = self.filter_jinja2(service_contents)
                         prop_file_name = service_name + ':main.yml'
@@ -73,7 +73,7 @@ class AnsibleProperties(object):
         try:
             self.allvars_path = os.path.join(kolla_home, ALLVARS_PATH)
             with open(self.allvars_path) as allvars_file:
-                allvars_contents = yaml.load(allvars_file)
+                allvars_contents = yaml.safe_load(allvars_file)
                 self.file_contents[self.allvars_path] = allvars_contents
                 allvars_contents = self.filter_jinja2(allvars_contents)
                 for key, value in allvars_contents.items():
@@ -87,7 +87,7 @@ class AnsibleProperties(object):
         try:
             self.globals_path = os.path.join(kolla_etc, GLOBALS_FILENAME)
             globals_data = sync_read_file(self.globals_path)
-            globals_contents = yaml.load(globals_data)
+            globals_contents = yaml.safe_load(globals_data)
             self.file_contents[self.globals_path] = globals_contents
             globals_contents = self.filter_jinja2(globals_contents)
             for key, value in globals_contents.items():
