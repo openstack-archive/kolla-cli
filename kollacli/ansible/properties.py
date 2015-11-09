@@ -13,6 +13,7 @@
 #    under the License.
 import logging
 import os
+import six
 import yaml
 
 from kollacli.utils import change_property
@@ -115,15 +116,16 @@ class AnsibleProperties(object):
         return sorted(unique_list, key=lambda x: x.name)
 
     def filter_jinja2(self, contents):
+        new_contents = {}
         for key, value in contents.items():
-            if isinstance(value, basestring) is False:
-                self.log.debug('removing non-string: %s' % str(value))
-                del contents[key]
+            if not isinstance(value, six.string_types):
+                self.log.debug('removing non-string: %s' % value)
                 continue
-            if '{{' in value and '}}' in value:
+            if value and '{{' in value and '}}' in value:
                 self.log.debug('removing jinja2 value: %s' % value)
-                del contents[key]
-        return contents
+                continue
+            new_contents[key] = value
+        return new_contents
 
     def set_property(self, property_key, property_value):
         # We only manipulate values in the globals.yml file so look up the key
