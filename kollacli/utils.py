@@ -18,7 +18,6 @@ import pexpect
 import pwd
 import six
 import sys
-import yaml
 
 from kollacli.exceptions import CommandError
 from oslo_utils.encodeutils import safe_decode
@@ -78,23 +77,6 @@ def get_pk_password():
 
 def get_pk_bits():
     return 1024
-
-
-def load_etc_yaml(fileName):
-    contents = {}
-    try:
-        with open(get_kollacli_etc() + fileName, 'r') as f:
-            contents = yaml.load(f)
-    except Exception:
-        # TODO(bmace) if file doesn't exist on a load we don't
-        # want to blow up, some better behavior here?
-        pass
-    return contents or {}
-
-
-def save_etc_yaml(fileName, contents):
-    with open(get_kollacli_etc() + fileName, 'w') as f:
-        f.write(yaml.dump(contents))
 
 
 def get_ansible_command(playbook=False):

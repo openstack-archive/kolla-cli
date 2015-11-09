@@ -13,7 +13,7 @@
 #    under the License.
 import logging
 import os
-import subprocess
+import subprocess  # nosec
 import traceback
 
 from kollacli.ansible.inventory import Inventory
@@ -123,7 +123,7 @@ class AnsiblePlaybook(object):
                     # log the inventory
                     dbg_gen = inventory_path
                     (inv, _) = \
-                        subprocess.Popen(dbg_gen.split(' '),
+                        subprocess.Popen(dbg_gen.split(' '),  # nosec
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE).communicate()
                     self.log.debug(inv)

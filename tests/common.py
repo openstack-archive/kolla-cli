@@ -258,7 +258,7 @@ class TestConfig(object):
         with open(path, 'r+') as cfg_file:
             yml_data = cfg_file.read()
 
-        test_cfg = yaml.load(yml_data)
+        test_cfg = yaml.safe_load(yml_data)
 
         hosts_info = test_cfg['hosts']
         if hosts_info:

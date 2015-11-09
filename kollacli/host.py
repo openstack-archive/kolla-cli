@@ -272,7 +272,7 @@ class HostSetup(Command):
         with open(yml_path, 'r') as hosts_file:
             file_data = hosts_file.read()
 
-        hosts_info = yaml.load(file_data)
+        hosts_info = yaml.safe_load(file_data)
         if not hosts_info:
             raise CommandError('%s is empty' % yml_path)
         return hosts_info
