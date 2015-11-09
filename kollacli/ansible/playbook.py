@@ -19,6 +19,7 @@ import traceback
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
+from kollacli.utils import get_ansible_command
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import run_cmd
 
@@ -49,9 +50,10 @@ class AnsiblePlaybook(object):
             if self.verbose_level > 1:
                 flag = '-vvv'
 
+            ansible_cmd = get_ansible_command(playbook=True)
             admin_user = get_admin_user()
-            command_string = ('/usr/bin/sudo -u %s ansible-playbook %s'
-                              % (admin_user, flag))
+            command_string = ('/usr/bin/sudo -u %s %s %s'
+                              % (admin_user, ansible_cmd, flag))
             inventory = Inventory.load()
             inventory_filter = {}
             if self.hosts:
