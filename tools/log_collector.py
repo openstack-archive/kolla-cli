@@ -38,19 +38,19 @@ def run_ansible_cmd(cmd, host):
 
     ansible_verb = get_ansible_command()
     ansible_cmd = ('/usr/bin/sudo -u %s %s %s -i %s -a "%s"'
-            % (user, ansible_verb, host, inv_path, cmd))
+                   % (user, ansible_verb, host, inv_path, cmd))
 
     try:
-        (out, _) = subprocess.Popen(ansible_cmd, shell=True,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE).communicate()
+        (out, err) = subprocess.Popen(ansible_cmd, shell=True,
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE).communicate()
     except Exception as e:
         print('%s\nCannot communicate with host: %s, skipping' % (e, host))
     finally:
         os.remove(inv_path)
 
     if not out:
-        print('Host %s is not accessible, skipping' % host)
+        print('Host %s is not accessible: %s, skipping' % (host, err))
     else:
         out = safe_decode(out)
         if '>>' not in out:
