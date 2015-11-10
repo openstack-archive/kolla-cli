@@ -19,6 +19,7 @@ from kollacli.ansible.inventory import SERVICES
 
 import json
 import os
+import tarfile
 import unittest
 
 
@@ -136,16 +137,39 @@ class TestFunctional(KollaCliTest):
         self.run_cli_cmd('deploy --groups=control')
 
     def test_dump(self):
-        # quick check of kollacli dump
+        check_files = [
+            'var/log/kolla/kolla.log',
+            'kolla/etc/globals.yml',
+            'kolla/etc/config/nova/nova-api.conf',
+            'kolla/etc/kollacli/ansible/inventory.json',
+            'kolla/share/ansible/site.yml',
+            'kolla/share/docs/ansible-deployment.rst',
+        ]
+        # dump success output is:
         # dump successful to /tmp/kollacli_dump_Umxu6d.tgz
-        msg = self.run_cli_cmd('dump')
-        self.assertIn('/', msg, 'path not found in dump output: %s' % msg)
+        dump_path = None
+        try:
+            msg = self.run_cli_cmd('dump')
+            self.assertIn('/', msg, 'path not found in dump output: %s' % msg)
 
-        dump_path = '/' + msg.strip().split('/', 1)[1]
-        is_file = os.path.isfile(dump_path)
-        self.assertTrue(is_file,
-                        'dump file not found at %s' % dump_path)
-        os.remove(dump_path)
+            dump_path = '/' + msg.strip().split('/', 1)[1]
+            is_file = os.path.isfile(dump_path)
+            self.assertTrue(is_file,
+                            'dump file not found at %s' % dump_path)
+
+            file_paths = []
+            with tarfile.open(dump_path, 'r') as tar:
+                file_paths = tar.getnames()
+
+            for check_file in check_files:
+                self.assertIn(check_file, file_paths,
+                              'dump: check file: %s, not in files:\n%s'
+                              % (check_file, file_paths))
+        except Exception as e:
+            raise e
+        finally:
+            if dump_path and os.path.exists(dump_path):
+                os.remove(dump_path)
 
     def check_json(self, msg, groups, hosts, included_groups, included_hosts):
         err_msg = ('included groups: %s\n' % included_groups +

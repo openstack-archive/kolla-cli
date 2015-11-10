@@ -22,31 +22,31 @@ import tempfile
 from kollacli.ansible.inventory import Inventory
 from kollacli.ansible import properties
 from kollacli.utils import get_admin_user
-from kollacli.utils import get_kollacli_home
 
 tar_file_descr = None
 
 
 def run_ansible_cmd(cmd, host):
-    # sudo -u kolla ansible ol7-c4 -i
-    #  /usr/share/kolla/kollacli/tools/json_generator.py -a "cmd"
+    # sudo -u kolla ansible ol7-c4 -i inv_path -a "cmd"
     out = None
     user = get_admin_user()
-    kollacli_home = get_kollacli_home()
-    inv_path = os.path.join(kollacli_home, 'tools', 'json_generator.py')
+    inventory = Inventory.load()
+    inv_path = inventory.create_json_gen_file()
 
     acmd = ('/usr/bin/sudo -u %s ansible %s -i %s -a "%s"'
             % (user, host, inv_path, cmd))
 
     try:
-        (out, _) = subprocess.Popen(acmd, shell=True,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE).communicate()
+        (out, err) = subprocess.Popen(acmd, shell=True,
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE).communicate()
     except Exception as e:
         print('%s\nCannot communicate with host: %s, skipping' % (e, host))
+    finally:
+        os.remove(inv_path)
 
     if not out:
-        print('Host %s is not accessible, skipping' % host)
+        print('Host %s is not accessible: %s, skipping' % (host, err))
     elif '>>' not in out:
         print('Ansible command: %s' % acmd)
         print('Host: %s. \nInvalid ansible return data: [%s]. skipping'
