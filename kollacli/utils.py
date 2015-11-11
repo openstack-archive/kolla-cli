@@ -179,16 +179,25 @@ def change_property(file_path, property_key, property_value, clear=False):
         lines = read_data.split('\n')
         new_line = '%s: "%s"' % (property_key, property_value)
         property_key_found = False
+        last_line_empty = False
         for line in lines:
-            line = line.rstrip() # make sure to swallow any newlines
+            line = line.rstrip()
+
+            # yank spurious empty lines
+            if line:
+                last_line_empty = False
+            else:
+                if last_line_empty:
+                    continue
+                last_line_empty = True
+
             if line[0:len(property_key)] == property_key:
                 property_key_found = True
                 if clear:
-                    # clear existing property by not adding it to output
+                    # clear existing property
                     continue
-                else:
-                    # edit existing property
-                    line = new_line
+                # edit existing property
+                line = new_line
             new_contents.append(line)
         if not property_key_found and not clear:
             # add new property to file
