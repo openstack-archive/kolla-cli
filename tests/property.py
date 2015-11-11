@@ -13,13 +13,23 @@
 #   under the License.
 #
 from common import KollaCliTest
+
+import os
 import unittest
+
+from kollacli.utils import get_kolla_etc
 
 
 class TestFunctional(KollaCliTest):
 
     def test_property_set_clear(self):
         # test list
+
+        # This test should leave the globals.yml file unchanged
+        # after the test completes.
+        globals_path = os.path.join(get_kolla_etc(), 'globals.yml')
+        size_start = os.path.getsize(globals_path)
+
         msg = self.run_cli_cmd('property list')
         key = 'kolla_base_distro'
         value = 'ol'
@@ -52,6 +62,11 @@ class TestFunctional(KollaCliTest):
         ok = self._property_value_exists(key, value, msg)
         self.assertFalse(ok, 'clear failed property in output: %s, %s' %
                          (key, value))
+
+        # check that globals.yml file size didn't change
+        size_end = os.path.getsize(globals_path)
+        self.assertEqual(size_start, size_end, 'globals.yml size changed ' +
+                         'from %s to %s' % (size_start, size_end))
 
     def _property_value_exists(self, key, value, cli_output):
         """Verify cli data against model data"""
