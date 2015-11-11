@@ -22,36 +22,42 @@ import tempfile
 from kollacli.ansible.inventory import Inventory
 from kollacli.ansible import properties
 from kollacli.utils import get_admin_user
-from kollacli.utils import get_kollacli_home
+from kollacli.utils import get_ansible_command
+
+from oslo_utils.encodeutils import safe_decode
 
 tar_file_descr = None
 
 
 def run_ansible_cmd(cmd, host):
-    # sudo -u kolla ansible ol7-c4 -i
-    #  /usr/share/kolla/kollacli/tools/json_generator.py -a "cmd"
+    # sudo -u kolla ansible ol7-c4 -i inv_path -a "cmd"
     out = None
     user = get_admin_user()
-    kollacli_home = get_kollacli_home()
-    inv_path = os.path.join(kollacli_home, 'tools', 'json_generator.py')
+    inv = Inventory.load()
+    inv_path = inv.create_json_gen_file()
 
-    acmd = ('/usr/bin/sudo -u %s ansible %s -i %s -a "%s"'
-            % (user, host, inv_path, cmd))
+    ansible_verb = get_ansible_command()
+    ansible_cmd = ('/usr/bin/sudo -u %s %s %s -i %s -a "%s"'
+                   % (user, ansible_verb, host, inv_path, cmd))
 
     try:
-        (out, _) = subprocess.Popen(acmd, shell=True,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE).communicate()
+        (out, err) = subprocess.Popen(ansible_cmd, shell=True,
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE).communicate()
     except Exception as e:
         print('%s\nCannot communicate with host: %s, skipping' % (e, host))
+    finally:
+        os.remove(inv_path)
 
     if not out:
-        print('Host %s is not accessible, skipping' % host)
-    elif '>>' not in out:
-        print('Ansible command: %s' % acmd)
-        print('Host: %s. \nInvalid ansible return data: [%s]. skipping'
-              % (host, out))
-        out = None
+        print('Host %s is not accessible: %s, skipping' % (host, err))
+    else:
+        out = safe_decode(out)
+        if '>>' not in out:
+            print('Ansible command: %s' % ansible_cmd)
+            print('Host: %s. \nInvalid ansible return data: [%s]. skipping'
+                  % (host, out))
+            out = None
     return out
 
 
@@ -165,6 +171,7 @@ def main():
         (_, err) = subprocess.Popen('kollacli dump'.split(),
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE).communicate()
+        err = safe_decode(err)
         if '/' in err:
             dump_path = '/' + err.strip().split('/', 1)[1]
             if os.path.isfile(dump_path):
