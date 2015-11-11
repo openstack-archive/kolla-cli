@@ -177,23 +177,24 @@ def change_property(file_path, property_key, property_value, clear=False):
         new_contents = []
         read_data = sync_read_file(file_path)
         lines = read_data.split('\n')
-        new_line = '%s: "%s"\n' % (property_key, property_value)
+        new_line = '%s: "%s"' % (property_key, property_value)
         property_key_found = False
         for line in lines:
+            line = line.rstrip() # make sure to swallow any newlines
             if line[0:len(property_key)] == property_key:
                 property_key_found = True
                 if clear:
-                    # clear existing property
-                    line = ''
+                    # clear existing property by not adding it to output
+                    continue
                 else:
                     # edit existing property
                     line = new_line
-            new_contents.append(line + '\n')
+            new_contents.append(line)
         if not property_key_found and not clear:
             # add new property to file
             new_contents.append(new_line)
 
-        write_data = ''.join(new_contents)
+        write_data = '\n'.join(new_contents)
         sync_write_file(file_path, write_data)
 
     except Exception as e:
