@@ -13,12 +13,21 @@
 #   under the License.
 #
 from common import KollaCliTest
+import os
 import unittest
+
+from kollacli.utils import get_kolla_etc
 
 
 class TestFunctional(KollaCliTest):
 
     def test_password_set_clear(self):
+
+        # This test should leave the passwords.yml file unchanged
+        # after the test completes.
+        pwds_path = os.path.join(get_kolla_etc(), 'passwords.yml')
+        size_start = os.path.getsize(pwds_path)
+
         # test list
         msg = self.run_cli_cmd('password list')
         key = 'database_password'
@@ -56,6 +65,11 @@ class TestFunctional(KollaCliTest):
         self.assertFalse(ok, 'clear password failed. Password ' +
                          '(%s/%s) not in output: %s' %
                          (key, value, msg))
+
+        # check that passwords.yml file size didn't change
+        size_end = os.path.getsize(pwds_path)
+        self.assertEqual(size_start, size_end, 'passwords.yml size changed ' +
+                         'from %s to %s' % (size_start, size_end))
 
     def _password_value_exists(self, key, value, cli_output):
         """Verify cli data against model data"""
