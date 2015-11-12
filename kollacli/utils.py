@@ -96,7 +96,7 @@ def get_ansible_command(playbook=False):
         for fname in os.listdir(usr_bin):
             if (fname.startswith('python2.') and
                     os.path.isfile(os.path.join(usr_bin, fname))):
-                suffix = file.split('.')[1]
+                suffix = fname.split('.')[1]
                 if suffix.isdigit():
                     py2_path = os.path.join(usr_bin, fname)
                     break
