@@ -15,16 +15,14 @@
 from common import KollaCliTest
 from common import TestConfig
 
-from kollacli.ansible import inventory
-
 import unittest
 
 DISABLED_SERVICES = [
-    'cinder', 'glance', 'haproxy', 'heat', 'rabbitmq'
+    'cinder', 'glance', 'haproxy', 'heat', 'msqlcluster',
     'horizon', 'keystone', 'murano', 'neutron', 'nova',
     ]
 ENABLED_SERVICES = [
-    'mysqlcluster'
+    'rabbitmq'
     ]
 
 UNKNOWN_HOST = 'Name or service not known'
@@ -60,9 +58,12 @@ class TestFunctional(KollaCliTest):
             self.assertIn(UNKNOWN_HOST, '%s' % e,
                           'Unexpected exception in host setup: %s' % e)
 
-        # add host to all deploy groups
-        for group in inventory.DEPLOY_GROUPS:
-            self.run_cli_cmd('group addhost %s %s' % (group, hostname))
+        # add host to a new deploy group
+        group_name = 'test_group'
+        self.run_cli_cmd('group add %s' % group_name)
+        self.run_cli_cmd('group addhost %s %s' % (group_name, hostname))
+        for service in ENABLED_SERVICES:
+            self.run_cli_cmd('service addgroup %s %s' % (service, group_name))
 
         # destroy services, initialize server
         try:
