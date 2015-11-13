@@ -11,8 +11,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
 import traceback
+
+import kollacli.i18n as u
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
@@ -24,12 +25,10 @@ from cliff.lister import Lister
 
 class GroupAdd(Command):
     """Add group to open-stack-kolla"""
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupAdd, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -49,12 +48,10 @@ class GroupAdd(Command):
 class GroupRemove(Command):
     """Remove group from openstack-kolla"""
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupRemove, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group name')
+                            help=u._('Group name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -72,14 +69,12 @@ class GroupRemove(Command):
 
 class GroupAddhost(Command):
     """Add host to group"""
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupAddhost, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         parser.add_argument('hostname', metavar='<hostname>',
-                            help='host')
+                            help=u._('Host name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -100,14 +95,12 @@ class GroupAddhost(Command):
 class GroupRemovehost(Command):
     """Remove host group from group"""
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupRemovehost, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         parser.add_argument('hostname', metavar='<hostname>',
-                            help='host')
+                            help=u._('Host name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -129,8 +122,6 @@ class GroupRemovehost(Command):
 class GroupListhosts(Lister):
     """List all groups and their hosts"""
 
-    log = logging.getLogger(__name__)
-
     def take_action(self, parsed_args):
         try:
             inventory = Inventory.load()
@@ -142,7 +133,7 @@ class GroupListhosts(Lister):
                     data.append((groupname, hostnames))
             else:
                 data.append(('', ''))
-            return (('Group', 'Hosts'), sorted(data))
+            return ((u._('Group'), u._('Hosts')), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:
@@ -151,14 +142,12 @@ class GroupListhosts(Lister):
 
 class GroupAddservice(Command):
     """Add service to group"""
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupAddservice, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         parser.add_argument('servicename', metavar='<servicename>',
-                            help='service')
+                            help=u._('Service name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -180,14 +169,12 @@ class GroupAddservice(Command):
 class GroupRemoveservice(Command):
     """Remove service group from group"""
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupRemoveservice, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         parser.add_argument('servicename', metavar='<servicename>',
-                            help='service')
+                            help=u._('Service name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -209,8 +196,6 @@ class GroupRemoveservice(Command):
 class GroupListservices(Lister):
     """List all groups and their services"""
 
-    log = logging.getLogger(__name__)
-
     def take_action(self, parsed_args):
         try:
             inventory = Inventory.load()
@@ -222,7 +207,7 @@ class GroupListservices(Lister):
                     data.append((groupname, sorted(servicenames)))
             else:
                 data.append(('', ''))
-            return (('Group', 'Services'), sorted(data))
+            return ((u._('Group'), u._('Services')), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:

@@ -12,9 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 """Exception definitions."""
+import kollacli.i18n as u
 
 
 class CommandError(Exception):
     def __init__(self, message, *args):
-        message = 'ERROR: %s' % message
+        message = u._('ERROR: {message}').format(message=message)
         super(CommandError, self).__init__(message, *args)

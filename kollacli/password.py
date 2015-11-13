@@ -13,8 +13,9 @@
 #    under the License.
 import argparse
 import getpass
-import logging
 import traceback
+
+import kollacli.i18n as u
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -27,12 +28,10 @@ from kollacli.ansible.passwords import set_password
 class PasswordSet(Command):
     "Password Set"
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(PasswordSet, self).get_parser(prog_name)
         parser.add_argument('passwordname', metavar='<passwordname>',
-                            help='passwordname')
+                            help=u._('Password name'))
         parser.add_argument('--insecure', nargs='?', help=argparse.SUPPRESS)
         return parser
 
@@ -42,7 +41,7 @@ class PasswordSet(Command):
             if parsed_args.insecure:
                 password = parsed_args.insecure.strip()
             else:
-                password = getpass.getpass('Password: ').strip()
+                password = getpass.getpass(u._('Password: ')).strip()
 
             set_password(password_name, password)
 
@@ -53,12 +52,10 @@ class PasswordSet(Command):
 class PasswordClear(Command):
     "Password Clear"
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(PasswordClear, self).get_parser(prog_name)
         parser.add_argument('passwordname', metavar='<passwordname>',
-                            help='passwordname')
+                            help=u._('Password name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -72,8 +69,6 @@ class PasswordClear(Command):
 class PasswordList(Lister):
     """List all password names"""
 
-    log = logging.getLogger(__name__)
-
     def take_action(self, parsed_args):
         password_names = get_password_names()
         password_names = sorted(password_names)
@@ -82,4 +77,4 @@ class PasswordList(Lister):
         for password_name in password_names:
             data.append((password_name, '-'))
 
-        return (('Password Name',  'Password'), data)
+        return ((u._('Password Name'),  u._('Password')), data)

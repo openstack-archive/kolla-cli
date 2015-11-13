@@ -11,8 +11,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
 import traceback
+
+import kollacli.i18n as u
 
 from kollacli.ansible import properties
 
@@ -23,14 +24,12 @@ from cliff.lister import Lister
 class PropertySet(Command):
     "Property Set"
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(PropertySet, self).get_parser(prog_name)
         parser.add_argument('propertyname', metavar='<propertyname>',
-                            help='propertyname')
+                            help=u._('Property name'))
         parser.add_argument('propertyvalue', metavar='<propertyvalue',
-                            help='propertyvalue')
+                            help=u._('Property value'))
         return parser
 
     def take_action(self, parsed_args):
@@ -47,12 +46,10 @@ class PropertySet(Command):
 class PropertyClear(Command):
     "Property Clear"
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(PropertyClear, self).get_parser(prog_name)
         parser.add_argument('propertyname', metavar='<propertyname>',
-                            help='propertyname')
+                            help=u._('Property name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -68,8 +65,6 @@ class PropertyClear(Command):
 class PropertyList(Lister):
     """List all properties"""
 
-    log = logging.getLogger(__name__)
-
     def take_action(self, parsed_args):
         ansible_properties = properties.AnsibleProperties()
         property_list = ansible_properties.get_all_unique()
@@ -80,4 +75,4 @@ class PropertyList(Lister):
         else:
             data.append(('', ''))
 
-        return (('Property Name', 'Property Value'), data)
+        return ((u._('Property Name'), u._('Property Value')), data)

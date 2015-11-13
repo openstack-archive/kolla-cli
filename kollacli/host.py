@@ -18,8 +18,7 @@ import os
 import traceback
 import yaml
 
-from kollacli.i18n import _
-from kollacli.i18n import _LI
+import kollacli.i18n as u
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.ansible.playbook import AnsiblePlaybook
@@ -37,16 +36,17 @@ LOG = logging.getLogger(__name__)
 
 def _host_not_found(hostname):
     raise CommandError(
-        _('Host ({host}) not found. Please '
-            'add it with "host add".').format(host=hostname))
+        u._('Host ({host}) not found. Please add it with "host add".')
+        .format(host=hostname))
 
 
 class HostAdd(Command):
     """Add host to open-stack-kolla"""
+
     def get_parser(self, prog_name):
         parser = super(HostAdd, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname>',
-                            help=_('Host name or ip address'))
+                            help=u._('Host name or ip address'))
         return parser
 
     def take_action(self, parsed_args):
@@ -73,9 +73,9 @@ class HostDestroy(Command):
     def get_parser(self, prog_name):
         parser = super(HostDestroy, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname | all>',
-                            help=_('Host name or ip address or "all"'))
+                            help=u._('Host name or ip address or "all"'))
         parser.add_argument('--stop', action='store_true',
-                            help=_('Stop rather than kill'))
+                            help=u._('Stop rather than kill'))
         return parser
 
     def take_action(self, parsed_args):
@@ -94,7 +94,7 @@ class HostDestroy(Command):
             if parsed_args.stop:
                 destroy_type = 'stop'
 
-            LOG.info(_LI('Please be patient as this may take a while.'))
+            LOG.info(u._LI('Please be patient as this may take a while.'))
             ansible_properties = properties.AnsibleProperties()
             base_distro = \
                 ansible_properties.get_property('kolla_base_distro')
@@ -123,7 +123,7 @@ class HostRemove(Command):
     def get_parser(self, prog_name):
         parser = super(HostRemove, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname>',
-                            help=_('Host name'))
+                            help=u._('Host name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -148,7 +148,7 @@ class HostList(Lister):
     def get_parser(self, prog_name):
         parser = super(HostList, self).get_parser(prog_name)
         parser.add_argument('hostname', nargs='?', metavar='[hostname]',
-                            help=_('Host name'))
+                            help=u._('Host name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -175,7 +175,7 @@ class HostList(Lister):
                         data.append((hostname, groupnames))
             else:
                 data.append(('', ''))
-            return (('Host', 'Groups'), sorted(data))
+            return ((u._('Host'), u._('Groups')), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:
@@ -188,7 +188,7 @@ class HostCheck(Command):
     def get_parser(self, prog_name):
         parser = super(HostCheck, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname>',
-                            help=_('Host name'))
+                            help=u._('Host name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -212,21 +212,22 @@ class HostSetup(Command):
     def get_parser(self, prog_name):
         parser = super(HostSetup, self).get_parser(prog_name)
         parser.add_argument('hostname', nargs='?',
-                            metavar='<hostname>', help=_('Host name'))
+                            metavar='<hostname>', help=u._('Host name'))
         parser.add_argument('--insecure', nargs='?', help=argparse.SUPPRESS)
         parser.add_argument('--file', '-f', nargs='?',
                             metavar='<hosts_info_file>',
-                            help=_('Absolute path to hosts info file '))
+                            help=u._('Absolute path to hosts info file '))
         return parser
 
     def take_action(self, parsed_args):
         try:
             if not parsed_args.hostname and not parsed_args.file:
-                raise CommandError(_('Host name or hosts info file path '
-                                     'is required.'))
+                raise CommandError(
+                    u._('Host name or hosts info file path is required.'))
             if parsed_args.hostname and parsed_args.file:
-                raise CommandError(_('Host name and hosts info file path '
-                                     'cannot both be present.'))
+                raise CommandError(
+                    u._('Host name and hosts info file path '
+                        'cannot both be present.'))
             inventory = Inventory.load()
 
             if parsed_args.file:
@@ -242,17 +243,18 @@ class HostSetup(Command):
 
                 check_ok = inventory.check_host(hostname, True)
                 if check_ok:
-                    LOG.info(_LI('Skipping setup of host ({host}) as '
-                                 'check is ok.').format(host=hostname))
+                    LOG.info(
+                        u._LI('Skipping setup of host ({host}) as '
+                              'check is ok.').format(host=hostname))
                     return True
 
                 if parsed_args.insecure:
                     password = parsed_args.insecure.strip()
                 else:
                     setup_user = get_setup_user()
-                    password = getpass.getpass(_(
-                        '{user} password for {host}: ').format(user=setup_user,
-                                                               host=hostname))
+                    password = getpass.getpass(
+                        u._('{user} password for {host}: ')
+                        .format(user=setup_user, host=hostname))
                 password = convert_to_unicode(password)
                 inventory.setup_host(hostname, password)
 
@@ -263,14 +265,14 @@ class HostSetup(Command):
 
     def get_yml_data(self, yml_path):
         if not os.path.isfile(yml_path):
-            raise CommandError(_(
-                'No file exists at {path}. '
-                'An absolute file path is required.').format(path=yml_path))
+            raise CommandError(
+                u._('No file exists at {path}. An absolute file path is '
+                    'required.').format(path=yml_path))
 
         with open(yml_path, 'r') as hosts_file:
             file_data = hosts_file.read()
 
         hosts_info = yaml.safe_load(file_data)
         if not hosts_info:
-            raise CommandError(_('{path} is empty.').format(path=yml_path))
+            raise CommandError(u._('{path} is empty.').format(path=yml_path))
         return hosts_info

@@ -13,6 +13,8 @@
 #    under the License.
 import os
 
+import kollacli.i18n as u
+
 from kollacli.exceptions import CommandError
 from kollacli import utils
 
@@ -29,7 +31,9 @@ def set_password(pwd_key, pwd_value):
     cmd = '%s -k %s -v %s' % (_get_cmd_prefix(), pwd_key, pwd_value)
     err_msg, output = utils.run_cmd(cmd, print_output=False)
     if err_msg:
-        raise CommandError('%s %s' % (err_msg, output))
+        raise CommandError(
+            u._('Password set failed. {error} {message}')
+            .format(error=err_msg, message=output))
 
 
 def clear_password(pwd_key):

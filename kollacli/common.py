@@ -17,6 +17,8 @@ import tarfile
 import tempfile
 import traceback
 
+import kollacli.i18n as u
+
 from kollacli.ansible.inventory import Inventory
 from kollacli.ansible.playbook import AnsiblePlaybook
 from kollacli.ansible.properties import AnsibleProperties
@@ -30,32 +32,32 @@ from kollacli.utils import run_cmd
 
 from cliff.command import Command
 
+LOG = logging.getLogger(__name__)
+
 
 class Deploy(Command):
     """Deploy"""
-
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(Deploy, self).get_parser(prog_name)
         parser.add_argument('--hosts', nargs='?',
                             metavar='<host_list>',
-                            help='deployment host list')
+                            help=u._('Deployment host list'))
         parser.add_argument('--groups', nargs='?',
                             metavar='<group_list>',
-                            help='deployment group list')
+                            help=u._('Deployment group list'))
         parser.add_argument('--services', nargs='?',
                             metavar='<service_list>',
-                            help='deployment service list')
+                            help=u._('Deployment service list'))
         parser.add_argument('--serial', action='store_true',
-                            help='deploy serially')
+                            help=u._('Deploy serially'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             if parsed_args.hosts and parsed_args.groups:
-                raise CommandError('Hosts and Groups arguments cannot both ' +
-                                   'be present at the same time.')
+                raise CommandError(
+                    u._('Hosts and Groups arguments cannot '
+                        'both be present at the same time.'))
 
             self._run_rules()
 
@@ -98,11 +100,12 @@ class Deploy(Command):
             for expected_file in expected_files:
                 path = os.path.join(path_pre, expected_file)
                 if not os.path.isfile(path):
-                    msg = ('Deploy failed. ' +
-                           'Swift is enabled but ring buffers have ' +
-                           'not yet been set up. Please see the ' +
-                           'documentation for swift configuration ' +
-                           'instructions.')
+                    msg = u._(
+                        'Deploy failed. '
+                        'Swift is enabled but ring buffers have '
+                        'not yet been set up. Please see the '
+                        'documentation for swift configuration '
+                        'instructions.')
                     raise CommandError(msg)
 
 
@@ -113,8 +116,6 @@ class Dump(Command):
     tar file so be given to support / development to help with
     debugging problems.
     """
-    log = logging.getLogger(__name__)
-
     def take_action(self, parsed_args):
         try:
             kolla_home = get_kolla_home()
@@ -154,13 +155,15 @@ class Dump(Command):
                 # add output of various commands
                 self._add_cmd_info(tar)
 
-            self.log.info('dump successful to %s' % dump_path)
+            LOG.info(
+                u._LI('dump successful to {path}').format(path=dump_path))
         except Exception:
             raise Exception(traceback.format_exc())
 
     def _add_cmd_info(self, tar):
         # run all the kollacli list commands
-        cmds = ['kollacli service listgroups',
+        cmds = ['kollacli --version',
+                'kollacli service listgroups',
                 'kollacli service list',
                 'kollacli group listservices',
                 'kollacli group listhosts',
@@ -206,7 +209,7 @@ class Setdeploy(Command):
     def get_parser(self, prog_name):
         parser = super(Setdeploy, self).get_parser(prog_name)
         parser.add_argument('mode', metavar='<mode>',
-                            help='mode=<local, remote>')
+                            help=u._('mode=<local, remote>'))
         return parser
 
     def take_action(self, parsed_args):
@@ -216,8 +219,9 @@ class Setdeploy(Command):
             if mode == 'remote':
                 remote_flag = True
             elif mode != 'local':
-                raise CommandError('Invalid deploy mode. Mode must be ' +
-                                   'either "local" or "remote"')
+                raise CommandError(
+                    u._('Invalid deploy mode. Mode must be '
+                        'either "local" or "remote".'))
             inventory = Inventory.load()
             inventory.set_deploy_mode(remote_flag)
             Inventory.save(inventory)

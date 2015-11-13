@@ -11,8 +11,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
 import traceback
+
+import kollacli.i18n as u
 
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
@@ -28,14 +29,13 @@ class ServiceAddGroup(Command):
     Associated the service to a group. If this is a sub-service,
     the inherit flag will be cleared.
     """
-    log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
         parser = super(ServiceAddGroup, self).get_parser(prog_name)
         parser.add_argument('servicename', metavar='<servicename>',
-                            help='service')
+                            help=u._('Service name'))
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -59,14 +59,12 @@ class ServiceAddGroup(Command):
 class ServiceRemoveGroup(Command):
     """Remove group from service"""
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(ServiceRemoveGroup, self).get_parser(prog_name)
         parser.add_argument('servicename', metavar='<servicename>',
-                            help='service')
+                            help=u._('Service name'))
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -90,8 +88,6 @@ class ServiceRemoveGroup(Command):
 class ServiceListGroups(Lister):
     """List services and their groups"""
 
-    log = logging.getLogger(__name__)
-
     def take_action(self, parsed_args):
         try:
             inventory = Inventory.load()
@@ -109,7 +105,8 @@ class ServiceListGroups(Lister):
                     data.append((servicename, groupnames, inh_str))
             else:
                 data.append(('', ''))
-            return (('Service', 'Groups', 'Inherited'), sorted(data))
+            return ((u._('Service'), u._('Groups'), u._('Inherited')),
+                    sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:
@@ -118,8 +115,6 @@ class ServiceListGroups(Lister):
 
 class ServiceList(Lister):
     """List services and their sub-services"""
-
-    log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
         try:
@@ -132,7 +127,7 @@ class ServiceList(Lister):
                     data.append((servicename, sub_svcname))
             else:
                 data.append(('', ''))
-            return (('Service', 'Sub-Services'), sorted(data))
+            return ((u._('Service'), u._('Sub-Services')), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:

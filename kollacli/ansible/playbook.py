@@ -16,6 +16,8 @@ import os
 import subprocess  # nosec
 import traceback
 
+import kollacli.i18n as u
+
 from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
@@ -60,15 +62,15 @@ class AnsiblePlaybook(object):
                 for hostname in self.hosts:
                     host = inventory.get_host(hostname)
                     if not host:
-                        raise CommandError(
-                            'Host (%s) not found. ' % hostname)
+                        raise CommandError(u._('Host ({host}) not found.')
+                                           .format(host=hostname))
                 inventory_filter['deploy_hosts'] = self.hosts
             elif self.groups:
                 for groupname in self.groups:
                     group = inventory.get_group(groupname)
                     if not group:
-                        raise CommandError(
-                            'Group (%s) not found. ' % groupname)
+                        raise CommandError(u._('Group ({group}) not found.')
+                                           .format(group=groupname))
                 inventory_filter['deploy_groups'] = self.groups
 
             inventory_path = inventory.create_json_gen_file(inventory_filter)
@@ -103,8 +105,8 @@ class AnsiblePlaybook(object):
                 for service in self.services:
                     valid_service = inventory.get_service(service)
                     if not valid_service:
-                        raise CommandError(
-                            'Service (%s) not found. ' % service)
+                        raise CommandError(u._('Service ({srvc}) not found.')
+                                           .format(srvc=service))
                     if not first:
                         service_string = service_string + ','
                     else:
@@ -136,7 +138,7 @@ class AnsiblePlaybook(object):
                     err_msg = '%s %s' % (err_msg, output)
                 raise CommandError(err_msg)
 
-            self.log.info('Success')
+            self.log.info(u._('Success'))
         except CommandError as e:
             raise e
         except Exception:

@@ -19,6 +19,8 @@ import pwd
 import six
 import sys
 
+import kollacli.i18n as u
+
 from kollacli.exceptions import CommandError
 from oslo_utils.encodeutils import safe_decode
 
@@ -57,8 +59,10 @@ def get_kolla_log_file_size():
     try:
         size = int(size_str)
     except Exception:
-        raise CommandError('Environmental variable ' +
-                           '(%s) is not an integer' % (envvar, size_str))
+        raise CommandError(
+            u._('Environmental variable ({env_var}) is not an '
+                'integer ({log_size}).')
+            .format(env_var=envvar, log_size=size_str))
     return size
 
 
@@ -101,8 +105,10 @@ def get_ansible_command(playbook=False):
                     py2_path = os.path.join(usr_bin, fname)
                     break
         if py2_path is None:
-            raise Exception('ansible-playbook requires python2 and no '
-                            'python2 interpreter found in %s' % usr_bin)
+            raise Exception(
+                u._('ansible-playbook requires python2 and no '
+                    'python2 interpreter found in {path}.')
+                .format(path=usr_bin))
         cmd = '%s %s' % (py2_path, os.path.join(usr_bin, cmd))
     return cmd
 
@@ -139,7 +145,8 @@ def run_cmd(cmd, print_output=True):
         if sniff == pwd_prompt:
             output = sniff + '\n'
             raise Exception(
-                'Insufficient permissions to run command "%s"' % cmd)
+                u._('Insufficient permissions to run command "{command}".')
+                .format(command=cmd))
         child.maxsize = 1
         child.timeout = 86400
         for line in child:
@@ -156,7 +163,8 @@ def run_cmd(cmd, print_output=True):
         if child:
             child.close()
             if child.exitstatus != 0:
-                err_msg = 'Command Failed %s' % err_msg
+                err_msg = (u._('Command failed. : {error}')
+                           .format(error=err_msg))
     return err_msg, output
 
 
