@@ -42,6 +42,7 @@ Requires:       python-babel                >= 2.0
 Requires:       python-cliff                >= 1.13.0
 Requires:       python-cliff-tablib         >= 1.1
 Requires:       python-jsonpickle           >= 0.9.2
+Requires:       python-oslo-config          >= 2.3.0
 Requires:       python-oslo-i18n            >= 2.5.0
 Requires:       python-oslo-utils           >= 2.4.0
 Requires:       python-paramiko             >= 1.15.1
