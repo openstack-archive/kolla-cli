@@ -20,12 +20,10 @@ import yaml
 
 import kollacli.i18n as u
 
-from kollacli.ansible.inventory import Inventory
-from kollacli.ansible.playbook import AnsiblePlaybook
-from kollacli.ansible import properties
+from kollacli.common.ansible.actions import destroy_hosts
+from kollacli.common.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.utils import convert_to_unicode
-from kollacli.utils import get_kollacli_home
 from kollacli.utils import get_setup_user
 
 from cliff.command import Command
@@ -84,33 +82,14 @@ class HostDestroy(Command):
             hostname = parsed_args.hostname.strip()
             hostname = convert_to_unicode(hostname)
 
-            if hostname != 'all':
-                inventory = Inventory.load()
-                host = inventory.get_host(hostname)
-                if not host:
-                    _host_not_found(hostname)
-
             destroy_type = 'kill'
             if parsed_args.stop:
                 destroy_type = 'stop'
 
-            LOG.info(u._LI('Please be patient as this may take a while.'))
-            ansible_properties = properties.AnsibleProperties()
-            base_distro = \
-                ansible_properties.get_property('kolla_base_distro')
-            install_type = \
-                ansible_properties.get_property('kolla_install_type')
-            container_prefix = base_distro + '-' + install_type
-            kollacli_home = get_kollacli_home()
-            playbook = AnsiblePlaybook()
-            playbook.playbook_path = os.path.join(kollacli_home,
-                                                  'ansible/host_destroy.yml')
-            playbook.extra_vars = 'hosts=' + hostname + \
-                                  ' prefix=' + container_prefix + \
-                                  ' destroy_type=' + destroy_type
-            playbook.print_output = False
-            playbook.verbose_level = self.app.options.verbose_level
-            playbook.run()
+            verbose_level = self.app.options.verbose_level
+
+            destroy_hosts(hostname, destroy_type, verbose_level)
+
         except CommandError as e:
             raise e
         except Exception as e:

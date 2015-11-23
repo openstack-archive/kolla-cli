@@ -14,8 +14,8 @@
 #
 from common import KollaCliTest
 
-from kollacli.ansible.inventory import Inventory
-from kollacli.ansible.inventory import SERVICES
+from kollacli.common.inventory import Inventory
+from kollacli.common.inventory import SERVICES
 
 import json
 import os

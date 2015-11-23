@@ -19,9 +19,8 @@ import traceback
 
 import kollacli.i18n as u
 
-from kollacli.ansible.inventory import Inventory
-from kollacli.ansible.playbook import AnsiblePlaybook
-from kollacli.ansible.properties import AnsibleProperties
+from kollacli.common.ansible.actions import deploy
+from kollacli.common.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.utils import convert_to_unicode
 from kollacli.utils import get_kolla_etc
@@ -53,60 +52,29 @@ class Deploy(Command):
         return parser
 
     def take_action(self, parsed_args):
+        hosts = None
+        groups = None
+        services = None
+        serial_flag = False
+        verbose_level = self.app.options.verbose_level
         try:
-            if parsed_args.hosts and parsed_args.groups:
-                raise CommandError(
-                    u._('Hosts and Groups arguments cannot '
-                        'both be present at the same time.'))
-
-            self._run_rules()
-
-            playbook = AnsiblePlaybook()
-            kolla_home = get_kolla_home()
-            playbook.playbook_path = os.path.join(kolla_home,
-                                                  'ansible/site.yml')
             if parsed_args.hosts:
                 host_list = parsed_args.hosts.strip()
-                host_list = convert_to_unicode(host_list)
-                playbook.hosts = host_list.split(',')
+                hosts = convert_to_unicode(host_list).split(',')
             if parsed_args.groups:
                 group_list = parsed_args.groups.strip()
-                group_list = convert_to_unicode(group_list)
-                playbook.groups = group_list.split(',')
+                groups = convert_to_unicode(group_list).split(',')
             if parsed_args.services:
-                tag_list = parsed_args.services.strip()
-                tag_list = convert_to_unicode(tag_list)
-                playbook.services = tag_list.split(',')
+                service_list = parsed_args.services.strip()
+                services = convert_to_unicode(service_list).split(',')
             if parsed_args.serial:
-                playbook.serial = True
+                serial_flag = True
 
-            playbook.verbose_level = self.app.options.verbose_level
-            playbook.run()
-        except CommandError as e:
-            raise e
+            deploy(hosts, groups, services, serial_flag,
+                   verbose_level)
+
         except Exception:
             raise Exception(traceback.format_exc())
-
-    def _run_rules(self):
-        # check that ring files are in /etc/kolla/config/swift if
-        # swift is enabled
-        expected_files = ['account.ring.gz',
-                          'container.ring.gz',
-                          'object.ring.gz']
-        properties = AnsibleProperties()
-        is_enabled = properties.get_property('enable_swift')
-        if is_enabled == 'yes':
-            path_pre = os.path.join(get_kolla_etc(), 'config', 'swift')
-            for expected_file in expected_files:
-                path = os.path.join(path_pre, expected_file)
-                if not os.path.isfile(path):
-                    msg = u._(
-                        'Deploy failed. '
-                        'Swift is enabled but ring buffers have '
-                        'not yet been set up. Please see the '
-                        'documentation for swift configuration '
-                        'instructions.')
-                    raise CommandError(msg)
 
 
 class Dump(Command):

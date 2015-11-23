@@ -20,9 +20,9 @@ import kollacli.i18n as u
 from cliff.command import Command
 from cliff.lister import Lister
 
-from kollacli.ansible.passwords import clear_password
-from kollacli.ansible.passwords import get_password_names
-from kollacli.ansible.passwords import set_password
+from kollacli.common.passwords import clear_password
+from kollacli.common.passwords import get_password_names
+from kollacli.common.passwords import set_password
 
 
 class PasswordSet(Command):

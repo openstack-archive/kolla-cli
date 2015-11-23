@@ -15,7 +15,7 @@ import traceback
 
 import kollacli.i18n as u
 
-from kollacli.ansible.inventory import Inventory
+from kollacli.common.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli import utils
 

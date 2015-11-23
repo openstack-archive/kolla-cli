@@ -18,12 +18,13 @@ import traceback
 
 import kollacli.i18n as u
 
-from kollacli.ansible.inventory import Inventory
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_ansible_command
 from kollacli.utils import get_kolla_etc
 from kollacli.utils import run_cmd
+
+from kollacli.common.inventory import Inventory
 
 
 class AnsiblePlaybook(object):
@@ -56,8 +57,8 @@ class AnsiblePlaybook(object):
             admin_user = get_admin_user()
             command_string = ('/usr/bin/sudo -u %s %s %s'
                               % (admin_user, ansible_cmd, flag))
-            inventory = Inventory.load()
             inventory_filter = {}
+            inventory = Inventory.load()
             if self.hosts:
                 for hostname in self.hosts:
                     host = inventory.get_host(hostname)
@@ -73,7 +74,8 @@ class AnsiblePlaybook(object):
                                            .format(group=groupname))
                 inventory_filter['deploy_groups'] = self.groups
 
-            inventory_path = inventory.create_json_gen_file(inventory_filter)
+            inventory_path = \
+                inventory.create_json_gen_file(inventory_filter)
             inventory_string = '-i ' + inventory_path
             cmd = (command_string + ' ' + inventory_string)
 

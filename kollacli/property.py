@@ -15,7 +15,7 @@ import traceback
 
 import kollacli.i18n as u
 
-from kollacli.ansible import properties
+from kollacli.common import properties
 
 from cliff.command import Command
 from cliff.lister import Lister

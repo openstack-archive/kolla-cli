@@ -21,7 +21,7 @@ from cliff.commandmanager import CommandManager
 
 import kollacli.i18n as u
 
-from kollacli.ansible.inventory import INVENTORY_PATH
+from kollacli.common.inventory import INVENTORY_PATH
 from kollacli.exceptions import CommandError
 from kollacli.utils import get_kolla_log_dir
 from kollacli.utils import get_kolla_log_file_size
