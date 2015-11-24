@@ -16,8 +16,8 @@ import traceback
 import kollacli.i18n as u
 
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import convert_to_unicode
 from kollacli.exceptions import CommandError
-from kollacli import utils
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -34,7 +34,7 @@ class GroupAdd(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
 
             inventory = Inventory.load()
             inventory.add_group(groupname)
@@ -57,7 +57,7 @@ class GroupRemove(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             inventory = Inventory.load()
             inventory.remove_group(groupname)
             Inventory.save(inventory)
@@ -80,9 +80,9 @@ class GroupAddhost(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             hostname = parsed_args.hostname.strip()
-            hostname = utils.convert_to_unicode(hostname)
+            hostname = convert_to_unicode(hostname)
             inventory = Inventory.load()
             inventory.add_host(hostname, groupname)
             Inventory.save(inventory)
@@ -106,9 +106,9 @@ class GroupRemovehost(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             hostname = parsed_args.hostname.strip()
-            hostname = utils.convert_to_unicode(hostname)
+            hostname = convert_to_unicode(hostname)
 
             inventory = Inventory.load()
             inventory.remove_host(hostname, groupname)
@@ -153,9 +153,9 @@ class GroupAddservice(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = utils.convert_to_unicode(servicename)
+            servicename = convert_to_unicode(servicename)
 
             inventory = Inventory.load()
             inventory.add_group_to_service(groupname, servicename)
@@ -180,9 +180,9 @@ class GroupRemoveservice(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = utils.convert_to_unicode(servicename)
+            servicename = convert_to_unicode(servicename)
 
             inventory = Inventory.load()
             inventory.remove_group_from_service(groupname, servicename)

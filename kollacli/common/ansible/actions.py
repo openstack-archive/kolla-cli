@@ -19,10 +19,10 @@ import kollacli.i18n as u
 from kollacli.common.ansible.playbook import AnsiblePlaybook
 from kollacli.common import properties
 from kollacli.common.properties import AnsibleProperties
+from kollacli.common.utils import get_kolla_etc
+from kollacli.common.utils import get_kolla_home
+from kollacli.common.utils import get_kollacli_home
 from kollacli.exceptions import CommandError
-from kollacli.utils import get_kolla_etc
-from kollacli.utils import get_kolla_home
-from kollacli.utils import get_kollacli_home
 
 LOG = logging.getLogger(__name__)
 

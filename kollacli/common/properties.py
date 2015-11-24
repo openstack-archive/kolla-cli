@@ -16,10 +16,10 @@ import os
 import six
 import yaml
 
-from kollacli.utils import change_property
-from kollacli.utils import get_kolla_etc
-from kollacli.utils import get_kolla_home
-from kollacli.utils import sync_read_file
+from kollacli.common.utils import change_property
+from kollacli.common.utils import get_kolla_etc
+from kollacli.common.utils import get_kolla_home
+from kollacli.common.utils import sync_read_file
 
 ALLVARS_PATH = 'ansible/group_vars/all.yml'
 GLOBALS_FILENAME = 'globals.yml'

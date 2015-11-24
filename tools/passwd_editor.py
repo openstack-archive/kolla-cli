@@ -15,13 +15,14 @@
 import getopt
 import sys
 
-from kollacli import utils
+from kollacli.common.utils import change_property
+from kollacli.common.utils import sync_read_file
 
 
 def _print_pwd_keys(path):
     pwd_keys = ''
     prefix = ''
-    pwd_data = utils.sync_read_file(path)
+    pwd_data = sync_read_file(path)
     for line in pwd_data.split('\n'):
         if line.startswith('#'):
             # skip commented lines
@@ -67,7 +68,7 @@ def main():
         _print_pwd_keys(path)
     else:
         # edit a password
-        utils.change_property(path, pwd_key, pwd_value, clear_flag)
+        change_property(path, pwd_key, pwd_value, clear_flag)
 
 
 if __name__ == '__main__':

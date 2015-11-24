@@ -18,11 +18,11 @@ import traceback
 
 import kollacli.i18n as u
 
+from kollacli.common.utils import get_admin_user
+from kollacli.common.utils import get_ansible_command
+from kollacli.common.utils import get_kolla_etc
+from kollacli.common.utils import run_cmd
 from kollacli.exceptions import CommandError
-from kollacli.utils import get_admin_user
-from kollacli.utils import get_ansible_command
-from kollacli.utils import get_kolla_etc
-from kollacli.utils import run_cmd
 
 from kollacli.common.inventory import Inventory
 

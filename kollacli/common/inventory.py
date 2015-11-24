@@ -20,13 +20,15 @@ import traceback
 
 import kollacli.i18n as u
 
-from kollacli import exceptions
-from kollacli import utils
+from kollacli.common.sshutils import ssh_setup_host
+from kollacli.common.utils import get_admin_user
+from kollacli.common.utils import get_ansible_command
+from kollacli.common.utils import get_kollacli_etc
+from kollacli.common.utils import run_cmd
+from kollacli.common.utils import sync_read_file
+from kollacli.common.utils import sync_write_file
 
 from kollacli.exceptions import CommandError
-from kollacli.sshutils import ssh_setup_host
-from kollacli.utils import get_admin_user
-from kollacli.utils import get_ansible_command
 
 ANSIBLE_SSH_USER = 'ansible_ssh_user'
 ANSIBLE_CONNECTION = 'ansible_connection'
@@ -158,7 +160,7 @@ class HostGroup(object):
         self.set_var(ANSIBLE_BECOME, 'yes')
         if remote_flag:
             # set the ssh info for all the servers in the group
-            self.set_var(ANSIBLE_SSH_USER, utils.get_admin_user())
+            self.set_var(ANSIBLE_SSH_USER, get_admin_user())
             self.clear_var(ANSIBLE_CONNECTION)
         else:
             # remove ssh info, add local connection type
@@ -279,11 +281,11 @@ class Inventory(object):
     @staticmethod
     def load():
         """load the inventory from a pickle file"""
-        inventory_path = os.path.join(utils.get_kollacli_etc(), INVENTORY_PATH)
+        inventory_path = os.path.join(get_kollacli_etc(), INVENTORY_PATH)
         data = ''
         try:
             if os.path.exists(inventory_path):
-                data = utils.sync_read_file(inventory_path)
+                data = sync_read_file(inventory_path)
 
             if data.strip():
                 inventory = jsonpickle.decode(data)
@@ -302,13 +304,13 @@ class Inventory(object):
     @staticmethod
     def save(inventory):
         """Save the inventory in a pickle file"""
-        inventory_path = os.path.join(utils.get_kollacli_etc(), INVENTORY_PATH)
+        inventory_path = os.path.join(get_kollacli_etc(), INVENTORY_PATH)
         try:
             # multiple trips thru json to render a readable inventory file
             data = jsonpickle.encode(inventory)
             data_str = json.loads(data)
             pretty_data = json.dumps(data_str, indent=4)
-            utils.sync_write_file(inventory_path, pretty_data)
+            sync_write_file(inventory_path, pretty_data)
 
         except Exception as e:
             raise CommandError(
@@ -454,7 +456,7 @@ class Inventory(object):
             self.log.info(u._LI('Host ({host}) setup succeeded.')
                           .format(host=hostname))
         except Exception as e:
-            raise exceptions.CommandError(
+            raise CommandError(
                 u._('Host ({host}) setup failed : {error}')
                 .format(host=hostname, error=str(e)))
         return True
@@ -469,7 +471,7 @@ class Inventory(object):
             inventory_string = '-i ' + gen_file_path
             ping_string = ' %s %s' % (hostname, '-m ping')
             cmd = (command_string + inventory_string + ping_string)
-            err_msg, output = utils.run_cmd(cmd, False)
+            err_msg, output = run_cmd(cmd, False)
         except Exception as e:
             raise e
         finally:
@@ -479,7 +481,7 @@ class Inventory(object):
             if result_only:
                 return False
             else:
-                raise exceptions.CommandError(
+                raise CommandError(
                     u._('Host ({host}) check failed. : {error} {message}')
                     .format(host=hostname, error=err_msg, message=output))
         else:

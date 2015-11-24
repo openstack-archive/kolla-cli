@@ -23,7 +23,7 @@ import yaml
 
 from oslo_utils.encodeutils import safe_decode
 
-import kollacli.utils as utils
+import kollacli.common.utils as utils
 
 TEST_SUFFIX = 'test/'
 VENV_PY_PATH = '.venv/bin/python'

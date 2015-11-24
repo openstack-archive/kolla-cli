@@ -22,9 +22,9 @@ import kollacli.i18n as u
 
 from kollacli.common.ansible.actions import destroy_hosts
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import convert_to_unicode
+from kollacli.common.utils import get_setup_user
 from kollacli.exceptions import CommandError
-from kollacli.utils import convert_to_unicode
-from kollacli.utils import get_setup_user
 
 from cliff.command import Command
 from cliff.lister import Lister

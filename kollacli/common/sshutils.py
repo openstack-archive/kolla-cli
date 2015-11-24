@@ -16,11 +16,12 @@ import os.path
 import paramiko
 import traceback
 
+from kollacli.common.utils import get_admin_user
+from kollacli.common.utils import get_kollacli_etc
+from kollacli.common.utils import get_setup_user
+
 import kollacli.i18n as u
 
-from kollacli.utils import get_admin_user
-from kollacli.utils import get_kollacli_etc
-from kollacli.utils import get_setup_user
 
 MIN_DOCKER_VERSION = '1.8.1'
 

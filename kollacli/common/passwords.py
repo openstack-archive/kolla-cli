@@ -15,8 +15,8 @@ import os
 
 import kollacli.i18n as u
 
+from kollacli.common import utils
 from kollacli.exceptions import CommandError
-from kollacli import utils
 
 PWDS_FILENAME = 'passwords.yml'
 PWD_EDITOR_FILENAME = 'passwd_editor.py'

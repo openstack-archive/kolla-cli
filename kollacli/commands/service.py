@@ -16,8 +16,8 @@ import traceback
 import kollacli.i18n as u
 
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import convert_to_unicode
 from kollacli.exceptions import CommandError
-from kollacli import utils
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -41,9 +41,9 @@ class ServiceAddGroup(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = utils.convert_to_unicode(servicename)
+            servicename = convert_to_unicode(servicename)
 
             inventory = Inventory.load()
 
@@ -70,9 +70,9 @@ class ServiceRemoveGroup(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = utils.convert_to_unicode(servicename)
+            servicename = convert_to_unicode(servicename)
 
             inventory = Inventory.load()
 
