@@ -75,6 +75,8 @@ class HostDestroy(Command):
                             help='host name or ip address or "all"')
         parser.add_argument('--stop', action='store_true',
                             help='stop rather than kill')
+        parser.add_argument('--includedata', action='store_true',
+                            help='destroy data containers')
         return parser
 
     def take_action(self, parsed_args):
@@ -92,6 +94,9 @@ class HostDestroy(Command):
             destroy_type = 'kill'
             if parsed_args.stop:
                 destroy_type = 'stop'
+            playbook_name = 'host_destroy_no_data.yml'
+            if parsed_args.includedata:
+                playbook_name = 'host_destroy.yml'
 
             self.log.info('please be patient as this may take a while.')
             ansible_properties = properties.AnsibleProperties()
@@ -103,7 +108,7 @@ class HostDestroy(Command):
             kollacli_home = get_kollacli_home()
             playbook = AnsiblePlaybook()
             playbook.playbook_path = os.path.join(kollacli_home,
-                                                  'ansible/host_destroy.yml')
+                                                  'ansible/' + playbook_name)
             playbook.extra_vars = 'hosts=' + hostname + \
                                   ' prefix=' + container_prefix + \
                                   ' destroy_type=' + destroy_type
