@@ -74,6 +74,8 @@ class HostDestroy(Command):
                             help=u._('Host name or ip address or "all"'))
         parser.add_argument('--stop', action='store_true',
                             help=u._('Stop rather than kill'))
+        parser.add_argument('--includedata', action='store_true',
+                            help=u._('Destroy data containers'))
         return parser
 
     def take_action(self, parsed_args):
@@ -85,10 +87,13 @@ class HostDestroy(Command):
             destroy_type = 'kill'
             if parsed_args.stop:
                 destroy_type = 'stop'
+            include_data = False
+            if parsed_args.includedata:
+                include_data = True
 
             verbose_level = self.app.options.verbose_level
 
-            destroy_hosts(hostname, destroy_type, verbose_level)
+            destroy_hosts(hostname, destroy_type, verbose_level, include_data)
 
         except CommandError as e:
             raise e
