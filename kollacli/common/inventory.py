@@ -780,10 +780,13 @@ class Inventory(object):
         return json.dumps(jdict)
 
     def _filter_hosts(self, initial_hostnames, deploy_hostnames):
-        """filter out hosts not in deploy hosts"""
+        """filter out hosts not in deploy hosts
+
+        Must preserve the ordering of hosts in the group.
+        """
         filtered_hostnames = []
-        for hostname in deploy_hostnames:
-            if hostname in initial_hostnames:
+        for hostname in initial_hostnames:
+            if hostname in deploy_hostnames:
                 filtered_hostnames.append(hostname)
         return filtered_hostnames
 
