@@ -24,6 +24,9 @@ DISABLED_SERVICES = [
 ENABLED_SERVICES = [
     'rabbitmq'
     ]
+ENABLED_DATA_SERVICES = [
+    'rabbitmq_data'
+    ]
 
 UNKNOWN_HOST = 'Name or service not known'
 
@@ -67,7 +70,7 @@ class TestFunctional(KollaCliTest):
 
         # destroy services, initialize server
         try:
-            self.run_cli_cmd('host destroy %s' % hostname)
+            self.run_cli_cmd('host destroy %s --includedata' % hostname)
         except Exception as e:
             self.assertFalse(is_physical_host, '1st destroy exception: %s' % e)
             self.assertIn(UNKNOWN_HOST, '%s' % e,
@@ -108,7 +111,8 @@ class TestFunctional(KollaCliTest):
                               'is not running on host: %s ' % hostname +
                               'after deploy.')
 
-        # destroy services (via --stop flag)
+        # destroy non-data services (via --stop flag)
+        # this should leave only data containers running
         try:
             self.run_cli_cmd('host destroy %s --stop' % hostname)
         except Exception as e:
@@ -124,10 +128,37 @@ class TestFunctional(KollaCliTest):
                                  'is running on host: %s ' % hostname +
                                  'after destroy.')
 
+            for enabled_service in ENABLED_DATA_SERVICES:
+                self.assertIn(enabled_service, docker_ps,
+                              'enabled service: %s ' % enabled_service +
+                              'is not running on host: %s ' % hostname +
+                              'after no-data destroy.')
+
+        try:
+            self.run_cli_cmd('host destroy %s --includedata --stop' % hostname)
+        except Exception as e:
+            self.assertFalse(is_physical_host, '3rd destroy exception: %s' % e)
+            self.assertIn(UNKNOWN_HOST, '%s' % e,
+                          'Unexpected exception in 3rd destroy: %s' % e)
+
+        if is_physical_host:
+            docker_ps = test_config.run_remote_cmd('docker ps', hostname)
+            for disabled_service in DISABLED_SERVICES:
+                self.assertNotIn(disabled_service, docker_ps,
+                                 'disabled service: %s ' % disabled_service +
+                                 'is running on host: %s ' % hostname +
+                                 'after destroy.')
+
+            for enabled_service in ENABLED_DATA_SERVICES:
+                self.assertNotIn(enabled_service, docker_ps,
+                                 'enabled service: %s ' % enabled_service +
+                                 'is running on host: %s ' % hostname +
+                                 'after destroy.')
+
             for enabled_service in ENABLED_SERVICES:
                 self.assertNotIn(enabled_service, docker_ps,
                                  'enabled service: %s ' % enabled_service +
-                                 'is still running on host: %s ' % hostname +
+                                 'is running on host: %s ' % hostname +
                                  'after destroy.')
 
     def tearDown(self):

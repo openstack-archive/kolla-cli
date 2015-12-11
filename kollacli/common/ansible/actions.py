@@ -27,7 +27,7 @@ from kollacli.exceptions import CommandError
 LOG = logging.getLogger(__name__)
 
 
-def destroy_hosts(hostname, destroy_type, verbose_level=1):
+def destroy_hosts(hostname, destroy_type, verbose_level=1, include_data=False):
     '''destroy containers on a host (or all hosts).
 
     If hostname == 'all', then containers on all hosts will be
@@ -41,6 +41,10 @@ def destroy_hosts(hostname, destroy_type, verbose_level=1):
             u._('Invalid destroy type ({type}). Must be either '
                 '"stop" or "kill".').format(type=destroy_type))
 
+    playbook_name = 'host_destroy_no_data.yml'
+    if include_data:
+        playbook_name = 'host_destroy.yml'
+
     LOG.info(u._LI('Please be patient as this may take a while.'))
     ansible_properties = properties.AnsibleProperties()
     base_distro = \
@@ -51,7 +55,7 @@ def destroy_hosts(hostname, destroy_type, verbose_level=1):
     kollacli_home = get_kollacli_home()
     playbook = AnsiblePlaybook()
     playbook.playbook_path = os.path.join(kollacli_home,
-                                          'ansible/host_destroy.yml')
+                                          'ansible/' + playbook_name)
     playbook.extra_vars = 'hosts=' + hostname + \
                           ' prefix=' + container_prefix + \
                           ' destroy_type=' + destroy_type
