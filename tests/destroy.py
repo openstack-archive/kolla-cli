@@ -66,7 +66,7 @@ class TestFunctional(KollaCliTest):
 
         # destroy services, initialize server
         try:
-            self.run_cli_cmd('host destroy %s' % hostname)
+            self.run_cli_cmd('host destroy %s --includedata' % hostname)
         except Exception as e:
             self.assertFalse(is_physical_host, '1st destroy exception: %s' % e)
             self.assertIn(UNKNOWN_HOST, '%s' % e,
@@ -109,7 +109,7 @@ class TestFunctional(KollaCliTest):
 
         # destroy services (via --stop flag)
         try:
-            self.run_cli_cmd('host destroy %s --stop' % hostname)
+            self.run_cli_cmd('host destroy %s --stop --includedata' % hostname)
         except Exception as e:
             self.assertFalse(is_physical_host, '2nd destroy exception: %s' % e)
             self.assertIn(UNKNOWN_HOST, '%s' % e,

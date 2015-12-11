@@ -757,8 +757,8 @@ class Inventory(object):
     def _filter_hosts(self, initial_hostnames, deploy_hostnames):
         """filter out hosts not in deploy hosts"""
         filtered_hostnames = []
-        for hostname in deploy_hostnames:
-            if hostname in initial_hostnames:
+        for hostname in initial_hostnames:
+            if hostname in deploy_hostnames:
                 filtered_hostnames.append(hostname)
         return filtered_hostnames
 
