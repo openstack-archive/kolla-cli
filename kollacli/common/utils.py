@@ -66,6 +66,19 @@ def get_kolla_log_file_size():
     return size
 
 
+def get_property_list_length():
+    envvar = 'KOLLA_PROP_LIST_LENGTH'
+    length_str = os.environ.get(envvar, '50')
+    try:
+        length = int(length_str)
+    except Exception:
+        raise CommandError(
+            u._('Environmental variable ({env_var}) is not an '
+                'integer ({prop_length}).')
+            .format(env_var=envvar, prop_length=length_str))
+    return length
+
+
 def get_admin_user():
     return os.environ.get("KOLLA_CLI_ADMIN_USER", "kolla")
 
