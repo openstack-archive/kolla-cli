@@ -14,23 +14,26 @@
 import logging
 import traceback
 
-from kollacli.ansible import properties
+import kollacli.i18n as u
+
+from kollacli.common import properties
+from kollacli.common import utils
 
 from cliff.command import Command
 from cliff.lister import Lister
+
+LOG = logging.getLogger(__name__)
 
 
 class PropertySet(Command):
     "Property Set"
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(PropertySet, self).get_parser(prog_name)
         parser.add_argument('propertyname', metavar='<propertyname>',
-                            help='propertyname')
+                            help=u._('Property name'))
         parser.add_argument('propertyvalue', metavar='<propertyvalue',
-                            help='propertyvalue')
+                            help=u._('Property value'))
         return parser
 
     def take_action(self, parsed_args):
@@ -47,12 +50,10 @@ class PropertySet(Command):
 class PropertyClear(Command):
     "Property Clear"
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(PropertyClear, self).get_parser(prog_name)
         parser.add_argument('propertyname', metavar='<propertyname>',
-                            help='propertyname')
+                            help=u._('Property name'))
         return parser
 
     def take_action(self, parsed_args):
@@ -68,16 +69,52 @@ class PropertyClear(Command):
 class PropertyList(Lister):
     """List all properties"""
 
-    log = logging.getLogger(__name__)
+    def get_parser(self, prog_name):
+        parser = super(PropertyList, self).get_parser(prog_name)
+        parser.add_argument('--all', action='store_true',
+                            help=u._('List all properties'))
+        parser.add_argument('--long', action='store_true',
+                            help=u._('Show all property attributes'))
+        return parser
 
     def take_action(self, parsed_args):
         ansible_properties = properties.AnsibleProperties()
         property_list = ansible_properties.get_all_unique()
+
+        list_all = False
+        if parsed_args.all:
+            list_all = True
+
+        list_long = False
+        if parsed_args.long:
+            list_long = True
+
+        property_length = utils.get_property_list_length()
         data = []
         if property_list:
-            for value in property_list:
-                data.append((value.name, value.value))
-        else:
-            data.append(('', ''))
+            for prop in property_list:
+                include_prop = False
+                if (prop.value is not None and
+                        len(str(prop.value)) > property_length):
+                    if list_all:
+                        include_prop = True
+                else:
+                    include_prop = True
 
-        return (('Property Name', 'Property Value'), data)
+                if include_prop:
+                    if list_long:
+                        data.append((prop.name, prop.value, prop.overrides,
+                                     prop.orig_value))
+                    else:
+                        data.append((prop.name, prop.value))
+        else:
+            if list_long:
+                data.append(('', '', '', ''))
+            else:
+                data.append(('', ''))
+
+        if list_long:
+            return ((u._('Property Name'), u._('Property Value'),
+                     u._('Overrides'), u._('Original Value')), data)
+        else:
+            return ((u._('Property Name'), u._('Property Value')), data)

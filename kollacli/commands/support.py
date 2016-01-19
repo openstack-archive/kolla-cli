@@ -11,11 +11,17 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-"""Exception definitions."""
-import kollacli.i18n as u
+from kollacli.common.support import dump
+
+from cliff.command import Command
 
 
-class CommandError(Exception):
-    def __init__(self, message, *args):
-        message = u._('ERROR: {message}').format(message=message)
-        super(CommandError, self).__init__(message, *args)
+class Dump(Command):
+    """Dumps configuration data for debugging
+
+    Dumps most files in /etc/kolla and /usr/share/kolla into a
+    tar file so be given to support / development to help with
+    debugging problems.
+    """
+    def take_action(self, parsed_args):
+        dump()

@@ -13,14 +13,18 @@
 #    under the License.
 import logging
 import os
-import subprocess
+import subprocess  # nosec
 import traceback
 
-from kollacli.ansible.inventory import Inventory
+import kollacli.i18n as u
+
+from kollacli.common.utils import get_admin_user
+from kollacli.common.utils import get_ansible_command
+from kollacli.common.utils import get_kolla_etc
+from kollacli.common.utils import run_cmd
 from kollacli.exceptions import CommandError
-from kollacli.utils import get_admin_user
-from kollacli.utils import get_kolla_etc
-from kollacli.utils import run_cmd
+
+from kollacli.common.inventory import Inventory
 
 
 class AnsiblePlaybook(object):
@@ -49,27 +53,29 @@ class AnsiblePlaybook(object):
             if self.verbose_level > 1:
                 flag = '-vvv'
 
+            ansible_cmd = get_ansible_command(playbook=True)
             admin_user = get_admin_user()
-            command_string = ('/usr/bin/sudo -u %s ansible-playbook %s'
-                              % (admin_user, flag))
-            inventory = Inventory.load()
+            command_string = ('/usr/bin/sudo -u %s %s %s'
+                              % (admin_user, ansible_cmd, flag))
             inventory_filter = {}
+            inventory = Inventory.load()
             if self.hosts:
                 for hostname in self.hosts:
                     host = inventory.get_host(hostname)
                     if not host:
-                        raise CommandError(
-                            'Host (%s) not found. ' % hostname)
+                        raise CommandError(u._('Host ({host}) not found.')
+                                           .format(host=hostname))
                 inventory_filter['deploy_hosts'] = self.hosts
             elif self.groups:
                 for groupname in self.groups:
                     group = inventory.get_group(groupname)
                     if not group:
-                        raise CommandError(
-                            'Group (%s) not found. ' % groupname)
+                        raise CommandError(u._('Group ({group}) not found.')
+                                           .format(group=groupname))
                 inventory_filter['deploy_groups'] = self.groups
 
-            inventory_path = inventory.create_json_gen_file(inventory_filter)
+            inventory_path = \
+                inventory.create_json_gen_file(inventory_filter)
             inventory_string = '-i ' + inventory_path
             cmd = (command_string + ' ' + inventory_string)
 
@@ -101,8 +107,8 @@ class AnsiblePlaybook(object):
                 for service in self.services:
                     valid_service = inventory.get_service(service)
                     if not valid_service:
-                        raise CommandError(
-                            'Service (%s) not found. ' % service)
+                        raise CommandError(u._('Service ({srvc}) not found.')
+                                           .format(srvc=service))
                     if not first:
                         service_string = service_string + ','
                     else:
@@ -121,7 +127,7 @@ class AnsiblePlaybook(object):
                     # log the inventory
                     dbg_gen = inventory_path
                     (inv, _) = \
-                        subprocess.Popen(dbg_gen.split(' '),
+                        subprocess.Popen(dbg_gen.split(' '),  # nosec
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE).communicate()
                     self.log.debug(inv)
@@ -134,7 +140,7 @@ class AnsiblePlaybook(object):
                     err_msg = '%s %s' % (err_msg, output)
                 raise CommandError(err_msg)
 
-            self.log.info('Success')
+            self.log.info(u._('Success'))
         except CommandError as e:
             raise e
         except Exception:

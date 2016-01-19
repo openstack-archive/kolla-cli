@@ -13,12 +13,13 @@
 #    under the License.
 import logging
 import os
+import six
 import yaml
 
-from kollacli.utils import change_property
-from kollacli.utils import get_kolla_etc
-from kollacli.utils import get_kolla_home
-from kollacli.utils import sync_read_file
+from kollacli.common.utils import change_property
+from kollacli.common.utils import get_kolla_etc
+from kollacli.common.utils import get_kolla_home
+from kollacli.common.utils import sync_read_file
 
 ALLVARS_PATH = 'ansible/group_vars/all.yml'
 GLOBALS_FILENAME = 'globals.yml'
@@ -58,9 +59,8 @@ class AnsibleProperties(object):
                                          ANSIBLE_DEFAULTS_PATH)
                 if os.path.isfile(file_name):
                     with open(file_name) as service_file:
-                        service_contents = yaml.load(service_file)
+                        service_contents = yaml.safe_load(service_file)
                         self.file_contents[file_name] = service_contents
-                        service_contents = self.filter_jinja2(service_contents)
                         prop_file_name = service_name + ':main.yml'
                         for key, value in service_contents.items():
                             ansible_property = AnsibleProperty(key, value,
@@ -73,12 +73,17 @@ class AnsibleProperties(object):
         try:
             self.allvars_path = os.path.join(kolla_home, ALLVARS_PATH)
             with open(self.allvars_path) as allvars_file:
-                allvars_contents = yaml.load(allvars_file)
+                allvars_contents = yaml.safe_load(allvars_file)
                 self.file_contents[self.allvars_path] = allvars_contents
-                allvars_contents = self.filter_jinja2(allvars_contents)
                 for key, value in allvars_contents.items():
+                    overrides = False
+                    orig_value = None
+                    if key in self.unique_properties:
+                        overrides = True
+                        orig_value = self.unique_properties[key].value
                     ansible_property = AnsibleProperty(key, value,
-                                                       'group_vars/all.yml')
+                                                       'group_vars/all.yml',
+                                                       overrides, orig_value)
                     self.properties.append(ansible_property)
                     self.unique_properties[key] = ansible_property
         except Exception as e:
@@ -87,12 +92,17 @@ class AnsibleProperties(object):
         try:
             self.globals_path = os.path.join(kolla_etc, GLOBALS_FILENAME)
             globals_data = sync_read_file(self.globals_path)
-            globals_contents = yaml.load(globals_data)
+            globals_contents = yaml.safe_load(globals_data)
             self.file_contents[self.globals_path] = globals_contents
-            globals_contents = self.filter_jinja2(globals_contents)
             for key, value in globals_contents.items():
+                overrides = False
+                orig_value = None
+                if key in self.unique_properties:
+                    overrides = True
+                    orig_value = self.unique_properties[key].value
                 ansible_property = AnsibleProperty(key, value,
-                                                   GLOBALS_FILENAME)
+                                                   GLOBALS_FILENAME,
+                                                   overrides, orig_value)
                 self.properties.append(ansible_property)
                 self.unique_properties[key] = ansible_property
         except Exception as e:
@@ -114,16 +124,20 @@ class AnsibleProperties(object):
             unique_list.append(value)
         return sorted(unique_list, key=lambda x: x.name)
 
+    # TODO(bmace) -- if this isn't used for 2.1.x it should be removed
+    # property listing is still being tweaked so leaving for
+    # the time being in case we want to use it
     def filter_jinja2(self, contents):
+        new_contents = {}
         for key, value in contents.items():
-            if isinstance(value, basestring) is False:
-                self.log.debug('removing non-string: %s' % str(value))
-                del contents[key]
+            if not isinstance(value, six.string_types):
+                self.log.debug('removing non-string: %s' % value)
                 continue
-            if '{{' in value and '}}' in value:
+            if value and '{{' in value and '}}' in value:
                 self.log.debug('removing jinja2 value: %s' % value)
-                del contents[key]
-        return contents
+                continue
+            new_contents[key] = value
+        return new_contents
 
     def set_property(self, property_key, property_value):
         # We only manipulate values in the globals.yml file so look up the key
@@ -148,7 +162,10 @@ class AnsibleProperties(object):
 
 class AnsibleProperty(object):
 
-    def __init__(self, name, value, file_name):
+    def __init__(self, name, value, file_name, overrides=False,
+                 orig_value=None):
         self.name = name
         self.value = value
         self.file_name = file_name
+        self.overrides = overrides
+        self.orig_value = orig_value

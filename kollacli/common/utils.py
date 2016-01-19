@@ -16,7 +16,13 @@ import logging
 import os
 import pexpect
 import pwd
-import yaml
+import six
+import sys
+
+import kollacli.i18n as u
+
+from kollacli.exceptions import CommandError
+from oslo_utils.encodeutils import safe_decode
 
 
 def get_kolla_home():
@@ -48,7 +54,29 @@ def get_admin_uids():
 
 
 def get_kolla_log_file_size():
-    return os.environ.get('KOLLA_LOG_FILE_SIZE', 500000)
+    envvar = 'KOLLA_LOG_FILE_SIZE'
+    size_str = os.environ.get(envvar, '500000')
+    try:
+        size = int(size_str)
+    except Exception:
+        raise CommandError(
+            u._('Environmental variable ({env_var}) is not an '
+                'integer ({log_size}).')
+            .format(env_var=envvar, log_size=size_str))
+    return size
+
+
+def get_property_list_length():
+    envvar = 'KOLLA_PROP_LIST_LENGTH'
+    length_str = os.environ.get(envvar, '50')
+    try:
+        length = int(length_str)
+    except Exception:
+        raise CommandError(
+            u._('Environmental variable ({env_var}) is not an '
+                'integer ({prop_length}).')
+            .format(env_var=envvar, prop_length=length_str))
+    return length
 
 
 def get_admin_user():
@@ -68,21 +96,34 @@ def get_pk_bits():
     return 1024
 
 
-def load_etc_yaml(fileName):
-    contents = {}
-    try:
-        with open(get_kollacli_etc() + fileName, 'r') as f:
-            contents = yaml.load(f)
-    except Exception:
-        # TODO(bmace) if file doesn't exist on a load we don't
-        # want to blow up, some better behavior here?
-        pass
-    return contents or {}
+def get_ansible_command(playbook=False):
+    """get a python2 ansible command
 
-
-def save_etc_yaml(fileName, contents):
-    with open(get_kollacli_etc() + fileName, 'w') as f:
-        f.write(yaml.dump(contents))
+    Ansible cannot run yet with python3. If the current default
+    python is py3, prefix the ansible command with a py2
+    interpreter.
+    """
+    cmd = 'ansible'
+    if playbook:
+        cmd = 'ansible-playbook'
+    if sys.version_info[0] >= 3:
+        # running with py3, find a py2 interpreter for ansible
+        py2_path = None
+        usr_bin = os.path.join('/', 'usr', 'bin')
+        for fname in os.listdir(usr_bin):
+            if (fname.startswith('python2.') and
+                    os.path.isfile(os.path.join(usr_bin, fname))):
+                suffix = fname.split('.')[1]
+                if suffix.isdigit():
+                    py2_path = os.path.join(usr_bin, fname)
+                    break
+        if py2_path is None:
+            raise Exception(
+                u._('ansible-playbook requires python2 and no '
+                    'python2 interpreter found in {path}.')
+                .format(path=usr_bin))
+        cmd = '%s %s' % (py2_path, os.path.join(usr_bin, cmd))
+    return cmd
 
 
 def convert_to_unicode(the_string):
@@ -91,12 +132,7 @@ def convert_to_unicode(the_string):
     This is used to fixup extended ascii chars in strings. these chars cause
     errors in json pickle/unpickle.
     """
-    uni_string = ''
-    try:
-        uni_string = unicode(the_string)
-    except UnicodeDecodeError:
-        uni_string = the_string.decode('utf-8')
-    return uni_string
+    return six.u(the_string)
 
 
 def run_cmd(cmd, print_output=True):
@@ -118,13 +154,16 @@ def run_cmd(cmd, print_output=True):
     try:
         child = pexpect.spawn(cmd)
         sniff = child.read(len(pwd_prompt))
+        sniff = safe_decode(sniff)
         if sniff == pwd_prompt:
             output = sniff + '\n'
             raise Exception(
-                'Insufficient permissions to run command "%s"' % cmd)
+                u._('Insufficient permissions to run command "{command}".')
+                .format(command=cmd))
         child.maxsize = 1
         child.timeout = 86400
         for line in child:
+            line = safe_decode(line)
             outline = sniff + line.rstrip()
             sniff = ''
             output = ''.join([output, outline, '\n'])
@@ -137,7 +176,8 @@ def run_cmd(cmd, print_output=True):
         if child:
             child.close()
             if child.exitstatus != 0:
-                err_msg = 'Command Failed %s' % err_msg
+                err_msg = (u._('Command failed. : {error}')
+                           .format(error=err_msg))
     return err_msg, output
 
 

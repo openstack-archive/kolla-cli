@@ -91,7 +91,7 @@ class TestFunctional(KollaCliTest):
 
         # check if host is not set-up
         timeout = time.time() + 75
-        while time.time <= timeout:
+        while time.time() <= timeout:
             msg = self.run_cli_cmd('host check %s' % hostname, True)
             if 'ERROR:' not in msg:
                 self.log.info('waiting for ansible ssh session to timeout')

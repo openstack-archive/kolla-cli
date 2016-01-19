@@ -11,12 +11,13 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
 import traceback
 
-from kollacli.ansible.inventory import Inventory
+import kollacli.i18n as u
+
+from kollacli.common.inventory import Inventory
+from kollacli.common.utils import convert_to_unicode
 from kollacli.exceptions import CommandError
-from kollacli import utils
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -24,18 +25,16 @@ from cliff.lister import Lister
 
 class GroupAdd(Command):
     """Add group to open-stack-kolla"""
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupAdd, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
 
             inventory = Inventory.load()
             inventory.add_group(groupname)
@@ -49,18 +48,16 @@ class GroupAdd(Command):
 class GroupRemove(Command):
     """Remove group from openstack-kolla"""
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupRemove, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group name')
+                            help=u._('Group name'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             inventory = Inventory.load()
             inventory.remove_group(groupname)
             Inventory.save(inventory)
@@ -72,22 +69,20 @@ class GroupRemove(Command):
 
 class GroupAddhost(Command):
     """Add host to group"""
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupAddhost, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         parser.add_argument('hostname', metavar='<hostname>',
-                            help='host')
+                            help=u._('Host name'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             hostname = parsed_args.hostname.strip()
-            hostname = utils.convert_to_unicode(hostname)
+            hostname = convert_to_unicode(hostname)
             inventory = Inventory.load()
             inventory.add_host(hostname, groupname)
             Inventory.save(inventory)
@@ -100,22 +95,20 @@ class GroupAddhost(Command):
 class GroupRemovehost(Command):
     """Remove host group from group"""
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupRemovehost, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         parser.add_argument('hostname', metavar='<hostname>',
-                            help='host')
+                            help=u._('Host name'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             hostname = parsed_args.hostname.strip()
-            hostname = utils.convert_to_unicode(hostname)
+            hostname = convert_to_unicode(hostname)
 
             inventory = Inventory.load()
             inventory.remove_host(hostname, groupname)
@@ -129,8 +122,6 @@ class GroupRemovehost(Command):
 class GroupListhosts(Lister):
     """List all groups and their hosts"""
 
-    log = logging.getLogger(__name__)
-
     def take_action(self, parsed_args):
         try:
             inventory = Inventory.load()
@@ -142,7 +133,7 @@ class GroupListhosts(Lister):
                     data.append((groupname, hostnames))
             else:
                 data.append(('', ''))
-            return (('Group', 'Hosts'), sorted(data))
+            return ((u._('Group'), u._('Hosts')), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:
@@ -151,22 +142,20 @@ class GroupListhosts(Lister):
 
 class GroupAddservice(Command):
     """Add service to group"""
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupAddservice, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         parser.add_argument('servicename', metavar='<servicename>',
-                            help='service')
+                            help=u._('Service name'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = utils.convert_to_unicode(servicename)
+            servicename = convert_to_unicode(servicename)
 
             inventory = Inventory.load()
             inventory.add_group_to_service(groupname, servicename)
@@ -180,22 +169,20 @@ class GroupAddservice(Command):
 class GroupRemoveservice(Command):
     """Remove service group from group"""
 
-    log = logging.getLogger(__name__)
-
     def get_parser(self, prog_name):
         parser = super(GroupRemoveservice, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
-                            help='group')
+                            help=u._('Group name'))
         parser.add_argument('servicename', metavar='<servicename>',
-                            help='service')
+                            help=u._('Service name'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = utils.convert_to_unicode(groupname)
+            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = utils.convert_to_unicode(servicename)
+            servicename = convert_to_unicode(servicename)
 
             inventory = Inventory.load()
             inventory.remove_group_from_service(groupname, servicename)
@@ -209,8 +196,6 @@ class GroupRemoveservice(Command):
 class GroupListservices(Lister):
     """List all groups and their services"""
 
-    log = logging.getLogger(__name__)
-
     def take_action(self, parsed_args):
         try:
             inventory = Inventory.load()
@@ -222,7 +207,7 @@ class GroupListservices(Lister):
                     data.append((groupname, sorted(servicenames)))
             else:
                 data.append(('', ''))
-            return (('Group', 'Services'), sorted(data))
+            return ((u._('Group'), u._('Services')), sorted(data))
         except CommandError as e:
             raise e
         except Exception as e:

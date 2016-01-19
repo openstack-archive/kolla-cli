@@ -17,9 +17,9 @@ from common import KollaCliTest
 import json
 import unittest
 
-from kollacli.ansible.inventory import DEFAULT_GROUPS
-from kollacli.ansible.inventory import DEFAULT_OVERRIDES
-from kollacli.ansible.inventory import SERVICES
+from kollacli.common.inventory import DEFAULT_GROUPS
+from kollacli.common.inventory import DEFAULT_OVERRIDES
+from kollacli.common.inventory import SERVICES
 
 
 class TestFunctional(KollaCliTest):

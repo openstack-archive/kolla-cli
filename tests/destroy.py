@@ -15,16 +15,17 @@
 from common import KollaCliTest
 from common import TestConfig
 
-from kollacli.ansible import inventory
-
 import unittest
 
 DISABLED_SERVICES = [
-    'cinder', 'glance', 'haproxy', 'heat', 'rabbitmq'
+    'cinder', 'glance', 'haproxy', 'heat', 'msqlcluster',
     'horizon', 'keystone', 'murano', 'neutron', 'nova',
     ]
 ENABLED_SERVICES = [
-    'mysqlcluster'
+    'rabbitmq'
+    ]
+ENABLED_DATA_SERVICES = [
+    'rabbitmq_data'
     ]
 
 UNKNOWN_HOST = 'Name or service not known'
@@ -60,9 +61,12 @@ class TestFunctional(KollaCliTest):
             self.assertIn(UNKNOWN_HOST, '%s' % e,
                           'Unexpected exception in host setup: %s' % e)
 
-        # add host to all deploy groups
-        for group in inventory.DEPLOY_GROUPS:
-            self.run_cli_cmd('group addhost %s %s' % (group, hostname))
+        # add host to a new deploy group
+        group_name = 'test_group'
+        self.run_cli_cmd('group add %s' % group_name)
+        self.run_cli_cmd('group addhost %s %s' % (group_name, hostname))
+        for service in ENABLED_SERVICES:
+            self.run_cli_cmd('service addgroup %s %s' % (service, group_name))
 
         # destroy services, initialize server
         try:
@@ -107,9 +111,10 @@ class TestFunctional(KollaCliTest):
                               'is not running on host: %s ' % hostname +
                               'after deploy.')
 
-        # destroy services (via --stop flag)
+        # destroy non-data services (via --stop flag)
+        # this should leave only data containers running
         try:
-            self.run_cli_cmd('host destroy %s --stop --includedata' % hostname)
+            self.run_cli_cmd('host destroy %s --stop' % hostname)
         except Exception as e:
             self.assertFalse(is_physical_host, '2nd destroy exception: %s' % e)
             self.assertIn(UNKNOWN_HOST, '%s' % e,
@@ -123,10 +128,37 @@ class TestFunctional(KollaCliTest):
                                  'is running on host: %s ' % hostname +
                                  'after destroy.')
 
+            for enabled_service in ENABLED_DATA_SERVICES:
+                self.assertIn(enabled_service, docker_ps,
+                              'enabled service: %s ' % enabled_service +
+                              'is not running on host: %s ' % hostname +
+                              'after no-data destroy.')
+
+        try:
+            self.run_cli_cmd('host destroy %s --includedata --stop' % hostname)
+        except Exception as e:
+            self.assertFalse(is_physical_host, '3rd destroy exception: %s' % e)
+            self.assertIn(UNKNOWN_HOST, '%s' % e,
+                          'Unexpected exception in 3rd destroy: %s' % e)
+
+        if is_physical_host:
+            docker_ps = test_config.run_remote_cmd('docker ps', hostname)
+            for disabled_service in DISABLED_SERVICES:
+                self.assertNotIn(disabled_service, docker_ps,
+                                 'disabled service: %s ' % disabled_service +
+                                 'is running on host: %s ' % hostname +
+                                 'after destroy.')
+
+            for enabled_service in ENABLED_DATA_SERVICES:
+                self.assertNotIn(enabled_service, docker_ps,
+                                 'enabled service: %s ' % enabled_service +
+                                 'is running on host: %s ' % hostname +
+                                 'after destroy.')
+
             for enabled_service in ENABLED_SERVICES:
                 self.assertNotIn(enabled_service, docker_ps,
                                  'enabled service: %s ' % enabled_service +
-                                 'is still running on host: %s ' % hostname +
+                                 'is running on host: %s ' % hostname +
                                  'after destroy.')
 
     def tearDown(self):

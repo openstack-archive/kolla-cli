@@ -14,8 +14,8 @@
 #
 from common import KollaCliTest
 
-from kollacli.ansible.inventory import Inventory
-from kollacli.ansible.inventory import SERVICES
+from kollacli.common.inventory import Inventory
+from kollacli.common.inventory import SERVICES
 
 import json
 import os
@@ -156,7 +156,6 @@ class TestFunctional(KollaCliTest):
             is_file = os.path.isfile(dump_path)
             self.assertTrue(is_file,
                             'dump file not found at %s' % dump_path)
-
             file_paths = []
             with tarfile.open(dump_path, 'r') as tar:
                 file_paths = tar.getnames()

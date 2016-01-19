@@ -19,42 +19,51 @@ import sys
 from cliff.app import App
 from cliff.commandmanager import CommandManager
 
-from kollacli.ansible.inventory import INVENTORY_PATH
+import kollacli.i18n as u
+
+from kollacli.common.inventory import INVENTORY_PATH
+from kollacli.common.utils import get_kolla_log_dir
+from kollacli.common.utils import get_kolla_log_file_size
+from kollacli.common.utils import get_kollacli_etc
 from kollacli.exceptions import CommandError
-from kollacli.utils import get_kolla_log_dir
-from kollacli.utils import get_kolla_log_file_size
-from kollacli.utils import get_kollacli_etc
+
+LOG = logging.getLogger(__name__)
 
 
 class KollaCli(App):
-    log = logging.getLogger(__name__)
-
     def __init__(self):
         super(KollaCli, self).__init__(
-            description='Command-Line Client for OpenStack Kolla',
+            description=u._('Command-Line Client for OpenStack Kolla'),
             version='0.1',
             command_manager=CommandManager('kolla.cli'),
             )
 
-        # check that current user is in the kolla group
         inventory_path = os.path.join(get_kollacli_etc(),
                                       INVENTORY_PATH)
-        errString = 'Required file %s does not exist.\n' + \
-                    'Please re-install the kollacli to recreate the file.'
         if os.path.isfile(inventory_path) is False:
-            raise CommandError(errString % inventory_path)
+            err_string = u._(
+                'Required file ({inventory}) does not exist.\n'
+                'Please re-install the kollacli to '
+                'recreate the file.').format(inventory=inventory_path)
+            raise CommandError(err_string)
 
+        # check that current user can access the inventory file
         inventory_file = None
         try:
             inventory_file = open(inventory_path, 'r+')
         except Exception:
-            raise CommandError('Permission denied to run the kollacli.' +
-                               '\nPlease add user to the kolla group and ' +
-                               'then log out and back in.')
+            raise CommandError(
+                u._('Permission denied to run the kollacli.\n'
+                    'Please add user to the kolla group and '
+                    'then log out and back in.'))
         finally:
             if inventory_file and inventory_file.close is False:
                 inventory_file.close()
 
+        # paramiko log is very chatty, tune it down
+        logging.getLogger('paramiko').setLevel(logging.WARNING)
+
+        # set up logging
         self.rotating_log_dir = get_kolla_log_dir()
         self.max_bytes = get_kolla_log_file_size()
         self.backup_count = 4
@@ -64,9 +73,9 @@ class KollaCli(App):
         self.add_rotational_log()
 
     def clean_up(self, cmd, result, err):
-        self.log.debug('clean_up %s', cmd.__class__.__name__)
+        LOG.debug('clean_up %s', cmd.__class__.__name__)
         if err:
-            self.log.debug('error: %s', err)
+            LOG.debug('ERROR: %s', err)
 
     def add_rotational_log(self):
         root_logger = logging.getLogger('')
