@@ -145,6 +145,7 @@ fi
 
 # create host_vars dir and make sure the permissions are ok on groups_vars and host_vars
 mkdir -m 0775 -p %{_datadir}/kolla/ansible/host_vars 
+chown %{kolla_user}:%{kolla_group} %{_datadir}/kolla/ansible/host_vars
 chmod 0775 %{_datadir}/kolla/ansible/group_vars 
 
 %postun
