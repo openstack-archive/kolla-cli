@@ -23,8 +23,7 @@ from kollacli.ansible.inventory import Inventory
 from kollacli.ansible import properties
 from kollacli.utils import get_admin_user
 from kollacli.utils import get_ansible_command
-
-from oslo_utils.encodeutils import safe_decode
+from kollacli.utils import safe_decode
 
 tar_file_descr = None
 

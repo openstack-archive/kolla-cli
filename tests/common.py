@@ -21,8 +21,6 @@ import testtools
 import traceback
 import yaml
 
-from oslo_utils.encodeutils import safe_decode
-
 import kollacli.common.utils as utils
 
 TEST_SUFFIX = 'test/'
@@ -93,7 +91,7 @@ class KollaCliTest(testtools.TestCase):
                    % (traceback.format_exc(), cmd))
 
         # the py dev debugger adds a string at the line start, remove it
-        msg = safe_decode(msg)
+        msg = utils.safe_decode(msg)
         if msg.startswith('pydev debugger'):
             msg = msg.split('\n', 1)[1]
         return (retval, msg)
@@ -301,7 +299,7 @@ class TestConfig(object):
         session.sendline(cmd)
         session.prompt()
         out = session.before
-        out = safe_decode(out)
+        out = utils.safe_decode(out)
         self.log.info(out)
         session.logout()
         return out
