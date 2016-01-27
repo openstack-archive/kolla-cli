@@ -16,7 +16,7 @@
 %{expand: %%define pyver %(python -c 'import sys;print(sys.version[0:3])')}
 
 # Package version
-%global package_version 0.1
+%global package_version 0.2
 
 # Kolla user name and group name (DO NOT CHANGE THESE!)
 %global kolla_user      kolla
@@ -144,6 +144,10 @@ then
     rm -f %{_datadir}/kolla/kollacli/tools/json_generator.py
 fi
 
+# create host_vars dir and make sure the permissions are ok on groups_vars and host_vars
+mkdir -m 0775 -p %{_datadir}/kolla/ansible/host_vars 
+chmod 0775 %{_datadir}/kolla/ansible/group_vars 
+
 %postun
 case "$*" in
     0)
@@ -156,6 +160,9 @@ esac
 
 
 %changelog
+* Tue Jan 26 2016 - Borne Mace <borne.mace@oracle.com>
+- added some post operations to support group / host variables
+
 * Fri Nov 06 2015 - Steve Noyes <steve.noyes@oracle.com>
 - add python-oslo-utils requirement
 

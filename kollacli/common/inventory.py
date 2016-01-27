@@ -23,6 +23,8 @@ import kollacli.i18n as u
 from kollacli.common.sshutils import ssh_setup_host
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
+from kollacli.common.utils import get_group_vars_dir
+from kollacli.common.utils import get_host_vars_dir
 from kollacli.common.utils import get_kollacli_etc
 from kollacli.common.utils import run_cmd
 from kollacli.common.utils import sync_read_file
@@ -403,6 +405,10 @@ class Inventory(object):
             if not groupname or groupname == group.name:
                 group.remove_host(host)
 
+        host_vars = os.path.join(get_host_vars_dir(), hostname)
+        if os.path.exists(host_vars):
+            os.remove(host_vars)
+
         if not groupname:
             del self._hosts[hostname]
 
@@ -520,6 +526,10 @@ class Inventory(object):
 
         for subservice in self._sub_services.values():
             subservice.remove_groupname(groupname)
+
+        group_vars = os.path.join(get_group_vars_dir(), groupname)
+        if os.path.exists(group_vars):
+            os.remove(group_vars)
 
         if groupname in self._groups:
             del self._groups[groupname]
