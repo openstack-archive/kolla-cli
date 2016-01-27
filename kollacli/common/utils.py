@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import fcntl
+import grp
 import logging
 import os
 import pexpect
@@ -23,6 +24,8 @@ import kollacli.i18n as u
 
 from kollacli.exceptions import CommandError
 from oslo_utils.encodeutils import safe_decode
+
+LOG = logging.getLogger(__name__)
 
 
 def get_kolla_home():
@@ -39,6 +42,14 @@ def get_kollacli_home():
 
 def get_kollacli_etc():
     return os.environ.get("KOLLA_CLI_ETC", "/etc/kolla/kollacli/")
+
+
+def get_group_vars_dir():
+    return os.path.join(get_kolla_home(), 'ansible/group_vars')
+
+
+def get_host_vars_dir():
+    return os.path.join(get_kolla_home(), 'ansible/host_vars')
 
 
 def get_kolla_log_dir():
@@ -85,15 +96,6 @@ def get_admin_user():
 
 def get_setup_user():
     return os.environ.get("KOLLA_CLI_SETUP_USER", "root")
-
-
-def get_pk_password():
-    # TODO(bmace) what to do here? pull from a file?
-    return None
-
-
-def get_pk_bits():
-    return 1024
 
 
 def get_ansible_command(playbook=False):
@@ -147,7 +149,6 @@ def run_cmd(cmd, print_output=True):
     output in an ansible log file.
     """
     pwd_prompt = '[sudo] password'
-    log = logging.getLogger(__name__)
     err_msg = ''
     output = ''
     child = None
@@ -168,7 +169,7 @@ def run_cmd(cmd, print_output=True):
             sniff = ''
             output = ''.join([output, outline, '\n'])
             if print_output:
-                log.info(outline)
+                LOG.info(outline)
 
     except Exception as e:
         err_msg = '%s' % e
@@ -195,6 +196,12 @@ def change_property(file_path, property_key, property_value, clear=False):
     If not clear, and key is found, edit property in place.
     """
     try:
+        group_info = grp.getgrnam('kolla')
+        if not os.path.exists(file_path):
+            with open(file_path, 'a'):
+                os.utime(file_path, None)
+                os.chown(file_path, -1, group_info.gr_gid)
+
         new_contents = []
         read_data = sync_read_file(file_path)
         lines = read_data.split('\n')
