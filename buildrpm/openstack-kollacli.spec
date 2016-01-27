@@ -43,7 +43,6 @@ Requires:       python-cliff                >= 1.13.0
 Requires:       python-cliff-tablib         >= 1.1
 Requires:       python-jsonpickle           >= 0.9.2
 Requires:       python-oslo-i18n            >= 2.5.0
-Requires:       python-oslo-utils           >= 2.4.0
 Requires:       python-paramiko             >= 1.15.1
 Requires:       python-pbr                  >= 1.6.0
 Requires:       python-six                  >= 1.9.0
@@ -162,9 +161,6 @@ esac
 %changelog
 * Tue Jan 26 2016 - Borne Mace <borne.mace@oracle.com>
 - added some post operations to support group / host variables
-
-* Fri Nov 06 2015 - Steve Noyes <steve.noyes@oracle.com>
-- add python-oslo-utils requirement
 
 * Mon Oct 26 2015 - Steve Noyes <steve.noyes@oracle.com>
 - Remove obsolete json_generator
