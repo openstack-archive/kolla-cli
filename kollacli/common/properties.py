@@ -18,7 +18,7 @@ import yaml
 
 import kollacli.i18n as u
 
-from kollacli.ansible.inventory import Inventory
+from kollacli.common.inventory import Inventory
 from kollacli.common.utils import change_property
 from kollacli.common.utils import get_group_vars_dir
 from kollacli.common.utils import get_host_vars_dir
