@@ -113,6 +113,7 @@ class AnsibleProperties(object):
         try:
             host_dir = get_host_vars_dir()
             for hostfile in os.listdir(host_dir):
+                self.host_props[hostfile] = []
                 with open(os.path.join(host_dir, hostfile)) as host_data:
                     host_contents = yaml.safe_load(host_data)
                     if host_contents is None:
@@ -138,6 +139,7 @@ class AnsibleProperties(object):
             for groupfile in os.listdir(group_dir):
                 if (groupfile == 'all.yml'):
                     continue
+                self.group_props[groupfile] = []
                 with open(os.path.join(group_dir, groupfile)) as group_data:
                     group_contents = yaml.safe_load(group_data)
                     if group_contents is None:

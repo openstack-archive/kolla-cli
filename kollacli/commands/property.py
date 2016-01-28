@@ -151,101 +151,108 @@ class PropertyList(Lister):
         return parser
 
     def take_action(self, parsed_args):
-        ansible_properties = properties.AnsibleProperties()
-        property_list = None
-        host_list = False
-        hosts = None
-        group_list = False
-        groups = None
-        list_type = None
+        try:
+            ansible_properties = properties.AnsibleProperties()
+            property_list = None
+            host_list = False
+            hosts = None
+            group_list = False
+            groups = None
+            list_type = None
 
-        if parsed_args.hosts:
-            host_list = parsed_args.hosts.strip()
-            hosts = utils.convert_to_unicode(host_list).split(',')
+            if parsed_args.hosts:
+                host_list = parsed_args.hosts.strip()
+                hosts = utils.convert_to_unicode(host_list).split(',')
 
-        if parsed_args.groups:
-            group_list = parsed_args.groups.strip()
-            groups = utils.convert_to_unicode(group_list).split(',')
+            if parsed_args.groups:
+                group_list = parsed_args.groups.strip()
+                groups = utils.convert_to_unicode(group_list).split(',')
 
-        list_all = False
-        if parsed_args.all:
-            list_all = True
+            list_all = False
+            if parsed_args.all:
+                list_all = True
 
-        list_long = False
-        if parsed_args.long:
-            list_long = True
+            list_long = False
+            if parsed_args.long:
+                list_long = True
 
-        if hosts is None and groups is None:
-            property_list = ansible_properties.get_all_unique()
-        elif hosts is not None and groups is not None:
-            raise CommandError(
-                u._('Invalid to use both hosts and groups arguments '
-                    'together.'))
-        elif hosts is not None:
-            host_list = True
-            list_type = u._('Host')
-            for host_name in hosts:
-                if host_name == 'all':
-                    hosts = None
-                    break
-            property_list = ansible_properties.get_host_list(hosts)
-        elif groups is not None:
-            group_list = True
-            list_type = u._('Group')
-            for group_name in groups:
-                if group_name == 'all':
-                    groups = None
-                    break
-            property_list = ansible_properties.get_group_list(groups)
+            if hosts is None and groups is None:
+                property_list = ansible_properties.get_all_unique()
+            elif hosts is not None and groups is not None:
+                raise CommandError(
+                    u._('Invalid to use both hosts and groups arguments '
+                        'together.'))
+            elif hosts is not None:
+                host_list = True
+                list_type = u._('Host')
+                for host_name in hosts:
+                    if host_name == 'all':
+                        hosts = None
+                        break
+                property_list = ansible_properties.get_host_list(hosts)
+            elif groups is not None:
+                group_list = True
+                list_type = u._('Group')
+                for group_name in groups:
+                    if group_name == 'all':
+                        groups = None
+                        break
+                property_list = ansible_properties.get_group_list(groups)
 
-        property_length = utils.get_property_list_length()
-        data = []
-        if property_list:
-            for prop in property_list:
-                include_prop = False
-                if (prop.value is not None and
-                        len(str(prop.value)) > property_length):
-                    if list_all:
-                        include_prop = True
-                else:
-                    include_prop = True
-
-                if include_prop:
-                    if list_long:
-                        if host_list is False and group_list is False:
-                            data.append((prop.name, prop.value, prop.overrides,
-                                         prop.orig_value))
-                        else:
-                            data.append((prop.name, prop.value, prop.overrides,
-                                         prop.orig_value, prop.target))
+            property_length = utils.get_property_list_length()
+            data = []
+            if property_list:
+                for prop in property_list:
+                    include_prop = False
+                    if (prop.value is not None and
+                            len(str(prop.value)) > property_length):
+                        if list_all:
+                            include_prop = True
                     else:
-                        if host_list is False and group_list is False:
-                            data.append((prop.name, prop.value))
+                        include_prop = True
+
+                    if include_prop:
+                        if list_long:
+                            if host_list is False and group_list is False:
+                                data.append((prop.name, prop.value,
+                                             prop.overrides,
+                                             prop.orig_value))
+                            else:
+                                data.append((prop.name, prop.value,
+                                             prop.overrides,
+                                             prop.orig_value, prop.target))
                         else:
-                            data.append((prop.name, prop.value, prop.target))
-        else:
+                            if host_list is False and group_list is False:
+                                data.append((prop.name, prop.value))
+                            else:
+                                data.append((prop.name, prop.value,
+                                             prop.target))
+            else:
+                if list_long:
+                    if host_list is False and group_list is False:
+                        data.append(('', '', '', ''))
+                    else:
+                        data.append(('', '', '', '', ''))
+                else:
+                    if host_list is False and group_list is False:
+                        data.append(('', ''))
+                    else:
+                        data.append(('', '', ''))
+
             if list_long:
                 if host_list is False and group_list is False:
-                    data.append(('', '', '', ''))
+                    return ((u._('Property Name'), u._('Property Value'),
+                             u._('Overrides'), u._('Original Value')), data)
                 else:
-                    data.append(('', '', '', '', ''))
+                    return ((u._('Property Name'), u._('Property Value'),
+                             u._('Overrides'), u._('Original Value'),
+                             list_type), data)
             else:
                 if host_list is False and group_list is False:
-                    data.append(('', ''))
+                    return ((u._('Property Name'), u._('Property Value')),
+                            data)
                 else:
-                    data.append(('', '', ''))
-
-        if list_long:
-            if host_list is False and group_list is False:
-                return ((u._('Property Name'), u._('Property Value'),
-                         u._('Overrides'), u._('Original Value')), data)
-            else:
-                return ((u._('Property Name'), u._('Property Value'),
-                         u._('Overrides'), u._('Original Value'),
-                         list_type), data)
-        else:
-            if host_list is False and group_list is False:
-                return ((u._('Property Name'), u._('Property Value')), data)
-            else:
-                return ((u._('Property Name'), u._('Property Value'),
-                         list_type), data)
+                    return ((u._('Property Name'), u._('Property Value'),
+                             list_type), data)
+        except Exception:
+            raise Exception(traceback.format_exc())
