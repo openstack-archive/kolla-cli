@@ -262,58 +262,10 @@ def sync_write_file(path, data, mode='w'):
 
 
 def safe_decode(text):
-    """Safely decode text string
-
-    Decodes incoming text/bytes string using `incoming` if they're not
-       already unicode.
-
-    :param incoming: Text's current encoding
-    :raises TypeError: If text is not an instance of str
-    """
-    if not isinstance(text, (six.string_types, six.binary_type)):
-        raise TypeError("%s can't be decoded" % type(text))
-
-    if isinstance(text, six.text_type):
-        return text
-
-    incoming = (sys.stdin.encoding or
-                sys.getdefaultencoding())
-
+    """Convert bytes or string to unicode string"""
     try:
-        return text.decode(incoming)
-    except UnicodeDecodeError:
-        return text.decode('utf-8')
-
-
-def safe_encode(text):
-    """Encodes incoming text/bytes string.
-
-    Text is expected to be encoded with current python's default
-    encoding. (`sys.getdefaultencoding`)
-
-    :param incoming: Text's current encoding
-    :returns: text or a bytestring `encoding` encoded
-                representation of it.
-    :raises TypeError: If text is not an instance of str
-    """
-    if not isinstance(text, (six.string_types, six.binary_type)):
-        raise TypeError("%s can't be encoded" % type(text))
-
-        incoming = (sys.stdin.encoding or
-                    sys.getdefaultencoding())
-
-    # Avoid case issues in comparisons
-    encoding = 'utf-8'
-    if hasattr(incoming, 'lower'):
-        incoming = incoming.lower()
-    if hasattr(encoding, 'lower'):
-        encoding = encoding.lower()
-
-    if isinstance(text, six.text_type):
-        return text.encode(encoding)
-    elif text and encoding != incoming:
-        # Decode text before encoding it with `encoding`
-        text = safe_decode(text, incoming)
-        return text.encode(encoding)
-    else:
-        return text
+        text = text.decode('utf-8')
+    except AttributeError:
+        # py3 will raise if text is already a string
+        pass
+    return text
