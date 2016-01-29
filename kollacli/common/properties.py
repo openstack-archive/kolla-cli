@@ -46,120 +46,111 @@ class AnsibleProperties(object):
         KOLLA_HOME/group_vars/all.yml
         KOLLA_HOME/ansible/roles/<service>/default/main.yml
         """
-        kolla_etc = get_kolla_etc()
-        kolla_home = get_kolla_home()
-
-        self.allvars_path = ''
         self.globals_path = ''
         self.global_props = []
         self.unique_global_props = {}
         self.group_props = {}
         self.host_props = {}
 
-        try:
-            start_dir = os.path.join(kolla_home, ANSIBLE_ROLES_PATH)
-            services = next(os.walk(start_dir))[1]
-            for service_name in services:
-                file_name = os.path.join(start_dir, service_name,
-                                         ANSIBLE_DEFAULTS_PATH)
-                if os.path.isfile(file_name):
-                    with open(file_name) as service_file:
-                        service_contents = yaml.safe_load(service_file)
-                        prop_file_name = service_name + ':main.yml'
-                        for key, value in service_contents.items():
-                            ansible_prop = AnsibleProperty(key, value,
-                                                           prop_file_name)
-                            self.global_props.append(ansible_prop)
-                            self.unique_global_props[key] = ansible_prop
-        except Exception as e:
-            raise e
+        self._load_properties_roles()
+        self._load_properties_all()
+        self._load_properties_global()
+        self._load_properties_hostvars()
+        self._load_properties_groupvars()
 
-        try:
-            self.allvars_path = os.path.join(kolla_home, ALLVARS_PATH)
-            with open(self.allvars_path) as allvars_file:
-                allvars_contents = yaml.safe_load(allvars_file)
-                for key, value in allvars_contents.items():
-                    overrides = False
-                    orig_value = None
-                    if key in self.unique_global_props:
-                        overrides = True
-                        orig_value = self.unique_global_props[key].value
-                    ansible_prop = AnsibleProperty(key, value,
-                                                   'group_vars/all.yml',
-                                                   overrides, orig_value)
-                    self.global_props.append(ansible_prop)
-                    self.unique_global_props[key] = ansible_prop
-        except Exception as e:
-            raise e
+    def _load_properties_roles(self):
+        start_dir = os.path.join(get_kolla_home(), ANSIBLE_ROLES_PATH)
+        services = next(os.walk(start_dir))[1]
+        for service_name in services:
+            file_name = os.path.join(start_dir, service_name,
+                                     ANSIBLE_DEFAULTS_PATH)
+            if os.path.isfile(file_name):
+                with open(file_name) as service_file:
+                    service_contents = yaml.safe_load(service_file)
+                    prop_file_name = service_name + ':main.yml'
+                    for key, value in service_contents.items():
+                        ansible_prop = AnsibleProperty(key, value,
+                                                       prop_file_name)
+                        self.global_props.append(ansible_prop)
+                        self.unique_global_props[key] = ansible_prop
 
-        try:
-            self.globals_path = os.path.join(kolla_etc, GLOBALS_FILENAME)
-            globals_data = sync_read_file(self.globals_path)
-            globals_contents = yaml.safe_load(globals_data)
-            for key, value in globals_contents.items():
+    def _load_properties_all(self):
+        allvars_path = os.path.join(get_kolla_home(), ALLVARS_PATH)
+        with open(allvars_path) as allvars_file:
+            allvars_contents = yaml.safe_load(allvars_file)
+            for key, value in allvars_contents.items():
                 overrides = False
                 orig_value = None
                 if key in self.unique_global_props:
                     overrides = True
                     orig_value = self.unique_global_props[key].value
                 ansible_prop = AnsibleProperty(key, value,
-                                               GLOBALS_FILENAME,
+                                               'group_vars/all.yml',
                                                overrides, orig_value)
                 self.global_props.append(ansible_prop)
                 self.unique_global_props[key] = ansible_prop
-        except Exception as e:
-            raise e
 
-        try:
-            host_dir = get_host_vars_dir()
-            for hostfile in os.listdir(host_dir):
-                self.host_props[hostfile] = []
-                with open(os.path.join(host_dir, hostfile)) as host_data:
-                    host_contents = yaml.safe_load(host_data)
-                    if host_contents is None:
-                        continue
-                    props = []
-                    for key, value in host_contents.items():
-                        overrides = False
-                        orig_value = None
-                        if key in self.unique_global_props:
-                            overrides = True
-                            orig_value = self.unique_global_props[key].value
-                        ansible_prop = AnsibleProperty(key, value,
-                                                       hostfile,
-                                                       overrides, orig_value,
-                                                       'host', hostfile)
-                        props.append(ansible_prop)
-                self.host_props[hostfile] = props
-        except Exception as e:
-            raise e
+    def _load_properties_global(self):
+        self.globals_path = os.path.join(get_kolla_etc(), GLOBALS_FILENAME)
+        globals_data = sync_read_file(self.globals_path)
+        globals_contents = yaml.safe_load(globals_data)
+        for key, value in globals_contents.items():
+            overrides = False
+            orig_value = None
+            if key in self.unique_global_props:
+                overrides = True
+                orig_value = self.unique_global_props[key].value
+            ansible_prop = AnsibleProperty(key, value,
+                                           GLOBALS_FILENAME,
+                                           overrides, orig_value)
+            self.global_props.append(ansible_prop)
+            self.unique_global_props[key] = ansible_prop
 
-        try:
-            group_dir = get_group_vars_dir()
-            for groupfile in os.listdir(group_dir):
-                if (groupfile == 'all.yml'):
+    def _load_properties_hostvars(self):
+        host_dir = get_host_vars_dir()
+        for hostfile in os.listdir(host_dir):
+            self.host_props[hostfile] = []
+            with open(os.path.join(host_dir, hostfile)) as host_data:
+                host_contents = yaml.safe_load(host_data)
+                if host_contents is None:
                     continue
-                self.group_props[groupfile] = []
-                with open(os.path.join(group_dir, groupfile)) as group_data:
-                    group_contents = yaml.safe_load(group_data)
-                    if group_contents is None:
-                        continue
-                    props = []
-                    for key, value in group_contents.items():
-                        overrides = False
-                        orig_value = None
-                        if key in self.unique_global_props:
-                            overrides = True
-                            orig_value = self.unique_global_props[key].value
-                        ansible_prop = AnsibleProperty(key, value,
-                                                       groupfile,
-                                                       overrides, orig_value,
-                                                       'group', groupfile)
-                        props.append(ansible_prop)
-                self.group_props[groupfile] = props
+                props = []
+                for key, value in host_contents.items():
+                    overrides = False
+                    orig_value = None
+                    if key in self.unique_global_props:
+                        overrides = True
+                        orig_value = self.unique_global_props[key].value
+                    ansible_prop = AnsibleProperty(key, value,
+                                                   hostfile,
+                                                   overrides, orig_value,
+                                                   'host', hostfile)
+                    props.append(ansible_prop)
+            self.host_props[hostfile] = props
 
-        except Exception as e:
-            raise e
+    def _load_properties_groupvars(self):
+        group_dir = get_group_vars_dir()
+        for groupfile in os.listdir(group_dir):
+            if (groupfile == 'all.yml'):
+                continue
+            self.group_props[groupfile] = []
+            with open(os.path.join(group_dir, groupfile)) as group_data:
+                group_contents = yaml.safe_load(group_data)
+                if group_contents is None:
+                    continue
+                props = []
+                for key, value in group_contents.items():
+                    overrides = False
+                    orig_value = None
+                    if key in self.unique_global_props:
+                        overrides = True
+                        orig_value = self.unique_global_props[key].value
+                    ansible_prop = AnsibleProperty(key, value,
+                                                   groupfile,
+                                                   overrides, orig_value,
+                                                   'group', groupfile)
+                    props.append(ansible_prop)
+            self.group_props[groupfile] = props
 
     def get_all(self):
         return sorted(self.global_props, key=lambda x: x.name)

@@ -136,6 +136,15 @@ class PropertyClear(Command):
 class PropertyList(Lister):
     """List all properties"""
 
+    def __init__(self, app, app_args, cmd_name=None):
+        super(Lister, self).__init__(app, app_args,
+                                     cmd_name=cmd_name)
+
+        self.is_global = True
+        self.is_all_flag = False
+        self.is_long_flag = False
+        self.list_type = None
+
     def get_parser(self, prog_name):
         parser = super(PropertyList, self).get_parser(prog_name)
         parser.add_argument('--all', action='store_true',
@@ -153,106 +162,109 @@ class PropertyList(Lister):
     def take_action(self, parsed_args):
         try:
             ansible_properties = properties.AnsibleProperties()
-            property_list = None
-            host_list = False
-            hosts = None
-            group_list = False
-            groups = None
-            list_type = None
+
+            if parsed_args.all:
+                self.is_all_flag = True
+
+            if parsed_args.long:
+                self.is_long_flag = True
 
             if parsed_args.hosts:
+                if parsed_args.groups:
+                    raise CommandError(
+                        u._('Invalid to use both hosts and groups arguments '
+                            'together.'))
+
+                self.is_global = False
+                self.list_type = u._('Host')
                 host_list = parsed_args.hosts.strip()
-                hosts = utils.convert_to_unicode(host_list).split(',')
+                host_names = \
+                    utils.convert_to_unicode(host_list).split(',')
+                if 'all' in host_names:
+                    host_names = None
+                property_list = \
+                    ansible_properties.get_host_list(host_names)
 
-            if parsed_args.groups:
+            elif parsed_args.groups:
+                self.is_global = False
+                self.list_type = u._('Group')
                 group_list = parsed_args.groups.strip()
-                groups = utils.convert_to_unicode(group_list).split(',')
+                group_names = \
+                    utils.convert_to_unicode(group_list).split(',')
+                if 'all' in group_names:
+                    group_names = None
+                property_list = \
+                    ansible_properties.get_group_list(group_names)
 
-            list_all = False
-            if parsed_args.all:
-                list_all = True
-
-            list_long = False
-            if parsed_args.long:
-                list_long = True
-
-            if hosts is None and groups is None:
+            else:
                 property_list = ansible_properties.get_all_unique()
-            elif hosts is not None and groups is not None:
-                raise CommandError(
-                    u._('Invalid to use both hosts and groups arguments '
-                        'together.'))
-            elif hosts is not None:
-                host_list = True
-                list_type = u._('Host')
-                for host_name in hosts:
-                    if host_name == 'all':
-                        hosts = None
-                        break
-                property_list = ansible_properties.get_host_list(hosts)
-            elif groups is not None:
-                group_list = True
-                list_type = u._('Group')
-                for group_name in groups:
-                    if group_name == 'all':
-                        groups = None
-                        break
-                property_list = ansible_properties.get_group_list(groups)
 
-            property_length = utils.get_property_list_length()
-            data = []
-            if property_list:
-                for prop in property_list:
-                    include_prop = False
-                    if (prop.value is not None and
-                            len(str(prop.value)) > property_length):
-                        if list_all:
-                            include_prop = True
-                    else:
-                        include_prop = True
+            data = self._get_list_data(property_list)
+            header = self._get_list_header()
+            return (header, data)
 
-                    if include_prop:
-                        if list_long:
-                            if host_list is False and group_list is False:
-                                data.append((prop.name, prop.value,
-                                             prop.overrides,
-                                             prop.orig_value))
-                            else:
-                                data.append((prop.name, prop.value,
-                                             prop.overrides,
-                                             prop.orig_value, prop.target))
-                        else:
-                            if host_list is False and group_list is False:
-                                data.append((prop.name, prop.value))
-                            else:
-                                data.append((prop.name, prop.value,
-                                             prop.target))
-            else:
-                if list_long:
-                    if host_list is False and group_list is False:
-                        data.append(('', '', '', ''))
-                    else:
-                        data.append(('', '', '', '', ''))
-                else:
-                    if host_list is False and group_list is False:
-                        data.append(('', ''))
-                    else:
-                        data.append(('', '', ''))
-
-            if list_long:
-                if host_list is False and group_list is False:
-                    return ((u._('Property Name'), u._('Property Value'),
-                             u._('Overrides'), u._('Original Value')), data)
-                else:
-                    return ((u._('Property Name'), u._('Property Value'),
-                             u._('Overrides'), u._('Original Value'),
-                             list_type), data)
-            else:
-                if host_list is False and group_list is False:
-                    return ((u._('Property Name'), u._('Property Value')),
-                            data)
-                else:
-                    return ((u._('Property Name'), u._('Property Value'),
-                             list_type), data)
         except Exception:
             raise Exception(traceback.format_exc())
+
+    def _get_list_header(self):
+        header = None
+        if self.is_long_flag:
+            if self.is_global:
+                header = (u._('Property Name'), u._('Property Value'),
+                          u._('Overrides'), u._('Original Value'))
+            else:
+                header = (u._('Property Name'), u._('Property Value'),
+                          u._('Overrides'), u._('Original Value'),
+                          self.list_type)
+        else:
+            if self.is_global:
+                header = (u._('Property Name'), u._('Property Value'))
+            else:
+                header = (u._('Property Name'), u._('Property Value'),
+                          self.list_type)
+        return header
+
+    def _get_list_data(self, property_list):
+        data = []
+        if property_list:
+            property_length = utils.get_property_list_length()
+            for prop in property_list:
+                include_prop = False
+                if (prop.value is not None and
+                        len(str(prop.value)) > property_length):
+                    if self.is_all_flag:
+                        include_prop = True
+                else:
+                    include_prop = True
+
+                if not include_prop:
+                    continue
+
+                if self.is_long_flag:
+                    if self.is_global:
+                        data.append((prop.name, prop.value,
+                                     prop.overrides,
+                                     prop.orig_value))
+                    else:
+                        data.append((prop.name, prop.value,
+                                     prop.overrides,
+                                     prop.orig_value, prop.target))
+                else:
+                    if self.is_global:
+                        data.append((prop.name, prop.value))
+                    else:
+                        data.append((prop.name, prop.value,
+                                     prop.target))
+        else:
+            if self.is_long_flag:
+                if self.is_global:
+                    data.append(('', '', '', ''))
+                else:
+                    data.append(('', '', '', '', ''))
+            else:
+                if self.is_global:
+                    data.append(('', ''))
+                else:
+                    data.append(('', '', ''))
+
+        return data
