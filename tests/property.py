@@ -137,7 +137,7 @@ class TestFunctional(KollaCliTest):
         value += '2'
         self.run_cli_cmd('property set %s %s %s %s'
                          % (switch, targets_csv, key, value))
-        msg = self.run_cli_cmd('property list -f json %s %s'
+        msg = self.run_cli_cmd('property list --all -f json %s %s'
                                % (switch, targets_csv))
         err_msg = self._check_property_values(key, value, msg, targets)
         self.assertEqual(err_msg, '',
@@ -151,7 +151,7 @@ class TestFunctional(KollaCliTest):
         # test clear
         self.run_cli_cmd('property clear %s %s %s'
                          % (switch, targets_csv, key))
-        msg = self.run_cli_cmd('property list -f json %s %s'
+        msg = self.run_cli_cmd('property list --long -f json %s %s'
                                % (switch, targets_csv))
         err_msg = self._check_property_values(key, value, msg, targets)
         self.assertTrue('missing' in err_msg,
