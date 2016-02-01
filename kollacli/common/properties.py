@@ -37,7 +37,8 @@ ANSIBLE_DEFAULTS_PATH = 'defaults/main.yml'
 
 class AnsibleProperties(object):
 
-    def __init__(self):
+    def __init__(self, load_globals=True, load_groups=True,
+                 load_hosts=True):
         """initialize ansible property information
 
         property information is pulled from the following files:
@@ -52,11 +53,14 @@ class AnsibleProperties(object):
         self.group_props = {}
         self.host_props = {}
 
-        self._load_properties_roles()
-        self._load_properties_all()
-        self._load_properties_global()
-        self._load_properties_hostvars()
-        self._load_properties_groupvars()
+        if load_globals:
+            self._load_properties_roles()
+            self._load_properties_all()
+            self._load_properties_global()
+        if load_hosts:
+            self._load_properties_hostvars()
+        if load_groups:
+            self._load_properties_groupvars()
 
     def _load_properties_roles(self):
         start_dir = os.path.join(get_kolla_home(), ANSIBLE_ROLES_PATH)
