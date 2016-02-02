@@ -23,6 +23,7 @@ from cliff.lister import Lister
 from kollacli.common.passwords import clear_password
 from kollacli.common.passwords import get_password_names
 from kollacli.common.passwords import set_password
+from kollacli.exceptions import CommandError
 
 
 class PasswordSet(Command):
@@ -42,6 +43,10 @@ class PasswordSet(Command):
                 password = parsed_args.insecure.strip()
             else:
                 password = getpass.getpass(u._('Password: ')).strip()
+                passtwo = getpass.getpass(u._('Retype Password: ')).strip()
+
+                if password != passtwo:
+                    raise CommandError(u._('Passwords do not match')) 
 
             set_password(password_name, password)
 
