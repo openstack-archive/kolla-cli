@@ -86,6 +86,23 @@ def deploy(hostnames=[], groupnames=[], servicenames=[],
     playbook.run()
 
 
+def precheck(hostname, verbose_level=1):
+    '''run check playbooks on a host (or all hosts).
+
+    If hostname == 'all', then checks will be run on all hosts,
+    otherwise the check will only be run on the specified host.
+    '''
+    playbook_name = 'prechecks.yml'
+    kolla_home = get_kolla_home()
+    playbook = AnsiblePlaybook()
+    playbook.playbook_path = os.path.join(kolla_home,
+                                          'ansible/' + playbook_name)
+    playbook.extra_vars = 'hosts=' + hostname
+    playbook.print_output = True
+    playbook.verbose_level = verbose_level
+    playbook.run()
+
+
 def _run_deploy_rules():
     # check that ring files are in /etc/kolla/config/swift if
     # swift is enabled
