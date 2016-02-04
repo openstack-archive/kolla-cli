@@ -56,7 +56,7 @@ class PropertySet(Command):
             if parsed_args.hosts:
                 if parsed_args.groups:
                     raise CommandError(
-                        u._('Invalid to use both hosts and groups arguments ' +
+                        u._('Invalid to use both hosts and groups arguments '
                             'together.'))
 
                 host_names = _get_names(parsed_args.hosts)
@@ -111,7 +111,7 @@ class PropertyClear(Command):
             if parsed_args.hosts:
                 if parsed_args.groups:
                     raise CommandError(
-                        u._('Invalid to use both hosts and groups arguments ' +
+                        u._('Invalid to use both hosts and groups arguments '
                             'together.'))
 
                 host_names = _get_names(parsed_args.hosts)

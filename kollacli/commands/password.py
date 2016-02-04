@@ -46,7 +46,7 @@ class PasswordSet(Command):
                 passtwo = getpass.getpass(u._('Retype Password: ')).strip()
 
                 if password != passtwo:
-                    raise CommandError(u._('Passwords do not match')) 
+                    raise CommandError(u._('Passwords do not match'))
 
             set_password(password_name, password)
 

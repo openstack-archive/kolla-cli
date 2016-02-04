@@ -35,7 +35,8 @@ BuildArch:      noarch
 BuildRequires:  python                      >= 2.7
 BuildRequires:  python-setuptools           >= 0.9.8
 BuildRequires:  python-pbr                  >= 1.3.0
-Requires:       openstack-kolla-ansible     >= 0.1.0
+Requires:       openstack-kolla-ansible     >= 0.2.0
+Requires:       openstack-kolla-ansible     < 0.3.0
 Requires:       babel                       >= 2.0
 Requires:       pexpect                     >= 2.3
 Requires:       python-babel                >= 2.0

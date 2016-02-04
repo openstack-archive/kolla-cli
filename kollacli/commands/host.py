@@ -21,6 +21,7 @@ import yaml
 import kollacli.i18n as u
 
 from kollacli.common.ansible.actions import destroy_hosts
+from kollacli.common.ansible.actions import precheck
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import convert_to_unicode
 from kollacli.common.utils import get_setup_user
@@ -172,7 +173,7 @@ class HostCheck(Command):
     def get_parser(self, prog_name):
         parser = super(HostCheck, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname>',
-                            help=u._('Host name'))
+                            help=u._('Host name or "all"'))
         return parser
 
     def take_action(self, parsed_args):
@@ -184,6 +185,7 @@ class HostCheck(Command):
                 _host_not_found(hostname)
 
             inventory.check_host(hostname)
+            precheck(hostname)
         except CommandError as e:
             raise e
         except Exception as e:
