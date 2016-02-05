@@ -55,8 +55,8 @@ DEPLOY_GROUPS = [
 SERVICES = {
     'ceilometer':   ['ceilometer-alarm-evaluator', 'ceilometer-alarm-notifier',
                      'ceilometer-api', 'ceilometer-central',
-                     'ceilometer_collector', 'ceilometer_compute',
-                     'ceilometer_notification'],
+                     'ceilometer-collector', 'ceilometer-compute',
+                     'ceilometer-notification'],
     'cinder':       ['cinder-api', 'cinder-scheduler', 'cinder-backup',
                      'cinder-volume'],
     'glance':       ['glance-api', 'glance-registry'],
@@ -94,6 +94,7 @@ DEFAULT_GROUPS = {
     }
 
 DEFAULT_OVERRIDES = {
+    'ceilometer-compute':       COMPUTE_GRP_NAME,
     'cinder-backup':            STORAGE_GRP_NAME,
     'cinder-volume':            STORAGE_GRP_NAME,
     'mysqlcluster-ndb':         DATABASE_GRP_NAME,
