@@ -153,54 +153,6 @@ class KollaCliTest(testtools.TestCase):
         self.assertEqual(0, 1,
                          'no kollacli shell command found. Aborting tests')
 
-    def get_default_groups(self):
-        group1 = {
-            'Group': 'control',
-            'Services': [
-                'cinder',
-                'glance',
-                'haproxy',
-                'heat',
-                'horizon',
-                'keystone',
-                'memcached',
-                'murano',
-                'mysqlcluster',
-                'neutron-server',
-                'nova',
-                'rabbitmq',
-                'swift',
-                ],
-            'Hosts': [],
-        }
-        group2 = {
-            'Group': 'network',
-            'Services': [
-                'neutron'],
-            'Hosts': [],
-            }
-        group3 = {
-            'Group': 'compute',
-            'Services': [],
-            'Hosts': [],
-            }
-        group4 = {
-            'Group': 'storage',
-            'Services': [
-                'cinder-backup', 'cinder-volume',
-                'swift-account-server', 'swift-container-server',
-                'swift-object-server'
-                ],
-            'Hosts': [],
-            }
-        group5 = {
-            'Group': 'database',
-            'Services': ['mysqlcluster-ndb'],
-            'Hosts': [],
-            }
-        groups = [group1, group2, group3, group4, group5]
-        return groups
-
 
 class TestConfig(object):
     """host systems for testing
