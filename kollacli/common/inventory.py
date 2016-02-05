@@ -53,6 +53,10 @@ DEPLOY_GROUPS = [
     ]
 
 SERVICES = {
+    'ceilometer':   ['ceilometer-alarm-evaluator', 'ceilometer-alarm-notifier',
+                     'ceilometer-api', 'ceilometer-central',
+                     'ceilometer_collector', 'ceilometer_compute',
+                     'ceilometer_notification'],
     'cinder':       ['cinder-api', 'cinder-scheduler', 'cinder-backup',
                      'cinder-volume'],
     'glance':       ['glance-api', 'glance-registry'],
@@ -73,6 +77,7 @@ SERVICES = {
     }
 
 DEFAULT_GROUPS = {
+    'ceilometer':               CONTROL_GRP_NAME,
     'cinder':                   CONTROL_GRP_NAME,
     'glance':                   CONTROL_GRP_NAME,
     'haproxy':                  CONTROL_GRP_NAME,
@@ -251,7 +256,7 @@ class SubService(object):
 
 
 class Inventory(object):
-    class_version = 1
+    class_version = 2
 
     log = logging.getLogger(__name__)
 
@@ -273,8 +278,15 @@ class Inventory(object):
 
     def upgrade(self):
         if self.version <= 1:
-            # upgrade from v1
-            pass
+            # upgrade from inventory v1
+
+            # add ceilometer to inventory
+            svc_name = 'ceilometer'
+            svc = self.create_service(svc_name)
+            for sub_svc_name in SERVICES[svc_name]:
+                sub_svc = self.create_sub_service(sub_svc_name)
+                sub_svc.set_parent_servicename(svc_name)
+                svc.add_sub_servicename(sub_svc_name)
 
         # update the version and save upgraded inventory file
         self.version = self.__class__.class_version
