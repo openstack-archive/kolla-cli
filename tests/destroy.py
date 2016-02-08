@@ -18,7 +18,7 @@ from common import TestConfig
 import unittest
 
 DISABLED_SERVICES = [
-    'cinder', 'glance', 'haproxy', 'heat', 'msqlcluster',
+    'ceilometer', 'cinder', 'glance', 'haproxy', 'heat', 'msqlcluster',
     'horizon', 'keystone', 'murano', 'neutron', 'nova',
     ]
 ENABLED_SERVICES = [
