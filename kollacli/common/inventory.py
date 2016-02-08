@@ -55,8 +55,7 @@ DEPLOY_GROUPS = [
 SERVICES = {
     'ceilometer':   ['ceilometer-alarm-evaluator', 'ceilometer-alarm-notifier',
                      'ceilometer-api', 'ceilometer-central',
-                     'ceilometer-collector', 'ceilometer-compute',
-                     'ceilometer-notification'],
+                     'ceilometer-collector', 'ceilometer-notification'],
     'cinder':       ['cinder-api', 'cinder-scheduler', 'cinder-backup',
                      'cinder-volume'],
     'glance':       ['glance-api', 'glance-registry'],
@@ -94,7 +93,6 @@ DEFAULT_GROUPS = {
     }
 
 DEFAULT_OVERRIDES = {
-    'ceilometer-compute':       COMPUTE_GRP_NAME,
     'cinder-backup':            STORAGE_GRP_NAME,
     'cinder-volume':            STORAGE_GRP_NAME,
     'mysqlcluster-ndb':         DATABASE_GRP_NAME,
@@ -284,6 +282,15 @@ class Inventory(object):
             # add ceilometer to inventory
             svc_name = 'ceilometer'
             svc = self.create_service(svc_name)
+
+            # associate ceilometer with all groups that heat is in.
+            clone_svc = self.get_service('heat')
+            groups = clone_svc.get_groupnames()
+            for group in groups:
+                svc.add_groupname(group)
+
+            # stitch sub-service to service and set override
+            # groups
             for sub_svc_name in SERVICES[svc_name]:
                 sub_svc = self.create_sub_service(sub_svc_name)
                 sub_svc.set_parent_servicename(svc_name)
