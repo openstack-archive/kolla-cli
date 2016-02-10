@@ -7,3 +7,4 @@
       with_items:
         - docker '{{ destroy_type | default("kill") }}' $(docker ps -a | grep '{{ prefix }}' | awk '{print $1}')
         - docker rm $(docker ps -a | grep '{{ prefix }}' | awk '{print $1}')
+        - rm -rf /var/lib/kolla/*
