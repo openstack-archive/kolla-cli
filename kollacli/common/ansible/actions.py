@@ -103,6 +103,17 @@ def precheck(hostname, verbose_level=1):
     playbook.run()
 
 
+def upgrade(verbose_level=1):
+    playbook = AnsiblePlaybook()
+    kolla_home = get_kolla_home()
+    playbook.playbook_path = os.path.join(kolla_home,
+                                          'ansible/site.yml')
+    playbook.extra_vars = 'action=upgrade'
+    playbook.print_output = True
+    playbook.verbose_level = verbose_level
+    playbook.run()
+
+
 def _run_deploy_rules():
     # check that ring files are in /etc/kolla/config/swift if
     # swift is enabled
