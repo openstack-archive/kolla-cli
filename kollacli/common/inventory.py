@@ -309,6 +309,14 @@ class Inventory(object):
             if os.path.exists(inventory_path):
                 data = sync_read_file(inventory_path)
 
+                # The inventory path changed between v1 and v2. Need to change
+                # path throughout the inventory. This has to be done before
+                # the pickle decode.
+                if 'kollacli.common.inventory' not in data:
+                    data = data.replace(
+                            '"py/object": "kollacli.ansible.inventory.',
+                            '"py/object": "kollacli.common.inventory.')
+
             if data.strip():
                 inventory = jsonpickle.decode(data)
 
