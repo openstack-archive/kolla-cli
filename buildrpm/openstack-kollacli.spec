@@ -51,7 +51,7 @@ Requires:       PyYAML                      >= 3.10
 
 Requires:       /usr/bin/ssh-keygen
 
-Conflicts:      python-oslo-utils           = 2.6.0
+Conflicts:      pexpect                     = 3.3
 
 %description
 The KollaCLI simplifies OpenStack Kolla deployments.
@@ -161,6 +161,10 @@ esac
 
 
 %changelog
+* Thu Feb 11 2016 - Steve Noyes <steve.noyes@oracle.com>
+- disallow pexpect 3.3 (sudo issue)
+- remove obsolete oslo-utils reference
+
 * Tue Jan 26 2016 - Borne Mace <borne.mace@oracle.com>
 - added some post operations to support group / host variables
 
