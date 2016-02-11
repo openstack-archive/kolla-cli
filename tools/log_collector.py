@@ -19,11 +19,11 @@ import sys
 import tarfile
 import tempfile
 
-from kollacli.ansible.inventory import Inventory
-from kollacli.ansible import properties
-from kollacli.utils import get_admin_user
-from kollacli.utils import get_ansible_command
-from kollacli.utils import safe_decode
+from kollacli.common.inventory import Inventory
+from kollacli.common import properties
+from kollacli.common.utils import get_admin_user
+from kollacli.common.utils import get_ansible_command
+from kollacli.common.utils import safe_decode
 
 tar_file_descr = None
 

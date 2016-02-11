@@ -314,8 +314,8 @@ class Inventory(object):
                 # the pickle decode.
                 if 'kollacli.common.inventory' not in data:
                     data = data.replace(
-                            '"py/object": "kollacli.ansible.inventory.',
-                            '"py/object": "kollacli.common.inventory.')
+                        '"py/object": "kollacli.ansible.inventory.',
+                        '"py/object": "kollacli.common.inventory.')
 
             if data.strip():
                 inventory = jsonpickle.decode(data)
