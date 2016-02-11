@@ -14,7 +14,6 @@
 #
 import logging
 import os
-import pxssh
 import subprocess
 import sys
 import testtools
@@ -22,6 +21,8 @@ import traceback
 import yaml
 
 import kollacli.common.utils as utils
+
+from pexpect import pxssh
 
 TEST_SUFFIX = 'test/'
 VENV_PY_PATH = '.venv/bin/python'

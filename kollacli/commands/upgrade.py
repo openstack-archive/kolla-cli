@@ -14,8 +14,6 @@
 import logging
 import traceback
 
-import kollacli.i18n as u
-
 from kollacli.common.ansible.actions import upgrade
 
 from cliff.command import Command
