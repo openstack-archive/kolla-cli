@@ -59,7 +59,8 @@ def destroy_hosts(hostname, destroy_type, verbose_level=1, include_data=False):
     playbook.extra_vars = 'hosts=' + hostname + \
                           ' prefix=' + container_prefix + \
                           ' destroy_type=' + destroy_type
-    playbook.print_output = False
+    if verbose_level <= 1:
+        playbook.print_output = False
     playbook.verbose_level = verbose_level
     playbook.run()
 
