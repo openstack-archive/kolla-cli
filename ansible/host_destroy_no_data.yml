@@ -1,9 +1,15 @@
 ---
 - hosts: '{{ hosts }}'
   tasks:
-    - name: destroy non-data kolla containers
-      shell: '{{ item }}'
-      ignore_errors: yes
-      with_items:
-        - docker '{{ destroy_type | default("kill") }}' $(docker ps -a | grep '{{ prefix }}' | grep -v '\-data' | awk '{print $1}')
-        - docker rm $(docker ps -a | grep '{{ prefix }}' | grep -v '\-data' | awk '{print $1}')
+    - name: get non-data container ids
+      shell: docker ps -a | grep '{{ prefix }}' | grep -v '\-data' | awk '{print $1}'
+      register: ps_result
+      ignore_errors: no
+    - name: stop/kill all non-data kolla containers
+      shell: docker '{{ destroy_type | default("kill") }}' "{{ item }}"
+      ignore_errors: no
+      with_items: ps_result.stdout_lines
+    - name: remove non-data docker containers
+      shell: docker rm "{{ item }}"
+      ignore_errors: no
+      with_items: ps_result.stdout_lines
