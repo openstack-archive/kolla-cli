@@ -484,9 +484,10 @@ class Inventory(object):
                 u._LI('Starting setup of host ({host}).')
                 .format(host=hostname))
             ssh_setup_host(hostname, password, uname)
-            check_ok = self.check_host(hostname, True)
+            check_ok, msg = self.ssh_check_host(hostname)
             if not check_ok:
-                raise Exception(u._('Post setup check failed.'))
+                raise Exception(u._('Post-setup ssh check failed. {err}')
+                                .format(err=msg))
             self.log.info(u._LI('Host ({host}) setup succeeded.')
                           .format(host=hostname))
         except Exception as e:
@@ -495,35 +496,34 @@ class Inventory(object):
                 .format(host=hostname, error=str(e)))
         return True
 
-    def check_host(self, hostname, result_only=False):
+    def ssh_check_host(self, hostname):
         command_string = '/usr/bin/sudo -u %s %s ' % \
             (get_admin_user(), get_ansible_command())
         gen_file_path = self.create_json_gen_file()
-        err_msg = None
-        output = None
+        is_ok = True
         try:
             inventory_string = '-i ' + gen_file_path
             ping_string = ' %s %s' % (hostname, '-m ping')
             cmd = (command_string + inventory_string + ping_string)
             err_msg, output = run_cmd(cmd, False)
         except Exception as e:
-            raise e
+            is_ok = False
+            msg = (
+                u._('Host: ({host}) setup exception. : {error}')
+                .format(host=hostname, error=str(e)))
         finally:
             if gen_file_path:
                 os.remove(gen_file_path)
+
         if err_msg:
-            if result_only:
-                return False
-            else:
-                raise CommandError(
-                    u._('Host ({host}) check failed. : {error} {message}')
-                    .format(host=hostname, error=err_msg, message=output))
+            is_ok = False
+            msg = (
+                u._('Host ({host}) ssh check failed. : {error} {message}')
+                .format(host=hostname, error=err_msg, message=output))
         else:
-            if not result_only:
-                self.log.info(
-                    u._LI('Host ({host}) check succeeded.')
-                    .format(host=hostname))
-        return True
+            msg = (u._LI('Host ({host}) ssh check succeeded.')
+                   .format(host=hostname))
+        return is_ok, msg
 
     def add_group(self, groupname):
 

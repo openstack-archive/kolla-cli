@@ -99,7 +99,7 @@ class TestFunctional(KollaCliTest):
             break
 
         self.assertLessEqual(time.time(), timeout,
-                             'check succeeded after key removal' +
+                             'check unexpectedly succeeded after key removal' +
                              '(%s)' % hostname)
 
         # setup the host
@@ -108,6 +108,9 @@ class TestFunctional(KollaCliTest):
         msg = self.run_cli_cmd('host check %s' % hostname, True)
         self.assertNotIn('ERROR:', msg, 'Check after setup failed on ' +
                          'host: (%s)' % hostname)
+
+        # check again using all
+        self.run_cli_cmd('host check all')
 
     def test_hosts_setup(self):
         """test multi-host setup"""
@@ -137,6 +140,9 @@ class TestFunctional(KollaCliTest):
         self.write_yml(yml_dict)
         msg = self.run_cli_cmd('host setup --file %s' % yml_path)
         self.log.info(msg)
+
+        # run check with 'all'
+        self.run_cli_cmd('host check all')
 
         # failure paths
 

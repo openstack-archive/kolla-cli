@@ -180,11 +180,10 @@ class HostCheck(Command):
         try:
             hostname = parsed_args.hostname.strip()
             hostname = convert_to_unicode(hostname)
-            inventory = Inventory.load()
-            if not inventory.get_host(hostname):
-                _host_not_found(hostname)
-
-            inventory.check_host(hostname)
+            if hostname != 'all':
+                inventory = Inventory.load()
+                if not inventory.get_host(hostname):
+                    _host_not_found(hostname)
             precheck(hostname)
         except CommandError as e:
             raise e
@@ -227,11 +226,11 @@ class HostSetup(Command):
                 if not inventory.get_host(hostname):
                     _host_not_found(hostname)
 
-                check_ok = inventory.check_host(hostname, True)
+                check_ok, _ = inventory.ssh_check_host(hostname)
                 if check_ok:
                     LOG.info(
                         u._LI('Skipping setup of host ({host}) as '
-                              'check is ok.').format(host=hostname))
+                              'ssh check is ok.').format(host=hostname))
                     return True
 
                 if parsed_args.insecure:
