@@ -497,7 +497,7 @@ class Inventory(object):
         return True
 
     def ssh_check_host(self, hostname):
-        command_string = '/usr/bin/sudo -u %s %s ' % \
+        command_string = '/usr/bin/sudo -u %s %s -vvv ' % \
             (get_admin_user(), get_ansible_command())
         gen_file_path = self.create_json_gen_file()
         is_ok = True
