@@ -496,6 +496,20 @@ class Inventory(object):
                 .format(host=hostname, error=str(e)))
         return True
 
+    def ssh_check_hosts(self, hostnames):
+        """ssh check for hosts
+
+        return {hostname: {'success': True|False,
+                           'msg': message}}
+        """
+        summary = {}
+        for hostname in hostnames:
+            is_ok, msg = self.ssh_check_host(hostname)
+            summary[hostname] = {}
+            summary[hostname]['success'] = is_ok
+            summary[hostname]['msg'] = msg
+        return summary
+
     def ssh_check_host(self, hostname):
         command_string = '/usr/bin/sudo -u %s %s -vvv ' % \
             (get_admin_user(), get_ansible_command())

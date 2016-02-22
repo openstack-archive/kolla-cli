@@ -105,12 +105,8 @@ class TestFunctional(KollaCliTest):
         # setup the host
         self.run_cli_cmd('host setup %s --insecure %s'
                          % (hostname, pwd))
-        msg = self.run_cli_cmd('host check %s' % hostname, True)
-        self.assertNotIn('ERROR:', msg, 'Check after setup failed on ' +
-                         'host: (%s)' % hostname)
-
-        # check again using all
-        self.run_cli_cmd('host check all')
+        self.run_cli_cmd('host check %s' % hostname)
+        self.run_cli_cmd('host check --predeploy %s' % hostname)
 
     def test_hosts_setup(self):
         """test multi-host setup"""
@@ -143,6 +139,7 @@ class TestFunctional(KollaCliTest):
 
         # run check with 'all'
         self.run_cli_cmd('host check all')
+        self.run_cli_cmd('host check all --predeploy')
 
         # failure paths
 
