@@ -168,12 +168,14 @@ class HostList(Lister):
 
 
 class HostCheck(Command):
-    """Check if openstack-kollacli is setup"""
+    """Check configuration of host(s)"""
 
     def get_parser(self, prog_name):
         parser = super(HostCheck, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname>',
                             help=u._('Host name or "all"'))
+        parser.add_argument('--predeploy', action='store_true',
+                            help=u._('Run pre-deploy host checks.'))
         return parser
 
     def take_action(self, parsed_args):
@@ -184,7 +186,29 @@ class HostCheck(Command):
                 inventory = Inventory.load()
                 if not inventory.get_host(hostname):
                     _host_not_found(hostname)
-            precheck(hostname)
+
+            if parsed_args.predeploy:
+                # run pre-deploy checks
+                precheck(hostname)
+            else:
+                # run ssh checks
+                all_ok = True
+                hostnames = [hostname]
+                if hostname == 'all':
+                    inventory = Inventory.load()
+                    hostnames = inventory.get_hostnames()
+                summary = inventory.ssh_check_hosts(hostnames)
+                for hostname, info in summary.items():
+                    status = 'success'
+                    msg = ''
+                    if not info['success']:
+                        status = 'failed- '
+                        msg = info['msg']
+                        all_ok = False
+                    LOG.info('Host (%s): %s %s' % (hostname, status, msg))
+
+                if not all_ok:
+                    raise CommandError('Host check failed.')
         except CommandError as e:
             raise e
         except Exception as e:
