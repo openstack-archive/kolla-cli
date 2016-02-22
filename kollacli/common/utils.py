@@ -218,7 +218,13 @@ def change_property(file_path, property_key, property_value, clear=False):
                     continue
                 last_line_empty = True
 
-            if line[0:len(property_key)] == property_key:
+            split_line = line.split(':')
+            if len(split_line) != 2:
+                # skip malformed property lines
+                continue
+            split_key = split_line[0]
+            split_key.rstrip()
+            if split_key == property_key:
                 property_key_found = True
                 if clear:
                     # clear existing property
