@@ -1,18 +1,22 @@
 ---
 - hosts: '{{ hosts }}'
   tasks:
-    - name: get container ids
-      shell: docker ps -a | grep '{{ prefix }}' | awk '{print $1}'
+    - name: get running container ids
+      shell: docker ps | grep '{{ prefix }}' | awk '{print $1}'
       register: ps_result
       ignore_errors: no
     - name: stop/kill all kolla containers
       shell: docker '{{ destroy_type | default("kill") }}' "{{ item }}"
       ignore_errors: no
       with_items: ps_result.stdout_lines
+    - name: get all container ids
+      shell: docker ps -a | grep '{{ prefix }}' | awk '{print $1}'
+      register: ps_a_result
+      ignore_errors: no
     - name: remove docker containers
       shell: docker rm "{{ item }}"
       ignore_errors: no
-      with_items: ps_result.stdout_lines
+      with_items: ps_a_result.stdout_lines
     - name: delete var/lib/kolla contents
       shell: rm -rf /var/lib/kolla/*
       ignore_errors: yes
