@@ -16,6 +16,7 @@ import traceback
 
 import kollacli.i18n as u
 
+from kollacli.api.client import ClientApi
 from kollacli.common.ansible.actions import deploy
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import convert_to_unicode
@@ -62,8 +63,10 @@ class Deploy(Command):
             if parsed_args.serial:
                 serial_flag = True
 
-            deploy(hosts, groups, services, serial_flag,
-                   verbose_level)
+            client = ClientApi()
+            client.deploy(hosts, groups, services, serial_flag, verbose_level)
+#            deploy(hosts, groups, services, serial_flag,
+#                   verbose_level)
 
         except Exception:
             raise Exception(traceback.format_exc())

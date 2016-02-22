@@ -16,6 +16,17 @@ import os
 import subprocess  # nosec
 import traceback
 
+from ansible import constants as C
+from collections import namedtuple
+from ansible.parsing.dataloader import DataLoader
+from ansible.parsing.splitter import parse_kv
+from ansible.vars import VariableManager
+from ansible.inventory import Inventory as AnsibleInventory
+from ansible.playbook import Playbook
+from ansible.playbook.play import Play
+from ansible.executor.playbook_executor import PlaybookExecutor
+from ansible.executor.task_queue_manager import TaskQueueManager
+
 import kollacli.i18n as u
 
 from kollacli.common.utils import get_admin_user
@@ -26,6 +37,7 @@ from kollacli.exceptions import CommandError
 
 from kollacli.common.inventory import Inventory
 
+LOG = logging.getLogger(__name__)
 
 class AnsiblePlaybook(object):
     playbook_path = ''
@@ -39,8 +51,6 @@ class AnsiblePlaybook(object):
     groups = None
     services = None
     serial = False
-
-    log = logging.getLogger(__name__)
 
     def run(self):
         globals_string = None
@@ -121,7 +131,7 @@ class AnsiblePlaybook(object):
 
             if self.verbose_level > 1:
                 # log the ansible command
-                self.log.debug('cmd:' + cmd)
+                LOG.debug('cmd:' + cmd)
 
                 if self.verbose_level > 2:
                     # log the inventory
@@ -130,17 +140,18 @@ class AnsiblePlaybook(object):
                         subprocess.Popen(dbg_gen.split(' '),  # nosec
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE).communicate()
-                    self.log.debug(inv)
+                    LOG.debug(inv)
 
-            err_msg, output = run_cmd(cmd, self.print_output)
-            if err_msg:
-                if not self.print_output:
-                    # since the user didn't see the output, include it in
-                    # the error message
-                    err_msg = '%s %s' % (err_msg, output)
-                raise CommandError(err_msg)
+            self._start_pb(inventory_path, self.extra_vars)
+#!!bm            err_msg, output = run_cmd(cmd, self.print_output)
+#            if err_msg:
+#                if not self.print_output:
+#                    # since the user didn't see the output, include it in
+#                    # the error message
+#                    err_msg = '%s %s' % (err_msg, output)
+#                raise CommandError(err_msg)
 
-            self.log.info(u._('Success'))
+            LOG.info(u._('Success'))
         except CommandError as e:
             raise e
         except Exception:
@@ -156,3 +167,50 @@ class AnsiblePlaybook(object):
     def _get_password_path(self):
         kolla_etc = get_kolla_etc()
         return (' -e @' + os.path.join(kolla_etc, 'passwords.yml '))
+
+    def _start_pb(self, inventory_path, extra_vars):
+        LOG.info('starting pb')
+        loader = DataLoader()
+        variable_manager = VariableManager()
+        Options = namedtuple('Options', ['connection','module_path', 'forks', 'remote_user', 'private_key_file', 'ssh_common_args', 'ssh_extra_args', 'sftp_extra_args', 'scp_extra_args', 'become', 'become_method', 'become_user', 'verbosity', 'check'])
+        options = Options(connection=None, module_path=None, forks=100, remote_user=None, private_key_file=None, ssh_common_args=None, ssh_extra_args=None, sftp_extra_args=None, scp_extra_args=None, become=None, become_method=None, become_user=None, verbosity=10, check=False)
+
+        # create inventory and pass to var manager
+        inventory = AnsibleInventory(loader=loader,
+                                     variable_manager=variable_manager,
+                                     host_list=inventory_path)
+        variable_manager.set_inventory(inventory)
+        passwords = {}
+        pbpath = [self.playbook_path]
+        pb = Playbook.load(self.playbook_path,
+                           variable_manager=variable_manager,
+                           loader=loader)
+        plays = pb.get_plays()
+
+        tqm = TaskQueueManager(inventory=inventory,
+                               variable_manager=variable_manager,
+                               loader=loader,
+                               options=options,
+                               passwords=passwords,
+                               stdout_callback='minimal')
+        tqm.load_callbacks()
+        tqm.send_callback('v2_playbook_on_start', pb)
+
+        LOG.info('num plays %s' % len(plays))
+        for play in plays:
+            all_vars = variable_manager.get_vars(loader=loader, play=play)
+            LOG.info('vars %s' % str(all_vars))
+            LOG.info('play name %s' % str(play.get_roles()))
+            loader.set_basedir(pb._basedir)
+            LOG.info('pb basedir %s' % str(pb._basedir))
+            result = tqm.run(play=play)
+            # pull stats from ansible.executor.stats.AggregateStats on tqm
+            LOG.info('failures: %s' % str(tqm._stats.failures))
+            if len(tqm._stats.failures) > 0:
+                break
+
+#        playbookEx = PlaybookExecutor(playbooks=pbpath, inventory=inventory,
+#                                      variable_manager=variable_manager, loader=loader,
+#                                      options=options, passwords=passwords)
+#        results = playbookEx.run()
+        LOG.info('done pb')
