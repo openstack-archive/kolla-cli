@@ -128,6 +128,9 @@ then
     chmod 0440 %{_sysconfdir}/kolla/kollacli/id_rsa.pub
 fi
 
+# disable ansible retry files (bug 22806271)
+sed -i "s/#retry_files_enabled = False/retry_files_enabled = False/"' /etc/ansible/ansible.cfg
+
 /usr/bin/kollacli complete >/etc/bash_completion.d/kollacli 2>/dev/null
 
 # Update the sudoers file
@@ -161,6 +164,9 @@ esac
 
 
 %changelog
+* Tue Feb 23, 2016 - Steve Noyes <steve.noyes@oracle.com>
+- disable retry_files_enabled in ansible.cfg
+
 * Thu Feb 11 2016 - Steve Noyes <steve.noyes@oracle.com>
 - disallow pexpect 3.3 (sudo issue)
 - remove obsolete oslo-utils reference
