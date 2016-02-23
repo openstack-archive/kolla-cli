@@ -88,7 +88,7 @@ class TestFunctional(KollaCliTest):
             dir_name = 'host_vars'
 
         key = 'TeStKeY'
-        value = 'TeStVaLuE'
+        value = 'TeStVaLuE:123:abc'
 
         # initialize keys
         targets_csv = ''
