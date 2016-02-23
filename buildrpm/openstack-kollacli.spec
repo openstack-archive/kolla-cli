@@ -129,7 +129,7 @@ then
 fi
 
 # disable ansible retry files (bug 22806271)
-sed -i "s/#retry_files_enabled = False/retry_files_enabled = False/"' /etc/ansible/ansible.cfg
+sed -i "s/#retry_files_enabled = False/retry_files_enabled = False/" /etc/ansible/ansible.cfg
 
 /usr/bin/kollacli complete >/etc/bash_completion.d/kollacli 2>/dev/null
 
