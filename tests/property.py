@@ -121,8 +121,11 @@ class TestFunctional(KollaCliTest):
         # test append
         self.run_cli_cmd('property set %s %s %s %s'
                          % (switch, targets_csv, key, value))
-        msg = self.run_cli_cmd('property list -f json %s %s'
-                               % (switch, targets_csv))
+        if switch:
+            msg = self.run_cli_cmd('property list -f json %s all'
+                                   % (switch))
+        else:
+            msg = self.run_cli_cmd('property list -f json')
         err_msg = self._check_property_values(key, value, msg, targets)
         self.assertEqual(err_msg, '',
                          'set failed property not in output: %s, %s (%s %s)'

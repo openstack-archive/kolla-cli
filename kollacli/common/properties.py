@@ -169,11 +169,13 @@ class AnsibleProperties(object):
                     raise CommandError(
                         u._('Host {host} does not exist.')
                         .format(host=host_name))
-                prop_list = prop_list + self.host_props[host_name]
+                if host_name in self.host_props:
+                    prop_list += self.host_props[host_name]
         else:
             hosts = inventory.get_hosts()
             for host in hosts:
-                prop_list = prop_list + self.host_props[host.name]
+                if host.name in self.host_props:
+                    prop_list += self.host_props[host.name]
         return prop_list
 
     def get_group_list(self, group_list):
@@ -186,11 +188,13 @@ class AnsibleProperties(object):
                     raise CommandError(
                         u._('Group {group} does not exist.')
                         .format(group=group_name))
-                prop_list = prop_list + self.group_props[group_name]
+                if group_name in self.group_props:
+                    prop_list += self.group_props[group_name]
         else:
             groups = inventory.get_groups()
             for group in groups:
-                prop_list = prop_list + self.group_props[group.name]
+                if group.name in self.group_props:
+                    prop_list += self.group_props[group.name]
         return prop_list
 
     def get_property(self, property_name):
