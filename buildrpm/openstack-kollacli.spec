@@ -112,6 +112,27 @@ rm -rf %{buildroot}
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
 %attr(2770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
 
+%pre
+case "$*" in
+    0)
+        #
+        # Install package
+        #
+        inst_type="install"
+        ;;
+    *)
+        #
+        # Update package
+        #
+        inst_type="update"
+        ;;
+esac
+
+if [[ "${inst_type}" == "update" ]]
+then
+    rm -rf %{python_sitelib}/kollacli-*egg-info
+fi
+
 %post
 setfacl -m d:g:%{kolla_group}:rw %{_var}/log/kolla
 
@@ -164,7 +185,10 @@ esac
 
 
 %changelog
-* Tue Feb 23, 2016 - Steve Noyes <steve.noyes@oracle.com>
+* Tue Feb 23 2016 - Borne Mace <borne.mace@oracle.com>
+- added clean up of old egg-info directories during update
+
+* Tue Feb 23 2016 - Steve Noyes <steve.noyes@oracle.com>
 - disable retry_files_enabled in ansible.cfg
 
 * Thu Feb 11 2016 - Steve Noyes <steve.noyes@oracle.com>
