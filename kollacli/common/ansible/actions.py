@@ -17,11 +17,13 @@ import os
 import kollacli.i18n as u
 
 from kollacli.common.ansible.playbook import AnsiblePlaybook
+from kollacli.common.inventory import Inventory
 from kollacli.common import properties
 from kollacli.common.properties import AnsibleProperties
 from kollacli.common.utils import get_kolla_etc
 from kollacli.common.utils import get_kolla_home
 from kollacli.common.utils import get_kollacli_home
+from kollacli.common.utils import is_string_true
 from kollacli.exceptions import CommandError
 
 LOG = logging.getLogger(__name__)
@@ -116,14 +118,45 @@ def upgrade(verbose_level=1):
 
 
 def _run_deploy_rules():
+    properties = AnsibleProperties()
+    inventory = Inventory.load()
+    # check that every group with enabled services
+    # has hosts associated to it
+    group_services = inventory.get_group_services()
+    failed_groups = []
+    failed_services = []
+    if group_services:
+        for (groupname, servicenames) in group_services.items():
+            group = inventory.get_group(groupname)
+            hosts = group.get_hostnames()
+
+            group_needs_host = False
+            if not hosts:
+                for service in servicenames:
+                    # check service enablement
+                    enabled_property = 'enable_' + service.replace('-', '_')
+                    is_enabled = properties.get_property(enabled_property)
+                    if is_string_true(is_enabled):
+                        group_needs_host = True
+                        failed_services.append(service)
+                if group_needs_host:
+                    failed_groups.append(groupname)
+
+        if len(failed_groups) > 0:
+            raise CommandError(
+                u._('Deploy failed. '
+                    'Groups: {groups} with enabled '
+                    'services : {services} '
+                    'have no associated hosts')
+                .format(groups=failed_groups, services=failed_services))
+
     # check that ring files are in /etc/kolla/config/swift if
     # swift is enabled
     expected_files = ['account.ring.gz',
                       'container.ring.gz',
                       'object.ring.gz']
-    properties = AnsibleProperties()
     is_enabled = properties.get_property('enable_swift')
-    if is_enabled == 'yes':
+    if is_string_true(is_enabled):
         path_pre = os.path.join(get_kolla_etc(), 'config', 'swift')
         for expected_file in expected_files:
             path = os.path.join(path_pre, expected_file)

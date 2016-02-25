@@ -717,7 +717,7 @@ class Inventory(object):
         return svc_sub_svcs
 
     def get_service_groups(self):
-        """set services and their groups
+        """get services and their groups
 
         return { servicename: ([groupnames], inherit=True/False/None) }
         """

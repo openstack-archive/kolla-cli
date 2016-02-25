@@ -12,23 +12,16 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+from common import DISABLED_SERVICES
+from common import ENABLED_DATA_SERVICES
+from common import ENABLED_SERVICES
 from common import KollaCliTest
 from common import TestConfig
+from common import UNKNOWN_HOST
 
 import unittest
 
-DISABLED_SERVICES = [
-    'ceilometer', 'cinder', 'glance', 'haproxy', 'heat', 'msqlcluster',
-    'horizon', 'keystone', 'murano', 'neutron', 'nova',
-    ]
-ENABLED_SERVICES = [
-    'rabbitmq'
-    ]
-ENABLED_DATA_SERVICES = [
-    'rabbitmq_data'
-    ]
-
-UNKNOWN_HOST = 'Name or service not known'
+TEST_GROUP_NAME = 'test_group'
 
 
 class TestFunctional(KollaCliTest):
@@ -62,11 +55,16 @@ class TestFunctional(KollaCliTest):
                           'Unexpected exception in host setup: %s' % e)
 
         # add host to a new deploy group
-        group_name = 'test_group'
-        self.run_cli_cmd('group add %s' % group_name)
-        self.run_cli_cmd('group addhost %s %s' % (group_name, hostname))
+        self.run_cli_cmd('group add %s' % TEST_GROUP_NAME)
+        self.run_cli_cmd('group addhost %s %s' % (TEST_GROUP_NAME, hostname))
+        # due to required host to group association where there are enabled
+        # services and we have only one host, move the enabled services
+        # out of control over to the new group, then move them back to
+        # control once we are done
         for service in ENABLED_SERVICES:
-            self.run_cli_cmd('service addgroup %s %s' % (service, group_name))
+            self.run_cli_cmd('service removegroup %s control' % service)
+            self.run_cli_cmd('service addgroup %s %s' %
+                             (service, TEST_GROUP_NAME))
 
         # destroy services, initialize server
         try:
@@ -165,6 +163,12 @@ class TestFunctional(KollaCliTest):
         # re-enabled disabled services
         for disabled_service in DISABLED_SERVICES:
             self.run_cli_cmd('property set enable_%s yes' % disabled_service)
+
+        # control once we are done
+        for service in ENABLED_SERVICES:
+            self.run_cli_cmd('service removegroup %s %s' %
+                             (service, TEST_GROUP_NAME))
+            self.run_cli_cmd('service addgroup %s control' % service)
 
         super(KollaCliTest, self).tearDown()
 
