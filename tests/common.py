@@ -31,6 +31,29 @@ KOLLA_SHELL_DIR = 'kollacli'
 
 CFG_FNAME = 'test_config.yml'
 
+ALL_SERVICES = [
+    'ceilometer', 'cinder', 'cinder_backup', 'cinder_volume',
+    'glance', 'haproxy', 'heat', 'memcached', 'mysqlcluster',
+    'mysqlcluster_ndb', 'horizon', 'keystone', 'murano',
+    'neutron', 'neutron_server', 'nova', 'rabbitmq',
+    'swift_container_server', 'swift_object_server'
+    ]
+DISABLED_SERVICES = [
+    'ceilometer', 'cinder', 'cinder_backup', 'cinder_volume',
+    'glance', 'haproxy', 'heat', 'memcached', 'mysqlcluster',
+    'mysqlcluster_ndb', 'horizon', 'keystone', 'murano',
+    'neutron', 'neutron_server', 'nova',
+    'swift_container_server', 'swift_object_server'
+    ]
+ENABLED_SERVICES = [
+    'rabbitmq'
+    ]
+ENABLED_DATA_SERVICES = [
+    'rabbitmq_data'
+    ]
+
+UNKNOWN_HOST = 'Name or service not known'
+
 
 class KollaCliTest(testtools.TestCase):
 

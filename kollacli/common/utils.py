@@ -273,3 +273,12 @@ def safe_decode(text):
         # py3 will raise if text is already a string
         pass
     return text
+
+
+def is_string_true(string):
+    """Return boolean True if string represents a true value (None is False)"""
+    true_values = ['yes', 'true']
+    if string is not None and string.lower() in true_values:
+        return True
+    else:
+        return False

@@ -12,6 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+from common import ALL_SERVICES
 from common import KollaCliTest
 
 from kollacli.common.inventory import Inventory
@@ -131,9 +132,17 @@ class TestFunctional(KollaCliTest):
     def test_deploy(self):
         # test will start with no hosts in the inventory
         # deploy will throw an exception if it fails
+        # disable all services first as without it empty groups cause errors
+        for service in ALL_SERVICES:
+            self.run_cli_cmd('property set enable_%s no' % service)
+
         self.run_cli_cmd('deploy')
         self.run_cli_cmd('deploy --serial')
         self.run_cli_cmd('deploy --groups=control')
+
+        # re-enable services after the test
+        for service in ALL_SERVICES:
+            self.run_cli_cmd('property set enable_%s yes' % service)
 
     def check_json(self, msg, groups, hosts, included_groups, included_hosts):
         err_msg = ('included groups: %s\n' % included_groups +
