@@ -40,7 +40,7 @@ def _host_not_found(hostname):
 
 
 class HostAdd(Command):
-    """Add host to open-stack-kolla"""
+    """Add host to openstack-kolla."""
 
     def get_parser(self, prog_name):
         parser = super(HostAdd, self).get_parser(prog_name)
@@ -63,7 +63,7 @@ class HostAdd(Command):
 
 
 class HostDestroy(Command):
-    """Destroy
+    """Destroy.
 
     Stops and removes all kolla related docker containers on either the
     specified host or if no host is specified, on all hosts.
@@ -103,7 +103,7 @@ class HostDestroy(Command):
 
 
 class HostRemove(Command):
-    """Remove host from openstack-kolla"""
+    """Remove host from openstack-kolla."""
 
     def get_parser(self, prog_name):
         parser = super(HostRemove, self).get_parser(prog_name)
@@ -125,7 +125,7 @@ class HostRemove(Command):
 
 
 class HostList(Lister):
-    """List hosts and their groups
+    """List hosts and their groups.
 
     If a hostname is provided, only list information about that host.
     """
@@ -168,7 +168,7 @@ class HostList(Lister):
 
 
 class HostCheck(Command):
-    """Check configuration of host(s)"""
+    """Check configuration of host(s)."""
 
     def get_parser(self, prog_name):
         parser = super(HostCheck, self).get_parser(prog_name)
@@ -216,7 +216,7 @@ class HostCheck(Command):
 
 
 class HostSetup(Command):
-    """Setup openstack-kollacli on host"""
+    """Setup openstack-kollacli on host."""
 
     def get_parser(self, prog_name):
         parser = super(HostSetup, self).get_parser(prog_name)

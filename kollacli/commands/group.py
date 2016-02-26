@@ -24,7 +24,7 @@ from cliff.lister import Lister
 
 
 class GroupAdd(Command):
-    """Add group to open-stack-kolla"""
+    """Add group to openstack-kolla."""
     def get_parser(self, prog_name):
         parser = super(GroupAdd, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
@@ -46,7 +46,7 @@ class GroupAdd(Command):
 
 
 class GroupRemove(Command):
-    """Remove group from openstack-kolla"""
+    """Remove group from openstack-kolla."""
 
     def get_parser(self, prog_name):
         parser = super(GroupRemove, self).get_parser(prog_name)
@@ -68,7 +68,7 @@ class GroupRemove(Command):
 
 
 class GroupAddhost(Command):
-    """Add host to group"""
+    """Add host to group."""
     def get_parser(self, prog_name):
         parser = super(GroupAddhost, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
@@ -93,7 +93,7 @@ class GroupAddhost(Command):
 
 
 class GroupRemovehost(Command):
-    """Remove host group from group"""
+    """Remove host group from group."""
 
     def get_parser(self, prog_name):
         parser = super(GroupRemovehost, self).get_parser(prog_name)
@@ -120,7 +120,7 @@ class GroupRemovehost(Command):
 
 
 class GroupListhosts(Lister):
-    """List all groups and their hosts"""
+    """List all groups and their hosts."""
 
     def take_action(self, parsed_args):
         try:
@@ -141,7 +141,7 @@ class GroupListhosts(Lister):
 
 
 class GroupAddservice(Command):
-    """Add service to group"""
+    """Add service to group."""
     def get_parser(self, prog_name):
         parser = super(GroupAddservice, self).get_parser(prog_name)
         parser.add_argument('groupname', metavar='<groupname>',
@@ -167,7 +167,7 @@ class GroupAddservice(Command):
 
 
 class GroupRemoveservice(Command):
-    """Remove service group from group"""
+    """Remove service group from group."""
 
     def get_parser(self, prog_name):
         parser = super(GroupRemoveservice, self).get_parser(prog_name)
@@ -194,7 +194,7 @@ class GroupRemoveservice(Command):
 
 
 class GroupListservices(Lister):
-    """List all groups and their services"""
+    """List all groups and their services."""
 
     def take_action(self, parsed_args):
         try:

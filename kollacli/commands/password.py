@@ -72,7 +72,7 @@ class PasswordClear(Command):
 
 
 class PasswordList(Lister):
-    """List all password names"""
+    """List all password names."""
 
     def take_action(self, parsed_args):
         password_names = get_password_names()
