@@ -17,7 +17,7 @@ from cliff.command import Command
 
 
 class Dump(Command):
-    """Dumps configuration data for debugging
+    """Dumps configuration data for debugging.
 
     Dumps most files in /etc/kolla and /usr/share/kolla into a
     tar file so be given to support / development to help with

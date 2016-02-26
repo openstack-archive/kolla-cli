@@ -143,7 +143,7 @@ class PropertyClear(Command):
 
 
 class PropertyList(Lister):
-    """List all properties"""
+    """List all properties."""
 
     def __init__(self, app, app_args, cmd_name=None):
         super(Lister, self).__init__(app, app_args,

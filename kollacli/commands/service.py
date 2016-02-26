@@ -24,7 +24,7 @@ from cliff.lister import Lister
 
 
 class ServiceAddGroup(Command):
-    """Add group to service
+    """Add group to service.
 
     Associated the service to a group. If this is a sub-service,
     the inherit flag will be cleared.
@@ -57,7 +57,7 @@ class ServiceAddGroup(Command):
 
 
 class ServiceRemoveGroup(Command):
-    """Remove group from service"""
+    """Remove group from service."""
 
     def get_parser(self, prog_name):
         parser = super(ServiceRemoveGroup, self).get_parser(prog_name)
@@ -86,7 +86,7 @@ class ServiceRemoveGroup(Command):
 
 
 class ServiceListGroups(Lister):
-    """List services and their groups"""
+    """List services and their groups."""
 
     def take_action(self, parsed_args):
         try:
@@ -114,7 +114,7 @@ class ServiceListGroups(Lister):
 
 
 class ServiceList(Lister):
-    """List services and their sub-services"""
+    """List services and their sub-services."""
 
     def take_action(self, parsed_args):
         try:

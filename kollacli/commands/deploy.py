@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
 
 
 class Deploy(Command):
-    """Deploy"""
+    """Deploy."""
     def get_parser(self, prog_name):
         parser = super(Deploy, self).get_parser(prog_name)
         parser.add_argument('--hosts', nargs='?',
@@ -73,7 +73,7 @@ class Deploy(Command):
 
 
 class Setdeploy(Command):
-    """Set deploy mode
+    """Set deploy mode.
 
     Set deploy mode to either local or remote. Local indicates
     that the openstack deployment will be to the local host.
