@@ -413,6 +413,12 @@ class Inventory(object):
             if hostname not in group.get_hostnames():
                 group.add_host(host)
 
+    def remove_all_hosts(self):
+        """remove all hosts."""
+        hostnamess = self.get_hostnames()
+        for hostname in hostnamess:
+            self.remove_host(hostname)
+
     def remove_host(self, hostname, groupname=None):
         """remove host
 

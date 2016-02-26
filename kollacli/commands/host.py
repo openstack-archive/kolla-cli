@@ -53,6 +53,11 @@ class HostAdd(Command):
             hostname = parsed_args.hostname.strip()
             hostname = convert_to_unicode(hostname)
 
+            if hostname.lower() == 'all':
+                raise CommandError(
+                    u._('Special host name "all" cannot be added as an '
+                        'individual host.'))
+
             inventory = Inventory.load()
             inventory.add_host(hostname)
             Inventory.save(inventory)
@@ -116,7 +121,12 @@ class HostRemove(Command):
             hostname = parsed_args.hostname.strip()
             hostname = convert_to_unicode(hostname)
             inventory = Inventory.load()
-            inventory.remove_host(hostname)
+
+            if hostname.lower() == 'all':
+                inventory.remove_all_hosts()
+            else:
+                inventory.remove_host(hostname)
+
             Inventory.save(inventory)
         except CommandError as e:
             raise e
