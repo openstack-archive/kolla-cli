@@ -57,6 +57,20 @@ class TestFunctional(KollaCliTest):
         msg = self.run_cli_cmd('host list -f json')
         self._check_cli_output(hosts, msg)
 
+        # check remove all
+        hosts.add_host(host1)
+        self.run_cli_cmd('host add %s' % host1)
+        hosts.add_host(host2)
+        self.run_cli_cmd('host add %s' % host2)
+        msg = self.run_cli_cmd('host list -f json')
+        self._check_cli_output(hosts, msg)
+
+        hosts.remove_host(host1)
+        hosts.remove_host(host2)
+        self.run_cli_cmd('host remove all')
+        msg = self.run_cli_cmd('host list -f json')
+        self._check_cli_output(hosts, msg)
+
         # check groups in host list
         hosts.add_host(host1)
         hosts.add_group(host1, group1)
