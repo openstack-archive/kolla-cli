@@ -72,7 +72,7 @@ def add_logdata_to_tar(logdata, host, cname, cid):
 
 def get_containers(host):
     """return dict {id:name}"""
-    cmd = '/bin/docker ps -a'
+    cmd = 'docker ps -a'
     out = run_ansible_cmd(cmd, host)
     if not out:
         return None
@@ -114,7 +114,7 @@ def get_containers(host):
 
 
 def add_container_log(cid, cname, host):
-    cmd = '/bin/docker logs %s' % cid
+    cmd = 'docker logs %s' % cid
     out = run_ansible_cmd(cmd, host)
     if out:
         out = out.split('>>', 1)[1]
