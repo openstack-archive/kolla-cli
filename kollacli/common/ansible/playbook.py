@@ -141,15 +141,15 @@ class AnsiblePlaybook(object):
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE).communicate()
                     LOG.debug(inv)
-
-            self._start_pb(inventory_path, self.extra_vars)
-#!!bm            err_msg, output = run_cmd(cmd, self.print_output)
-#            if err_msg:
-#                if not self.print_output:
-#                    # since the user didn't see the output, include it in
-#                    # the error message
-#                    err_msg = '%s %s' % (err_msg, output)
-#                raise CommandError(err_msg)
+# 3.x WIP to support direct Ansible API calls
+#            self._start_pb(inventory_path, self.extra_vars)
+            err_msg, output = run_cmd(cmd, self.print_output)
+            if err_msg:
+                if not self.print_output:
+                    # since the user didn't see the output, include it in
+                    # the error message
+                    err_msg = '%s %s' % (err_msg, output)
+                raise CommandError(err_msg)
 
             LOG.info(u._('Success'))
         except CommandError as e:
