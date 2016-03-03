@@ -17,14 +17,13 @@ import traceback
 import kollacli.i18n as u
 
 from kollacli.api.client import ClientApi
-from kollacli.common.ansible.actions import deploy
-from kollacli.common.inventory import Inventory
 from kollacli.common.utils import convert_to_unicode
 from kollacli.exceptions import CommandError
 
 from cliff.command import Command
 
 LOG = logging.getLogger(__name__)
+CLIENT = ClientApi()
 
 
 class Deploy(Command):
@@ -63,11 +62,7 @@ class Deploy(Command):
             if parsed_args.serial:
                 serial_flag = True
 
-            client = ClientApi()
-            client.deploy(hosts, groups, services, serial_flag, verbose_level)
-#            deploy(hosts, groups, services, serial_flag,
-#                   verbose_level)
-
+            CLIENT.deploy(hosts, groups, services, serial_flag, verbose_level)
         except Exception:
             raise Exception(traceback.format_exc())
 
@@ -95,9 +90,7 @@ class Setdeploy(Command):
                 raise CommandError(
                     u._('Invalid deploy mode. Mode must be '
                         'either "local" or "remote".'))
-            inventory = Inventory.load()
-            inventory.set_deploy_mode(remote_flag)
-            Inventory.save(inventory)
+            CLIENT.deploy_set_mode(remote_flag)
         except CommandError as e:
             raise e
         except Exception:

@@ -20,6 +20,7 @@ import yaml
 
 import kollacli.i18n as u
 
+from kollacli.api.client import ClientApi
 from kollacli.common.ansible.actions import destroy_hosts
 from kollacli.common.ansible.actions import precheck
 from kollacli.common.inventory import Inventory
@@ -31,6 +32,7 @@ from cliff.command import Command
 from cliff.lister import Lister
 
 LOG = logging.getLogger(__name__)
+CLIENT = ClientApi()
 
 
 def _host_not_found(hostname):
@@ -58,9 +60,7 @@ class HostAdd(Command):
                     u._('Special host name "all" cannot be added as an '
                         'individual host.'))
 
-            inventory = Inventory.load()
-            inventory.add_host(hostname)
-            Inventory.save(inventory)
+            CLIENT.host_add(hostname)
         except CommandError as e:
             raise e
         except Exception as e:
@@ -120,14 +120,8 @@ class HostRemove(Command):
         try:
             hostname = parsed_args.hostname.strip()
             hostname = convert_to_unicode(hostname)
-            inventory = Inventory.load()
 
-            if hostname.lower() == 'all':
-                inventory.remove_all_hosts()
-            else:
-                inventory.remove_host(hostname)
-
-            Inventory.save(inventory)
+            CLIENT.host_remove(hostname)
         except CommandError as e:
             raise e
         except Exception as e:

@@ -16,14 +16,19 @@ import logging
 LOG = logging.getLogger(__name__)
 
 from kollacli.common.ansible import actions
+from kollacli.common.inventory import Inventory
+
 
 class DeployApi(object):
 
+    # TODO(bmace) -- update this to only take host names
+    # and we will probably only support compute host individual deploys
     def deploy(self, hostnames=[], groupnames=[], servicenames=[],
                serial_flag=False, verbose_level=1):
-        LOG.info('start deploy')
-
         actions.deploy(hostnames, groupnames, servicenames,
-                      serial_flag, verbose_level)
+                       serial_flag, verbose_level)
 
-        LOG.info('end deploy')
+    def deploy_set_mode(self, remote_mode):
+        inventory = Inventory.load()
+        inventory.set_deploy_mode(remote_mode)
+        Inventory.save(inventory)

@@ -13,16 +13,26 @@
 #    under the License.
 import logging
 
-from kollacli.api.deploy import DeployApi
-from kollacli.api.host import HostApi
+from kollacli.common.inventory import Inventory
 
 LOG = logging.getLogger(__name__)
 
 
-class ClientApi(
-        DeployApi,
-        HostApi
-        ):
+class HostApi(object):
 
-    def base_call(self):
-        LOG.info('base call')
+    def host_add(self, hostname):
+        inventory = Inventory.load()
+        inventory.add_host(hostname)
+        Inventory.save(inventory)
+
+    def host_remove(self, hostname):
+        # TODO(bmace) - need to do a lot of validity
+        # / null checking in these api calls
+        inventory = Inventory.load()
+
+        if hostname.lower() == 'all':
+            inventory.remove_all_hosts()
+        else:
+            inventory.remove_host(hostname)
+
+        Inventory.save(inventory)
