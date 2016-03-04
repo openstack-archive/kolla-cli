@@ -41,97 +41,20 @@ class AnsiblePlaybook(object):
     groups = None
     services = None
     serial = False
+    deploy_id = None
+    inventory = Inventory.load()
 
     def run(self):
-        globals_string = None
-        password_string = None
         inventory_path = None
-        cmd = ''
         try:
-            flag = ''
-            # verbose levels: 1=not verbose, 2=more verbose
-            if self.verbose_level > 1:
-                flag = '-vvv'
+            inventory_path = self._make_temp_inventory()
 
-            ansible_cmd = get_ansible_command(playbook=True)
-            admin_user = get_admin_user()
-            command_string = ('/usr/bin/sudo -u %s %s %s'
-                              % (admin_user, ansible_cmd, flag))
-            inventory_filter = {}
-            inventory = Inventory.load()
-            if self.hosts:
-                for hostname in self.hosts:
-                    host = inventory.get_host(hostname)
-                    if not host:
-                        raise CommandError(u._('Host ({host}) not found.')
-                                           .format(host=hostname))
-                inventory_filter['deploy_hosts'] = self.hosts
-            elif self.groups:
-                for groupname in self.groups:
-                    group = inventory.get_group(groupname)
-                    if not group:
-                        raise CommandError(u._('Group ({group}) not found.')
-                                           .format(group=groupname))
-                inventory_filter['deploy_groups'] = self.groups
+            cmd = self._get_playbook_cmd(inventory_path)
+            self._log_ansible_cmd(cmd, inventory_path)
 
-            inventory_path = \
-                inventory.create_json_gen_file(inventory_filter)
-            inventory_string = '-i ' + inventory_path
-            cmd = (command_string + ' ' + inventory_string)
-
-            if self.include_globals:
-                globals_string = self._get_globals_path()
-                cmd = (cmd + ' ' + globals_string)
-
-            if self.include_passwords:
-                password_string = self._get_password_path()
-                cmd = (cmd + ' ' + password_string)
-
-            cmd = (cmd + ' ' + self.playbook_path)
-
-            if self.extra_vars or self.serial:
-                extra_vars = ''
-                if self.extra_vars:
-                    extra_vars = self.extra_vars
-                    if self.serial:
-                        extra_vars += ' '
-                if self.serial:
-                    extra_vars += 'serial_var=1'
-
-                cmd = (cmd + ' --extra-vars \"' +
-                       extra_vars + '\"')
-
-            if self.services:
-                service_string = ''
-                first = True
-                for service in self.services:
-                    valid_service = inventory.get_service(service)
-                    if not valid_service:
-                        raise CommandError(u._('Service ({srvc}) not found.')
-                                           .format(srvc=service))
-                    if not first:
-                        service_string = service_string + ','
-                    else:
-                        first = False
-                    service_string = service_string + service
-                cmd = (cmd + ' --tags ' + service_string)
-
-            if self.flush_cache:
-                cmd = (cmd + ' --flush-cache')
-
-            if self.verbose_level > 1:
-                # log the ansible command
-                LOG.debug('cmd:' + cmd)
-
-                if self.verbose_level > 2:
-                    # log the inventory
-                    dbg_gen = inventory_path
-                    (inv, _) = \
-                        subprocess.Popen(dbg_gen.split(' '),  # nosec
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE).communicate()
-                    LOG.debug(inv)
+            # run the playbook
             err_msg, output = run_cmd(cmd, self.print_output)
+
             if err_msg:
                 if not self.print_output:
                     # since the user didn't see the output, include it in
@@ -145,13 +68,104 @@ class AnsiblePlaybook(object):
         except Exception:
             raise Exception(traceback.format_exc())
         finally:
-            if inventory_path:
-                os.remove(inventory_path)
+            self.inventory.remove_json_gen_file(inventory_path)
+
+    def _get_playbook_cmd(self, inventory_path):
+        flag = ''
+        # verbose levels: 1=not verbose, 2=more verbose
+        if self.verbose_level > 1:
+            flag = '-vvv'
+
+        ansible_cmd = get_ansible_command(playbook=True)
+        admin_user = get_admin_user()
+        cmd = '/usr/bin/sudo -u %s %s %s' % (admin_user, ansible_cmd, flag)
+
+        cmd += ' -i %s' % inventory_path
+
+        if self.include_globals:
+            cmd += ' %s' % self._get_globals_path()
+
+        if self.include_passwords:
+            cmd += ' %s' % self._get_password_path()
+
+        cmd += ' %s' % self.playbook_path
+
+        if self.extra_vars or self.serial:
+            extra_vars = ''
+            if self.extra_vars:
+                extra_vars = self.extra_vars
+                if self.serial:
+                    extra_vars += ' '
+            if self.serial:
+                extra_vars += 'serial_var=1'
+
+            cmd += ' --extra-vars \"%s\"' % extra_vars
+
+        if self.services:
+            service_string = ''
+            first = True
+            for service in self.services:
+                if not first:
+                    service_string = service_string + ','
+                else:
+                    first = False
+                service_string = service_string + service
+            cmd += ' --tags %s' % service_string
+
+        if self.flush_cache:
+            cmd += ' --flush-cache'
+        return cmd
+
+    def _make_temp_inventory(self):
+        """Create temporary inventory file
+
+        A temporary inventory is created so that a
+        unique id can be assigned to the deployment. That
+        id will used by the ansible callback to tag messages
+        and status from deployments back to the kolla code.
+        """
+        inventory_filter = {}
+        if self.hosts:
+            for hostname in self.hosts:
+                host = self.inventory.get_host(hostname)
+                if not host:
+                    raise CommandError(u._('Host ({host}) not found.')
+                                       .format(host=hostname))
+            inventory_filter['deploy_hosts'] = self.hosts
+        elif self.groups:
+            for groupname in self.groups:
+                group = self.inventory.get_group(groupname)
+                if not group:
+                    raise CommandError(u._('Group ({group}) not found.')
+                                       .format(group=groupname))
+            inventory_filter['deploy_groups'] = self.groups
+        inventory_path = \
+            self.inventory.create_json_gen_file(inventory_filter)
+
+        # inv path = /tmp/kolla_UUID/temp_inventory.py
+        deploy_id = os.path.dirname(inventory_path)
+        self.deploy_id = deploy_id.split('kolla_')[1]
+
+        return inventory_path
 
     def _get_globals_path(self):
         kolla_etc = get_kolla_etc()
-        return (' -e @' + os.path.join(kolla_etc, 'globals.yml '))
+        return ('-e @' + os.path.join(kolla_etc, 'globals.yml '))
 
     def _get_password_path(self):
         kolla_etc = get_kolla_etc()
-        return (' -e @' + os.path.join(kolla_etc, 'passwords.yml '))
+        return ('-e @' + os.path.join(kolla_etc, 'passwords.yml '))
+
+    def _log_ansible_cmd(self, cmd, inventory_path):
+        if self.verbose_level > 1:
+            # log the ansible command
+            LOG.debug('cmd:' + cmd)
+
+            if self.verbose_level > 2:
+                # log the inventory
+                dbg_gen = inventory_path
+                (inv, _) = \
+                    subprocess.Popen(dbg_gen.split(' '),  # nosec
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE).communicate()
+                LOG.debug(inv)

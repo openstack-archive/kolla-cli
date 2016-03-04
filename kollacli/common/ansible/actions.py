@@ -69,13 +69,6 @@ def destroy_hosts(hostname, destroy_type, verbose_level=1, include_data=False):
 
 def deploy(hostnames=[], groupnames=[], servicenames=[],
            serial_flag=False, verbose_level=1):
-    if hostnames and groupnames:
-        raise CommandError(
-            u._('Hosts and Groups arguments cannot '
-                'both be present at the same time.'))
-
-    _run_deploy_rules()
-
     playbook = AnsiblePlaybook()
     kolla_home = get_kolla_home()
     playbook.playbook_path = os.path.join(kolla_home,
@@ -86,6 +79,9 @@ def deploy(hostnames=[], groupnames=[], servicenames=[],
     playbook.serial = serial_flag
 
     playbook.verbose_level = verbose_level
+
+    _run_deploy_rules(playbook)
+
     playbook.run()
 
 
@@ -117,9 +113,24 @@ def upgrade(verbose_level=1):
     playbook.run()
 
 
-def _run_deploy_rules():
+def _run_deploy_rules(playbook):
     properties = AnsibleProperties()
     inventory = Inventory.load()
+
+    # cannot have both groups and hosts
+    if playbook.hosts and playbook.groups:
+        raise CommandError(
+            u._('Hosts and Groups arguments cannot '
+                'both be present at the same time.'))
+
+    # verify that all services exists
+    if playbook.services:
+        for service in playbook.services:
+            valid_service = inventory.get_service(service)
+            if not valid_service:
+                raise CommandError(u._('Service ({srvc}) not found.')
+                                   .format(srvc=service))
+
     # check that every group with enabled services
     # has hosts associated to it
     group_services = inventory.get_group_services()

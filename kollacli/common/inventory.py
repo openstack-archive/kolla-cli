@@ -17,6 +17,7 @@ import logging
 import os
 import tempfile
 import traceback
+import uuid
 
 import kollacli.i18n as u
 
@@ -851,13 +852,19 @@ class Inventory(object):
     def create_json_gen_file(self, inventory_filter=None):
         """create json inventory file using filter ({})
 
+        The inventory will be placed in a directory in /tmp,
+        with the directory name of form kolla_uuid.py,
+        where uuid is a unique deployment id.
+
         return path to filtered json generator file
         """
         json_out = self.get_ansible_json(inventory_filter)
 
-        fd, json_gen_path = tempfile.mkstemp(prefix='kollacli_json_gen_',
-                                             suffix='.py')
-        os.close(fd)  # avoid fd leak
+        deploy_id = str(uuid.uuid4())
+        dirname = 'kolla_%s' % deploy_id
+        dirpath = os.path.join(tempfile.gettempdir(), dirname)
+        os.mkdir(dirpath)
+        json_gen_path = os.path.join(dirpath, 'temp_inventory.py')
 
         with open(json_gen_path, 'w') as json_gen_file:
             json_gen_file.write('#!/usr/bin/env python\n')
@@ -868,3 +875,11 @@ class Inventory(object):
         # set executable by group
         os.chmod(json_gen_path, 0o555)  # nosec
         return json_gen_path
+
+    def remove_json_gen_file(self, path):
+        if path:
+            if os.path.exists(path):
+                os.remove(path)
+            dirpath = os.path.dirname(path)
+            if os.path.exists(dirpath):
+                os.rmdir(dirpath)
