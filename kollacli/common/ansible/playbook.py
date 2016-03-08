@@ -30,7 +30,6 @@ from kollacli.common.inventory import Inventory
 class AnsiblePlaybook(object):
     playbook_path = ''
     extra_vars = ''
-    include_globals = True
     include_passwords = True
     flush_cache = True
     print_output = True
@@ -43,7 +42,6 @@ class AnsiblePlaybook(object):
     log = logging.getLogger(__name__)
 
     def run(self):
-        globals_string = None
         password_string = None
         inventory_path = None
         cmd = ''
@@ -78,10 +76,6 @@ class AnsiblePlaybook(object):
                 inventory.create_json_gen_file(inventory_filter)
             inventory_string = '-i ' + inventory_path
             cmd = (command_string + ' ' + inventory_string)
-
-            if self.include_globals:
-                globals_string = self._get_globals_path()
-                cmd = (cmd + ' ' + globals_string)
 
             if self.include_passwords:
                 password_string = self._get_password_path()
@@ -148,10 +142,6 @@ class AnsiblePlaybook(object):
         finally:
             if inventory_path:
                 os.remove(inventory_path)
-
-    def _get_globals_path(self):
-        kolla_etc = get_kolla_etc()
-        return (' -e @' + os.path.join(kolla_etc, 'globals.yml '))
 
     def _get_password_path(self):
         kolla_etc = get_kolla_etc()

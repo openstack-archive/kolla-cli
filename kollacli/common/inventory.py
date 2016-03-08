@@ -576,7 +576,7 @@ class Inventory(object):
             subservice.remove_groupname(groupname)
 
         group_vars = os.path.join(get_group_vars_dir(), groupname)
-        if os.path.exists(group_vars):
+        if os.path.exists(group_vars) and groupname != '__RESERVED__':
             os.remove(group_vars)
 
         if groupname in self._groups:
