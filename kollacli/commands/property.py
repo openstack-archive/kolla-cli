@@ -211,7 +211,8 @@ class PropertyList(Lister):
 
                 property_list = ansible_properties.get_all_unique()
 
-            data = self._get_list_data(property_list)
+            override_flags = ansible_properties.get_all_override_flags()
+            data = self._get_list_data(property_list, override_flags)
             header = self._get_list_header()
             return (header, data)
 
@@ -222,21 +223,25 @@ class PropertyList(Lister):
         header = None
         if self.is_long_flag:
             if self.is_global:
-                header = (u._('Property Name'), u._('Property Value'),
-                          u._('Overrides'), u._('Original Value'))
+                header = (u._('OVR'),
+                          u._('Property Name'), u._('Property Value'),
+                          u._('Original Value'))
             else:
-                header = (u._('Property Name'), u._('Property Value'),
-                          u._('Overrides'), u._('Original Value'),
+                header = (u._('OVR'),
+                          u._('Property Name'), u._('Property Value'),
+                          u._('Original Value'),
                           self.list_type)
         else:
             if self.is_global:
-                header = (u._('Property Name'), u._('Property Value'))
+                header = (u._('OVR'),
+                          u._('Property Name'), u._('Property Value'))
             else:
-                header = (u._('Property Name'), u._('Property Value'),
+                header = (u._('OVR'),
+                          u._('Property Name'), u._('Property Value'),
                           self.list_type)
         return header
 
-    def _get_list_data(self, property_list):
+    def _get_list_data(self, property_list, override_flags):
         data = []
         if property_list:
             property_length = utils.get_property_list_length()
@@ -252,30 +257,42 @@ class PropertyList(Lister):
                 if not include_prop:
                     continue
 
+                ovr_global = '-'
+                ovr_group = '-'
+                ovr_host = '-'
+                if prop.name in override_flags:
+                    override_flag_set = override_flags[prop.name]
+                    if override_flag_set.ovr_global:
+                        ovr_global = '*'
+                    if override_flag_set.ovr_group:
+                        ovr_group = 'G'
+                    if override_flag_set.ovr_host:
+                        ovr_host = 'H'
+
+                prop_ovr = ovr_global + ovr_group + ovr_host
+
                 if self.is_long_flag:
                     if self.is_global:
-                        data.append((prop.name, prop.value,
-                                     prop.overrides,
+                        data.append((prop_ovr, prop.name, prop.value,
                                      prop.orig_value))
                     else:
-                        data.append((prop.name, prop.value,
-                                     prop.overrides,
+                        data.append((prop_ovr, prop.name, prop.value,
                                      prop.orig_value, prop.target))
                 else:
                     if self.is_global:
-                        data.append((prop.name, prop.value))
+                        data.append((prop_ovr, prop.name, prop.value))
                     else:
-                        data.append((prop.name, prop.value,
+                        data.append((prop_ovr, prop.name, prop.value,
                                      prop.target))
         else:
             if self.is_long_flag:
                 if self.is_global:
-                    data.append(('', '', '', ''))
+                    data.append(('', '', '', '', ''))
                 else:
                     data.append(('', '', '', '', ''))
             else:
                 if self.is_global:
-                    data.append(('', ''))
+                    data.append(('', '', ''))
                 else:
                     data.append(('', '', ''))
 
