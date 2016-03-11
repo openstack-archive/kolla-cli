@@ -287,13 +287,13 @@ class PropertyList(Lister):
         else:
             if self.is_long_flag:
                 if self.is_global:
-                    data.append(('', '', '', '', ''))
+                    data.append(('', '', '', ''))
                 else:
                     data.append(('', '', '', '', ''))
             else:
                 if self.is_global:
                     data.append(('', '', ''))
                 else:
-                    data.append(('', '', ''))
+                    data.append(('', '', '', ''))
 
         return data
