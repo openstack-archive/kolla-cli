@@ -269,7 +269,7 @@ def safe_decode(text):
     """Convert bytes or string to unicode string"""
     try:
         text = text.decode('utf-8')
-    except AttributeError:
+    except AttributeError:  # nosec
         # py3 will raise if text is already a string
         pass
     return text

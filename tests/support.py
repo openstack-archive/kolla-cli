@@ -46,7 +46,6 @@ class TestFunctional(KollaCliTest):
     def test_dump(self):
         check_files = [
             'var/log/kolla/kolla.log',
-            'kolla/etc/globals.yml',
             'kolla/etc/config/nova/nova-api.conf',
             'kolla/etc/kollacli/ansible/inventory.json',
             'kolla/share/ansible/site.yml',

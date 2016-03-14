@@ -20,7 +20,6 @@ import unittest
 
 from kollacli.common.utils import get_group_vars_dir
 from kollacli.common.utils import get_host_vars_dir
-from kollacli.common.utils import get_kolla_etc
 from kollacli.common.utils import get_kolla_home
 
 from kollacli.common.inventory import Inventory
@@ -29,7 +28,7 @@ from kollacli.common.inventory import Inventory
 class TestFunctional(KollaCliTest):
 
     def test_properties(self):
-        # test globals.yml properties
+        # test global properties
         self._properties_test()
 
         # test single group vars
@@ -146,7 +145,8 @@ class TestFunctional(KollaCliTest):
             sizes[path] = [os.path.getsize(path)]
         if not switch:
             self.run_cli_cmd('property clear %s' % key)
-            path = os.path.join(get_kolla_etc(), 'globals.yml')
+            path = os.path.join(get_kolla_home(),
+                                'ansible/group_vars/__GLOBAL__')
             sizes[path] = [os.path.getsize(path)]
 
         # test append
@@ -211,7 +211,7 @@ class TestFunctional(KollaCliTest):
                         prop['Property Value'] == value):
                     ok = True
             if not ok:
-                error_msg = '%s:%s is missing in globals.yml'
+                error_msg = '%s:%s is missing in __GLOBAL__'
         else:
             target_map = {}
             for target in targets:
