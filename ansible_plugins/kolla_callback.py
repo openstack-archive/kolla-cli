@@ -1,7 +1,20 @@
 # Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.
-
-# TODO(snoyes) - Need to add Oracle GPL3 license here
 #
+# This file is part of Oracle OpenStack for Oracle Linux
+#
+# Oracle OpenStack for Oracle Linux is free software: you can redistribute
+# it and/or modify it under the terms of the GNU General Public License as
+# published by # the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Oracle OpenStack for Oracle Linux is distributed in the hope that it will
+# be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Oracle OpenStack for Oracle Linux.  If not, see
+# <http://www.gnu.org/licenses/>.#
 import json
 import os
 import tempfile
@@ -12,6 +25,15 @@ from ansible.plugins.callback import CallbackBase
 
 KOLLA_LOG_PATH = '/tmp/ansible'
 DEBUG = True
+
+PIPE_PREFIX = '.kolla_pipe_'
+
+# action defs
+ACTION_PLAY_START = 'play_start'
+ACTION_TASK_START = 'task_start'
+ACTION_TASK_END = 'task_end'
+ACTION_INCLUDE_FILE = 'includefile'
+ACTION_STATS = 'stats'
 
 # deploy_id, a unique id for each playbook run
 deploy_id = ''
@@ -25,7 +47,7 @@ is_playbook = False
 # playbook path
 playbook_path = ''
 
-# flag that play failed waiting for pipe to be opened by client
+# pipe open failed
 fifo_failed = False
 
 
@@ -48,10 +70,11 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_start(self, playbook):
         global is_playbook
         global playbook_path
+
+        log('Playbook starting: ******************************************')
         is_playbook = True
         playbook_path = playbook._file_name
-        log('Playbook starting: %s ***************************************'
-            % playbook_path)
+        log('playbook path: %s' % playbook_path)
 
     def v2_playbook_on_play_start(self, ans_play):
         try:
@@ -116,19 +139,20 @@ class CallbackModule(CallbackBase):
             global deploy_id
             global fifo_path
             global is_playbook
-            global fifo_failed
 
             self.ansible_play = ansible_play
 
             # for now, ignore ad-hoc ansible commands TODO(snoyes)
-            if is_playbook and not fifo_failed:
+            if is_playbook:
                 # play is the first action of a playbook, set the
                 # deploy_id if it doesn't yet exist.
                 if not deploy_id:
                     deploy_id = self.get_deploy_id()
 
-                if deploy_id and not fifo_path:
-                    self._open_fifo()
+                if deploy_id:
+                    fifo_path = os.path.join(tempfile.gettempdir(),
+                                             '%s_%s' % (PIPE_PREFIX,
+                                                        deploy_id))
 
         def get_id(self):
             return str(self.ansible_play._uuid)
@@ -153,8 +177,9 @@ class CallbackModule(CallbackBase):
 
         def serialize(self):
             global playbook_path
+
             out = {}
-            out['action'] = 'play_start'
+            out['action'] = ACTION_PLAY_START
             out['playbook'] = playbook_path
             out['id'] = self.get_id()
             return json.dumps(out)
@@ -166,34 +191,6 @@ class CallbackModule(CallbackBase):
                     log('(%s) play start [%s]'
                         % (deploy_id, play_ser))
                 _send_msg(play_ser)
-
-        def _open_fifo(self):
-            global fifo_path
-            global fifo_failed
-
-            fifo_path = os.path.join(tempfile.gettempdir(),
-                                     'kolla_pipe_%s' % deploy_id)
-
-            # Create the pipe, will be owned by kolla:kolla.
-            # The client will see this appear and then open the pipe
-            # for reading.
-            log('creating named pipe: %s' % fifo_path)
-            os.mkfifo(fifo_path)
-
-            # wait for pipe to be opened by the client for reading.
-            timeout = time.time() + 5
-            is_opened_for_read = False
-            while time.time() < timeout:
-                try:
-                    # avoid blocking on open
-                    os.open(fifo_path, os.O_WRONLY | os.O_NONBLOCK)
-                    is_opened_for_read = True
-                    break
-                except OSError:
-                    time.sleep(1)
-            if not is_opened_for_read:
-                log('ERROR: timed out waiting for open fifo: %s' % fifo_path)
-                fifo_failed = True
 
     class Task(object):
         """Task class for hiding ansible methods"""
@@ -216,7 +213,7 @@ class CallbackModule(CallbackBase):
             return rolename
 
         def start(self):
-            task_ser = self.serialize('task_start')
+            task_ser = self.serialize(ACTION_TASK_START)
             if DEBUG:
                 msg = ('(%s) start task [%s]'
                        % (deploy_id, task_ser))
@@ -272,7 +269,7 @@ class CallbackModule(CallbackBase):
 
         def serialize(self):
             out = {}
-            out['action'] = 'task_end'
+            out['action'] = ACTION_TASK_END
             out['host'] = self.get_hostname()
             out['status'] = self.get_status()
             out['results'] = self.get_results_dict()
@@ -300,7 +297,7 @@ class CallbackModule(CallbackBase):
 
         def serialize(self):
             out = {}
-            out['action'] = 'includefile'
+            out['action'] = ACTION_INCLUDE_FILE
             out['filename'] = self.get_filename()
             out['task'] = self.get_task().convert_to_dictionary()
             return json.dumps(out)
@@ -310,16 +307,27 @@ class CallbackModule(CallbackBase):
         def __init__(self, ans_stats):
             # each of the stats members is a dictionary
             # with the hostname as the key
-            self.anible_stats = ans_stats
+            self.ansible_stats = ans_stats
 
         def serialize(self):
             out = {}
-            out['action'] = 'stats'
-            out['processed'] = self.anible_stats.processed
-            out['ok'] = self.anible_stats.ok
-            out['dark'] = self.anible_stats.dark
-            out['changed'] = self.anible_stats.changed
-            out['skipped'] = self.anible_stats.skipped
+            out['action'] = ACTION_STATS
+            out['processed'] = self.ansible_stats.processed
+            out['failures'] = self.ansible_stats.failures
+            out['unreachable'] = self.ansible_stats.dark
+            out['changed'] = self.ansible_stats.changed
+            out['skipped'] = self.ansible_stats.skipped
+            out['ok'] = self.ansible_stats.ok
+
+            # for some odd reason, if any of the stats are 0, the host
+            # may (or may not) be ommitted in the dict. fix that up.
+            for host in out['processed']:
+                self._fix_hosts(host, out['failures'])
+                self._fix_hosts(host, out['unreachable'])
+                self._fix_hosts(host, out['ok'])
+                self._fix_hosts(host, out['changed'])
+                self._fix_hosts(host, out['skipped'])
+
             return json.dumps(out)
 
         def start(self):
@@ -329,6 +337,10 @@ class CallbackModule(CallbackBase):
                        % (deploy_id, stats_ser))
                 log(msg)
             _send_msg(stats_ser)
+
+        def _fix_hosts(self, host, stats):
+            if host not in stats:
+                stats[host] = 0
 
 
 def _send_msg(msg):
@@ -340,15 +352,16 @@ def _send_msg(msg):
     global fifo_path
     global fifo_failed
 
+    fifo_fd = None
     if fifo_failed:
         return
-
-    fifo_fd = None
     try:
         fifo_fd = os.open(fifo_path, os.O_WRONLY | os.O_NONBLOCK)
-        os.write(fifo_fd, msg)
+        os.write(fifo_fd, msg + '\n')
     except Exception:
         log('ERROR: send_msg: %s' % traceback.format_exc())
+        fifo_failed = True
+        return
     finally:
         if fifo_fd:
             os.close(fifo_fd)

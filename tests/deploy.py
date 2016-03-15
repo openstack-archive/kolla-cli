@@ -19,7 +19,6 @@ from kollacli.common.inventory import Inventory
 from kollacli.common.inventory import SERVICES
 
 import json
-import os
 import unittest
 
 
@@ -35,7 +34,7 @@ class TestFunctional(KollaCliTest):
 
         path = inventory.create_json_gen_file()
         (retval, msg) = self.run_command(path)
-        os.remove(path)
+        inventory.remove_json_gen_file(path)
         self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
 
         self.assertNotEqual('', msg, 'json generator returned no data: %s'
@@ -70,7 +69,7 @@ class TestFunctional(KollaCliTest):
         inventory = Inventory.load()
         path = inventory.create_json_gen_file()
         (retval, msg) = self.run_command(path)
-        os.remove(path)
+        inventory.remove_json_gen_file(path)
         self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
 
         self.assertIn(remote_msg, msg, '%s not in remote json_gen output: %s'
@@ -95,7 +94,7 @@ class TestFunctional(KollaCliTest):
         path = inventory.create_json_gen_file(inv_filter)
         self.log.info('run command: %s' % path)
         (retval, msg) = self.run_command(path)
-        os.remove(path)
+        inventory.remove_json_gen_file(path)
         self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
 
         self.check_json(msg, groups, hosts, groups, hosts)
@@ -106,7 +105,7 @@ class TestFunctional(KollaCliTest):
         path = inventory.create_json_gen_file(inv_filter)
         self.log.info('run command: %s' % path)
         (retval, msg) = self.run_command(path)
-        os.remove(path)
+        inventory.remove_json_gen_file(path)
         self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
         self.check_json(msg, groups, hosts, groups, [included_host])
 
@@ -115,7 +114,7 @@ class TestFunctional(KollaCliTest):
         path = inventory.create_json_gen_file(inv_filter)
         self.log.info('run command: %s' % path)
         (retval, msg) = self.run_command(path)
-        os.remove(path)
+        inventory.remove_json_gen_file(path)
         self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
         self.check_json(msg, groups, hosts, groups, hosts)
 
@@ -125,7 +124,7 @@ class TestFunctional(KollaCliTest):
         path = inventory.create_json_gen_file(inv_filter)
         self.log.info('run command: %s' % path)
         (retval, msg) = self.run_command(path)
-        os.remove(path)
+        inventory.remove_json_gen_file(path)
         self.assertEqual(0, retval, 'json generator command failed: %s' % msg)
         self.check_json(msg, groups, hosts, [included_group], hosts)
 
@@ -133,16 +132,18 @@ class TestFunctional(KollaCliTest):
         # test will start with no hosts in the inventory
         # deploy will throw an exception if it fails
         # disable all services first as without it empty groups cause errors
-        for service in ALL_SERVICES:
-            self.run_cli_cmd('property set enable_%s no' % service)
+        try:
+            for service in ALL_SERVICES:
+                self.run_cli_cmd('property set enable_%s no' % service)
 
-        self.run_cli_cmd('deploy')
-        self.run_cli_cmd('deploy --serial')
-        self.run_cli_cmd('deploy --groups=control')
+            self.run_cli_cmd('deploy')
+            self.run_cli_cmd('deploy --serial')
+            self.run_cli_cmd('deploy --groups=control')
 
-        # re-enable services after the test
-        for service in ALL_SERVICES:
-            self.run_cli_cmd('property set enable_%s yes' % service)
+        finally:
+            # re-enable services after the test
+            for service in ALL_SERVICES:
+                self.run_cli_cmd('property set enable_%s yes' % service)
 
     def check_json(self, msg, groups, hosts, included_groups, included_hosts):
         err_msg = ('included groups: %s\n' % included_groups +

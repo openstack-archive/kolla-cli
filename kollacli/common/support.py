@@ -124,6 +124,5 @@ def _add_cmd_info(tar):
     finally:
         if path:
             os.remove(path)
-        if inv_path:
-            os.remove(inv_path)
+        inventory.remove_json_gen_file(inv_path)
     return

@@ -16,8 +16,8 @@ import os
 import tarfile
 import unittest
 
+from common import KollaCliTest
 from kollacli.common.utils import get_kollacli_home
-from tests.common import KollaCliTest
 
 LOGS_PREFIX = '/tmp/kolla_support_logs_'
 
@@ -40,7 +40,7 @@ class TestFunctional(KollaCliTest):
         except Exception as e:
             raise e
         finally:
-            if zip_path:
+            if zip_path and os.path.exists(zip_path):
                 os.remove(zip_path)
 
     def test_dump(self):

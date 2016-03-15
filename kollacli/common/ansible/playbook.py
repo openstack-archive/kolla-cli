@@ -18,10 +18,10 @@ import traceback
 
 import kollacli.i18n as u
 
+from kollacli.common.ansible.command import AnsibleCommand
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
 from kollacli.common.utils import get_kolla_etc
-from kollacli.common.utils import run_cmd
 from kollacli.exceptions import CommandError
 
 from kollacli.common.inventory import Inventory
@@ -50,17 +50,20 @@ class AnsiblePlaybook(object):
             inventory_path = self._make_temp_inventory()
 
             cmd = self._get_playbook_cmd(inventory_path)
+
             self._log_ansible_cmd(cmd, inventory_path)
 
             # run the playbook
-            err_msg, output = run_cmd(cmd, self.print_output)
+            output, ret_code = AnsibleCommand(cmd,
+                                              self.deploy_id,
+                                              self.print_output).run()
 
-            if err_msg:
+            if ret_code != 0:
                 if not self.print_output:
-                    # since the user didn't see the output, include it in
-                    # the error message
-                    err_msg = '%s %s' % (err_msg, output)
-                raise CommandError(err_msg)
+                    # since the user didn't see the output,
+                    # print it now
+                    LOG.error(output)
+                raise CommandError(u._('Ansible command failed'))
 
             LOG.info(u._('Success'))
         except CommandError as e:

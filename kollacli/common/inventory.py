@@ -518,6 +518,7 @@ class Inventory(object):
         return summary
 
     def ssh_check_host(self, hostname):
+        err_msg = None
         command_string = '/usr/bin/sudo -u %s %s -vvv ' % \
             (get_admin_user(), get_ansible_command())
         gen_file_path = self.create_json_gen_file()
@@ -533,8 +534,7 @@ class Inventory(object):
                 u._('Host: ({host}) setup exception. : {error}')
                 .format(host=hostname, error=str(e)))
         finally:
-            if gen_file_path:
-                os.remove(gen_file_path)
+            self.remove_json_gen_file(gen_file_path)
 
         if err_msg:
             is_ok = False
