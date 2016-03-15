@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import traceback
 
 from kollacli.common.inventory import Inventory
 from kollacli.common import properties
@@ -62,12 +63,19 @@ def run_ansible_cmd(cmd, host):
 
 def add_logdata_to_tar(logdata, host, cname, cid):
     print('Adding container log %s:%s(%s)' % (host, cname, cid))
-    fd, tmp_path = tempfile.mkstemp()
-    os.close(fd)  # avoid fd leak
-    with open(tmp_path, 'w') as tmpfile:
-        tmpfile.write(logdata)
-    tar_file_descr.add(tmp_path, arcname='/%s/%s_%s.log' % (host, cname, cid))
-    os.remove(tmp_path)
+    archive_name = '/%s/%s_%s.log' % (host, cname, cid)
+    tmp_path = None
+    try:
+        fd, tmp_path = tempfile.mkstemp()
+        os.close(fd)  # avoid fd leak
+        with open(tmp_path, 'w') as tmpfile:
+            tmpfile.write(logdata)
+        tar_file_descr.add(tmp_path, arcname=archive_name)
+    except Exception:
+        print('ERROR adding %s\n%s' % (archive_name, traceback.format_exc()))
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            os.remove(tmp_path)
 
 
 def get_containers(host):
@@ -76,6 +84,7 @@ def get_containers(host):
     out = run_ansible_cmd(cmd, host)
     if not out:
         return None
+    out = safe_decode(out)
     if 'NAMES' not in out:
         print('Host: %s. \nInvalid docker ps return data: [%s]. skipping'
               % (host, out))
@@ -117,6 +126,7 @@ def add_container_log(cid, cname, host):
     cmd = 'docker logs %s' % cid
     out = run_ansible_cmd(cmd, host)
     if out:
+        out = safe_decode(out)
         out = out.split('>>', 1)[1]
         header = ('Host: %s, Container: %s, id: %s\n'
                   % (host, cname, cid))
