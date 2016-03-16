@@ -18,7 +18,7 @@ import traceback
 
 import kollacli.i18n as u
 
-from kollacli.common.ansible.command import AnsibleCommand
+from kollacli.common.ansible.job import AnsibleJob
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
 from kollacli.common.utils import get_kolla_etc
@@ -45,33 +45,18 @@ class AnsiblePlaybook(object):
     inventory = Inventory.load()
 
     def run(self):
-        inventory_path = None
         try:
             inventory_path = self._make_temp_inventory()
-
             cmd = self._get_playbook_cmd(inventory_path)
-
             self._log_ansible_cmd(cmd, inventory_path)
 
-            # run the playbook
-            output, ret_code = AnsibleCommand(cmd,
-                                              self.deploy_id,
-                                              self.print_output).run()
-
-            if ret_code != 0:
-                if not self.print_output:
-                    # since the user didn't see the output,
-                    # print it now
-                    LOG.error(output)
-                raise CommandError(u._('Ansible command failed'))
-
-            LOG.info(u._('Success'))
-        except CommandError as e:
-            raise e
+            # create and run the job
+            job = AnsibleJob(cmd, self.deploy_id,
+                             self.print_output, inventory_path)
+            job.run()
+            return job
         except Exception:
             raise Exception(traceback.format_exc())
-        finally:
-            self.inventory.remove_json_gen_file(inventory_path)
 
     def _get_playbook_cmd(self, inventory_path):
         flag = ''
@@ -160,11 +145,11 @@ class AnsiblePlaybook(object):
         return ('-e @' + os.path.join(kolla_etc, 'passwords.yml '))
 
     def _log_ansible_cmd(self, cmd, inventory_path):
-        if self.verbose_level > 1:
+        if self.verbose_level > 2:
             # log the ansible command
             LOG.debug('cmd:' + cmd)
 
-            if self.verbose_level > 2:
+            if self.verbose_level > 3:
                 # log the inventory
                 dbg_gen = inventory_path
                 (inv, _) = \

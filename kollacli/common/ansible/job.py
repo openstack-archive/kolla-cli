@@ -21,6 +21,7 @@ import tempfile
 import time
 
 from kollacli.common.utils import get_admin_uids
+from kollacli.common.inventory import remove_temp_inventory
 from kollacli.common.utils import safe_decode
 
 LOG = logging.getLogger(__name__)
@@ -37,92 +38,137 @@ ACTION_INCLUDE_FILE = 'includefile'
 ACTION_STATS = 'stats'
 
 
-class AnsibleCommand(object):
+class AnsibleJob(object):
     """class for running ansible commands"""
 
-    def __init__(self, command, deploy_id, print_output=True):
-        self.command = command
-        self.print_output = print_output
-        self.deploy_id = deploy_id
-        self.fragment = ''
-        self.is_first_packet = True
-        self.fifo_path = os.path.join(tempfile.gettempdir(),
-                                      '%s_%s' % (PIPE_PREFIX, self.deploy_id))
+    def __init__(self, cmd, deploy_id, print_output, inventory_path):
+        self._command = cmd
+        self._deploy_id = deploy_id
+        self._print_output = print_output
+        self._temp_inv_path = inventory_path
+
+        self._fragment = ''
+        self._is_first_packet = True
+        self._fifo_path = os.path.join(
+            tempfile.gettempdir(), '%s_%s' % (PIPE_PREFIX, self._deploy_id))
+        self._fifo_fd = None
+        self._process = None
+        self._errors = []
+        self._cmd_output = ''
 
     def run(self):
-        fifo_fd = None
         try:
             # create and open named pipe, must be owned by kolla group
-            os.mkfifo(self.fifo_path, 0o660)
+            os.mkfifo(self._fifo_path, 0o660)
             _, grp_id = get_admin_uids()
-            os.chown(self.fifo_path, os.getuid(), grp_id)
-            fifo_fd = os.open(self.fifo_path, os.O_RDONLY | os.O_NONBLOCK)
+            os.chown(self._fifo_path, os.getuid(), grp_id)
+            self._fifo_fd = os.open(self._fifo_path,
+                                    os.O_RDONLY | os.O_NONBLOCK)
 
-            process = subprocess.Popen(self.command,  # nosec
-                                       shell=True,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
+            self._process = subprocess.Popen(self._command,  # nosec
+                                             shell=True,
+                                             stdout=subprocess.PIPE,
+                                             stderr=subprocess.PIPE)
 
             # setup stdout to be read without blocking
-            flags = fcntl.fcntl(process.stdout, fcntl.F_GETFL)
-            fcntl.fcntl(process.stdout, fcntl.F_SETFL, (flags | os.O_NONBLOCK))
+            flags = fcntl.fcntl(self._process.stdout, fcntl.F_GETFL)
+            fcntl.fcntl(self._process.stdout, fcntl.F_SETFL,
+                        (flags | os.O_NONBLOCK))
+        except Exception as e:
+            self._cleanup()
+            raise e
 
-            out = ''
-            while process.poll() is None:
-                # process is still running
+    def wait(self):
+        """wait for job to complete
 
-                # need to drain stdout so buffer doesn't fill up and hang
-                # process.
-                out = self._get_stdout(out, process)
+        return status of job (see get_status for status values)
+        """
+        while True:
+            status = self.get_status()
+            if status is not None:
+                break
+            time.sleep(1)
+        return status
 
-                # log info from kolla callback
-                self._log_callback(fifo_fd)
-                time.sleep(1)
+    def get_status(self):
+        """get process status
 
-            ret_code = process.returncode
-
-            # dump any remaining data in the named pipe
-            self._log_callback(fifo_fd)
-        finally:
-            # close the named pipe
-            if fifo_fd:
-                os.close(fifo_fd)
-            if self.fifo_path and os.path.exists(self.fifo_path):
-                os.remove(self.fifo_path)
-        return out, ret_code
-
-    def _get_stdout(self, out, process):
+        status:
+        - None: running
+        - 0: done, success
+        - 1: done, error
+        """
+        status = self._process.poll()
+        self._read_from_callback()
+        if status is not None:
+            self._cleanup()
+            status = 0
+            if self._process.returncode != 0:
+                status = 1
         try:
-            data = process.stdout.read()
-            if data:
-                out = ''.join([safe_decode(data)])
+            out = safe_decode(self._process.stdout.read())
+            if out:
+                self._cmd_output = ''.join([self._cmd_output, out])
         except IOError:  # nosec
             # error can happen if stdout is empty
             pass
-        return out
+        return status
 
-    def _log_callback(self, fifo_fd):
-        """log info from callback in real-time to log"""
+    def get_error_message(self):
+        """"get error message"""
+        msg = ''
+        for error in self._errors:
+            msg = ''.join([msg, error, '\n'])
+        return msg
+
+    def get_command_output(self):
+        """get command output
+
+        get final output text from command execution
+        """
+        return self._cmd_output
+
+    def _log_lines(self, lines):
+        if self._print_output:
+            for line in lines:
+                LOG.info(line)
+
+    def _cleanup(self):
+        # delete temp inventory file
+        remove_temp_inventory(self._temp_inv_path)
+
+        # close and delete the named pipe (fifo)
+        if self._fifo_fd:
+            try:
+                os.close(self._fifo_fd)
+            except OSError:  # nosec
+                # fifo already closed
+                pass
+        if self._fifo_path and os.path.exists(self._fifo_path):
+            os.remove(self._fifo_path)
+
+    def _read_from_callback(self):
+        """read lines from callback in real-time"""
         data = None
         try:
-            data = os.read(fifo_fd, 1000000)
+            data = os.read(self._fifo_fd, 1000000)
             data = safe_decode(data)
         except OSError:  # nosec
             # error can happen if fifo is empty
             pass
-        if data and self.print_output:
+        if data:
             packets = self._deserialize_packets(data)
             for packet in packets:
-                line = self._format_packet(packet, self.is_first_packet)
-                LOG.info(line)
-        return
+                formatted_data = self._format_packet(packet)
+                lines = formatted_data.split('\n')
+                self._log_lines(lines)
 
-    def _format_packet(self, packet, first_packet_flag):
+    def _format_packet(self, packet):
         action = packet['action']
         if action == ACTION_INCLUDE_FILE:
             return self._format_include_file(packet)
         elif action == ACTION_PLAY_START:
-            return self._format_play_start(packet, first_packet_flag)
+            return self._format_play_start(packet)
         elif action == ACTION_STATS:
             return self._format_stats(packet)
         elif action == ACTION_TASK_END:
@@ -135,11 +181,11 @@ class AnsibleCommand(object):
     def _format_include_file(self, packet):
         return 'included: %s' % packet['filename']
 
-    def _format_play_start(self, packet, first_packet_flag):
+    def _format_play_start(self, packet):
         msg = '\n' + self._add_filler('PLAY ', LINE_LENGTH, '*')
-        if first_packet_flag:
+        if self._is_first_packet:
             msg += '\nPlaybook: %s' % packet['playbook']
-            self.is_first_packet = False
+            self._is_first_packet = False
         return msg
 
     def _format_stats(self, packet):
@@ -167,7 +213,14 @@ class AnsibleCommand(object):
         status = packet['status']
         msg = '%s: [%s]' % (status, host)
         if status == 'failed' or status == 'unreachable':
-            results = json.dumps(packet['results'])
+            results_dict = packet['results']
+            taskname = packet['task']['name']
+
+            # update saved error messages
+            self._errors.append(self._format_error(taskname, host,
+                                                   status, results_dict))
+            # format log message
+            results = json.dumps(results_dict)
             msg = 'fatal: [%s]: %s! => %s' % (host, status.upper(), results)
         return msg
 
@@ -175,6 +228,14 @@ class AnsibleCommand(object):
         taskname = packet['name']
         task_line = 'TASK [%s] ' % taskname
         msg = '\n' + self._add_filler(task_line, LINE_LENGTH, '*')
+        return msg
+
+    def _format_error(self, taskname, host, status, results):
+        err_msg = ''
+        if 'msg' in results and results['msg']:
+            err_msg = results['msg']
+        msg = ('Host: %s, Task: %s, Status: %s, Message: %s' %
+               (host, taskname, status, err_msg))
         return msg
 
     def _add_filler(self, msg, length, filler):
@@ -204,12 +265,12 @@ class AnsibleCommand(object):
             i += 1
             if i == 1:
                 # first line
-                line = self.fragment + line
-                self.fragment = ''
+                line = self._fragment + line
+                self._fragment = ''
             elif i == num_lines - 1:
                 # last line
                 if has_fragment:
-                    self.fragment = line
+                    self._fragment = line
                     continue
             try:
                 packets.append(json.loads(line))

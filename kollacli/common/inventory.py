@@ -108,6 +108,16 @@ DEFAULT_OVERRIDES = {
 PROTECTED_GROUPS = [COMPUTE_GRP_NAME]
 
 
+def remove_temp_inventory(path):
+    """remove temp inventory file and its parent directory"""
+    if path:
+        if os.path.exists(path):
+            os.remove(path)
+        dirpath = os.path.dirname(path)
+        if os.path.exists(dirpath):
+            os.rmdir(dirpath)
+
+
 class Host(object):
     class_version = 1
     log = logging.getLogger(__name__)
@@ -877,9 +887,4 @@ class Inventory(object):
         return json_gen_path
 
     def remove_json_gen_file(self, path):
-        if path:
-            if os.path.exists(path):
-                os.remove(path)
-            dirpath = os.path.dirname(path)
-            if os.path.exists(dirpath):
-                os.rmdir(dirpath)
+        remove_temp_inventory(path)

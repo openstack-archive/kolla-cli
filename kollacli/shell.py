@@ -72,11 +72,6 @@ class KollaCli(App):
 
         self.add_rotational_log()
 
-    def clean_up(self, cmd, result, err):
-        LOG.debug('clean_up %s', cmd.__class__.__name__)
-        if err:
-            LOG.debug('ERROR: %s', err)
-
     def add_rotational_log(self):
         root_logger = logging.getLogger('')
         rotate_handler = logging.handlers.RotatingFileHandler(

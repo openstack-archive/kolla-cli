@@ -24,7 +24,7 @@ import traceback
 from ansible.plugins.callback import CallbackBase
 
 KOLLA_LOG_PATH = '/tmp/ansible'
-DEBUG = True
+DEBUG = False
 
 PIPE_PREFIX = '.kolla_pipe_'
 
@@ -187,9 +187,7 @@ class CallbackModule(CallbackBase):
         def start(self):
             if deploy_id:
                 play_ser = self.serialize()
-                if DEBUG:
-                    log('(%s) play start [%s]'
-                        % (deploy_id, play_ser))
+                log('(%s) play start [%s]' % (deploy_id, play_ser))
                 _send_msg(play_ser)
 
     class Task(object):
@@ -214,18 +212,14 @@ class CallbackModule(CallbackBase):
 
         def start(self):
             task_ser = self.serialize(ACTION_TASK_START)
-            if DEBUG:
-                msg = ('(%s) start task [%s]'
-                       % (deploy_id, task_ser))
-                log(msg)
+            msg = ('(%s) start task [%s]' % (deploy_id, task_ser))
+            log(msg)
             _send_msg(task_ser)
 
         def end(self, result):
             result_ser = result.serialize()
-            if DEBUG:
-                msg = ('(%s) end task [%s]'
-                       % (deploy_id, result_ser))
-                log(msg)
+            msg = ('(%s) end task [%s]' % (deploy_id, result_ser))
+            log(msg)
             _send_msg(result_ser)
 
         def convert_to_dictionary(self, action=None):
@@ -289,10 +283,8 @@ class CallbackModule(CallbackBase):
 
         def start(self):
             include_ser = self.serialize()
-            if DEBUG:
-                msg = ('(%s) included file: %s'
-                       % (deploy_id, include_ser))
-                log(msg)
+            msg = ('(%s) included file: %s' % (deploy_id, include_ser))
+            log(msg)
             _send_msg(include_ser)
 
         def serialize(self):
@@ -332,10 +324,8 @@ class CallbackModule(CallbackBase):
 
         def start(self):
             stats_ser = self.serialize()
-            if DEBUG:
-                msg = ('(%s) stats: %s'
-                       % (deploy_id, stats_ser))
-                log(msg)
+            msg = ('(%s) stats: %s' % (deploy_id, stats_ser))
+            log(msg)
             _send_msg(stats_ser)
 
         def _fix_hosts(self, host, stats):

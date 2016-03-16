@@ -267,7 +267,7 @@ def sync_write_file(path, data, mode='w'):
 
 def safe_decode(text):
     """Convert bytes or string to unicode string"""
-    if text:
+    if text is not None:
         try:
             text = text.decode('utf-8')
         except AttributeError:   # nosec
