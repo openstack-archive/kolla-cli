@@ -65,7 +65,7 @@ def destroy_hosts(hostname, destroy_type, verbose_level=1, include_data=False):
         playbook.print_output = False
     playbook.verbose_level = verbose_level
     job = playbook.run()
-    _process_job(job, verbose_level)
+    return job
 
 
 def deploy(hostnames=[], groupnames=[], servicenames=[],
@@ -84,7 +84,7 @@ def deploy(hostnames=[], groupnames=[], servicenames=[],
     _run_deploy_rules(playbook)
 
     job = playbook.run()
-    _process_job(job, verbose_level)
+    return job
 
 
 def precheck(hostname, verbose_level=1):
@@ -102,7 +102,7 @@ def precheck(hostname, verbose_level=1):
     playbook.print_output = True
     playbook.verbose_level = verbose_level
     job = playbook.run()
-    _process_job(job, verbose_level)
+    return job
 
 
 def upgrade(verbose_level=1):
@@ -114,19 +114,7 @@ def upgrade(verbose_level=1):
     playbook.print_output = True
     playbook.verbose_level = verbose_level
     job = playbook.run()
-    _process_job(job, verbose_level)
-
-
-def _process_job(job, verbose_level):
-    job.wait()
-    status = job.get_status()
-    if status != 0:
-        if verbose_level > 2:
-            LOG.info('\n\n' + 80 * '=')
-            LOG.info('DEBUG command output:\n%s'
-                     % job.get_command_output())
-        raise CommandError(u._('Ansible command failed:\n{msg}')
-                           .format(msg=job.get_error_message()))
+    return job
 
 
 def _run_deploy_rules(playbook):

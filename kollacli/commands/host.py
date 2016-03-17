@@ -21,8 +21,6 @@ import yaml
 import kollacli.i18n as u
 
 from kollacli.api.client import ClientApi
-from kollacli.common.ansible.actions import destroy_hosts
-from kollacli.common.ansible.actions import precheck
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import convert_to_unicode
 from kollacli.common.utils import get_setup_user
@@ -99,7 +97,16 @@ class HostDestroy(Command):
 
             verbose_level = self.app.options.verbose_level
 
-            destroy_hosts(hostname, destroy_type, verbose_level, include_data)
+            job = CLIENT.async_host_destroy(hostname, destroy_type,
+                                            verbose_level, include_data)
+            status = job.wait()
+            if verbose_level > 2:
+                LOG.info('\n\n' + 80 * '=')
+                LOG.info(u._('DEBUG command output:\n{out}')
+                         .format(out=job.get_console_output()))
+            if status != 0:
+                raise CommandError(u._('Job failed:\n{msg}')
+                                   .format(msg=job.get_error_message()))
 
         except CommandError as e:
             raise e
@@ -193,7 +200,17 @@ class HostCheck(Command):
 
             if parsed_args.predeploy:
                 # run pre-deploy checks
-                precheck(hostname)
+                verbose_level = self.app.options.verbose_level
+                job = CLIENT.async_host_precheck(hostname, verbose_level)
+                status = job.wait()
+                if verbose_level > 2:
+                    LOG.info('\n\n' + 80 * '=')
+                    LOG.info(u._('DEBUG command output:\n{out}')
+                             .format(out=job.get_console_output()))
+                if status != 0:
+                    raise CommandError(u._('Job failed:\n{msg}')
+                                       .format(msg=job.get_error_message()))
+
             else:
                 # run ssh checks
                 all_ok = True

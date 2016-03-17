@@ -20,10 +20,10 @@ import tarfile
 import tempfile
 
 from kollacli.common.inventory import Inventory
+from kollacli.common.inventory import remove_temp_inventory
 from kollacli.common import properties
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
-from kollacli.common.utils import remove_temp_inventory
 from kollacli.common.utils import safe_decode
 
 tar_file_descr = None

@@ -137,13 +137,18 @@ class TestFunctional(KollaCliTest):
                 self.run_cli_cmd('property set enable_%s no' % service)
 
             self.run_cli_cmd('deploy')
-            self.run_cli_cmd('deploy --serial')
-            self.run_cli_cmd('deploy --groups=control')
+            self.run_cli_cmd('deploy --serial -v')
+            self.run_cli_cmd('deploy --groups=control -vv')
 
         finally:
             # re-enable services after the test
             for service in ALL_SERVICES:
                 self.run_cli_cmd('property set enable_%s yes' % service)
+
+    def test_upgrade(self):
+        # test will upgrade an environment with no hosts, mostly a NOP,
+        # but it will go through the client code paths.
+        self.run_cli_cmd('upgrade -v')
 
     def check_json(self, msg, groups, hosts, included_groups, included_hosts):
         err_msg = ('included groups: %s\n' % included_groups +

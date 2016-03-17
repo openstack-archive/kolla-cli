@@ -62,7 +62,19 @@ class Deploy(Command):
             if parsed_args.serial:
                 serial_flag = True
 
-            CLIENT.deploy(hosts, groups, services, serial_flag, verbose_level)
+            job = CLIENT.async_deploy(hosts, groups, services, serial_flag,
+                                      verbose_level)
+            status = job.wait()
+            if verbose_level > 2:
+                LOG.info('\n\n' + 80 * '=')
+                LOG.info(u._('DEBUG command output:\n{out}')
+                         .format(out=job.get_console_output()))
+            if status == 0:
+                LOG.info(u._('Success'))
+            else:
+                raise CommandError(u._('Job failed:\n{msg}')
+                                   .format(msg=job.get_error_message()))
+
         except Exception:
             raise Exception(traceback.format_exc())
 

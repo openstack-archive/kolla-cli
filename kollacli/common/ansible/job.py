@@ -20,8 +20,8 @@ import subprocess  # nosec
 import tempfile
 import time
 
-from kollacli.common.utils import get_admin_uids
 from kollacli.common.inventory import remove_temp_inventory
+from kollacli.common.utils import get_admin_uids
 from kollacli.common.utils import safe_decode
 
 LOG = logging.getLogger(__name__)

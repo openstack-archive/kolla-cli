@@ -14,9 +14,15 @@
 import logging
 import traceback
 
-from kollacli.common.ansible.actions import upgrade
-
 from cliff.command import Command
+
+import kollacli.i18n as u
+
+from kollacli.api.client import ClientApi
+from kollacli.exceptions import CommandError
+
+
+CLIENT = ClientApi()
 
 LOG = logging.getLogger(__name__)
 
@@ -28,9 +34,19 @@ class Upgrade(Command):
         return parser
 
     def take_action(self, parsed_args):
-        verbose_level = self.app.options.verbose_level
         try:
-            upgrade(verbose_level)
+            verbose_level = self.app.options.verbose_level
+            job = CLIENT.async_upgrade(verbose_level)
+            status = job.wait()
+            if verbose_level > 2:
+                LOG.info('\n\n' + 80 * '=')
+                LOG.info(u._('DEBUG command output:\n{out}')
+                         .format(out=job.get_console_output()))
+            if status == 0:
+                LOG.info(u._('Success'))
+            else:
+                raise CommandError(u._('Job failed:\n{msg}')
+                                   .format(msg=job.get_error_message()))
 
         except Exception:
             raise Exception(traceback.format_exc())

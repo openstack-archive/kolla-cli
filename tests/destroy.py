@@ -112,7 +112,7 @@ class TestFunctional(KollaCliTest):
         # destroy non-data services (via --stop flag)
         # this should leave only data containers running
         try:
-            self.run_cli_cmd('host destroy %s --stop' % hostname)
+            self.run_cli_cmd('host destroy %s --stop -v' % hostname)
         except Exception as e:
             self.assertFalse(is_physical_host, '2nd destroy exception: %s' % e)
             self.assertIn(UNKNOWN_HOST, '%s' % e,
@@ -133,7 +133,8 @@ class TestFunctional(KollaCliTest):
                               'after no-data destroy.')
 
         try:
-            self.run_cli_cmd('host destroy %s --includedata --stop' % hostname)
+            self.run_cli_cmd('host destroy %s --includedata --stop -vv'
+                             % hostname)
         except Exception as e:
             self.assertFalse(is_physical_host, '3rd destroy exception: %s' % e)
             self.assertIn(UNKNOWN_HOST, '%s' % e,

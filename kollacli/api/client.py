@@ -13,6 +13,7 @@
 #    under the License.
 import logging
 
+from kollacli.api.async import AsyncApi
 from kollacli.api.deploy import DeployApi
 from kollacli.api.host import HostApi
 
@@ -20,6 +21,7 @@ LOG = logging.getLogger(__name__)
 
 
 class ClientApi(
+        AsyncApi,
         DeployApi,
         HostApi
         ):
