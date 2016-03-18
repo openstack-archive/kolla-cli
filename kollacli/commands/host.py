@@ -21,6 +21,7 @@ import yaml
 import kollacli.i18n as u
 
 from kollacli.api.client import ClientApi
+# TODO(snoyes): remove inventory reference from CLI
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import convert_to_unicode
 from kollacli.common.utils import get_setup_user
@@ -89,6 +90,14 @@ class HostDestroy(Command):
             hostname = parsed_args.hostname.strip()
             hostname = convert_to_unicode(hostname)
 
+            inventory = Inventory.load()
+            hostnames = [hostname]
+            if hostname == 'all':
+                hostnames = inventory.get_hostnames()
+            else:
+                if not inventory.get_host(hostname):
+                    _host_not_found(hostname)
+
             destroy_type = 'kill'
             if parsed_args.stop:
                 destroy_type = 'stop'
@@ -98,7 +107,7 @@ class HostDestroy(Command):
 
             verbose_level = self.app.options.verbose_level
 
-            job = CLIENT.async_host_destroy(hostname, destroy_type,
+            job = CLIENT.async_host_destroy(hostnames, destroy_type,
                                             verbose_level, include_data)
             status = job.wait()
             if verbose_level > 2:
@@ -195,15 +204,18 @@ class HostCheck(Command):
         try:
             hostname = parsed_args.hostname.strip()
             hostname = convert_to_unicode(hostname)
-            if hostname != 'all':
-                inventory = Inventory.load()
+            inventory = Inventory.load()
+            hostnames = [hostname]
+            if hostname == 'all':
+                hostnames = inventory.get_hostnames()
+            else:
                 if not inventory.get_host(hostname):
                     _host_not_found(hostname)
 
             if parsed_args.predeploy:
                 # run pre-deploy checks
                 verbose_level = self.app.options.verbose_level
-                job = CLIENT.async_host_precheck(hostname, verbose_level)
+                job = CLIENT.async_host_precheck(hostnames, verbose_level)
                 status = job.wait()
                 if verbose_level > 2:
                     LOG.info('\n\n' + 80 * '=')
@@ -216,10 +228,6 @@ class HostCheck(Command):
             else:
                 # run ssh checks
                 all_ok = True
-                hostnames = [hostname]
-                if hostname == 'all':
-                    inventory = Inventory.load()
-                    hostnames = inventory.get_hostnames()
                 summary = inventory.ssh_check_hosts(hostnames)
                 for hostname, info in summary.items():
                     status = 'success'

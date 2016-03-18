@@ -42,25 +42,23 @@ class AsyncApi(object):
         ansible_job = actions.upgrade(verbose_level)
         return Job(ansible_job)
 
-    def async_host_destroy(self, hostname, destroy_type, verbose_level=1,
+    def async_host_destroy(self, hostnames, destroy_type, verbose_level=1,
                            include_data=False):
         """Destroy Hosts.
 
-        Stops and removes all kolla related docker containers on either the
-        specified host or all hosts if hostname is "all".
+        Stops and removes all kolla related docker containers on the
+        specified hosts.
         """
-        ansible_job = actions.destroy_hosts(hostname, destroy_type,
+        ansible_job = actions.destroy_hosts(hostnames, destroy_type,
                                             verbose_level, include_data)
         return Job(ansible_job)
 
-    def async_host_precheck(self, hostname, verbose_level=1):
-        """Check pre-deployment configuration of host(s).
+    def async_host_precheck(self, hostnames, verbose_level=1):
+        """Check pre-deployment configuration of hosts.
 
         Check if host is ready for a new deployment. This will fail if
-        the host is not configured correctly or if it has already been
-        deployed to.
-
-        If hostname is "all", then check all hosts.
+        any of the hosts are not configured correctly or if they have
+        already been deployed to.
         """
-        ansible_job = actions.precheck(hostname, verbose_level)
+        ansible_job = actions.precheck(hostnames, verbose_level)
         return Job(ansible_job)

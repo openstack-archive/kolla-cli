@@ -29,14 +29,13 @@ from kollacli.exceptions import CommandError
 LOG = logging.getLogger(__name__)
 
 
-def destroy_hosts(hostname, destroy_type, verbose_level=1, include_data=False):
-    '''destroy containers on a host (or all hosts).
+def destroy_hosts(hostnames, destroy_type,
+                  verbose_level=1, include_data=False):
+    '''destroy containers on a set of hosts.
 
-    If hostname == 'all', then containers on all hosts will be
-    stopped. Otherwise, the containers on the specified host
-    will be stopped.
-
-    The destroy type can either be 'stop' or 'kill'.
+    The containers on the specified hosts will be stopped
+    or killed. That will be determined by the destroy_type,
+    which can either be 'stop' or 'kill'.
     '''
     if destroy_type not in ['stop', 'kill']:
         raise CommandError(
@@ -58,9 +57,12 @@ def destroy_hosts(hostname, destroy_type, verbose_level=1, include_data=False):
     playbook = AnsiblePlaybook()
     playbook.playbook_path = os.path.join(kollacli_home,
                                           'ansible/' + playbook_name)
-    playbook.extra_vars = 'hosts=' + hostname + \
-                          ' prefix=' + container_prefix + \
+
+    # 'hosts' is defined as 'all' in the playbook yml code, but inventory
+    # filtering will subset that down to the hosts in playbook.hosts.
+    playbook.extra_vars = 'prefix=' + container_prefix + \
                           ' destroy_type=' + destroy_type
+    playbook.hosts = hostnames
     if verbose_level <= 1:
         playbook.print_output = False
     playbook.verbose_level = verbose_level
@@ -87,18 +89,18 @@ def deploy(hostnames=[], groupnames=[], servicenames=[],
     return job
 
 
-def precheck(hostname, verbose_level=1):
-    '''run check playbooks on a host (or all hosts).
-
-    If hostname == 'all', then checks will be run on all hosts,
-    otherwise the check will only be run on the specified host.
-    '''
+def precheck(hostnames, verbose_level=1):
+    '''run check playbooks on a set of hosts'''
     playbook_name = 'prechecks.yml'
     kolla_home = get_kolla_home()
     playbook = AnsiblePlaybook()
     playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/' + playbook_name)
-    playbook.extra_vars = 'hosts=' + hostname
+
+    # define 'hosts' to be all, but inventory filtering will subset
+    # that down to the hosts in playbook.hosts.
+    playbook.extra_vars = 'hosts=all'
+    playbook.hosts = hostnames
     playbook.print_output = True
     playbook.verbose_level = verbose_level
     job = playbook.run()
