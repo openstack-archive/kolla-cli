@@ -22,7 +22,6 @@ from kollacli.common.inventory import Inventory
 from kollacli.common.utils import change_property
 from kollacli.common.utils import get_group_vars_dir
 from kollacli.common.utils import get_host_vars_dir
-from kollacli.common.utils import get_kolla_etc
 from kollacli.common.utils import get_kolla_home
 from kollacli.common.utils import sync_read_file
 from kollacli.exceptions import CommandError
@@ -30,7 +29,7 @@ from kollacli.exceptions import CommandError
 LOG = logging.getLogger(__name__)
 
 ALLVARS_PATH = 'ansible/group_vars/all.yml'
-GLOBALS_FILENAME = 'globals.yml'
+GLOBALS_PATH = 'ansible/group_vars/__GLOBAL__'
 ANSIBLE_ROLES_PATH = 'ansible/roles'
 ANSIBLE_DEFAULTS_PATH = 'defaults/main.yml'
 
@@ -41,26 +40,27 @@ class AnsibleProperties(object):
                  load_hosts=True):
         """initialize ansible property information
 
-        property information is pulled from the following files:
-        KOLLA_ETC/globals.yml
-        KOLLA_ETC/passwords.yml
-        KOLLA_HOME/group_vars/all.yml
+        property information is pulled from the following files
+        (from lowest to highest priority):
         KOLLA_HOME/ansible/roles/<service>/default/main.yml
+        KOLLA_HOME/ansible/group_vars/all.yml
+        KOLLA_HOME/ansible/group_vars/__GLOBAL__
+        KOLLA_HOME/ansible/group_vars/*
+        KOLLA_HOME/ansible/host_vars/*
+        KOLLA_ETC/passwords.yml
         """
         self.globals_path = ''
         self.global_props = []
         self.unique_global_props = {}
+        self.unique_override_flags = {}
         self.group_props = {}
         self.host_props = {}
 
-        if load_globals:
-            self._load_properties_roles()
-            self._load_properties_all()
-            self._load_properties_global()
-        if load_hosts:
-            self._load_properties_hostvars()
-        if load_groups:
-            self._load_properties_groupvars()
+        self._load_properties_roles()
+        self._load_properties_all()
+        self._load_properties_global()
+        self._load_properties_hostvars()
+        self._load_properties_groupvars()
 
     def _load_properties_roles(self):
         start_dir = os.path.join(get_kolla_home(), ANSIBLE_ROLES_PATH)
@@ -95,20 +95,26 @@ class AnsibleProperties(object):
                 self.unique_global_props[key] = ansible_prop
 
     def _load_properties_global(self):
-        self.globals_path = os.path.join(get_kolla_etc(), GLOBALS_FILENAME)
+        self.globals_path = os.path.join(get_kolla_home(), GLOBALS_PATH)
         globals_data = sync_read_file(self.globals_path)
         globals_contents = yaml.safe_load(globals_data)
+        if not globals_contents:
+            return
         for key, value in globals_contents.items():
             overrides = False
+            override_flags = OverrideFlags()
             orig_value = None
             if key in self.unique_global_props:
                 overrides = True
+                override_flags.ovr_global = True
                 orig_value = self.unique_global_props[key].value
             ansible_prop = AnsibleProperty(key, value,
-                                           GLOBALS_FILENAME,
+                                           'group_vars/__GLOBAL',
                                            overrides, orig_value)
+            ansible_prop.override_flags = override_flags
             self.global_props.append(ansible_prop)
             self.unique_global_props[key] = ansible_prop
+            self.unique_override_flags[key] = override_flags
 
     def _load_properties_hostvars(self):
         host_dir = get_host_vars_dir()
@@ -121,9 +127,14 @@ class AnsibleProperties(object):
                 props = []
                 for key, value in host_contents.items():
                     overrides = False
+                    override_flags = OverrideFlags()
+                    if key in self.unique_override_flags:
+                        override_flags = self.unique_override_flags[key]
                     orig_value = None
                     if key in self.unique_global_props:
                         overrides = True
+                        override_flags.ovr_host = True
+                        self.unique_override_flags[key] = override_flags
                         orig_value = self.unique_global_props[key].value
                     ansible_prop = AnsibleProperty(key, value,
                                                    hostfile,
@@ -138,6 +149,9 @@ class AnsibleProperties(object):
             if (groupfile == 'all.yml'):
                 continue
             self.group_props[groupfile] = []
+            # don't load __GLOBAL__ as a group property list as it is globals
+            if groupfile == '__GLOBAL__':
+                continue
             with open(os.path.join(group_dir, groupfile)) as group_data:
                 group_contents = yaml.safe_load(group_data)
                 if group_contents is None:
@@ -145,9 +159,14 @@ class AnsibleProperties(object):
                 props = []
                 for key, value in group_contents.items():
                     overrides = False
+                    override_flags = OverrideFlags()
+                    if key in self.unique_override_flags:
+                        override_flags = self.unique_override_flags[key]
                     orig_value = None
                     if key in self.unique_global_props:
                         overrides = True
+                        override_flags.ovr_group = True
+                        self.unique_override_flags[key] = override_flags
                         orig_value = self.unique_global_props[key].value
                     ansible_prop = AnsibleProperty(key, value,
                                                    groupfile,
@@ -209,6 +228,9 @@ class AnsibleProperties(object):
         for _, value in self.unique_global_props.items():
             unique_list.append(value)
         return sorted(unique_list, key=lambda x: x.name)
+
+    def get_all_override_flags(self):
+        return self.unique_override_flags
 
     # TODO(bmace) -- if this isn't used for 2.1.x it should be removed
     # property listing is still being tweaked so leaving for
@@ -339,3 +361,11 @@ class AnsibleProperty(object):
         self.overrides = overrides
         self.orig_value = orig_value
         self.target = target
+
+
+class OverrideFlags(object):
+
+    def __init__(self):
+        self.ovr_global = False
+        self.ovr_group = False
+        self.ovr_host = False

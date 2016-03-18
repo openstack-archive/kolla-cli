@@ -107,6 +107,8 @@ DEFAULT_OVERRIDES = {
 # these groups cannot be deleted, they are required by kolla
 PROTECTED_GROUPS = [COMPUTE_GRP_NAME]
 
+LOG = logging.getLogger(__name__)
+
 
 def remove_temp_inventory(path):
     """remove temp inventory file and its parent directory"""
@@ -120,7 +122,6 @@ def remove_temp_inventory(path):
 
 class Host(object):
     class_version = 1
-    log = logging.getLogger(__name__)
 
     def __init__(self, hostname):
         self.name = hostname
@@ -267,8 +268,6 @@ class SubService(object):
 
 class Inventory(object):
     class_version = 2
-
-    log = logging.getLogger(__name__)
 
     """class version history
 
@@ -493,11 +492,11 @@ class Inventory(object):
                 u._('Not all hosts were set up. : {reasons}')
                 .format(reasons=summary))
         else:
-            self.log.info(u._LI('All hosts were successfully set up.'))
+            LOG.info(u._LI('All hosts were successfully set up.'))
 
     def setup_host(self, hostname, password, uname=None):
         try:
-            self.log.info(
+            LOG.info(
                 u._LI('Starting setup of host ({host}).')
                 .format(host=hostname))
             ssh_setup_host(hostname, password, uname)
@@ -505,8 +504,8 @@ class Inventory(object):
             if not check_ok:
                 raise Exception(u._('Post-setup ssh check failed. {err}')
                                 .format(err=msg))
-            self.log.info(u._LI('Host ({host}) setup succeeded.')
-                          .format(host=hostname))
+            LOG.info(u._LI('Host ({host}) setup succeeded.')
+                     .format(host=hostname))
         except Exception as e:
             raise CommandError(
                 u._('Host ({host}) setup failed : {error}')
@@ -587,7 +586,7 @@ class Inventory(object):
             subservice.remove_groupname(groupname)
 
         group_vars = os.path.join(get_group_vars_dir(), groupname)
-        if os.path.exists(group_vars):
+        if os.path.exists(group_vars) and groupname != '__GLOBAL__':
             os.remove(group_vars)
 
         if groupname in self._groups:
@@ -833,7 +832,7 @@ class Inventory(object):
 
         # temporarily create group containing all hosts. this is needed for
         # ansible commands that are performed on hosts not yet in groups.
-        group = self.add_group('__RESERVED__')
+        group = self.add_group('__GLOBAL__')
         jdict[group.name] = {}
         jdict[group.name]['hosts'] = deploy_hostnames
         jdict[group.name]['vars'] = group.get_vars()

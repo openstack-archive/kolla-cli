@@ -47,7 +47,6 @@ def dump():
         kolla_docs = os.path.join(kolla_home, 'docs')
         kolla_etc = get_kolla_etc()
         kolla_config = os.path.join(kolla_etc, 'config')
-        kolla_globals = os.path.join(kolla_etc, 'globals.yml')
         kollacli_etc = get_kollacli_etc().rstrip('/')
         ketc = 'kolla/etc/'
         kshare = 'kolla/share/'
@@ -66,8 +65,6 @@ def dump():
             # file is accessible by the kolla user only (not kolla group)
             tar.add(kolla_config,
                     arcname=ketc + os.path.basename(kolla_config))
-            tar.add(kolla_globals,
-                    arcname=ketc + os.path.basename(kolla_globals))
             tar.add(kollacli_etc,
                     arcname=ketc + os.path.basename(kollacli_etc))
 

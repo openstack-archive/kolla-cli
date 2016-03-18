@@ -59,6 +59,7 @@ class HostAdd(Command):
                         'individual host.'))
 
             CLIENT.host_add(hostname)
+
         except CommandError as e:
             raise e
         except Exception as e:
@@ -129,6 +130,7 @@ class HostRemove(Command):
             hostname = convert_to_unicode(hostname)
 
             CLIENT.host_remove(hostname)
+
         except CommandError as e:
             raise e
         except Exception as e:

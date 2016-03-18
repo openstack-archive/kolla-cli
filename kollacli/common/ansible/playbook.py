@@ -32,7 +32,6 @@ LOG = logging.getLogger(__name__)
 class AnsiblePlaybook(object):
     playbook_path = ''
     extra_vars = ''
-    include_globals = True
     include_passwords = True
     flush_cache = True
     print_output = True
@@ -55,6 +54,7 @@ class AnsiblePlaybook(object):
                              self.print_output, inventory_path)
             job.run()
             return job
+
         except Exception:
             raise Exception(traceback.format_exc())
 
@@ -69,9 +69,6 @@ class AnsiblePlaybook(object):
         cmd = '/usr/bin/sudo -u %s %s %s' % (admin_user, ansible_cmd, flag)
 
         cmd += ' -i %s' % inventory_path
-
-        if self.include_globals:
-            cmd += ' %s' % self._get_globals_path()
 
         if self.include_passwords:
             cmd += ' %s' % self._get_password_path()
@@ -135,10 +132,6 @@ class AnsiblePlaybook(object):
         self.deploy_id = deploy_id.split('kolla_')[1]
 
         return inventory_path
-
-    def _get_globals_path(self):
-        kolla_etc = get_kolla_etc()
-        return ('-e @' + os.path.join(kolla_etc, 'globals.yml '))
 
     def _get_password_path(self):
         kolla_etc = get_kolla_etc()

@@ -20,7 +20,6 @@ import unittest
 
 from kollacli.common.utils import get_group_vars_dir
 from kollacli.common.utils import get_host_vars_dir
-from kollacli.common.utils import get_kolla_etc
 from kollacli.common.utils import get_kolla_home
 
 from kollacli.common.inventory import Inventory
@@ -29,7 +28,7 @@ from kollacli.common.inventory import Inventory
 class TestFunctional(KollaCliTest):
 
     def test_properties(self):
-        # test globals.yml properties
+        # test global properties
         self._properties_test()
 
         # test single group vars
@@ -61,6 +60,37 @@ class TestFunctional(KollaCliTest):
 
         # test all host vars
         self._properties_test(hosts=['all'])
+
+        # test property override output
+        ovr_key = 'enable_haproxy'
+        ovr_value = 'no'
+
+        # clear property values before test
+        self.run_cli_cmd('property clear %s' % ovr_key)
+        self.run_cli_cmd('property clear %s --host=all' % ovr_key)
+        self.run_cli_cmd('property clear %s --group=all' % ovr_key)
+
+        # global property override test
+        self.run_cli_cmd('property set %s %s' % (ovr_key, ovr_value))
+        json_str = self.run_cli_cmd('property list -f json')
+        msg = self._override_test(json_str, ovr_key, ovr_value, '*--')
+        self.assertEqual(msg, '', 'override check failed: %s' % msg)
+
+        # host property override test
+        self.run_cli_cmd('property set %s %s --host=%s' %
+                         (ovr_key, ovr_value, host))
+        json_str = self.run_cli_cmd('property list -f json --host=%s' % host)
+        msg = self._override_test(json_str, ovr_key,
+                                  ovr_value, '*-H', host=host)
+        self.assertEqual(msg, '', 'host override check failed: %s' % msg)
+
+        # group property override test
+        self.run_cli_cmd('property set %s %s --group=%s' %
+                         (ovr_key, ovr_value, group))
+        json_str = self.run_cli_cmd('property list -f json --group=%s' % group)
+        msg = self._override_test(json_str, ovr_key,
+                                  ovr_value, '*GH', group=group)
+        self.assertEqual(msg, '', 'group override check failed: %s' % msg)
 
         # check that group_var files are deleted
         # when groups are deleted
@@ -115,7 +145,8 @@ class TestFunctional(KollaCliTest):
             sizes[path] = [os.path.getsize(path)]
         if not switch:
             self.run_cli_cmd('property clear %s' % key)
-            path = os.path.join(get_kolla_etc(), 'globals.yml')
+            path = os.path.join(get_kolla_home(),
+                                'ansible/group_vars/__GLOBAL__')
             sizes[path] = [os.path.getsize(path)]
 
         # test append
@@ -180,7 +211,7 @@ class TestFunctional(KollaCliTest):
                         prop['Property Value'] == value):
                     ok = True
             if not ok:
-                error_msg = '%s:%s is missing in globals.yml'
+                error_msg = '%s:%s is missing in __GLOBAL__'
         else:
             target_map = {}
             for target in targets:
@@ -216,6 +247,33 @@ class TestFunctional(KollaCliTest):
                     break
         return bad_path
 
+    def _override_test(self, json_str, key, value, ovr_string,
+                       host=None, group=None):
+        error_msg = ''
+        props = json.loads(json_str.strip())
+        for prop in props:
+            if group is not None:
+                if prop['Group'] == group:
+                    error_msg = self._check_override_value(prop, key,
+                                                           value, ovr_string)
+            elif host is not None:
+                if prop['Host'] == host:
+                    error_msg = self._check_override_value(prop, key,
+                                                           value, ovr_string)
+            else:
+                error_msg = self._check_override_value(prop, key,
+                                                       value, ovr_string)
+        return error_msg
+
+    def _check_override_value(self, prop, key, value, ovr_string):
+        error_msg = ''
+        if(prop['Property Name'] == key and
+           prop['Property Value'] == value and
+           prop['OVR'] != ovr_string):
+            error_msg = ('override value mismatch for '
+                         'key:%s value:%s ovr:%s target:%s' %
+                         (key, value, prop['OVR'], ovr_string))
+        return error_msg
 
 if __name__ == '__main__':
     unittest.main()
