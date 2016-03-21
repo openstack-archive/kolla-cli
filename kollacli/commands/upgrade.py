@@ -19,7 +19,7 @@ from cliff.command import Command
 import kollacli.i18n as u
 
 from kollacli.api.client import ClientApi
-from kollacli.exceptions import CommandError
+from kollacli.commands.exceptions import CommandError
 
 
 CLIENT = ClientApi()

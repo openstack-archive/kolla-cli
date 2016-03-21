@@ -22,7 +22,7 @@ import sys
 
 import kollacli.i18n as u
 
-from kollacli.exceptions import CommandError
+from kollacli.api.exceptions import InvalidArgument
 
 LOG = logging.getLogger(__name__)
 
@@ -69,7 +69,7 @@ def get_kolla_log_file_size():
     try:
         size = int(size_str)
     except Exception:
-        raise CommandError(
+        raise InvalidArgument(
             u._('Environmental variable ({env_var}) is not an '
                 'integer ({log_size}).')
             .format(env_var=envvar, log_size=size_str))
@@ -82,7 +82,7 @@ def get_property_list_length():
     try:
         length = int(length_str)
     except Exception:
-        raise CommandError(
+        raise InvalidArgument(
             u._('Environmental variable ({env_var}) is not an '
                 'integer ({prop_length}).')
             .format(env_var=envvar, prop_length=length_str))
@@ -133,6 +133,8 @@ def convert_to_unicode(the_string):
     This is used to fixup extended ascii chars in strings. these chars cause
     errors in json pickle/unpickle.
     """
+    if the_string is None:
+        return the_string
     return six.u(the_string)
 
 
@@ -265,15 +267,32 @@ def sync_write_file(path, data, mode='w'):
         raise e
 
 
-def safe_decode(text):
-    """Convert bytes or string to unicode string"""
-    if text is not None:
+def safe_decode(obj_to_decode):
+    """Convert bytes or string to unicode string
+
+    Convert either a string or list of strings to
+    unicode.
+    """
+    if obj_to_decode is None:
+        return None
+
+    new_obj = None
+    if isinstance(obj_to_decode, list):
+        new_obj = []
+        for text in obj_to_decode:
+            try:
+                text = text.decode('utf-8')
+            except AttributeError:   # nosec
+                # py3 will raise if text is already a string
+                pass
+            new_obj.append(text)
+    else:
         try:
-            text = text.decode('utf-8')
+            new_obj = obj_to_decode.decode('utf-8')
         except AttributeError:   # nosec
             # py3 will raise if text is already a string
-            pass
-    return text
+            new_obj = obj_to_decode
+    return new_obj
 
 
 def is_string_true(string):

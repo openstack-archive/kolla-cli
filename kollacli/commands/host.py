@@ -21,23 +21,14 @@ import yaml
 import kollacli.i18n as u
 
 from kollacli.api.client import ClientApi
-# TODO(snoyes): remove inventory reference from CLI
-from kollacli.common.inventory import Inventory
-from kollacli.common.utils import convert_to_unicode
-from kollacli.common.utils import get_setup_user
-from kollacli.exceptions import CommandError
+from kollacli.api.exceptions import ClientException
+from kollacli.commands.exceptions import CommandError
 
 from cliff.command import Command
 from cliff.lister import Lister
 
 LOG = logging.getLogger(__name__)
 CLIENT = ClientApi()
-
-
-def _host_not_found(hostname):
-    raise CommandError(
-        u._('Host ({host}) not found. Please add it with "host add".')
-        .format(host=hostname))
 
 
 class HostAdd(Command):
@@ -52,17 +43,10 @@ class HostAdd(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            hostname = convert_to_unicode(hostname)
+            CLIENT.host_add([hostname])
 
-            if hostname.lower() == 'all':
-                raise CommandError(
-                    u._('Special host name "all" cannot be added as an '
-                        'individual host.'))
-
-            CLIENT.host_add(hostname)
-
-        except CommandError as e:
-            raise e
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -86,17 +70,11 @@ class HostDestroy(Command):
 
     def take_action(self, parsed_args):
         try:
-            hostname = ''
             hostname = parsed_args.hostname.strip()
-            hostname = convert_to_unicode(hostname)
 
-            inventory = Inventory.load()
             hostnames = [hostname]
             if hostname == 'all':
-                hostnames = inventory.get_hostnames()
-            else:
-                if not inventory.get_host(hostname):
-                    _host_not_found(hostname)
+                hostnames = CLIENT.host_get_all()
 
             destroy_type = 'kill'
             if parsed_args.stop:
@@ -118,8 +96,8 @@ class HostDestroy(Command):
                 raise CommandError(u._('Job failed:\n{msg}')
                                    .format(msg=job.get_error_message()))
 
-        except CommandError as e:
-            raise e
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -129,19 +107,20 @@ class HostRemove(Command):
 
     def get_parser(self, prog_name):
         parser = super(HostRemove, self).get_parser(prog_name)
-        parser.add_argument('hostname', metavar='<hostname>',
-                            help=u._('Host name'))
+        parser.add_argument('hostname', metavar='<hostname | all>',
+                            help=u._('Host name or "all"'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            hostname = convert_to_unicode(hostname)
+            hostnames = [hostname]
+            if hostname == 'all':
+                hostnames = CLIENT.host_get_all()
+            CLIENT.host_remove(hostnames)
 
-            CLIENT.host_remove(hostname)
-
-        except CommandError as e:
-            raise e
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -163,28 +142,19 @@ class HostList(Lister):
             hostname = None
             if parsed_args.hostname:
                 hostname = parsed_args.hostname.strip()
-                hostname = convert_to_unicode(hostname)
 
-            inventory = Inventory.load()
-
-            if hostname:
-                host = inventory.get_host(hostname)
-                if not host:
-                    _host_not_found(hostname)
-
+            host_groups = CLIENT.host_get_groups(hostname)
             data = []
-            host_groups = inventory.get_host_groups()
             if host_groups:
-                if hostname:
-                    data.append((hostname, host_groups[hostname]))
-                else:
-                    for (hostname, groupnames) in host_groups.items():
-                        data.append((hostname, groupnames))
+                for (hostname, groupnames) in host_groups.items():
+                    data.append((hostname, groupnames))
             else:
                 data.append(('', ''))
+
             return ((u._('Host'), u._('Groups')), sorted(data))
-        except CommandError as e:
-            raise e
+
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -194,7 +164,7 @@ class HostCheck(Command):
 
     def get_parser(self, prog_name):
         parser = super(HostCheck, self).get_parser(prog_name)
-        parser.add_argument('hostname', metavar='<hostname>',
+        parser.add_argument('hostname', metavar='<hostname | all>',
                             help=u._('Host name or "all"'))
         parser.add_argument('--predeploy', action='store_true',
                             help=u._('Run pre-deploy host checks.'))
@@ -203,14 +173,9 @@ class HostCheck(Command):
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            hostname = convert_to_unicode(hostname)
-            inventory = Inventory.load()
             hostnames = [hostname]
             if hostname == 'all':
-                hostnames = inventory.get_hostnames()
-            else:
-                if not inventory.get_host(hostname):
-                    _host_not_found(hostname)
+                hostnames = CLIENT.host_get_all()
 
             if parsed_args.predeploy:
                 # run pre-deploy checks
@@ -224,24 +189,23 @@ class HostCheck(Command):
                 if status != 0:
                     raise CommandError(u._('Job failed:\n{msg}')
                                        .format(msg=job.get_error_message()))
-
             else:
-                # run ssh checks
+                summary = CLIENT.host_check_ssh(hostnames)
                 all_ok = True
-                summary = inventory.ssh_check_hosts(hostnames)
                 for hostname, info in summary.items():
-                    status = 'success'
+                    status = u._('success')
                     msg = ''
                     if not info['success']:
-                        status = 'failed- '
+                        status = u._('failed- ')
                         msg = info['msg']
                         all_ok = False
-                    LOG.info('Host (%s): %s %s' % (hostname, status, msg))
+                    LOG.info(u._('Host {host}: {sts} {msg}')
+                             .format(host=hostname, sts=status, msg=msg))
 
                 if not all_ok:
-                    raise CommandError('Host check failed.')
-        except CommandError as e:
-            raise e
+                    raise CommandError(u._('Host check failed.'))
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -268,21 +232,16 @@ class HostSetup(Command):
                 raise CommandError(
                     u._('Host name and hosts info file path '
                         'cannot both be present.'))
-            inventory = Inventory.load()
 
             if parsed_args.file:
                 # multi-host setup via xml file
                 hosts_data = self.get_yml_data(parsed_args.file.strip())
-                inventory.setup_hosts(hosts_data)
+                CLIENT.host_setup_hosts(hosts_data)
             else:
                 # single host setup
                 hostname = parsed_args.hostname.strip()
-                hostname = convert_to_unicode(hostname)
-                if not inventory.get_host(hostname):
-                    _host_not_found(hostname)
-
-                check_ok, _ = inventory.ssh_check_host(hostname)
-                if check_ok:
+                summary = CLIENT.host_check_ssh([hostname])
+                if summary[hostname]['success']:
                     LOG.info(
                         u._LI('Skipping setup of host ({host}) as '
                               'ssh check is ok.').format(host=hostname))
@@ -291,15 +250,13 @@ class HostSetup(Command):
                 if parsed_args.insecure:
                     password = parsed_args.insecure.strip()
                 else:
-                    setup_user = get_setup_user()
                     password = getpass.getpass(
-                        u._('{user} password for {host}: ')
-                        .format(user=setup_user, host=hostname))
-                password = convert_to_unicode(password)
-                inventory.setup_host(hostname, password)
+                        u._('kolla password for {host}: ')
+                        .format(host=hostname))
+                CLIENT.host_setup(hostname, password)
 
-        except CommandError as e:
-            raise e
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 

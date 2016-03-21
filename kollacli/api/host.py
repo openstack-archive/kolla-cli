@@ -13,26 +13,92 @@
 #    under the License.
 import logging
 
+from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import safe_decode
 
 LOG = logging.getLogger(__name__)
 
 
 class HostApi(object):
 
-    def host_add(self, hostname):
+    def host_add(self, hostnames):
+        """add hosts to the inventory"""
+        if not hostnames:
+            raise MissingArgument('host names')
+        hostnames = safe_decode(hostnames)
+
         inventory = Inventory.load()
-        inventory.add_host(hostname)
+        for hostname in hostnames:
+            inventory.add_host(hostname)
         Inventory.save(inventory)
 
-    def host_remove(self, hostname):
-        # TODO(bmace) - need to do a lot of validity
-        # / null checking in these api calls
+    def host_remove(self, hostnames):
+        """remove hosts from the inventory"""
         inventory = Inventory.load()
 
-        if hostname.lower() == 'all':
-            inventory.remove_all_hosts()
-        else:
+        if not hostnames:
+                raise MissingArgument('host name')
+
+        hostnames = safe_decode(hostnames)
+        for hostname in hostnames:
             inventory.remove_host(hostname)
 
         Inventory.save(inventory)
+
+    def host_get_all(self):
+        """get all hosts in the inventory"""
+        # TODO(snoyes) - need to make a host object
+        inventory = Inventory.load()
+        hostnames = inventory.get_hostnames()
+        return hostnames
+
+    def host_get_groups(self, hostname=None):
+        """get groups for hosts
+
+        Return:
+        - if hostname, {hostname: [groups]}
+        - else, {hostname: [groups], hostname: [groups]...}
+        """
+        inventory = Inventory.load()
+        host_groups = inventory.get_host_groups()
+        if hostname:
+            hostname = safe_decode(hostname)
+            inventory.validate_hostnames([hostname])
+            groupnames = host_groups[hostname]
+            host_groups = {hostname: groupnames}
+        return host_groups
+
+    def host_check_ssh(self, hostnames):
+        """ssh check for hosts
+
+        return {hostname: {'success': True|False,
+                           'msg': message}}
+        """
+        inventory = Inventory.load()
+        hostnames = safe_decode(hostnames)
+        inventory.validate_hostnames(hostnames)
+        summary = inventory.ssh_check_hosts(hostnames)
+        return summary
+
+    def host_setup_hosts(self, hosts_info):
+        """setup multiple hosts
+
+        hosts_info is a dict of format:
+        {'hostname1': {
+            'password': password
+            'uname': user_name
+            }
+        }
+        The uname entry is optional.
+        """
+        inventory = Inventory.load()
+        inventory.validate_hostnames(hosts_info.keys())
+        inventory.setup_hosts(hosts_info)
+
+    def host_setup(self, hostname, password):
+        # TODO(snoyes) move to host object
+        inventory = Inventory.load()
+        hostname = safe_decode(hostname)
+        inventory.validate_hostnames([hostname])
+        inventory.setup_host(hostname, password)

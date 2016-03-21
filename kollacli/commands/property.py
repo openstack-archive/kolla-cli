@@ -15,9 +15,9 @@ import traceback
 
 import kollacli.i18n as u
 
+from kollacli.commands.exceptions import CommandError
 from kollacli.common import properties
 from kollacli.common import utils
-from kollacli.exceptions import CommandError
 
 from cliff.command import Command
 from cliff.lister import Lister

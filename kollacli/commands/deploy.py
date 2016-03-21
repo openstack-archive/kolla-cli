@@ -17,8 +17,8 @@ import traceback
 import kollacli.i18n as u
 
 from kollacli.api.client import ClientApi
+from kollacli.commands.exceptions import CommandError
 from kollacli.common.utils import convert_to_unicode
-from kollacli.exceptions import CommandError
 
 from cliff.command import Command
 

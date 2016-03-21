@@ -21,6 +21,12 @@ import uuid
 
 import kollacli.i18n as u
 
+from kollacli.api.exceptions import FailedOperation
+from kollacli.api.exceptions import HostError
+from kollacli.api.exceptions import InvalidArgument
+from kollacli.api.exceptions import InvalidConfiguration
+from kollacli.api.exceptions import MissingArgument
+from kollacli.api.exceptions import NotInInventory
 from kollacli.common.sshutils import ssh_setup_host
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
@@ -30,8 +36,6 @@ from kollacli.common.utils import get_kollacli_etc
 from kollacli.common.utils import run_cmd
 from kollacli.common.utils import sync_read_file
 from kollacli.common.utils import sync_write_file
-
-from kollacli.exceptions import CommandError
 
 ANSIBLE_SSH_USER = 'ansible_ssh_user'
 ANSIBLE_CONNECTION = 'ansible_connection'
@@ -336,7 +340,7 @@ class Inventory(object):
             else:
                 inventory = Inventory()
         except Exception:
-            raise CommandError(
+            raise FailedOperation(
                 u._('Loading inventory failed. : {error}')
                 .format(error=traceback.format_exc()))
         return inventory
@@ -353,7 +357,7 @@ class Inventory(object):
             sync_write_file(inventory_path, pretty_data)
 
         except Exception as e:
-            raise CommandError(
+            raise FailedOperation(
                 u._('Saving inventory failed. : {error}')
                 .format(error=str(e)))
 
@@ -397,17 +401,14 @@ class Inventory(object):
         if group name is not none, add host to group
         """
         if groupname and groupname not in self._groups:
-            raise CommandError(
-                u._('Group name ({group}) does not exist.')
-                .format(group=groupname))
+            raise NotInInventory(u._('Group'), groupname)
 
         if groupname and hostname not in self._hosts:
-            raise CommandError(
-                u._('Host name ({host}) does not exist.')
-                .format(host=hostname))
+            # if a groupname is specified, the host must already exist
+            raise NotInInventory(u._('Host'), hostname)
 
         if not groupname and not self.remote_mode and len(self._hosts) >= 1:
-            raise CommandError(
+            raise InvalidConfiguration(
                 u._('Cannot have more than one host when in local deploy '
                     'mode.'))
 
@@ -436,9 +437,7 @@ class Inventory(object):
         if group name is not none, remove host from group
         """
         if groupname and groupname not in self._groups:
-            raise CommandError(
-                u._('Group name ({group}) does not exist.')
-                .format(group=groupname))
+            raise NotInInventory(u._('Group'), groupname)
 
         if hostname not in self._hosts:
             return
@@ -488,7 +487,7 @@ class Inventory(object):
             summary = '\n'
             for hostname, err in failed_hosts.items():
                 summary = summary + '- %s: %s\n' % (hostname, err)
-            raise CommandError(
+            raise HostError(
                 u._('Not all hosts were set up. : {reasons}')
                 .format(reasons=summary))
         else:
@@ -507,7 +506,7 @@ class Inventory(object):
             LOG.info(u._LI('Host ({host}) setup succeeded.')
                      .format(host=hostname))
         except Exception as e:
-            raise CommandError(
+            raise HostError(
                 u._('Host ({host}) setup failed : {error}')
                 .format(host=hostname, error=str(e)))
         return True
@@ -559,7 +558,7 @@ class Inventory(object):
 
         # Group names cannot overlap with service names:
         if groupname in self._services or groupname in self._sub_services:
-            raise CommandError(
+            raise InvalidArgument(
                 u._('Invalid group name. A service name '
                     'cannot be used for a group name.'))
 
@@ -574,7 +573,7 @@ class Inventory(object):
 
     def remove_group(self, groupname):
         if groupname in PROTECTED_GROUPS:
-            raise CommandError(
+            raise InvalidArgument(
                 u._('Cannot remove {group} group. It is required by kolla.')
                 .format(group=groupname))
 
@@ -617,7 +616,7 @@ class Inventory(object):
         return groups
 
     def get_host_groups(self):
-        """return { hostname : groupnames }"""
+        """return { hostname : [groupnames] }"""
 
         host_groups = {}
         for host in self._hosts.values():
@@ -676,8 +675,7 @@ class Inventory(object):
 
     def add_group_to_service(self, groupname, servicename):
         if groupname not in self._groups:
-            raise CommandError(u._('Group ({group}) not found.')
-                               .format(group=groupname))
+            raise NotInInventory(u._('Group'), groupname)
         if servicename in self._services:
             service = self.get_service(servicename)
             service.add_groupname(groupname)
@@ -685,13 +683,11 @@ class Inventory(object):
                 sub_service = self.get_sub_service(servicename)
                 sub_service.add_groupname(groupname)
         else:
-            raise CommandError(u._('Service ({service})) not found.')
-                               .format(service=servicename))
+            raise NotInInventory(u._('Service'), servicename)
 
     def remove_group_from_service(self, groupname, servicename):
         if groupname not in self._groups:
-            raise CommandError(u._('Group ({group}) not found.')
-                               .format(group=groupname))
+            raise NotInInventory(u._('Group'), groupname)
         if servicename in self._services:
             service = self.get_service(servicename)
             service.remove_groupname(groupname)
@@ -699,8 +695,7 @@ class Inventory(object):
                 sub_service = self.get_sub_service(servicename)
                 sub_service.remove_groupname(groupname)
         else:
-            raise CommandError(u._('Service ({service})) not found.')
-                               .format(service=servicename))
+            raise NotInInventory(u._('Service'), servicename)
 
     def create_sub_service(self, sub_servicename):
         if sub_servicename not in self._sub_services:
@@ -750,7 +745,7 @@ class Inventory(object):
 
     def set_deploy_mode(self, remote_flag):
         if not remote_flag and len(self._hosts) > 1:
-            raise CommandError(
+            raise InvalidConfiguration(
                 u._('Cannot set local deploy mode when multiple hosts exist.'))
         self.remote_mode = remote_flag
 
@@ -887,3 +882,13 @@ class Inventory(object):
 
     def remove_json_gen_file(self, path):
         remove_temp_inventory(path)
+
+    def validate_hostnames(self, hostnames):
+        if not hostnames:
+            raise MissingArgument(u._('host name(s)'))
+        invalid_hosts = []
+        for hostname in hostnames:
+            if hostname not in self._hosts:
+                invalid_hosts.append(hostname)
+        if invalid_hosts:
+            raise NotInInventory(u._('Host'), invalid_hosts)

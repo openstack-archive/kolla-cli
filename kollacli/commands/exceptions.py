@@ -16,6 +16,9 @@ import kollacli.i18n as u
 
 
 class CommandError(Exception):
+    """CLI command error"""
     def __init__(self, message, *args):
-        message = u._('ERROR: {message}').format(message=message)
+        prefix = u._('ERROR: ')
+        if not message.startswith(prefix):
+            message = prefix + message
         super(CommandError, self).__init__(message, *args)

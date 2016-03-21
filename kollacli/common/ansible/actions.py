@@ -16,6 +16,9 @@ import os
 
 import kollacli.i18n as u
 
+from kollacli.api.exceptions import InvalidArgument
+from kollacli.api.exceptions import InvalidConfiguration
+from kollacli.api.exceptions import NotInInventory
 from kollacli.common.ansible.playbook import AnsiblePlaybook
 from kollacli.common.inventory import Inventory
 from kollacli.common import properties
@@ -24,7 +27,6 @@ from kollacli.common.utils import get_kolla_etc
 from kollacli.common.utils import get_kolla_home
 from kollacli.common.utils import get_kollacli_home
 from kollacli.common.utils import is_string_true
-from kollacli.exceptions import CommandError
 
 LOG = logging.getLogger(__name__)
 
@@ -37,11 +39,6 @@ def destroy_hosts(hostnames, destroy_type,
     or killed. That will be determined by the destroy_type,
     which can either be 'stop' or 'kill'.
     '''
-    if destroy_type not in ['stop', 'kill']:
-        raise CommandError(
-            u._('Invalid destroy type ({type}). Must be either '
-                '"stop" or "kill".').format(type=destroy_type))
-
     playbook_name = 'host_destroy_no_data.yml'
     if include_data:
         playbook_name = 'host_destroy.yml'
@@ -125,7 +122,7 @@ def _run_deploy_rules(playbook):
 
     # cannot have both groups and hosts
     if playbook.hosts and playbook.groups:
-        raise CommandError(
+        raise InvalidArgument(
             u._('Hosts and Groups arguments cannot '
                 'both be present at the same time.'))
 
@@ -134,8 +131,7 @@ def _run_deploy_rules(playbook):
         for service in playbook.services:
             valid_service = inventory.get_service(service)
             if not valid_service:
-                raise CommandError(u._('Service ({srvc}) not found.')
-                                   .format(srvc=service))
+                raise NotInInventory(u._('Service'), service)
 
     # check that every group with enabled services
     # has hosts associated to it
@@ -160,7 +156,7 @@ def _run_deploy_rules(playbook):
                     failed_groups.append(groupname)
 
         if len(failed_groups) > 0:
-            raise CommandError(
+            raise InvalidConfiguration(
                 u._('Deploy failed. '
                     'Groups: {groups} with enabled '
                     'services : {services} '
@@ -184,4 +180,4 @@ def _run_deploy_rules(playbook):
                     'not yet been set up. Please see the '
                     'documentation for swift configuration '
                     'instructions.')
-                raise CommandError(msg)
+                raise InvalidConfiguration(msg)

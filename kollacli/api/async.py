@@ -13,8 +13,13 @@
 #    under the License.
 import logging
 
+import kollacli.i18n as u
+
+from kollacli.api.exceptions import InvalidArgument
 from kollacli.api.job import Job
 from kollacli.common.ansible import actions
+from kollacli.common.inventory import Inventory
+from kollacli.common.utils import safe_decode
 
 LOG = logging.getLogger(__name__)
 
@@ -49,6 +54,15 @@ class AsyncApi(object):
         Stops and removes all kolla related docker containers on the
         specified hosts.
         """
+        if destroy_type not in ['stop', 'kill']:
+            raise InvalidArgument(
+                u._('Invalid destroy type ({type}). Must be either '
+                    '"stop" or "kill".').format(type=destroy_type))
+
+        hostnames = safe_decode(hostnames)
+        inventory = Inventory.load()
+        inventory.validate_hostnames(hostnames)
+
         ansible_job = actions.destroy_hosts(hostnames, destroy_type,
                                             verbose_level, include_data)
         return Job(ansible_job)
@@ -60,5 +74,9 @@ class AsyncApi(object):
         any of the hosts are not configured correctly or if they have
         already been deployed to.
         """
+        hostnames = safe_decode(hostnames)
+        inventory = Inventory.load()
+        inventory.validate_hostnames(hostnames)
+
         ansible_job = actions.precheck(hostnames, verbose_level)
         return Job(ansible_job)

@@ -15,8 +15,8 @@ import os
 
 import kollacli.i18n as u
 
+from kollacli.api.exceptions import FailedOperation
 from kollacli.common import utils
-from kollacli.exceptions import CommandError
 
 PWDS_FILENAME = 'passwords.yml'
 PWD_EDITOR_FILENAME = 'passwd_editor.py'
@@ -31,7 +31,7 @@ def set_password(pwd_key, pwd_value):
     cmd = '%s -k %s -v %s' % (_get_cmd_prefix(), pwd_key, pwd_value)
     err_msg, output = utils.run_cmd(cmd, print_output=False)
     if err_msg:
-        raise CommandError(
+        raise FailedOperation(
             u._('Password set failed. {error} {message}')
             .format(error=err_msg, message=output))
 
@@ -44,7 +44,7 @@ def clear_password(pwd_key):
     cmd = '%s -k %s -c' % (_get_cmd_prefix(), pwd_key)
     err_msg, output = utils.run_cmd(cmd, print_output=False)
     if err_msg:
-        raise CommandError('%s %s' % (err_msg, output))
+        raise FailedOperation('%s %s' % (err_msg, output))
 
 
 def get_password_names():
@@ -52,7 +52,7 @@ def get_password_names():
     cmd = '%s -l' % (_get_cmd_prefix())
     err_msg, output = utils.run_cmd(cmd, print_output=False)
     if err_msg:
-        raise CommandError('%s %s' % (err_msg, output))
+        raise FailedOperation('%s %s' % (err_msg, output))
 
     pwd_names = []
     if output and ',' in output:

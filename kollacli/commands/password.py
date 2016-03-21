@@ -20,10 +20,10 @@ import kollacli.i18n as u
 from cliff.command import Command
 from cliff.lister import Lister
 
+from kollacli.commands.exceptions import CommandError
 from kollacli.common.passwords import clear_password
 from kollacli.common.passwords import get_password_names
 from kollacli.common.passwords import set_password
-from kollacli.exceptions import CommandError
 
 
 class PasswordSet(Command):

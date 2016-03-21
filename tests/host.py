@@ -159,7 +159,8 @@ class TestFunctional(KollaCliTest):
 
         # no hostname and no file spec
         msg = self.run_cli_cmd('host setup', True)
-        self.assertIn('ERROR', msg, 'No command params did not error')
+        self.assertIn('ERROR', msg,
+                      'Setup with no command params did not error')
 
         # hostname and file spec both present
         msg = self.run_cli_cmd('host setup -f zzzzz hostname', True)

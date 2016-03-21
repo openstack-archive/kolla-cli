@@ -18,13 +18,13 @@ import yaml
 
 import kollacli.i18n as u
 
+from kollacli.api.exceptions import NotInInventory
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import change_property
 from kollacli.common.utils import get_group_vars_dir
 from kollacli.common.utils import get_host_vars_dir
 from kollacli.common.utils import get_kolla_home
 from kollacli.common.utils import sync_read_file
-from kollacli.exceptions import CommandError
 
 LOG = logging.getLogger(__name__)
 
@@ -185,9 +185,7 @@ class AnsibleProperties(object):
             for host_name in host_list:
                 host = inventory.get_host(host_name)
                 if host is None:
-                    raise CommandError(
-                        u._('Host {host} does not exist.')
-                        .format(host=host_name))
+                    raise NotInInventory(u._('Host'), host_name)
                 if host_name in self.host_props:
                     prop_list += self.host_props[host_name]
         else:
@@ -204,9 +202,7 @@ class AnsibleProperties(object):
             for group_name in group_list:
                 group = inventory.get_group(group_name)
                 if group is None:
-                    raise CommandError(
-                        u._('Group {group} does not exist.')
-                        .format(group=group_name))
+                    raise NotInInventory(u._('Group'), group_name)
                 if group_name in self.group_props:
                     prop_list += self.group_props[group_name]
         else:
@@ -264,9 +260,7 @@ class AnsibleProperties(object):
             for host_name in hosts:
                 host = inventory.get_host(host_name)
                 if host is None:
-                    raise CommandError(
-                        u._('Host {host} does not exist.')
-                        .format(host=host_name))
+                    raise NotInInventory(u._('Host'), host_name)
                 host_list.append(host)
         try:
             for host in host_list:
@@ -286,9 +280,7 @@ class AnsibleProperties(object):
             for group_name in groups:
                 group = inventory.get_group(group_name)
                 if group is None:
-                    raise CommandError(
-                        u._('Group {group} does not exist.')
-                        .format(group=group_name))
+                    raise NotInInventory(u._('Group'), group_name)
                 group_list.append(group)
         try:
             for group in group_list:
@@ -315,9 +307,7 @@ class AnsibleProperties(object):
             for host_name in hosts:
                 host = inventory.get_host(host_name)
                 if host is None:
-                    raise CommandError(
-                        u._('Host {host} does not exist.')
-                        .format(host=host_name))
+                    raise NotInInventory(u._('Host'), host_name)
                 host_list.append(host)
         try:
             for host in host_list:
@@ -337,9 +327,7 @@ class AnsibleProperties(object):
             for group_name in groups:
                 group = inventory.get_group(group_name)
                 if group is None:
-                    raise CommandError(
-                        u._('Group {group} does not exist.')
-                        .format(group=group_name))
+                    raise NotInInventory(u._('Group'), group_name)
                 group_list.append(group)
         try:
             for group in group_list:
