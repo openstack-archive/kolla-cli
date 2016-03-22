@@ -11,8 +11,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
-
 import kollacli.i18n as u
 
 from kollacli.api.exceptions import InvalidArgument
@@ -20,8 +18,6 @@ from kollacli.api.job import Job
 from kollacli.common.ansible import actions
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import safe_decode
-
-LOG = logging.getLogger(__name__)
 
 
 class AsyncApi(object):

@@ -412,17 +412,21 @@ class Inventory(object):
                 u._('Cannot have more than one host when in local deploy '
                     'mode.'))
 
+        changed = False
         # create new host if it doesn't exist
         host = Host(hostname)
         if hostname not in self.get_hostnames():
             # a new host is being added to the inventory
+            changed = True
             self._hosts[hostname] = host
 
         # a host is to be added to an existing group
         elif groupname:
             group = self._groups[groupname]
             if hostname not in group.get_hostnames():
+                changed = True
                 group.add_host(host)
+        return changed
 
     def remove_all_hosts(self):
         """remove all hosts."""
@@ -436,12 +440,14 @@ class Inventory(object):
         if groupname is none, delete host
         if group name is not none, remove host from group
         """
+        changed = False
         if groupname and groupname not in self._groups:
             raise NotInInventory(u._('Group'), groupname)
 
         if hostname not in self._hosts:
-            return
+            return changed
 
+        changed = True
         host = self._hosts[hostname]
         groups = self.get_groups(host)
         for group in groups:
@@ -454,6 +460,7 @@ class Inventory(object):
 
         if not groupname:
             del self._hosts[hostname]
+        return changed
 
     def setup_hosts(self, hosts_info):
         """setup multiple hosts

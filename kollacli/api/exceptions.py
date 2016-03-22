@@ -76,4 +76,4 @@ class MissingArgument(ClientException):
     def __init__(self, argname, *args):
         message = (u._('argument is missing: {name}')
                    .format(name=argname))
-        super(InvalidArgument, self).__init__(message, *args)
+        super(MissingArgument, self).__init__(message, *args)

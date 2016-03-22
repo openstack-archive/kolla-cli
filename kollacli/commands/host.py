@@ -74,7 +74,7 @@ class HostDestroy(Command):
 
             hostnames = [hostname]
             if hostname == 'all':
-                hostnames = CLIENT.host_get_all()
+                hostnames = _get_all_hostnames()
 
             destroy_type = 'kill'
             if parsed_args.stop:
@@ -116,7 +116,7 @@ class HostRemove(Command):
             hostname = parsed_args.hostname.strip()
             hostnames = [hostname]
             if hostname == 'all':
-                hostnames = CLIENT.host_get_all()
+                hostnames = _get_all_hostnames()
             CLIENT.host_remove(hostnames)
 
         except ClientException as e:
@@ -143,11 +143,16 @@ class HostList(Lister):
             if parsed_args.hostname:
                 hostname = parsed_args.hostname.strip()
 
-            host_groups = CLIENT.host_get_groups(hostname)
+            hosts = []
+            if hostname:
+                hosts = CLIENT.host_get([hostname])
+            else:
+                hosts = CLIENT.host_get_all()
+
             data = []
-            if host_groups:
-                for (hostname, groupnames) in host_groups.items():
-                    data.append((hostname, groupnames))
+            if hosts:
+                for host in hosts:
+                    data.append((host.name, host.groupnames))
             else:
                 data.append(('', ''))
 
@@ -175,7 +180,7 @@ class HostCheck(Command):
             hostname = parsed_args.hostname.strip()
             hostnames = [hostname]
             if hostname == 'all':
-                hostnames = CLIENT.host_get_all()
+                hostnames = _get_all_hostnames()
 
             if parsed_args.predeploy:
                 # run pre-deploy checks
@@ -190,7 +195,7 @@ class HostCheck(Command):
                     raise CommandError(u._('Job failed:\n{msg}')
                                        .format(msg=job.get_error_message()))
             else:
-                summary = CLIENT.host_check_ssh(hostnames)
+                summary = CLIENT.host_ssh_check(hostnames)
                 all_ok = True
                 for hostname, info in summary.items():
                     status = u._('success')
@@ -235,12 +240,12 @@ class HostSetup(Command):
 
             if parsed_args.file:
                 # multi-host setup via xml file
-                hosts_data = self.get_yml_data(parsed_args.file.strip())
-                CLIENT.host_setup_hosts(hosts_data)
+                hosts_data = self._get_yml_data(parsed_args.file.strip())
+                CLIENT.host_setup(hosts_data)
             else:
                 # single host setup
                 hostname = parsed_args.hostname.strip()
-                summary = CLIENT.host_check_ssh([hostname])
+                summary = CLIENT.host_ssh_check([hostname])
                 if summary[hostname]['success']:
                     LOG.info(
                         u._LI('Skipping setup of host ({host}) as '
@@ -253,14 +258,14 @@ class HostSetup(Command):
                     password = getpass.getpass(
                         u._('kolla password for {host}: ')
                         .format(host=hostname))
-                CLIENT.host_setup(hostname, password)
+                CLIENT.host_setup({hostname: {'password': password}})
 
         except ClientException as e:
             raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
-    def get_yml_data(self, yml_path):
+    def _get_yml_data(self, yml_path):
         if not os.path.isfile(yml_path):
             raise CommandError(
                 u._('No file exists at {path}. An absolute file path is '
@@ -273,3 +278,11 @@ class HostSetup(Command):
         if not hosts_info:
             raise CommandError(u._('{path} is empty.').format(path=yml_path))
         return hosts_info
+
+
+def _get_all_hostnames():
+    hostnames = []
+    hosts = CLIENT.host_get_all()
+    for host in hosts:
+        hostnames.append(host.name)
+    return hostnames

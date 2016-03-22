@@ -11,69 +11,112 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
-
 from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import safe_decode
 
-LOG = logging.getLogger(__name__)
-
 
 class HostApi(object):
 
+    class Host(object):
+        """Host"""
+        def __init__(self, hostname, groupnames):
+            self.name = hostname
+            self.groupnames = groupnames
+
+        def get_name(self):
+            """Get name
+
+            :return: host name
+            :rtype: string
+            """
+            return self.name
+
+        def get_groupnames(self):
+            """Get names of the groups associated with this host
+
+            :return: group names
+            :rtype: list of strings
+            """
+            return self.groupnames()
+
     def host_add(self, hostnames):
-        """add hosts to the inventory"""
+        """Add hosts to the inventory
+
+        :param hostnames: list of strings
+        """
         if not hostnames:
             raise MissingArgument('host names')
         hostnames = safe_decode(hostnames)
 
         inventory = Inventory.load()
+        any_changed = False
         for hostname in hostnames:
-            inventory.add_host(hostname)
-        Inventory.save(inventory)
+            changed = inventory.add_host(hostname)
+            if changed:
+                any_changed = True
+        if any_changed:
+            Inventory.save(inventory)
 
     def host_remove(self, hostnames):
-        """remove hosts from the inventory"""
+        """Remove hosts from the inventory
+
+        :param hostnames: list of strings
+        """
         inventory = Inventory.load()
 
         if not hostnames:
                 raise MissingArgument('host name')
 
         hostnames = safe_decode(hostnames)
+        any_changed = False
         for hostname in hostnames:
-            inventory.remove_host(hostname)
-
-        Inventory.save(inventory)
+            changed = inventory.remove_host(hostname)
+            if changed:
+                any_changed = True
+        if any_changed:
+            Inventory.save(inventory)
 
     def host_get_all(self):
-        """get all hosts in the inventory"""
-        # TODO(snoyes) - need to make a host object
-        inventory = Inventory.load()
-        hostnames = inventory.get_hostnames()
-        return hostnames
+        """Get all hosts in the inventory
 
-    def host_get_groups(self, hostname=None):
-        """get groups for hosts
-
-        Return:
-        - if hostname, {hostname: [groups]}
-        - else, {hostname: [groups], hostname: [groups]...}
+        :return: Hosts
+        :rtype: Host
         """
         inventory = Inventory.load()
+        hosts = []
         host_groups = inventory.get_host_groups()
-        if hostname:
-            hostname = safe_decode(hostname)
-            inventory.validate_hostnames([hostname])
-            groupnames = host_groups[hostname]
-            host_groups = {hostname: groupnames}
-        return host_groups
+        for hostname, groupnames in host_groups.items():
+            hosts.append(self.Host(hostname, groupnames))
+        return hosts
 
-    def host_check_ssh(self, hostnames):
-        """ssh check for hosts
+    def host_get(self, hostnames):
+        """Get selected hosts in the inventory
 
-        return {hostname: {'success': True|False,
-                           'msg': message}}
+        :param hostnames: list of strings
+        :return: hosts
+        :rtype: Host
+        """
+        inventory = Inventory.load()
+        hosts = []
+        host_groups = inventory.get_host_groups()
+        for hostname in hostnames:
+            hosts.append(self.Host(hostname, host_groups[hostname]))
+        return hosts
+
+    def host_ssh_check(self, hostnames):
+        """Check hosts for ssh connectivity
+
+        Check status is a dictionary of form:
+        - {hostname: {
+              'success':<True|False>,
+              'msg':message_string},
+           ...
+          }
+
+        :param hostnames: list of strings
+        :return: check status
+        :rtype: dictionary
         """
         inventory = Inventory.load()
         hostnames = safe_decode(hostnames)
@@ -81,24 +124,19 @@ class HostApi(object):
         summary = inventory.ssh_check_hosts(hostnames)
         return summary
 
-    def host_setup_hosts(self, hosts_info):
-        """setup multiple hosts
+    def host_setup(self, hosts_info):
+        """Setup multiple hosts for ssh access
 
-        hosts_info is a dict of format:
-        {'hostname1': {
+        hosts_info is a dictionary of form:
+        {hostname': {
             'password': password
-            'uname': user_name
-            }
+            'uname': user_name},
+         ...
         }
         The uname entry is optional.
+
+        :param hosts_info: dictionary
         """
         inventory = Inventory.load()
         inventory.validate_hostnames(hosts_info.keys())
         inventory.setup_hosts(hosts_info)
-
-    def host_setup(self, hostname, password):
-        # TODO(snoyes) move to host object
-        inventory = Inventory.load()
-        hostname = safe_decode(hostname)
-        inventory.validate_hostnames([hostname])
-        inventory.setup_host(hostname, password)
