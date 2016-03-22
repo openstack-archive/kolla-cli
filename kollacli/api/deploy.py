@@ -21,6 +21,15 @@ LOG = logging.getLogger(__name__)
 class DeployApi(object):
 
     def deploy_set_mode(self, remote_mode):
+        """Set deploy mode.            
+
+        Set deploy mode to either local or remote. Local indicates
+        that the openstack deployment will be to the local host.
+        Remote means that the deployment is executed via ssh.
+
+        :param remote_mode: if remote mode is True deployment is done via ssh
+        :type remote_mode: bool
+        """
         inventory = Inventory.load()
         inventory.set_deploy_mode(remote_mode)
         Inventory.save(inventory)
