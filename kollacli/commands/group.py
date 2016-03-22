@@ -15,12 +15,16 @@ import traceback
 
 import kollacli.i18n as u
 
+from kollacli.api.client import ClientApi
+from kollacli.api.exceptions import ClientException
 from kollacli.commands.exceptions import CommandError
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import convert_to_unicode
 
 from cliff.command import Command
 from cliff.lister import Lister
+
+CLIENT = ClientApi()
 
 
 class GroupAdd(Command):
@@ -34,13 +38,10 @@ class GroupAdd(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = convert_to_unicode(groupname)
 
-            inventory = Inventory.load()
-            inventory.add_group(groupname)
-            Inventory.save(inventory)
-        except CommandError as e:
-            raise e
+            CLIENT.group_add(groupname)
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -57,12 +58,10 @@ class GroupRemove(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = convert_to_unicode(groupname)
-            inventory = Inventory.load()
-            inventory.remove_group(groupname)
-            Inventory.save(inventory)
-        except CommandError as e:
-            raise e
+
+            CLIENT.group_remove(groupname)
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 

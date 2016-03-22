@@ -15,6 +15,7 @@ import logging
 
 from kollacli.api.async import AsyncApi
 from kollacli.api.deploy import DeployApi
+from kollacli.api.group import GroupApi
 from kollacli.api.host import HostApi
 
 LOG = logging.getLogger(__name__)
@@ -23,6 +24,7 @@ LOG = logging.getLogger(__name__)
 class ClientApi(
         AsyncApi,
         DeployApi,
+        GroupApi,
         HostApi
         ):
 
