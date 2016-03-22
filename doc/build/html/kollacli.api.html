@@ -1,0 +1,407 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kollacli.api package &mdash; kollacli 1.0.0.dev363 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0.dev363',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="kollacli 1.0.0.dev363 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">kollacli 1.0.0.dev363 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="kollacli-api-package">
+<h1>kollacli.api package<a class="headerlink" href="#kollacli-api-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-kollacli.api.async">
+<span id="kollacli-api-async-module"></span><h2>kollacli.api.async module<a class="headerlink" href="#module-kollacli.api.async" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.api.async.AsyncApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.async.</tt><tt class="descname">AsyncApi</tt><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.api.async.AsyncApi.async_deploy">
+<tt class="descname">async_deploy</tt><big>(</big><em>hostnames=[]</em>, <em>groupnames=[]</em>, <em>servicenames=[]</em>, <em>serial_flag=False</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_deploy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deploy.</p>
+<p>Deploy containers to hosts.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.async.AsyncApi.async_host_destroy">
+<tt class="descname">async_host_destroy</tt><big>(</big><em>hostnames</em>, <em>destroy_type</em>, <em>verbose_level=1</em>, <em>include_data=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_host_destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_host_destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy Hosts.</p>
+<p>Stops and removes all kolla related docker containers on the
+specified hosts.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.async.AsyncApi.async_host_precheck">
+<tt class="descname">async_host_precheck</tt><big>(</big><em>hostnames</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_host_precheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_host_precheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check pre-deployment configuration of hosts.</p>
+<p>Check if host is ready for a new deployment. This will fail if
+any of the hosts are not configured correctly or if they have
+already been deployed to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.async.AsyncApi.async_upgrade">
+<tt class="descname">async_upgrade</tt><big>(</big><em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_upgrade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upgrade.</p>
+<p>Upgrade containers to new version specified by the property
+&#8220;openstack_release.&#8221;</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api.client">
+<span id="kollacli-api-client-module"></span><h2>kollacli.api.client module<a class="headerlink" href="#module-kollacli.api.client" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.api.client.ClientApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.client.</tt><tt class="descname">ClientApi</tt><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.async.AsyncApi" title="kollacli.api.async.AsyncApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.async.AsyncApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.deploy.DeployApi" title="kollacli.api.deploy.DeployApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.deploy.DeployApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.group.GroupApi" title="kollacli.api.group.GroupApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.group.GroupApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.host.HostApi" title="kollacli.api.host.HostApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.host.HostApi</span></tt></a></p>
+<dl class="method">
+<dt id="kollacli.api.client.ClientApi.base_call">
+<tt class="descname">base_call</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.base_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.base_call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api.deploy">
+<span id="kollacli-api-deploy-module"></span><h2>kollacli.api.deploy module<a class="headerlink" href="#module-kollacli.api.deploy" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.api.deploy.DeployApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.deploy.</tt><tt class="descname">DeployApi</tt><a class="reference internal" href="_modules/kollacli/api/deploy.html#DeployApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.deploy.DeployApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.api.deploy.DeployApi.deploy_set_mode">
+<tt class="descname">deploy_set_mode</tt><big>(</big><em>remote_mode</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/deploy.html#DeployApi.deploy_set_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.deploy.DeployApi.deploy_set_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set deploy mode.</p>
+<p>Set deploy mode to either local or remote. Local indicates
+that the openstack deployment will be to the local host.
+Remote means that the deployment is executed via ssh.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>remote_mode</strong> (<em>bool</em>) &#8211; if remote mode is True deployment is done via ssh</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api.exceptions">
+<span id="kollacli-api-exceptions-module"></span><h2>kollacli.api.exceptions module<a class="headerlink" href="#module-kollacli.api.exceptions" title="Permalink to this headline">¶</a></h2>
+<p>Exception definitions.</p>
+<dl class="exception">
+<dt id="kollacli.api.exceptions.ClientException">
+<em class="property">exception </em><tt class="descclassname">kollacli.api.exceptions.</tt><tt class="descname">ClientException</tt><big>(</big><em>message</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/exceptions.html#ClientException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.exceptions.ClientException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>KollaClient Base Class Exception</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="kollacli.api.exceptions.FailedOperation">
+<em class="property">exception </em><tt class="descclassname">kollacli.api.exceptions.</tt><tt class="descname">FailedOperation</tt><big>(</big><em>message</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/exceptions.html#FailedOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.exceptions.FailedOperation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.exceptions.ClientException" title="kollacli.api.exceptions.ClientException"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.exceptions.ClientException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="kollacli.api.exceptions.HostError">
+<em class="property">exception </em><tt class="descclassname">kollacli.api.exceptions.</tt><tt class="descname">HostError</tt><big>(</big><em>message</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/exceptions.html#HostError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.exceptions.HostError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.exceptions.ClientException" title="kollacli.api.exceptions.ClientException"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.exceptions.ClientException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="kollacli.api.exceptions.HostsSshCheckError">
+<em class="property">exception </em><tt class="descclassname">kollacli.api.exceptions.</tt><tt class="descname">HostsSshCheckError</tt><big>(</big><em>hostnames</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/exceptions.html#HostsSshCheckError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.exceptions.HostsSshCheckError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.exceptions.ClientException" title="kollacli.api.exceptions.ClientException"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.exceptions.ClientException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="kollacli.api.exceptions.InvalidArgument">
+<em class="property">exception </em><tt class="descclassname">kollacli.api.exceptions.</tt><tt class="descname">InvalidArgument</tt><big>(</big><em>message</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/exceptions.html#InvalidArgument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.exceptions.InvalidArgument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.exceptions.ClientException" title="kollacli.api.exceptions.ClientException"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.exceptions.ClientException</span></tt></a></p>
+<p>Invalid argument</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="kollacli.api.exceptions.InvalidConfiguration">
+<em class="property">exception </em><tt class="descclassname">kollacli.api.exceptions.</tt><tt class="descname">InvalidConfiguration</tt><big>(</big><em>message</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/exceptions.html#InvalidConfiguration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.exceptions.InvalidConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.exceptions.ClientException" title="kollacli.api.exceptions.ClientException"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.exceptions.ClientException</span></tt></a></p>
+<p>Invalid configuration</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="kollacli.api.exceptions.MissingArgument">
+<em class="property">exception </em><tt class="descclassname">kollacli.api.exceptions.</tt><tt class="descname">MissingArgument</tt><big>(</big><em>argname</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/exceptions.html#MissingArgument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.exceptions.MissingArgument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.exceptions.ClientException" title="kollacli.api.exceptions.ClientException"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.exceptions.ClientException</span></tt></a></p>
+<p>Missing argument</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="kollacli.api.exceptions.NotInInventory">
+<em class="property">exception </em><tt class="descclassname">kollacli.api.exceptions.</tt><tt class="descname">NotInInventory</tt><big>(</big><em>obj_type</em>, <em>obj_names</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/exceptions.html#NotInInventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.exceptions.NotInInventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.exceptions.ClientException" title="kollacli.api.exceptions.ClientException"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.exceptions.ClientException</span></tt></a></p>
+<p>Not in inventory exception</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api.group">
+<span id="kollacli-api-group-module"></span><h2>kollacli.api.group module<a class="headerlink" href="#module-kollacli.api.group" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.api.group.GroupApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.group.</tt><tt class="descname">GroupApi</tt><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.group_add">
+<tt class="descname">group_add</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>add a group to the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>groupname</strong> &#8211; name of the group to add to the inventory</li>
+<li><strong>groupname</strong> &#8211; string</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.group_remove">
+<tt class="descname">group_remove</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove a group from the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>groupname</strong> &#8211; name of the group to remove from the inventory</li>
+<li><strong>groupname</strong> &#8211; string</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api.host">
+<span id="kollacli-api-host-module"></span><h2>kollacli.api.host module<a class="headerlink" href="#module-kollacli.api.host" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.api.host.HostApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.host.</tt><tt class="descname">HostApi</tt><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_add">
+<tt class="descname">host_add</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>add hosts to the inventory</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_check_ssh">
+<tt class="descname">host_check_ssh</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_check_ssh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_check_ssh" title="Permalink to this definition">¶</a></dt>
+<dd><p>ssh check for hosts</p>
+<dl class="docutils">
+<dt>return {hostname: {&#8216;success&#8217;: True|False,</dt>
+<dd>&#8216;msg&#8217;: message}}</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_get_all">
+<tt class="descname">host_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>get all hosts in the inventory</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_get_groups">
+<tt class="descname">host_get_groups</tt><big>(</big><em>hostname=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>get groups for hosts</p>
+<p>Return:
+- if hostname, {hostname: [groups]}
+- else, {hostname: [groups], hostname: [groups]...}</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_remove">
+<tt class="descname">host_remove</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove hosts from the inventory</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_setup">
+<tt class="descname">host_setup</tt><big>(</big><em>hostname</em>, <em>password</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_setup_hosts">
+<tt class="descname">host_setup_hosts</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup_hosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>setup multiple hosts</p>
+<p>hosts_info is a dict of format:
+{&#8216;hostname1&#8217;: {</p>
+<blockquote>
+<div>&#8216;password&#8217;: password
+&#8216;uname&#8217;: user_name
+}</div></blockquote>
+<p>}
+The uname entry is optional.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api.job">
+<span id="kollacli-api-job-module"></span><h2>kollacli.api.job module<a class="headerlink" href="#module-kollacli.api.job" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.api.job.Job">
+<em class="property">class </em><tt class="descclassname">kollacli.api.job.</tt><tt class="descname">Job</tt><big>(</big><em>ansible_job</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.api.job.Job.get_console_output">
+<tt class="descname">get_console_output</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job.get_console_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job.get_console_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>get command output</p>
+<p>get the console output from the job. Returns a string
+containing the console output of the job.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.job.Job.get_error_message">
+<tt class="descname">get_error_message</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job.get_error_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>get error message</p>
+<p>if job failed, this will return a string with the error message.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.job.Job.get_status">
+<tt class="descname">get_status</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job.get_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>get status of job</p>
+<p>Status:
+- None: still running
+- 0: complete/success
+- 1: complete/fail</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.job.Job.wait">
+<tt class="descname">wait</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>wait for job to complete</p>
+<p>return status of job (see get_status() for status values)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-kollacli.api" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">kollacli.api package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.async">kollacli.api.async module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.client">kollacli.api.client module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.deploy">kollacli.api.deploy module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.exceptions">kollacli.api.exceptions module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.group">kollacli.api.group module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.host">kollacli.api.host module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.job">kollacli.api.job module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/kollacli.api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">kollacli 1.0.0.dev363 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Oracle.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
