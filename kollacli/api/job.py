@@ -14,37 +14,38 @@
 
 
 class Job(object):
+    """Job"""
     def __init__(self, ansible_job):
         self._ansible_job = ansible_job
 
     def wait(self):
-        """wait for job to complete
+        """Wait for job to complete
 
-        return status of job (see get_status() for status values)
+        :return: 0 if job succeeded, 1 if job failed
+        :rtype: int
         """
         return self._ansible_job.wait()
 
     def get_status(self):
-        """get status of job
+        """Get status of job
 
-        Status:
-        - None: still running
-        - 0: complete/success
-        - 1: complete/fail
+        :return: None if job still running, 0 if job succeeded, 1 if job failed
+        :rtype: int or None
         """
         return self._ansible_job.get_status()
 
     def get_error_message(self):
-        """get error message
+        """Get error message
 
-        if job failed, this will return a string with the error message.
+        :return: if job failed, this will return the error message.
+        :rtype: string
         """
         return self._ansible_job.get_error_message()
 
     def get_console_output(self):
-        """get command output
+        """Get the console output from the job
 
-        get the console output from the job. Returns a string
-        containing the console output of the job.
+        :return: console output useful for debugging failed jobs.
+        :rtype: string
         """
         return self._ansible_job.get_command_output()

@@ -15,12 +15,16 @@ import traceback
 
 import kollacli.i18n as u
 
+from kollacli.api.client import ClientApi
+from kollacli.api.exceptions import ClientException
 from kollacli.commands.exceptions import CommandError
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import convert_to_unicode
 
 from cliff.command import Command
 from cliff.lister import Lister
+
+CLIENT = ClientApi()
 
 
 class ServiceAddGroup(Command):
@@ -90,25 +94,26 @@ class ServiceListGroups(Lister):
 
     def take_action(self, parsed_args):
         try:
-            inventory = Inventory.load()
-
-            data = []
-            service_groups = inventory.get_service_groups()
-            if service_groups:
-                for (servicename, (groupnames, inherit)) \
-                        in service_groups.items():
-                    inh_str = 'yes'
-                    if inherit is None:
-                        inh_str = '-'
-                    elif inherit is False:
+            data = [('', '')]
+            services = CLIENT.service_get_all()
+            if services:
+                data = []
+                for service in services:
+                    inh_str = '-'
+                    groupnames = sorted(service.get_groupnames())
+                    parentname = service.get_parentname()
+                    if parentname:
+                        # this is a subservice
                         inh_str = 'no'
-                    data.append((servicename, groupnames, inh_str))
-            else:
-                data.append(('', ''))
+                        if not groupnames:
+                            # sub-service is inheriting groups from parent
+                            inh_str = 'yes'
+                            groupnames = ''
+                    data.append((service.name, groupnames, inh_str))
             return ((u._('Service'), u._('Groups'), u._('Inherited')),
                     sorted(data))
-        except CommandError as e:
-            raise e
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -118,17 +123,17 @@ class ServiceList(Lister):
 
     def take_action(self, parsed_args):
         try:
-            inventory = Inventory.load()
-
-            data = []
-            service_subsvcs = inventory.get_service_sub_services()
-            if service_subsvcs:
-                for (servicename, sub_svcname) in service_subsvcs.items():
-                    data.append((servicename, sub_svcname))
-            else:
-                data.append(('', ''))
+            data = [('', '')]
+            services = CLIENT.service_get_all()
+            if services:
+                data = []
+                for service in services:
+                    if not service.get_parentname():
+                        # this is a service, not a subservice
+                        data.append((service.name, service.get_childnames()))
             return ((u._('Service'), u._('Sub-Services')), sorted(data))
-        except CommandError as e:
-            raise e
+
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())

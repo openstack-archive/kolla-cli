@@ -244,7 +244,6 @@ class SubService(object):
     def add_groupname(self, groupname):
         if groupname not in self._groupnames:
             self._groupnames.append(groupname)
-            self._parent_servicename = None
 
     def remove_groupname(self, groupname):
         if groupname in self._groupnames:
@@ -263,7 +262,7 @@ class SubService(object):
         self._parent_servicename = parent_svc_name
         self._groupnames = []
 
-    def get_parent_service_name(self):
+    def get_parent_servicename(self):
         return self._parent_servicename
 
     def get_vars(self):
@@ -271,7 +270,7 @@ class SubService(object):
 
 
 class Inventory(object):
-    class_version = 2
+    class_version = 3
 
     """class version history
 
@@ -309,6 +308,16 @@ class Inventory(object):
                 sub_svc = self.create_sub_service(sub_svc_name)
                 sub_svc.set_parent_servicename(svc_name)
                 svc.add_sub_servicename(sub_svc_name)
+
+        if self.version <= 2:
+            # upgrade from inventory v2
+
+            # some sub-services may be missing their parent associations.
+            # they are now needed in v3.
+            for svc in self.get_services():
+                for sub_svcname in svc.get_subservicenames():
+                    sub_svc = self.get_sub_service(sub_svcname)
+                    sub_svc.set_parent_servicename(svc.name)
 
         # update the version and save upgraded inventory file
         self.version = self.__class__.class_version
@@ -734,22 +743,6 @@ class Inventory(object):
             svc_sub_svcs[service.name].extend(service.get_sub_servicenames())
         return svc_sub_svcs
 
-    def get_service_groups(self):
-        """get services and their groups
-
-        return { servicename: ([groupnames], inherit=True/False/None) }
-        """
-        svc_groups = {}
-        for svc in self.get_services():
-            svc_groups[svc.name] = (svc.get_groupnames(), None)
-        for sub_svc in self.get_sub_services():
-            parent_svcname = sub_svc.get_parent_service_name()
-            if parent_svcname:
-                svc_groups[sub_svc.name] = ('', True)
-            else:
-                svc_groups[sub_svc.name] = (sub_svc.get_groupnames(), False)
-        return svc_groups
-
     def set_deploy_mode(self, remote_flag):
         if not remote_flag and len(self._hosts) > 1:
             raise InvalidConfiguration(
@@ -830,7 +823,7 @@ class Inventory(object):
             else:
                 # sub-service is associated with parent service
                 jdict[sub_svc.name]['children'] = \
-                    [sub_svc.get_parent_service_name()]
+                    [sub_svc.get_parent_servicename()]
 
         # temporarily create group containing all hosts. this is needed for
         # ansible commands that are performed on hosts not yet in groups.

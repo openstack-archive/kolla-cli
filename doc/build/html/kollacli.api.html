@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api package &mdash; kollacli 1.0.0.dev363 documentation</title>
+    <title>kollacli.api package &mdash; kollacli 1.0.0.dev366 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.0.dev363',
+        VERSION:     '1.0.0.dev366',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev363 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 1.0.0.dev366 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev363 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev366 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -95,7 +95,7 @@ already been deployed to.</p>
 <dl class="class">
 <dt id="kollacli.api.client.ClientApi">
 <em class="property">class </em><tt class="descclassname">kollacli.api.client.</tt><tt class="descname">ClientApi</tt><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#kollacli.api.async.AsyncApi" title="kollacli.api.async.AsyncApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.async.AsyncApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.deploy.DeployApi" title="kollacli.api.deploy.DeployApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.deploy.DeployApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.group.GroupApi" title="kollacli.api.group.GroupApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.group.GroupApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.host.HostApi" title="kollacli.api.host.HostApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.host.HostApi</span></tt></a></p>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.async.AsyncApi" title="kollacli.api.async.AsyncApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.async.AsyncApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.deploy.DeployApi" title="kollacli.api.deploy.DeployApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.deploy.DeployApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.group.GroupApi" title="kollacli.api.group.GroupApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.group.GroupApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.host.HostApi" title="kollacli.api.host.HostApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.host.HostApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.password.PasswordApi" title="kollacli.api.password.PasswordApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.password.PasswordApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.service.ServiceApi" title="kollacli.api.service.ServiceApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.service.ServiceApi</span></tt></a></p>
 <dl class="method">
 <dt id="kollacli.api.client.ClientApi.base_call">
 <tt class="descname">base_call</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.base_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.base_call" title="Permalink to this definition">¶</a></dt>
@@ -156,6 +156,7 @@ Remote means that the deployment is executed via ssh.</p>
 <dt id="kollacli.api.exceptions.HostsSshCheckError">
 <em class="property">exception </em><tt class="descclassname">kollacli.api.exceptions.</tt><tt class="descname">HostsSshCheckError</tt><big>(</big><em>hostnames</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/exceptions.html#HostsSshCheckError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.exceptions.HostsSshCheckError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#kollacli.api.exceptions.ClientException" title="kollacli.api.exceptions.ClientException"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.exceptions.ClientException</span></tt></a></p>
+<p>Host failed its ssh check</p>
 </dd></dl>
 
 <dl class="exception">
@@ -238,60 +239,158 @@ Remote means that the deployment is executed via ssh.</p>
 <dt id="kollacli.api.host.HostApi">
 <em class="property">class </em><tt class="descclassname">kollacli.api.host.</tt><tt class="descname">HostApi</tt><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="class">
+<dt id="kollacli.api.host.HostApi.Host">
+<em class="property">class </em><tt class="descname">Host</tt><big>(</big><em>hostname</em>, <em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.Host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.Host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Host</p>
 <dl class="method">
-<dt id="kollacli.api.host.HostApi.host_add">
-<tt class="descname">host_add</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_add" title="Permalink to this definition">¶</a></dt>
-<dd><p>add hosts to the inventory</p>
+<dt id="kollacli.api.host.HostApi.Host.get_groupnames">
+<tt class="descname">get_groupnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.Host.get_groupnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.Host.get_groupnames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get names of the groups associated with this host</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">group names</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of strings</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.host.HostApi.host_check_ssh">
-<tt class="descname">host_check_ssh</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_check_ssh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_check_ssh" title="Permalink to this definition">¶</a></dt>
-<dd><p>ssh check for hosts</p>
-<dl class="docutils">
-<dt>return {hostname: {&#8216;success&#8217;: True|False,</dt>
-<dd>&#8216;msg&#8217;: message}}</dd>
-</dl>
+<dt id="kollacli.api.host.HostApi.Host.get_name">
+<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.Host.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.Host.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">host name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_add">
+<tt class="descclassname">HostApi.</tt><tt class="descname">host_add</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add hosts to the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hostnames</strong> &#8211; list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_get">
+<tt class="descclassname">HostApi.</tt><tt class="descname">host_get</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get selected hosts in the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hostnames</strong> &#8211; list of strings</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">hosts</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Host</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="kollacli.api.host.HostApi.host_get_all">
-<tt class="descname">host_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get_all" title="Permalink to this definition">¶</a></dt>
-<dd><p>get all hosts in the inventory</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kollacli.api.host.HostApi.host_get_groups">
-<tt class="descname">host_get_groups</tt><big>(</big><em>hostname=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get_groups" title="Permalink to this definition">¶</a></dt>
-<dd><p>get groups for hosts</p>
-<p>Return:
-- if hostname, {hostname: [groups]}
-- else, {hostname: [groups], hostname: [groups]...}</p>
+<tt class="descclassname">HostApi.</tt><tt class="descname">host_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all hosts in the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Hosts</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Host</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="kollacli.api.host.HostApi.host_remove">
-<tt class="descname">host_remove</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_remove" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove hosts from the inventory</p>
+<tt class="descclassname">HostApi.</tt><tt class="descname">host_remove</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove hosts from the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hostnames</strong> &#8211; list of strings</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="kollacli.api.host.HostApi.host_setup">
-<tt class="descname">host_setup</tt><big>(</big><em>hostname</em>, <em>password</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.api.host.HostApi.host_setup_hosts">
-<tt class="descname">host_setup_hosts</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup_hosts" title="Permalink to this definition">¶</a></dt>
-<dd><p>setup multiple hosts</p>
-<p>hosts_info is a dict of format:
-{&#8216;hostname1&#8217;: {</p>
+<tt class="descclassname">HostApi.</tt><tt class="descname">host_setup</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup multiple hosts for ssh access</p>
+<p>hosts_info is a dictionary of form:
+{hostname&#8217;: {</p>
 <blockquote>
+<div><blockquote>
 <div>&#8216;password&#8217;: password
-&#8216;uname&#8217;: user_name
-}</div></blockquote>
+&#8216;uname&#8217;: user_name},</div></blockquote>
+<p>...</p>
+</div></blockquote>
 <p>}
 The uname entry is optional.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hosts_info</strong> &#8211; dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.host.HostApi.host_ssh_check">
+<tt class="descclassname">HostApi.</tt><tt class="descname">host_ssh_check</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_ssh_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_ssh_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check hosts for ssh connectivity</p>
+<p>Check status is a dictionary of form:
+- {hostname: {</p>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div>&#8216;success&#8217;:&lt;True|False&gt;,
+&#8216;msg&#8217;:message_string},</div></blockquote>
+<p>...</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hostnames</strong> &#8211; list of strings</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">check status</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -303,36 +402,272 @@ The uname entry is optional.</p>
 <dt id="kollacli.api.job.Job">
 <em class="property">class </em><tt class="descclassname">kollacli.api.job.</tt><tt class="descname">Job</tt><big>(</big><em>ansible_job</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Job</p>
 <dl class="method">
 <dt id="kollacli.api.job.Job.get_console_output">
 <tt class="descname">get_console_output</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job.get_console_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job.get_console_output" title="Permalink to this definition">¶</a></dt>
-<dd><p>get command output</p>
-<p>get the console output from the job. Returns a string
-containing the console output of the job.</p>
+<dd><p>Get the console output from the job</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">console output useful for debugging failed jobs.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="kollacli.api.job.Job.get_error_message">
 <tt class="descname">get_error_message</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job.get_error_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job.get_error_message" title="Permalink to this definition">¶</a></dt>
-<dd><p>get error message</p>
-<p>if job failed, this will return a string with the error message.</p>
+<dd><p>Get error message</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">if job failed, this will return the error message.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="kollacli.api.job.Job.get_status">
 <tt class="descname">get_status</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job.get_status" title="Permalink to this definition">¶</a></dt>
-<dd><p>get status of job</p>
-<p>Status:
-- None: still running
-- 0: complete/success
-- 1: complete/fail</p>
+<dd><p>Get status of job</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None if job still running, 0 if job succeeded, 1 if job failed</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int or None</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="kollacli.api.job.Job.wait">
 <tt class="descname">wait</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job.wait" title="Permalink to this definition">¶</a></dt>
-<dd><p>wait for job to complete</p>
-<p>return status of job (see get_status() for status values)</p>
+<dd><p>Wait for job to complete</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">0 if job succeeded, 1 if job failed</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api.password">
+<span id="kollacli-api-password-module"></span><h2>kollacli.api.password module<a class="headerlink" href="#module-kollacli.api.password" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.api.password.PasswordApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.password.</tt><tt class="descname">PasswordApi</tt><a class="reference internal" href="_modules/kollacli/api/password.html#PasswordApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.password.PasswordApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.api.password.PasswordApi.password_clear">
+<tt class="descname">password_clear</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/password.html#PasswordApi.password_clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.password.PasswordApi.password_clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear password</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>string</em>) &#8211; name of the password</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.password.PasswordApi.password_get_names">
+<tt class="descname">password_get_names</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/password.html#PasswordApi.password_get_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.password.PasswordApi.password_get_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get password names</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">password names</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.password.PasswordApi.password_set">
+<tt class="descname">password_set</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/password.html#PasswordApi.password_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.password.PasswordApi.password_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set password</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>string</em>) &#8211; name of the password</li>
+<li><strong>value</strong> (<em>string</em>) &#8211; value of the password</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api.service">
+<span id="kollacli-api-service-module"></span><h2>kollacli.api.service module<a class="headerlink" href="#module-kollacli.api.service" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.api.service.ServiceApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.service.</tt><tt class="descname">ServiceApi</tt><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="class">
+<dt id="kollacli.api.service.ServiceApi.Service">
+<em class="property">class </em><tt class="descname">Service</tt><big>(</big><em>servicename</em>, <em>parentname=None</em>, <em>childnames=[]</em>, <em>groupnames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Service</p>
+<p>A service is one of the services available in openstack-kolla.</p>
+<p>For example, this would be how the murano services would be
+represented:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>murano</dt>
+<dd><ul class="first last simple">
+<li>parentname: None</li>
+<li>childnames: [murano-api, murano-engine]</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>murano-api</dt>
+<dd><ul class="first last simple">
+<li>parentname: murano</li>
+<li>childnames: []</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>murano-engine</dt>
+<dd><ul class="first last simple">
+<li>parentname: murano</li>
+<li>childnames: []</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="method">
+<dt id="kollacli.api.service.ServiceApi.Service.get_childnames">
+<tt class="descname">get_childnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service.get_childnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service.get_childnames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get names of the child services associated with this service</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">child names</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.service.ServiceApi.Service.get_groupnames">
+<tt class="descname">get_groupnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service.get_groupnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service.get_groupnames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get names of the groups associated with this service</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">group names</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.service.ServiceApi.Service.get_name">
+<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">service name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.service.ServiceApi.Service.get_parentname">
+<tt class="descname">get_parentname</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service.get_parentname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service.get_parentname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get name or parent service</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">parent service name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.service.ServiceApi.service_get">
+<tt class="descclassname">ServiceApi.</tt><tt class="descname">service_get</tt><big>(</big><em>servicenames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.service_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.service_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get selected services in the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>servicenames</strong> (<em>list of strings</em>) &#8211; names of services to be read</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">services</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of Service objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.service.ServiceApi.service_get_all">
+<tt class="descclassname">ServiceApi.</tt><tt class="descname">service_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.service_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.service_get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all services in the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">services</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List of Service objects</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -360,6 +695,8 @@ containing the console output of the job.</p>
 <li><a class="reference internal" href="#module-kollacli.api.group">kollacli.api.group module</a></li>
 <li><a class="reference internal" href="#module-kollacli.api.host">kollacli.api.host module</a></li>
 <li><a class="reference internal" href="#module-kollacli.api.job">kollacli.api.job module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.password">kollacli.api.password module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.service">kollacli.api.service module</a></li>
 <li><a class="reference internal" href="#module-kollacli.api">Module contents</a></li>
 </ul>
 </li>
@@ -396,7 +733,7 @@ containing the console output of the job.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev363 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev366 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

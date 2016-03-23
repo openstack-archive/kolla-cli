@@ -20,10 +20,10 @@ import kollacli.i18n as u
 from cliff.command import Command
 from cliff.lister import Lister
 
+from kollacli.api.client import ClientApi
 from kollacli.commands.exceptions import CommandError
-from kollacli.common.passwords import clear_password
-from kollacli.common.passwords import get_password_names
-from kollacli.common.passwords import set_password
+
+CLIENT = ClientApi()
 
 
 class PasswordSet(Command):
@@ -48,7 +48,7 @@ class PasswordSet(Command):
                 if password != passtwo:
                     raise CommandError(u._('Passwords do not match'))
 
-            set_password(password_name, password)
+            CLIENT.password_set(password_name, password)
 
         except Exception:
             raise Exception(traceback.format_exc())
@@ -66,7 +66,7 @@ class PasswordClear(Command):
     def take_action(self, parsed_args):
         try:
             password_name = parsed_args.passwordname.strip()
-            clear_password(password_name)
+            CLIENT.password_clear(password_name)
         except Exception:
             raise Exception(traceback.format_exc())
 
@@ -75,11 +75,14 @@ class PasswordList(Lister):
     """List all password names."""
 
     def take_action(self, parsed_args):
-        password_names = get_password_names()
-        password_names = sorted(password_names)
+        try:
+            password_names = CLIENT.password_get_names()
+            password_names = sorted(password_names)
 
-        data = []
-        for password_name in password_names:
-            data.append((password_name, '-'))
+            data = []
+            for password_name in password_names:
+                data.append((password_name, '-'))
 
-        return ((u._('Password Name'),  u._('Password')), data)
+            return ((u._('Password Name'),  u._('Password')), data)
+        except Exception:
+            raise Exception(traceback.format_exc())

@@ -60,6 +60,22 @@ kollacli.api.job module
     :undoc-members:
     :show-inheritance:
 
+kollacli.api.password module
+----------------------------
+
+.. automodule:: kollacli.api.password
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+kollacli.api.service module
+---------------------------
+
+.. automodule:: kollacli.api.service
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

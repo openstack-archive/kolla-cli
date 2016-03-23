@@ -46,6 +46,7 @@ class HostError(ClientException):
 
 
 class HostsSshCheckError(ClientException):
+    """Host failed its ssh check"""
     def __init__(self, hostnames, *args):
         failed_hosts = ''
         comma = ''
