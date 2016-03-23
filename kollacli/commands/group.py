@@ -123,18 +123,16 @@ class GroupListhosts(Lister):
 
     def take_action(self, parsed_args):
         try:
-            inventory = Inventory.load()
-
-            data = []
-            group_hosts = inventory.get_group_hosts()
-            if group_hosts:
-                for (groupname, hostnames) in group_hosts.items():
-                    data.append((groupname, hostnames))
-            else:
-                data.append(('', ''))
+            data = [('', '')]
+            groups = CLIENT.group_get_all()
+            if groups:
+                data = []
+                for group in groups:
+                    data.append((group.get_name(),
+                                 sorted(group.get_hostnames())))
             return ((u._('Group'), u._('Hosts')), sorted(data))
-        except CommandError as e:
-            raise e
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -197,17 +195,15 @@ class GroupListservices(Lister):
 
     def take_action(self, parsed_args):
         try:
-            inventory = Inventory.load()
-
-            data = []
-            group_services = inventory.get_group_services()
-            if group_services:
-                for (groupname, servicenames) in group_services.items():
-                    data.append((groupname, sorted(servicenames)))
-            else:
-                data.append(('', ''))
+            data = [('', '')]
+            groups = CLIENT.group_get_all()
+            if groups:
+                data = []
+                for group in groups:
+                    data.append((group.get_name(),
+                                 sorted(group.get_servicenames())))
             return ((u._('Group'), u._('Services')), sorted(data))
-        except CommandError as e:
-            raise e
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())

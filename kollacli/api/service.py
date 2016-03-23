@@ -15,6 +15,7 @@ import kollacli.i18n as u
 
 from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import safe_decode
 
 
 class ServiceApi(object):
@@ -94,6 +95,7 @@ class ServiceApi(object):
         """
         if servicenames is None:
             raise(MissingArgument(u._('Service names')))
+        servicenames = safe_decode(servicenames)
         return self._get_services(servicenames)
 
     def _get_services(self, servicenames, get_all=False):
