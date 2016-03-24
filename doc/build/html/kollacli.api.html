@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api package &mdash; kollacli 1.0.0.dev366 documentation</title>
+    <title>kollacli.api package &mdash; kollacli 1.0.0.dev368 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.0.dev366',
+        VERSION:     '1.0.0.dev368',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev366 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 1.0.0.dev368 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev366 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -194,19 +194,159 @@ Remote means that the deployment is executed via ssh.</p>
 <dt id="kollacli.api.group.GroupApi">
 <em class="property">class </em><tt class="descclassname">kollacli.api.group.</tt><tt class="descname">GroupApi</tt><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="class">
+<dt id="kollacli.api.group.GroupApi.Group">
+<em class="property">class </em><tt class="descname">Group</tt><big>(</big><em>groupname</em>, <em>servicenames</em>, <em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <dl class="method">
-<dt id="kollacli.api.group.GroupApi.group_add">
-<tt class="descname">group_add</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_add" title="Permalink to this definition">¶</a></dt>
-<dd><p>add a group to the inventory</p>
+<dt id="kollacli.api.group.GroupApi.Group.add_host">
+<tt class="descname">add_host</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.add_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.add_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add host to group</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>groupname</strong> &#8211; name of the group to add to the inventory</li>
-<li><strong>groupname</strong> &#8211; string</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hostname</strong> (<em>string</em>) &#8211; name of the host to add to the group</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.Group.add_service">
+<tt class="descname">add_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.add_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.add_service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add service to group</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>servicename</strong> (<em>string</em>) &#8211; name of the service to add to the group</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.Group.get_hosts">
+<tt class="descname">get_hosts</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.get_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.get_hosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get names of hosts associated with this group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">host names</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.Group.get_name">
+<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">group name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.Group.get_services">
+<tt class="descname">get_services</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.get_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.get_services" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get names of services associated with this group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">service names</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.Group.remove_host">
+<tt class="descname">remove_host</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.remove_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.remove_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove host from group</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hostname</strong> (<em>string</em>) &#8211; name of the host to remove from the group</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.Group.remove_service">
+<tt class="descname">remove_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.remove_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.remove_service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove service from group</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>servicename</strong> (<em>string</em>) &#8211; name of the service to remove from the group</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.group_add">
+<tt class="descclassname">GroupApi.</tt><tt class="descname">group_add</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a group to the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>groupname</strong> (<em>string</em>) &#8211; name of the group to add to the inventory</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.group_get">
+<tt class="descclassname">GroupApi.</tt><tt class="descname">group_get</tt><big>(</big><em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get selected groups in the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>groupnames</strong> (<em>list of strings</em>) &#8211; names of groups to be read</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">groups</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of Group objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.group.GroupApi.group_get_all">
+<tt class="descclassname">GroupApi.</tt><tt class="descname">group_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all groups in the inventory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">groups</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of Group objects</td>
 </tr>
 </tbody>
 </table>
@@ -214,17 +354,13 @@ Remote means that the deployment is executed via ssh.</p>
 
 <dl class="method">
 <dt id="kollacli.api.group.GroupApi.group_remove">
-<tt class="descname">group_remove</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_remove" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove a group from the inventory</p>
+<tt class="descclassname">GroupApi.</tt><tt class="descname">group_remove</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a group from the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>groupname</strong> &#8211; name of the group to remove from the inventory</li>
-<li><strong>groupname</strong> &#8211; string</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>groupname</strong> (<em>string</em>) &#8211; name of the group to remove from the inventory</td>
 </tr>
 </tbody>
 </table>
@@ -733,7 +869,7 @@ represented:</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev366 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible.job &mdash; kollacli 1.0.0.dev366 documentation</title>
+    <title>kollacli.common.ansible.job &mdash; kollacli 1.0.0.dev368 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.0.dev366',
+        VERSION:     '1.0.0.dev368',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev366 documentation" href="../../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev368 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 1.0.0.dev366 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -60,7 +60,6 @@
 <span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
 <span class="c">#    License for the specific language governing permissions and limitations</span>
 <span class="c">#    under the License.</span>
-
 <span class="kn">import</span> <span class="nn">fcntl</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -68,6 +67,8 @@
 <span class="kn">import</span> <span class="nn">subprocess</span>  <span class="c"># nosec</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
 
 <span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">remove_temp_inventory</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_admin_uids</span>
@@ -225,7 +226,8 @@
         <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">ACTION_TASK_START</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_task_start</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Invalid action [</span><span class="si">%s</span><span class="s">] from callback&#39;</span> <span class="o">%</span> <span class="n">action</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Invalid action [{action}] from callback&#39;</span><span class="p">)</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_format_include_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&#39;included: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">packet</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">]</span>
@@ -360,7 +362,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 1.0.0.dev366 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

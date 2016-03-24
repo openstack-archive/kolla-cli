@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.inventory &mdash; kollacli 1.0.0.dev366 documentation</title>
+    <title>kollacli.common.inventory &mdash; kollacli 1.0.0.dev368 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev366',
+        VERSION:     '1.0.0.dev368',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev366 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev368 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev366 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -934,13 +934,34 @@
 </div>
 <div class="viewcode-block" id="Inventory.validate_hostnames"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.validate_hostnames">[docs]</a>    <span class="k">def</span> <span class="nf">validate_hostnames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">hostnames</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;host name(s)&#39;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host name(s)&#39;</span><span class="p">))</span>
         <span class="n">invalid_hosts</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">hostname</span> <span class="ow">in</span> <span class="n">hostnames</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span><span class="p">:</span>
                 <span class="n">invalid_hosts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">invalid_hosts</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host&#39;</span><span class="p">),</span> <span class="n">invalid_hosts</span><span class="p">)</span></div></div>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host&#39;</span><span class="p">),</span> <span class="n">invalid_hosts</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Inventory.validate_groupnames"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.validate_groupnames">[docs]</a>    <span class="k">def</span> <span class="nf">validate_groupnames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">groupnames</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group name(s)&#39;</span><span class="p">))</span>
+        <span class="n">invalid_groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="n">groupnames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">groupname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
+                <span class="n">invalid_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">invalid_groups</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group&#39;</span><span class="p">),</span> <span class="n">invalid_groups</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Inventory.validate_servicenames"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.validate_servicenames">[docs]</a>    <span class="k">def</span> <span class="nf">validate_servicenames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicenames</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">servicenames</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service name(s)&#39;</span><span class="p">))</span>
+        <span class="n">invalid_services</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="n">servicenames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span> <span class="ow">and</span>
+                    <span class="n">servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">):</span>
+                <span class="n">invalid_services</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">invalid_services</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service&#39;</span><span class="p">),</span> <span class="n">invalid_services</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -974,7 +995,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev366 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
