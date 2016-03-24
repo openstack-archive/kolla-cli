@@ -11,6 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import kollacli.i18n as u
+
 from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import safe_decode
@@ -46,7 +48,7 @@ class HostApi(object):
         :param hostnames: list of strings
         """
         if not hostnames:
-            raise MissingArgument('host names')
+            raise MissingArgument(u._('Host names'))
         hostnames = safe_decode(hostnames)
 
         inventory = Inventory.load()
@@ -66,7 +68,7 @@ class HostApi(object):
         inventory = Inventory.load()
 
         if not hostnames:
-                raise MissingArgument('host name')
+                raise MissingArgument(u._('Host names'))
 
         hostnames = safe_decode(hostnames)
         any_changed = False
@@ -97,7 +99,12 @@ class HostApi(object):
         :return: hosts
         :rtype: Host
         """
+        if hostnames is None:
+            raise MissingArgument(u._('Host names'))
+        hostnames = safe_decode(hostnames)
         inventory = Inventory.load()
+        inventory.validate_hostnames(hostnames)
+
         hosts = []
         host_groups = inventory.get_host_groups()
         for hostname in hostnames:

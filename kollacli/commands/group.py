@@ -18,8 +18,6 @@ import kollacli.i18n as u
 from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import ClientException
 from kollacli.commands.exceptions import CommandError
-from kollacli.common.inventory import Inventory
-from kollacli.common.utils import convert_to_unicode
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -79,14 +77,13 @@ class GroupAddhost(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = convert_to_unicode(groupname)
             hostname = parsed_args.hostname.strip()
-            hostname = convert_to_unicode(hostname)
-            inventory = Inventory.load()
-            inventory.add_host(hostname, groupname)
-            Inventory.save(inventory)
-        except CommandError as e:
-            raise e
+
+            group = CLIENT.group_get([groupname])[0]
+            group.add_host(hostname)
+
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -105,15 +102,13 @@ class GroupRemovehost(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = convert_to_unicode(groupname)
             hostname = parsed_args.hostname.strip()
-            hostname = convert_to_unicode(hostname)
 
-            inventory = Inventory.load()
-            inventory.remove_host(hostname, groupname)
-            Inventory.save(inventory)
-        except CommandError as e:
-            raise e
+            group = CLIENT.group_get([groupname])[0]
+            group.remove_host(hostname)
+
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -129,7 +124,7 @@ class GroupListhosts(Lister):
                 data = []
                 for group in groups:
                     data.append((group.get_name(),
-                                 sorted(group.get_hostnames())))
+                                 sorted(group.get_hosts())))
             return ((u._('Group'), u._('Hosts')), sorted(data))
         except ClientException as e:
             raise CommandError(str(e))
@@ -150,15 +145,13 @@ class GroupAddservice(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = convert_to_unicode(servicename)
 
-            inventory = Inventory.load()
-            inventory.add_group_to_service(groupname, servicename)
-            Inventory.save(inventory)
-        except CommandError as e:
-            raise e
+            group = CLIENT.group_get([groupname])[0]
+            group.add_service(servicename)
+
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -177,15 +170,13 @@ class GroupRemoveservice(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = convert_to_unicode(servicename)
 
-            inventory = Inventory.load()
-            inventory.remove_group_from_service(groupname, servicename)
-            Inventory.save(inventory)
-        except CommandError as e:
-            raise e
+            group = CLIENT.group_get([groupname])[0]
+            group.remove_service(servicename)
+
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -201,7 +192,7 @@ class GroupListservices(Lister):
                 data = []
                 for group in groups:
                     data.append((group.get_name(),
-                                 sorted(group.get_servicenames())))
+                                 sorted(group.get_services())))
             return ((u._('Group'), u._('Services')), sorted(data))
         except ClientException as e:
             raise CommandError(str(e))

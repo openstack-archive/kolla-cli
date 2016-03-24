@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from copy import copy
 import kollacli.i18n as u
 
 from kollacli.api.exceptions import MissingArgument
@@ -23,8 +24,8 @@ class GroupApi(object):
     class Group(object):
         def __init__(self, groupname, servicenames, hostnames):
             self.name = groupname
-            self.servicenames = servicenames
-            self.hostnames = hostnames
+            self._servicenames = servicenames
+            self._hostnames = hostnames
 
         def get_name(self):
             """Get name
@@ -34,21 +35,93 @@ class GroupApi(object):
             """
             return self.name
 
-        def get_servicenames(self):
-            """Get service names associated with this group.
+        def get_services(self):
+            """Get names of services associated with this group.
 
             :return: service names
             :rtype: list of strings
             """
-            return self.servicenames
+            return copy(self._servicenames)
 
-        def get_hostnames(self):
-            """Get host names associated with this group.
+        def add_service(self, servicename):
+            """Add service to group
+
+            :param servicename: name of the service to add to the group
+            :type servicename: string
+
+            """
+            servicename = safe_decode(servicename)
+            inventory = Inventory.load()
+            inventory.validate_servicenames([servicename])
+
+            group_services = inventory.get_group_services()
+            self._servicenames = group_services[self.name]
+            if servicename not in self._servicenames:
+                # service not associated with group, add it
+                inventory.add_group_to_service(self.name, servicename)
+                Inventory.save(inventory)
+
+        def remove_service(self, servicename):
+            """Remove service from group
+
+            :param servicename: name of the service to remove from the group
+            :type servicename: string
+
+            """
+            servicename = safe_decode(servicename)
+            inventory = Inventory.load()
+            inventory.validate_servicenames([servicename])
+
+            group_services = inventory.get_group_services()
+            self._servicenames = group_services[self.name]
+            if servicename in self._servicenames:
+                # service is associated with group, remove it
+                inventory.remove_group_from_service(self.name, servicename)
+                Inventory.save(inventory)
+
+        def get_hosts(self):
+            """Get names of hosts associated with this group.
 
             :return: host names
             :rtype: list of strings
             """
-            return self.hostnames
+            return copy(self._hostnames)
+
+        def add_host(self, hostname):
+            """Add host to group
+
+            :param hostname: name of the host to add to the group
+            :type hostname: string
+
+            """
+            hostname = safe_decode(hostname)
+            inventory = Inventory.load()
+            inventory.validate_hostnames([hostname])
+
+            group = inventory.get_group(self.name)
+            self._hostnames = group.get_hostnames()
+            if hostname not in self._hostnames:
+                # host not associated with group, add it
+                inventory.add_host(hostname, self.name)
+                Inventory.save(inventory)
+
+        def remove_host(self, hostname):
+            """Remove host from group
+
+            :param hostname: name of the host to remove from the group
+            :type hostname: string
+
+            """
+            hostname = safe_decode(hostname)
+            inventory = Inventory.load()
+            inventory.validate_hostnames([hostname])
+
+            group = inventory.get_group(self.name)
+            self._hostnames = group.get_hostnames()
+            if hostname in self._hostnames:
+                # host is associated with group, remove it
+                inventory.remove_host(hostname, self.name)
+                Inventory.save(inventory)
 
     def group_add(self, groupname):
         """Add a group to the inventory
@@ -58,7 +131,7 @@ class GroupApi(object):
 
         """
         if not groupname:
-            raise MissingArgument('Group name')
+            raise MissingArgument(u._('Group name'))
         groupname = safe_decode(groupname)
 
         inventory = Inventory.load()
@@ -73,7 +146,7 @@ class GroupApi(object):
 
         """
         if not groupname:
-            raise MissingArgument('Group name')
+            raise MissingArgument(u._('Group name'))
 
         inventory = Inventory.load()
         groupname = safe_decode(groupname)
@@ -97,13 +170,16 @@ class GroupApi(object):
         :rtype: list of Group objects
         """
         if groupnames is None:
-            raise(MissingArgument(u._('Group names')))
+            raise MissingArgument(u._('Group names'))
         groupnames = safe_decode(groupnames)
         return self._get_groups(groupnames)
 
     def _get_groups(self, groupnames, get_all=False):
         groups = []
         inventory = Inventory.load()
+        if groupnames:
+            inventory.validate_groupnames(groupnames)
+
         group_services = inventory.get_group_services()
         inv_groups = inventory.get_groups()
         for inv_group in inv_groups:

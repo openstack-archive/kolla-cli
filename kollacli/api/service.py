@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from copy import copy
 import kollacli.i18n as u
 
 from kollacli.api.exceptions import MissingArgument
@@ -42,8 +43,8 @@ class ServiceApi(object):
                      childnames=[], groupnames=[]):
             self.name = servicename
             self.parentname = parentname
-            self.childnames = childnames
-            self.groupnames = groupnames
+            self._childnames = childnames
+            self._groupnames = groupnames
 
         def get_name(self):
             """Get name
@@ -67,7 +68,7 @@ class ServiceApi(object):
             :return: child names
             :rtype: list of strings
             """
-            return self.childnames
+            return copy(self._childnames)
 
         def get_groupnames(self):
             """Get names of the groups associated with this service
@@ -75,7 +76,7 @@ class ServiceApi(object):
             :return: group names
             :rtype: list of strings
             """
-            return self.groupnames
+            return copy(self._groupnames)
 
     def service_get_all(self):
         """Get all services in the inventory
@@ -94,13 +95,16 @@ class ServiceApi(object):
         :rtype: list of Service objects
         """
         if servicenames is None:
-            raise(MissingArgument(u._('Service names')))
+            raise MissingArgument(u._('Service names'))
         servicenames = safe_decode(servicenames)
         return self._get_services(servicenames)
 
     def _get_services(self, servicenames, get_all=False):
         services = []
         inventory = Inventory.load()
+        if servicenames:
+            inventory.validate_servicenames(servicenames)
+
         inv_services = inventory.get_services()
         inv_subservices = inventory.get_sub_services()
 

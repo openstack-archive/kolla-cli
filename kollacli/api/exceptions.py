@@ -53,7 +53,7 @@ class HostsSshCheckError(ClientException):
         for hostname in hostnames:
             failed_hosts = ''.join([failed_hosts, comma, hostname])
             comma = ','
-        message = (u._('host(s) ssh check failed: {hosts}')
+        message = (u._('Host(s) ssh check failed: {hosts}')
                    .format(hosts=failed_hosts))
         super(HostsSshCheckError, self).__init__(message, *args)
 
@@ -75,6 +75,6 @@ class FailedOperation(ClientException):
 class MissingArgument(ClientException):
     """Missing argument"""
     def __init__(self, argname, *args):
-        message = (u._('argument is missing: {name}')
+        message = (u._('Argument is missing: {name}')
                    .format(name=argname))
         super(MissingArgument, self).__init__(message, *args)

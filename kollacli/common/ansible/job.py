@@ -11,7 +11,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
 import fcntl
 import json
 import logging
@@ -19,6 +18,8 @@ import os
 import subprocess  # nosec
 import tempfile
 import time
+
+import kollacli.i18n as u
 
 from kollacli.common.inventory import remove_temp_inventory
 from kollacli.common.utils import get_admin_uids
@@ -176,7 +177,8 @@ class AnsibleJob(object):
         elif action == ACTION_TASK_START:
             return self._format_task_start(packet)
         else:
-            raise Exception('Invalid action [%s] from callback' % action)
+            raise Exception(u._('Invalid action [{action}] from callback')
+                            .format(action=action))
 
     def _format_include_file(self, packet):
         return 'included: %s' % packet['filename']

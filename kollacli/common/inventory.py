@@ -885,10 +885,31 @@ class Inventory(object):
 
     def validate_hostnames(self, hostnames):
         if not hostnames:
-            raise MissingArgument(u._('host name(s)'))
+            raise MissingArgument(u._('Host name(s)'))
         invalid_hosts = []
         for hostname in hostnames:
             if hostname not in self._hosts:
                 invalid_hosts.append(hostname)
         if invalid_hosts:
             raise NotInInventory(u._('Host'), invalid_hosts)
+
+    def validate_groupnames(self, groupnames):
+        if not groupnames:
+            raise MissingArgument(u._('Group name(s)'))
+        invalid_groups = []
+        for groupname in groupnames:
+            if groupname not in self._groups:
+                invalid_groups.append(groupname)
+        if invalid_groups:
+            raise NotInInventory(u._('Group'), invalid_groups)
+
+    def validate_servicenames(self, servicenames):
+        if not servicenames:
+            raise MissingArgument(u._('Service name(s)'))
+        invalid_services = []
+        for servicename in servicenames:
+            if (servicename not in self._services and
+                    servicename not in self._sub_services):
+                invalid_services.append(servicename)
+        if invalid_services:
+            raise NotInInventory(u._('Service'), invalid_services)

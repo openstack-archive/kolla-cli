@@ -18,8 +18,6 @@ import kollacli.i18n as u
 from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import ClientException
 from kollacli.commands.exceptions import CommandError
-from kollacli.common.inventory import Inventory
-from kollacli.common.utils import convert_to_unicode
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -45,17 +43,13 @@ class ServiceAddGroup(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = convert_to_unicode(servicename)
 
-            inventory = Inventory.load()
+            group = CLIENT.group_get([groupname])[0]
+            group.add_service(servicename)
 
-            inventory.add_group_to_service(groupname, servicename)
-
-            Inventory.save(inventory)
-        except CommandError as e:
-            raise e
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
@@ -74,17 +68,13 @@ class ServiceRemoveGroup(Command):
     def take_action(self, parsed_args):
         try:
             groupname = parsed_args.groupname.strip()
-            groupname = convert_to_unicode(groupname)
             servicename = parsed_args.servicename.strip()
-            servicename = convert_to_unicode(servicename)
 
-            inventory = Inventory.load()
+            group = CLIENT.group_get([groupname])[0]
+            group.remove_service(servicename)
 
-            inventory.remove_group_from_service(groupname, servicename)
-
-            Inventory.save(inventory)
-        except CommandError as e:
-            raise e
+        except ClientException as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
 
