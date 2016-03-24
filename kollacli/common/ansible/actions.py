@@ -145,13 +145,10 @@ def _run_deploy_rules(playbook):
 
             group_needs_host = False
             if not hosts:
-                for service in servicenames:
-                    # check service enablement
-                    enabled_property = 'enable_' + service.replace('-', '_')
-                    is_enabled = properties.get_property(enabled_property)
-                    if is_string_true(is_enabled):
+                for servicename in servicenames:
+                    if _is_service_enabled(servicename, inventory, properties):
                         group_needs_host = True
-                        failed_services.append(service)
+                        failed_services.append(servicename)
                 if group_needs_host:
                     failed_groups.append(groupname)
 
@@ -180,4 +177,48 @@ def _run_deploy_rules(playbook):
                     'not yet been set up. Please see the '
                     'documentation for swift configuration '
                     'instructions.')
+<<<<<<< HEAD
                 raise InvalidConfiguration(msg)
+=======
+                raise CommandError(msg)
+
+
+def _is_service_enabled(servicename, inventory, properties):
+    service_enabled = False
+    service = None
+
+    sub_service = inventory.get_sub_service(servicename)
+    if sub_service is not None:
+        enabled_property = 'enable_' + servicename.replace('-', '_')
+        is_enabled = properties.get_property(enabled_property)
+        if is_string_true(is_enabled):
+            service_enabled = True
+
+    # Only bother looking at the parent service if the sub service
+    # is enabled.
+    if service_enabled:
+        servicename = sub_service.get_parent_service_name()
+        if servicename is None:
+            servicename = _find_parent_service(sub_service.name, inventory)
+
+        service = inventory.get_service(servicename)
+        if service is not None:
+            enabled_property = 'enable_' + servicename.replace('-', '_')
+            is_enabled = properties.get_property(enabled_property)
+            if is_string_true(is_enabled):
+                service_enabled = True
+            else:
+                service_enabled = False
+
+    return service_enabled
+
+
+def _find_parent_service(servicename, inventory):
+    services = inventory.get_services()
+    for service in services:
+        sub_servicenames = service.get_sub_servicenames()
+        for sub_servicename in sub_servicenames:
+            if sub_servicename == servicename:
+                return service.name
+    return None
+>>>>>>> 82cbb04... Added code to check sub-service parent enablement to determine if a group needs hosts
