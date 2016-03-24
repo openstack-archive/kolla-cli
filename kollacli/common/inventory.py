@@ -260,7 +260,6 @@ class SubService(object):
 
     def set_parent_servicename(self, parent_svc_name):
         self._parent_servicename = parent_svc_name
-        self._groupnames = []
 
     def get_parent_servicename(self):
         return self._parent_servicename
@@ -315,9 +314,10 @@ class Inventory(object):
             # some sub-services may be missing their parent associations.
             # they are now needed in v3.
             for svc in self.get_services():
-                for sub_svcname in svc.get_subservicenames():
+                for sub_svcname in svc.get_sub_servicenames():
                     sub_svc = self.get_sub_service(sub_svcname)
-                    sub_svc.set_parent_servicename(svc.name)
+                    if not sub_svc.get_parent_servicename():
+                        sub_svc.set_parent_servicename(svc.name)
 
         # update the version and save upgraded inventory file
         self.version = self.__class__.class_version
