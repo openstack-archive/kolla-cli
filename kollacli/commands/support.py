@@ -11,9 +11,14 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from kollacli.common.support import dump
-
 from cliff.command import Command
+from kollacli.api.client import ClientApi
+import kollacli.i18n as u
+import logging
+import traceback
+
+LOG = logging.getLogger(__name__)
+CLIENT = ClientApi()
 
 
 class Dump(Command):
@@ -24,4 +29,10 @@ class Dump(Command):
     debugging problems.
     """
     def take_action(self, parsed_args):
-        dump()
+        try:
+            dump_path = CLIENT.support_dump()
+            LOG.info(u._('Dump successful to {path}').format(path=dump_path))
+        except Exception:
+            msg = (u._('Dump failed: {reason}')
+                   .format(reason=traceback.format_exc()))
+            raise Exception(msg)

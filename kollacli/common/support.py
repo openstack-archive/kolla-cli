@@ -17,9 +17,6 @@ import logging
 import os
 import tarfile
 import tempfile
-import traceback
-
-import kollacli.i18n as u
 
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import get_kolla_etc
@@ -38,53 +35,41 @@ def dump():
     tar file so be given to support / development to help with
     debugging problems.
     """
-    try:
-        msg = None
-        return_code = 0
-        kolla_home = get_kolla_home()
-        kolla_logs = get_kolla_log_dir()
-        kolla_ansible = os.path.join(kolla_home, 'ansible')
-        kolla_docs = os.path.join(kolla_home, 'docs')
-        kolla_etc = get_kolla_etc()
-        kolla_config = os.path.join(kolla_etc, 'config')
-        kollacli_etc = get_kollacli_etc().rstrip('/')
-        ketc = 'kolla/etc/'
-        kshare = 'kolla/share/'
-        fd, dump_path = tempfile.mkstemp(prefix='kollacli_dump_',
-                                         suffix='.tgz')
-        os.close(fd)  # avoid fd leak
-        with tarfile.open(dump_path, 'w:gz') as tar:
-            # Can't blanket add kolla_home because the .ssh dir is
-            # accessible by the kolla user only (not kolla group)
-            tar.add(kolla_ansible,
-                    arcname=kshare + os.path.basename(kolla_ansible))
-            tar.add(kolla_docs,
-                    arcname=kshare + os.path.basename(kolla_docs))
+    kolla_home = get_kolla_home()
+    kolla_logs = get_kolla_log_dir()
+    kolla_ansible = os.path.join(kolla_home, 'ansible')
+    kolla_docs = os.path.join(kolla_home, 'docs')
+    kolla_etc = get_kolla_etc()
+    kolla_config = os.path.join(kolla_etc, 'config')
+    kollacli_etc = get_kollacli_etc().rstrip('/')
+    ketc = 'kolla/etc/'
+    kshare = 'kolla/share/'
+    fd, dump_path = tempfile.mkstemp(prefix='kollacli_dump_',
+                                     suffix='.tgz')
+    os.close(fd)  # avoid fd leak
+    with tarfile.open(dump_path, 'w:gz') as tar:
+        # Can't blanket add kolla_home because the .ssh dir is
+        # accessible by the kolla user only (not kolla group)
+        tar.add(kolla_ansible,
+                arcname=kshare + os.path.basename(kolla_ansible))
+        tar.add(kolla_docs,
+                arcname=kshare + os.path.basename(kolla_docs))
 
-            # Can't blanket add kolla_etc because the passwords.yml
-            # file is accessible by the kolla user only (not kolla group)
-            tar.add(kolla_config,
-                    arcname=ketc + os.path.basename(kolla_config))
-            tar.add(kollacli_etc,
-                    arcname=ketc + os.path.basename(kollacli_etc))
+        # Can't blanket add kolla_etc because the passwords.yml
+        # file is accessible by the kolla user only (not kolla group)
+        tar.add(kolla_config,
+                arcname=ketc + os.path.basename(kolla_config))
+        tar.add(kollacli_etc,
+                arcname=ketc + os.path.basename(kollacli_etc))
 
-            # add kolla log files
-            if os.path.isdir(kolla_logs):
-                tar.add(kolla_logs)
+        # add kolla log files
+        if os.path.isdir(kolla_logs):
+            tar.add(kolla_logs)
 
-            # add output of various commands
-            _add_cmd_info(tar)
+        # add output of various commands
+        _add_cmd_info(tar)
 
-        msg = u._LI('dump successful to {path}').format(path=dump_path)
-        LOG.info(msg)
-
-    except Exception:
-        msg = (u._LI('dump failed: {reason}')
-               .format(reason=traceback.format_exc()))
-        LOG.error(msg)
-        return_code = -1
-
-    return return_code, msg
+    return dump_path
 
 
 def _add_cmd_info(tar):

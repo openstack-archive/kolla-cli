@@ -11,28 +11,20 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
-
-from kollacli.api.async import AsyncApi
-from kollacli.api.deploy import DeployApi
-from kollacli.api.group import GroupApi
-from kollacli.api.host import HostApi
-from kollacli.api.password import PasswordApi
-from kollacli.api.service import ServiceApi
-from kollacli.api.support import SupportApi
-
-LOG = logging.getLogger(__name__)
+from kollacli.common.support import dump
 
 
-class ClientApi(
-        AsyncApi,
-        DeployApi,
-        GroupApi,
-        HostApi,
-        PasswordApi,
-        ServiceApi,
-        SupportApi,
-        ):
+class SupportApi(object):
 
-    def base_call(self):
-        LOG.info('base call')
+    def support_dump(self):
+        """Dumps configuration data for debugging.
+
+        Dumps most files in /etc/kolla and /usr/share/kolla into a
+        tar file so be given to support / development to help with
+        debugging problems.
+
+        :return: path to dump file
+        :rtype: string
+        """
+        dumpfile_path = dump()
+        return dumpfile_path
