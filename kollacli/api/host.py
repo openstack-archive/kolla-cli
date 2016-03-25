@@ -11,8 +11,10 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from copy import copy
 import kollacli.i18n as u
 
+from kollacli.api.exceptions import InvalidArgument
 from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import safe_decode
@@ -24,7 +26,7 @@ class HostApi(object):
         """Host"""
         def __init__(self, hostname, groupnames):
             self.name = hostname
-            self.groupnames = groupnames
+            self._groupnames = groupnames
 
         def get_name(self):
             """Get name
@@ -34,13 +36,13 @@ class HostApi(object):
             """
             return self.name
 
-        def get_groupnames(self):
+        def get_groups(self):
             """Get names of the groups associated with this host
 
             :return: group names
             :rtype: list of strings
             """
-            return self.groupnames()
+            return copy(self._groupnames)
 
     def host_add(self, hostnames):
         """Add hosts to the inventory
@@ -101,6 +103,9 @@ class HostApi(object):
         """
         if hostnames is None:
             raise MissingArgument(u._('Host names'))
+        if not isinstance(hostnames, list):
+            raise InvalidArgument(u._('Host names ({names}) is not a list')
+                                  .format(names=hostnames))
         hostnames = safe_decode(hostnames)
         inventory = Inventory.load()
         inventory.validate_hostnames(hostnames)

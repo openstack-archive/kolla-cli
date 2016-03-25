@@ -14,6 +14,7 @@
 from copy import copy
 import kollacli.i18n as u
 
+from kollacli.api.exceptions import InvalidArgument
 from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import safe_decode
@@ -54,15 +55,15 @@ class ServiceApi(object):
             """
             return self.name
 
-        def get_parentname(self):
-            """Get name or parent service
+        def get_parent(self):
+            """Get name of parent service
 
             :return: parent service name
             :rtype: string
             """
             return self.parentname
 
-        def get_childnames(self):
+        def get_children(self):
             """Get names of the child services associated with this service
 
             :return: child names
@@ -70,7 +71,7 @@ class ServiceApi(object):
             """
             return copy(self._childnames)
 
-        def get_groupnames(self):
+        def get_groups(self):
             """Get names of the groups associated with this service
 
             :return: group names
@@ -96,6 +97,9 @@ class ServiceApi(object):
         """
         if servicenames is None:
             raise MissingArgument(u._('Service names'))
+        if not isinstance(servicenames, list):
+            raise InvalidArgument(u._('Service names ({names}) is not a list')
+                                  .format(names=servicenames))
         servicenames = safe_decode(servicenames)
         return self._get_services(servicenames)
 

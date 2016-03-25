@@ -90,8 +90,8 @@ class ServiceListGroups(Lister):
                 data = []
                 for service in services:
                     inh_str = '-'
-                    groupnames = sorted(service.get_groupnames())
-                    parentname = service.get_parentname()
+                    groupnames = sorted(service.get_groups())
+                    parentname = service.get_parent()
                     if parentname:
                         # this is a subservice
                         inh_str = 'no'
@@ -118,9 +118,9 @@ class ServiceList(Lister):
             if services:
                 data = []
                 for service in services:
-                    if not service.get_parentname():
+                    if not service.get_parent():
                         # this is a service, not a subservice
-                        data.append((service.name, service.get_childnames()))
+                        data.append((service.name, service.get_children()))
             return ((u._('Service'), u._('Sub-Services')), sorted(data))
 
         except ClientException as e:

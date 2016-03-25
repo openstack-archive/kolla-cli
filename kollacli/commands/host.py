@@ -152,7 +152,7 @@ class HostList(Lister):
             data = []
             if hosts:
                 for host in hosts:
-                    data.append((host.name, host.groupnames))
+                    data.append((host.name, host.get_groups()))
             else:
                 data.append(('', ''))
 

@@ -14,6 +14,7 @@
 from copy import copy
 import kollacli.i18n as u
 
+from kollacli.api.exceptions import InvalidArgument
 from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
 from kollacli.common.utils import safe_decode
@@ -171,6 +172,9 @@ class GroupApi(object):
         """
         if groupnames is None:
             raise MissingArgument(u._('Group names'))
+        if not isinstance(groupnames, list):
+            raise InvalidArgument(u._('Group names ({names}) is not a list')
+                                  .format(names=groupnames))
         groupnames = safe_decode(groupnames)
         return self._get_groups(groupnames)
 
