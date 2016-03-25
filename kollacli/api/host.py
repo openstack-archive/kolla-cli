@@ -14,9 +14,8 @@
 from copy import copy
 import kollacli.i18n as u
 
-from kollacli.api.exceptions import InvalidArgument
-from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import check_arg
 from kollacli.common.utils import safe_decode
 
 
@@ -49,8 +48,7 @@ class HostApi(object):
 
         :param hostnames: list of strings
         """
-        if not hostnames:
-            raise MissingArgument(u._('Host names'))
+        check_arg(hostnames, u._('Host names'), list)
         hostnames = safe_decode(hostnames)
 
         inventory = Inventory.load()
@@ -67,12 +65,10 @@ class HostApi(object):
 
         :param hostnames: list of strings
         """
-        inventory = Inventory.load()
-
-        if not hostnames:
-                raise MissingArgument(u._('Host names'))
-
+        check_arg(hostnames, u._('Host names'), list)
         hostnames = safe_decode(hostnames)
+
+        inventory = Inventory.load()
         any_changed = False
         for hostname in hostnames:
             changed = inventory.remove_host(hostname)
@@ -101,11 +97,7 @@ class HostApi(object):
         :return: hosts
         :rtype: Host
         """
-        if hostnames is None:
-            raise MissingArgument(u._('Host names'))
-        if not isinstance(hostnames, list):
-            raise InvalidArgument(u._('Host names ({names}) is not a list')
-                                  .format(names=hostnames))
+        check_arg(hostnames, u._('Host names'), list)
         hostnames = safe_decode(hostnames)
         inventory = Inventory.load()
         inventory.validate_hostnames(hostnames)
@@ -130,6 +122,7 @@ class HostApi(object):
         :return: check status
         :rtype: dictionary
         """
+        check_arg(hostnames, u._('Host names'), list)
         inventory = Inventory.load()
         hostnames = safe_decode(hostnames)
         inventory.validate_hostnames(hostnames)
@@ -149,6 +142,7 @@ class HostApi(object):
 
         :param hosts_info: dictionary
         """
+        check_arg(hosts_info, u._('Hosts info'), dict)
         inventory = Inventory.load()
         inventory.validate_hostnames(hosts_info.keys())
         inventory.setup_hosts(hosts_info)

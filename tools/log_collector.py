@@ -20,6 +20,7 @@ import tarfile
 import tempfile
 import traceback
 
+from kollacli.api.client import ClientApi
 from kollacli.common.inventory import Inventory
 from kollacli.common.inventory import remove_temp_inventory
 from kollacli.common import properties
@@ -28,6 +29,8 @@ from kollacli.common.utils import get_ansible_command
 from kollacli.common.utils import safe_decode
 
 tar_file_descr = None
+
+CLIENT = ClientApi()
 
 
 def run_ansible_cmd(cmd, host):
@@ -180,20 +183,15 @@ def main():
     with tarfile.open(tar_path, 'w:gz') as tar_file_descr:
         # gather dump output from kollacli
         print('Getting kollacli logs')
-        # cliff prints log output to stderr
-        (_, err) = subprocess.Popen('kollacli dump'.split(),
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE).communicate()
-        err = safe_decode(err)
-        if '/' in err:
-            dump_path = '/' + err.strip().split('/', 1)[1]
-            if os.path.isfile(dump_path):
-                tar_file_descr.add(dump_path)
+        dump_path = None
+        try:
+            dump_path = CLIENT.support_dump()
+            tar_file_descr.add(dump_path)
+        except Exception:
+            print('ERROR: running dump command %s' % traceback.format_exc())
+        finally:
+            if dump_path and os.path.exists(dump_path):
                 os.remove(dump_path)
-            else:
-                print('ERROR: No kolla dump output file at %s' % dump_path)
-        else:
-            print('ERROR: No path found in dump command output: %s' % err)
 
         # gather logs from selected hosts
         for host in hosts:

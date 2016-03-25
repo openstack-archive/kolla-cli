@@ -95,8 +95,8 @@ class TestFunctional(KollaCliTest):
         hostname = 'test_host_upg'
 
         # This host add will cause the inventory to be upgraded
-        CLIENT.host_add(hostname)
-        CLIENT.host_remove(hostname)
+        CLIENT.host_add([hostname])
+        CLIENT.host_remove([hostname])
 
         # run tests for each version:
         if version <= 1:

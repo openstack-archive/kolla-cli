@@ -13,10 +13,10 @@
 #    under the License.
 import kollacli.i18n as u
 
-from kollacli.api.exceptions import MissingArgument
 from kollacli.common.passwords import clear_password
 from kollacli.common.passwords import get_password_names
 from kollacli.common.passwords import set_password
+from kollacli.common.utils import check_arg
 
 
 class PasswordApi(object):
@@ -29,8 +29,7 @@ class PasswordApi(object):
         :param value: value of the password
         :type value: string
         """
-        if not name:
-            raise(MissingArgument(u._('Password name')))
+        check_arg(name, u._('Password name'), str)
         set_password(name, value)
 
     def password_clear(self, name):
@@ -39,8 +38,7 @@ class PasswordApi(object):
         :param name: name of the password
         :type name: string
         """
-        if not name:
-            raise(MissingArgument(u._('Password name')))
+        check_arg(name, u._('Password name'), str)
         clear_password(name)
 
     def password_get_names(self):

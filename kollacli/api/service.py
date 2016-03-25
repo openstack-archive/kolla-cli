@@ -14,9 +14,8 @@
 from copy import copy
 import kollacli.i18n as u
 
-from kollacli.api.exceptions import InvalidArgument
-from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import check_arg
 from kollacli.common.utils import safe_decode
 
 
@@ -95,11 +94,7 @@ class ServiceApi(object):
         :return: services
         :rtype: list of Service objects
         """
-        if servicenames is None:
-            raise MissingArgument(u._('Service names'))
-        if not isinstance(servicenames, list):
-            raise InvalidArgument(u._('Service names ({names}) is not a list')
-                                  .format(names=servicenames))
+        check_arg(servicenames, u._('Service names'), list)
         servicenames = safe_decode(servicenames)
         return self._get_services(servicenames)
 

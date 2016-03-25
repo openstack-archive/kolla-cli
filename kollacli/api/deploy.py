@@ -13,7 +13,10 @@
 #    under the License.
 import logging
 
+import kollacli.i18n as u
+
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import check_arg
 
 LOG = logging.getLogger(__name__)
 
@@ -30,6 +33,7 @@ class DeployApi(object):
         :param remote_mode: if remote mode is True deployment is done via ssh
         :type remote_mode: bool
         """
+        check_arg(remote_mode, u._('Remote mode'), bool)
         inventory = Inventory.load()
         inventory.set_deploy_mode(remote_mode)
         Inventory.save(inventory)

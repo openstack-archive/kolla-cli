@@ -17,6 +17,7 @@ from kollacli.api.exceptions import InvalidArgument
 from kollacli.api.job import Job
 from kollacli.common.ansible import actions
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import check_arg
 from kollacli.common.utils import safe_decode
 
 
@@ -37,9 +38,13 @@ class AsyncApi(object):
     def async_upgrade(self, verbose_level=1):
         """Upgrade.
 
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
+
         Upgrade containers to new version specified by the property
         "openstack_release."
         """
+        check_arg(verbose_level, u._('Verbose level'), int)
         ansible_job = actions.upgrade(verbose_level)
         return Job(ansible_job)
 
@@ -49,7 +54,20 @@ class AsyncApi(object):
 
         Stops and removes all kolla related docker containers on the
         specified hosts.
+
+        :param hostnames: host names
+        :type hostnames: list
+        :param destroy_type: either 'kill' or 'stop'
+        :type destroy_type: string
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
+        :param include_data: if true, destroy data containers too.
+        :type include_data: boolean
         """
+        check_arg(hostnames, u._('Host names'), list)
+        check_arg(destroy_type, u._('Destroy type'), str)
+        check_arg(verbose_level, u._('Verbose level'), int)
+        check_arg(include_data, u._('Include data'), bool)
         if destroy_type not in ['stop', 'kill']:
             raise InvalidArgument(
                 u._('Invalid destroy type ({type}). Must be either '
@@ -69,7 +87,13 @@ class AsyncApi(object):
         Check if host is ready for a new deployment. This will fail if
         any of the hosts are not configured correctly or if they have
         already been deployed to.
+        :param hostnames: host names
+        :type hostnames: list
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
         """
+        check_arg(hostnames, u._('Host names'), list)
+        check_arg(verbose_level, u._('Verbose level'), int)
         hostnames = safe_decode(hostnames)
         inventory = Inventory.load()
         inventory.validate_hostnames(hostnames)

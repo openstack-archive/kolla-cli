@@ -14,9 +14,8 @@
 from copy import copy
 import kollacli.i18n as u
 
-from kollacli.api.exceptions import InvalidArgument
-from kollacli.api.exceptions import MissingArgument
 from kollacli.common.inventory import Inventory
+from kollacli.common.utils import check_arg
 from kollacli.common.utils import safe_decode
 
 
@@ -51,6 +50,7 @@ class GroupApi(object):
             :type servicename: string
 
             """
+            check_arg(servicename, u._('Service name'), str)
             servicename = safe_decode(servicename)
             inventory = Inventory.load()
             inventory.validate_servicenames([servicename])
@@ -69,6 +69,7 @@ class GroupApi(object):
             :type servicename: string
 
             """
+            check_arg(servicename, u._('Service name'), str)
             servicename = safe_decode(servicename)
             inventory = Inventory.load()
             inventory.validate_servicenames([servicename])
@@ -95,6 +96,7 @@ class GroupApi(object):
             :type hostname: string
 
             """
+            check_arg(hostname, u._('Host name'), str)
             hostname = safe_decode(hostname)
             inventory = Inventory.load()
             inventory.validate_hostnames([hostname])
@@ -113,6 +115,7 @@ class GroupApi(object):
             :type hostname: string
 
             """
+            check_arg(hostname, u._('Host name'), str)
             hostname = safe_decode(hostname)
             inventory = Inventory.load()
             inventory.validate_hostnames([hostname])
@@ -131,8 +134,7 @@ class GroupApi(object):
         :type groupname: string
 
         """
-        if not groupname:
-            raise MissingArgument(u._('Group name'))
+        check_arg(groupname, u._('Group name'), str)
         groupname = safe_decode(groupname)
 
         inventory = Inventory.load()
@@ -146,9 +148,7 @@ class GroupApi(object):
         :type groupname: string
 
         """
-        if not groupname:
-            raise MissingArgument(u._('Group name'))
-
+        check_arg(groupname, u._('Group name'), str)
         inventory = Inventory.load()
         groupname = safe_decode(groupname)
         inventory.remove_group(groupname)
@@ -170,11 +170,7 @@ class GroupApi(object):
         :return: groups
         :rtype: list of Group objects
         """
-        if groupnames is None:
-            raise MissingArgument(u._('Group names'))
-        if not isinstance(groupnames, list):
-            raise InvalidArgument(u._('Group names ({names}) is not a list')
-                                  .format(names=groupnames))
+        check_arg(groupnames, u._('Group names'), list)
         groupnames = safe_decode(groupnames)
         return self._get_groups(groupnames)
 

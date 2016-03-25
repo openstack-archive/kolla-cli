@@ -23,6 +23,7 @@ import sys
 import kollacli.i18n as u
 
 from kollacli.api.exceptions import InvalidArgument
+from kollacli.api.exceptions import MissingArgument
 
 LOG = logging.getLogger(__name__)
 
@@ -302,3 +303,22 @@ def is_string_true(string):
         return True
     else:
         return False
+
+
+def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False):
+    if param is None:
+        if none_ok:
+            return
+        # None arg
+        raise MissingArgument(param_name)
+
+    if (not isinstance(param, bool) and
+            not param and not empty_ok):
+            # empty arg
+            raise MissingArgument(param_name)
+
+    if not isinstance(param, expected_type):
+        # wrong type
+        raise InvalidArgument(u._('{name} ({param}) is not a {type}')
+                              .format(name=param_name, param=param,
+                                      type=expected_type))
