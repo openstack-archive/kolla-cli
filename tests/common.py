@@ -21,8 +21,19 @@ import yaml
 
 import kollacli.common.utils as utils
 
+from copy import copy
 from pexpect import pxssh
 from shutil import copyfile
+
+from kollacli.api.exceptions import InvalidArgument
+
+ARG_LIST = {
+    bool: False,
+    list: [1, 2, 3],
+    str: 'qwerty',
+    dict: {'a': 1},
+    int: 0,
+    }
 
 TEST_SUFFIX = 'test/'
 VENV_PY_PATH = '.venv/bin/python'
@@ -121,6 +132,46 @@ class KollaCliTest(testtools.TestCase):
         if msg.startswith('pydev debugger'):
             msg = msg.split('\n', 1)[1]
         return (retval, msg)
+
+    def check_types(self, method, expected_types):
+        # expected type is a list:
+        args = []
+        for arg_type in expected_types:
+            args.append((arg_type, ARG_LIST[arg_type]))
+        for i in range(0, len(args)):
+            arg_type, _ = args[i]
+            for new_arg in ARG_LIST.values():
+                new_args = copy(args)
+                if isinstance(new_arg, arg_type):
+                    # this new type is the correct arg type, skip
+                    continue
+                # substitute a valid type for an invalid one
+                new_args[i] = new_arg
+                self._check_invalid_arg(method, new_args)
+
+    def _check_invalid_arg(self, method, args):
+            assert(len(args) <= 5)
+            try:
+                if len(args) == 1:
+                    method(args[0])
+                elif len(args) == 2:
+                    method(args[0], args[1])
+                elif len(args) == 3:
+                    method(args[0], args[1], args[2])
+                elif len(args) == 4:
+                    method(args[0], args[1], args[2], args[3])
+                elif len(args) == 5:
+                    method(args[0], args[1], args[2], args[3], args[4])
+            except InvalidArgument:
+                # success
+                return
+            except Exception as e:
+                self.assertTrue(False,
+                                'method: %s, arg: %s ' % (method, args) +
+                                'failed with the wrong exception: '
+                                '%s' % str(e))
+            self.assertTrue(False, 'method: %s, arg: %s did not fail'
+                            % (method, args))
 
     # PRIVATE FUNCTIONS ----------------------------------------------------
     def _save_config(self):

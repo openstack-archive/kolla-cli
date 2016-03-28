@@ -312,10 +312,12 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False):
         # None arg
         raise MissingArgument(param_name)
 
-    if (not isinstance(param, bool) and
+    if ((isinstance(param, str) or
+            isinstance(param, dict) or
+            isinstance(param, list)) and
             not param and not empty_ok):
-            # empty arg
-            raise MissingArgument(param_name)
+        # empty string, dict or list
+        raise MissingArgument(param_name)
 
     if not isinstance(param, expected_type):
         # wrong type

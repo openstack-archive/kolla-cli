@@ -21,7 +21,11 @@ import time
 import unittest
 import yaml
 
+from kollacli.api.client import ClientApi
+
 TEST_YML_FNAME = 'unittest_hosts_setup.yml'
+
+CLIENT = ClientApi()
 
 
 class TestFunctional(KollaCliTest):
@@ -184,6 +188,38 @@ class TestFunctional(KollaCliTest):
         self.write_yml({hostnames[0]: {'uname': 'name'}})
         msg = self.run_cli_cmd('host setup -f %s' % yml_path, True)
         self.assertIn('ERROR', msg, 'no password for host did not error')
+
+    def test_host_api(self):
+        # check some of the api not exercised by the CLI
+        host1 = 'host_test1'
+        host2 = 'host_test2'
+        exp_hosts = sorted([host1, host2])
+        CLIENT.host_add(exp_hosts)
+        hosts = CLIENT.host_get([host1])
+        hostnames = []
+        for host in hosts:
+            hostnames.append(host.name)
+        self.assertIn(host1, hostnames, 'host %s is missing in %s'
+                      % (host1, hostnames))
+        self.assertNotIn(host2, hostnames, 'host %s is unexpectedly in %s'
+                         % (host2, hostnames))
+        hosts = CLIENT.host_get(exp_hosts)
+        hostnames = []
+        for host in hosts:
+            hostnames.append(host.name)
+        self.assertEqual(exp_hosts, sorted(hostnames), 'hosts mismatch')
+
+        CLIENT.host_remove(exp_hosts)
+        hosts = CLIENT.host_get_all()
+        self.assertEqual([], hosts, 'hosts were not all removed')
+
+        # check the type checking logic
+        self.check_types(CLIENT.host_add, [list])
+        self.check_types(CLIENT.host_remove, [list])
+        self.check_types(CLIENT.host_setup, [dict])
+        self.check_types(CLIENT.host_ssh_check, [list])
+        self.check_types(CLIENT.async_host_destroy, [list, str, int, bool])
+        self.check_types(CLIENT.async_host_precheck, [list, int])
 
     def _check_cli_output(self, exp_hosts, cli_output):
         """Verify cli data against model data
