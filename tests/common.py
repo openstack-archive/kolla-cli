@@ -17,12 +17,12 @@ import os
 import subprocess
 import sys
 import testtools
-import traceback
 import yaml
 
 import kollacli.common.utils as utils
 
 from pexpect import pxssh
+from shutil import copyfile
 
 TEST_SUFFIX = 'test/'
 VENV_PY_PATH = '.venv/bin/python'
@@ -76,11 +76,18 @@ class KollaCliTest(testtools.TestCase):
 
         self._set_cmd_prefix()
 
+        self._save_config()
+
         # make sure inventory dirs exists and remove inventory file
-        self._init_dir(etc_path)
         etc_ansible_path = os.path.join(etc_path, 'ansible/')
+        inv_path = os.path.join(etc_ansible_path, 'inventory.json')
+        self._init_dir(etc_path)
         self._init_dir(etc_ansible_path)
-        self._init_file(os.path.join(etc_ansible_path, 'inventory.json'))
+        self._init_file(inv_path)
+
+    def tearDown(self):
+        super(KollaCliTest, self).tearDown()
+        self._restore_config()
 
     def run_cli_cmd(self, cmd, expect_error=False):
         full_cmd = ('%s %s' % (self.cmd_prefix, cmd))
@@ -92,33 +99,94 @@ class KollaCliTest(testtools.TestCase):
                                          % (msg, full_cmd)))
         return msg
 
-    # PRIVATE FUNCTIONS ----------------------------------------------------
     def run_command(self, cmd):
         """run bash command
 
         return (retval, msg)
         """
         # self.log.debug('run cmd: %s' % cmd)
-        retval = 0
         msg = ''
-        try:
-            msg = subprocess.check_output(cmd.split(),
-                                          stderr=subprocess.STDOUT)
-
-        except subprocess.CalledProcessError as e:
-            retval = e.returncode
-            msg = e.output
-
-        except Exception as e:
-            retval = -1
-            msg = ('Unexpected exception: %s, cmd: %s'
-                   % (traceback.format_exc(), cmd))
+        process = subprocess.Popen(cmd,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   shell=True)
+        (out, err) = process.communicate()
+        retval = process.returncode
 
         # the py dev debugger adds a string at the line start, remove it
-        msg = utils.safe_decode(msg)
+        if err:
+            msg = utils.safe_decode(err)
+        else:
+            msg = utils.safe_decode(out)
         if msg.startswith('pydev debugger'):
             msg = msg.split('\n', 1)[1]
         return (retval, msg)
+
+    # PRIVATE FUNCTIONS ----------------------------------------------------
+    def _save_config(self):
+        """save config"""
+        # save inventory
+        src_path = os.path.join(utils.get_kollacli_etc(),
+                                'ansible', 'inventory.json')
+        dst_path = os.path.join('/tmp', 'inventory.json.utest.save')
+        copyfile(src_path, dst_path)
+
+        # save group vars
+        ansible_dir = os.path.join(utils.get_kolla_home(), 'ansible')
+        groupdir = os.path.join(ansible_dir, 'group_vars')
+        self._save_dir(groupdir)
+
+        # save host vars
+        hostdir = os.path.join(ansible_dir, 'host_vars')
+        self._save_dir(hostdir)
+
+    def _restore_config(self):
+        """restore config"""
+        # restore inventory
+        dst_path = os.path.join(utils.get_kollacli_etc(),
+                                'ansible', 'inventory.json')
+        src_path = os.path.join('/tmp', 'inventory.json.utest.save')
+        copyfile(src_path, dst_path)
+
+        # restore group vars
+        ansible_dir = os.path.join(utils.get_kolla_home(), 'ansible')
+        groupdir = os.path.join(ansible_dir, 'group_vars')
+        self._restore_dir(groupdir)
+
+        # restore host vars
+        hostdir = os.path.join(ansible_dir, 'host_vars')
+        self._restore_dir(hostdir)
+
+    def _save_dir(self, src_dir):
+        dirname = os.path.basename(src_dir)
+        save_dir = os.path.join('/tmp', dirname + '.utest.save')
+        if not os.path.exists(save_dir):
+            os.mkdir(save_dir)
+        fnames = os.listdir(src_dir)
+        for fname in fnames:
+            src_path = os.path.join(src_dir, fname)
+            dst_path = os.path.join(save_dir, fname)
+            copyfile(src_path, dst_path)
+
+    def _restore_dir(self, dst_dir):
+        # we do not have privs to write these files
+        ignore_list = ['all.yml']
+
+        dirname = os.path.basename(dst_dir)
+        save_dir = os.path.join('/tmp', dirname + '.utest.save')
+        sv_fnames = os.listdir(save_dir)
+        fnames = os.listdir(dst_dir)
+        # remove any new var files created by tests
+        for fname in fnames:
+            if fname not in sv_fnames:
+                os.remove(os.path.join(dst_dir, fname))
+        # restore saved files
+        for sv_fname in sv_fnames:
+            if sv_fname in ignore_list:
+                continue
+            src_path = os.path.join(save_dir, sv_fname)
+            dst_path = os.path.join(dst_dir, sv_fname)
+            copyfile(src_path, dst_path)
 
     def _init_file(self, filepath):
         with open(filepath, 'w'):

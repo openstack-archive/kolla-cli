@@ -160,19 +160,5 @@ class TestFunctional(KollaCliTest):
                                  'is running on host: %s ' % hostname +
                                  'after destroy.')
 
-    def tearDown(self):
-        # re-enabled disabled services
-        for disabled_service in DISABLED_SERVICES:
-            self.run_cli_cmd('property set enable_%s yes' % disabled_service)
-
-        # control once we are done
-        for service in ENABLED_SERVICES:
-            self.run_cli_cmd('service removegroup %s %s' %
-                             (service, TEST_GROUP_NAME))
-            self.run_cli_cmd('service addgroup %s control' % service)
-
-        super(KollaCliTest, self).tearDown()
-
-
 if __name__ == '__main__':
     unittest.main()

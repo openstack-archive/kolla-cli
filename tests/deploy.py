@@ -132,18 +132,12 @@ class TestFunctional(KollaCliTest):
         # test will start with no hosts in the inventory
         # deploy will throw an exception if it fails
         # disable all services first as without it empty groups cause errors
-        try:
-            for service in ALL_SERVICES:
-                self.run_cli_cmd('property set enable_%s no' % service)
+        for service in ALL_SERVICES:
+            self.run_cli_cmd('property set enable_%s no' % service)
 
-            self.run_cli_cmd('deploy')
-            self.run_cli_cmd('deploy --serial -v')
-            self.run_cli_cmd('deploy --groups=control -vv')
-
-        finally:
-            # re-enable services after the test
-            for service in ALL_SERVICES:
-                self.run_cli_cmd('property set enable_%s yes' % service)
+        self.run_cli_cmd('deploy')
+        self.run_cli_cmd('deploy --serial -v')
+        self.run_cli_cmd('deploy --groups=control -vv')
 
     def test_upgrade(self):
         # test will upgrade an environment with no hosts, mostly a NOP,

@@ -177,10 +177,7 @@ def _run_deploy_rules(playbook):
                     'not yet been set up. Please see the '
                     'documentation for swift configuration '
                     'instructions.')
-<<<<<<< HEAD
                 raise InvalidConfiguration(msg)
-=======
-                raise CommandError(msg)
 
 
 def _is_service_enabled(servicename, inventory, properties):
@@ -221,4 +218,3 @@ def _find_parent_service(servicename, inventory):
             if sub_servicename == servicename:
                 return service.name
     return None
->>>>>>> 82cbb04... Added code to check sub-service parent enablement to determine if a group needs hosts
