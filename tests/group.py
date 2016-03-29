@@ -17,9 +17,13 @@ from common import KollaCliTest
 import json
 import unittest
 
+from kollacli.api.client import ClientApi
+from kollacli.api.exceptions import NotInInventory
 from kollacli.common.inventory import DEFAULT_GROUPS
 from kollacli.common.inventory import DEFAULT_OVERRIDES
 from kollacli.common.inventory import DEPLOY_GROUPS
+
+CLIENT = ClientApi()
 
 
 class TestFunctional(KollaCliTest):
@@ -107,6 +111,41 @@ class TestFunctional(KollaCliTest):
                          % (service1, groupname))
         groups[groupname]['Services'].remove(service1)
         self.check_group(groups)
+
+    def test_group_api(self):
+        # check some of the api not exercised by the CLI
+        group1 = 'group_test1'
+        group2 = 'group_test2'
+        exp_groups = sorted([group1, group2])
+        CLIENT.group_add(group1)
+        CLIENT.group_add(group2)
+        groups = CLIENT.group_get([group1])
+        groupnames = []
+        for group in groups:
+            groupnames.append(group.name)
+        self.assertIn(group1, groupnames, 'group %s is missing in %s'
+                      % (group1, groupnames))
+        self.assertNotIn(group2, groupnames, 'group %s is unexpectedly in %s'
+                         % (group2, groupnames))
+        groups = CLIENT.group_get(exp_groups)
+        groupnames = []
+        for group in groups:
+            groupnames.append(group.name)
+        self.assertEqual(exp_groups, sorted(groupnames), 'groups mismatch')
+
+        CLIENT.group_remove(group1)
+        CLIENT.group_remove(group2)
+        try:
+            CLIENT.group_get(exp_groups)
+            self.assertTrue(False, 'Failed to raise NotInInventory exception')
+        except NotInInventory:
+            pass
+        except Exception as e:
+            raise e
+
+        # check the type checking logic
+        self.check_types(CLIENT.group_add, [str])
+        self.check_types(CLIENT.group_remove, [str])
 
     def check_group(self, groups):
         """check groups

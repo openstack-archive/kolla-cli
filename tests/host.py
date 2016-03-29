@@ -22,6 +22,7 @@ import unittest
 import yaml
 
 from kollacli.api.client import ClientApi
+from kollacli.api.exceptions import NotInInventory
 
 TEST_YML_FNAME = 'unittest_hosts_setup.yml'
 
@@ -210,8 +211,13 @@ class TestFunctional(KollaCliTest):
         self.assertEqual(exp_hosts, sorted(hostnames), 'hosts mismatch')
 
         CLIENT.host_remove(exp_hosts)
-        hosts = CLIENT.host_get_all()
-        self.assertEqual([], hosts, 'hosts were not all removed')
+        try:
+            CLIENT.host_get(exp_hosts)
+            self.assertTrue(False, 'Failed to raise NotInInventory exception')
+        except NotInInventory:
+            pass
+        except Exception as e:
+            raise e
 
         # check the type checking logic
         self.check_types(CLIENT.host_add, [list])
