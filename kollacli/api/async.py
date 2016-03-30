@@ -30,7 +30,32 @@ class AsyncApi(object):
         """Deploy.
 
         Deploy containers to hosts.
+
+        :param hostnames: hosts to deploy to. If empty, then deploy to all.
+        :type hostnames: list of strings
+        :param groupnames: names of groups
+        :type groupnames: list of strings
+        :param servicenames: names of services
+        :type servicenames: list of strings
+        :param serial_flag: if true, deploy will be done one host at a time
+        :type serial_flag: boolean
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
+        :return: Job object
+        :rtype: Job
         """
+        check_arg(hostnames, u._('Host names'), list,
+                  empty_ok=True, none_ok=True)
+        check_arg(groupnames, u._('Group names'), list,
+                  empty_ok=True, none_ok=True)
+        check_arg(servicenames, u._('Service names'), list,
+                  empty_ok=True, none_ok=True)
+        check_arg(serial_flag, u._('Serial flag'), bool)
+        check_arg(verbose_level, u._('Verbose level'), int)
+        hostnames = safe_decode(hostnames)
+        groupnames = safe_decode(groupnames)
+        servicenames = safe_decode(servicenames)
+
         ansible_job = actions.deploy(hostnames, groupnames, servicenames,
                                      serial_flag, verbose_level)
         return Job(ansible_job)
@@ -40,6 +65,8 @@ class AsyncApi(object):
 
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
+        :return: Job object
+        :rtype: Job
 
         Upgrade containers to new version specified by the property
         "openstack_release."
@@ -63,6 +90,9 @@ class AsyncApi(object):
         :type verbose_level: integer
         :param include_data: if true, destroy data containers too.
         :type include_data: boolean
+        :return: Job object
+        :rtype: Job
+
         """
         check_arg(hostnames, u._('Host names'), list)
         check_arg(destroy_type, u._('Destroy type'), str)
@@ -91,6 +121,8 @@ class AsyncApi(object):
         :type hostnames: list
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
+        :return: Job object
+        :rtype: Job
         """
         check_arg(hostnames, u._('Host names'), list)
         check_arg(verbose_level, u._('Verbose level'), int)

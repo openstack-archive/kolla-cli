@@ -18,7 +18,6 @@ import kollacli.i18n as u
 
 from kollacli.api.client import ClientApi
 from kollacli.commands.exceptions import CommandError
-from kollacli.common.utils import convert_to_unicode
 
 from cliff.command import Command
 
@@ -52,13 +51,13 @@ class Deploy(Command):
         try:
             if parsed_args.hosts:
                 host_list = parsed_args.hosts.strip()
-                hosts = convert_to_unicode(host_list).split(',')
+                hosts = host_list.split(',')
             if parsed_args.groups:
                 group_list = parsed_args.groups.strip()
-                groups = convert_to_unicode(group_list).split(',')
+                groups = group_list.split(',')
             if parsed_args.services:
                 service_list = parsed_args.services.strip()
-                services = convert_to_unicode(service_list).split(',')
+                services = service_list.split(',')
             if parsed_args.serial:
                 serial_flag = True
 
