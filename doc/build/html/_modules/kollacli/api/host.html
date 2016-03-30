@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.host &mdash; kollacli 1.0.0.dev368 documentation</title>
+    <title>kollacli.api.host &mdash; kollacli 1.0.0.dev379 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev368',
+        VERSION:     '1.0.0.dev379',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev368 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev379 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,23 +47,24 @@
           <div class="body">
             
   <h1>Source code for kollacli.api.host</h1><div class="highlight"><pre>
-<span class="c"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
-<span class="c">#</span>
-<span class="c">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
-<span class="c">#    not use this file except in compliance with the License. You may obtain</span>
-<span class="c">#    a copy of the License at</span>
-<span class="c">#</span>
-<span class="c">#         http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c">#</span>
-<span class="c">#    Unless required by applicable law or agreed to in writing, software</span>
-<span class="c">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
-<span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
-<span class="c">#    License for the specific language governing permissions and limitations</span>
-<span class="c">#    under the License.</span>
+<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
+<span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
+<span class="c1">#    a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#         http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
+<span class="c1">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
+<span class="c1">#    License for the specific language governing permissions and limitations</span>
+<span class="c1">#    under the License.</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
 
-<span class="kn">from</span> <span class="nn">kollacli.api.exceptions</span> <span class="kn">import</span> <span class="n">MissingArgument</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">Inventory</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">check_arg</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">safe_decode</span>
 
 
@@ -73,7 +74,7 @@
         <span class="sd">&quot;&quot;&quot;Host&quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">hostname</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">groupnames</span> <span class="o">=</span> <span class="n">groupnames</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_groupnames</span> <span class="o">=</span> <span class="n">groupnames</span>
 
 <div class="viewcode-block" id="HostApi.Host.get_name"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.Host.get_name">[docs]</a>        <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Get name</span>
@@ -83,21 +84,20 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </div>
-<div class="viewcode-block" id="HostApi.Host.get_groupnames"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.Host.get_groupnames">[docs]</a>        <span class="k">def</span> <span class="nf">get_groupnames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HostApi.Host.get_groups"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.Host.get_groups">[docs]</a>        <span class="k">def</span> <span class="nf">get_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Get names of the groups associated with this host</span>
 
 <span class="sd">            :return: group names</span>
 <span class="sd">            :rtype: list of strings</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">groupnames</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groupnames</span><span class="p">)</span>
 </div></div>
 <div class="viewcode-block" id="HostApi.host_add"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_add">[docs]</a>    <span class="k">def</span> <span class="nf">host_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add hosts to the inventory</span>
 
 <span class="sd">        :param hostnames: list of strings</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">hostnames</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host names&#39;</span><span class="p">))</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
         <span class="n">hostnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
 
         <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
@@ -114,12 +114,10 @@
 
 <span class="sd">        :param hostnames: list of strings</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">hostnames</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host names&#39;</span><span class="p">))</span>
-
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
         <span class="n">hostnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">any_changed</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="k">for</span> <span class="n">hostname</span> <span class="ow">in</span> <span class="n">hostnames</span><span class="p">:</span>
             <span class="n">changed</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">remove_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
@@ -148,8 +146,7 @@
 <span class="sd">        :return: hosts</span>
 <span class="sd">        :rtype: Host</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">hostnames</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host names&#39;</span><span class="p">))</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
         <span class="n">hostnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
         <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
@@ -174,6 +171,7 @@
 <span class="sd">        :return: check status</span>
 <span class="sd">        :rtype: dictionary</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
         <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">hostnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
         <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
@@ -193,6 +191,7 @@
 
 <span class="sd">        :param hosts_info: dictionary</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hosts_info</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Hosts info&#39;</span><span class="p">),</span> <span class="nb">dict</span><span class="p">)</span>
         <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hosts_info</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">inventory</span><span class="o">.</span><span class="n">setup_hosts</span><span class="p">(</span><span class="n">hosts_info</span><span class="p">)</span></div></div>
@@ -229,7 +228,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

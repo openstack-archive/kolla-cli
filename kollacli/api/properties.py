@@ -31,7 +31,20 @@ PROP_TYPES = [GLOBAL_TYPE, GROUP_TYPE, HOST_TYPE]
 class PropertyApi(object):
 
     class Property(object):
+        """Property
 
+        Members:
+            - name (str): key
+            - value (str): value
+            - file_name (str): name of file property is from
+            - overrides (bool): does the property override some other value
+            - orig_value (str): the value which is overridden or None
+            - target (str): group or host name for group or host properties
+            - prop_type (str): one of 'global', 'group' or 'host'
+            - ovr_global (bool): true if property is overridden at global level
+            - ovr_group (bool): true if property is overridden at group level
+            - ovr_host (bool): true if property is overridden at host level
+        """
         def __init__(self, ansible_property, override_flags):
             self.name = ansible_property.name
             self.value = ansible_property.value

@@ -68,10 +68,26 @@ kollacli.api.password module
     :undoc-members:
     :show-inheritance:
 
+kollacli.api.properties module
+------------------------------
+
+.. automodule:: kollacli.api.properties
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 kollacli.api.service module
 ---------------------------
 
 .. automodule:: kollacli.api.service
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+kollacli.api.support module
+---------------------------
+
+.. automodule:: kollacli.api.support
     :members:
     :undoc-members:
     :show-inheritance:

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.support &mdash; kollacli 1.0.0.dev368 documentation</title>
+    <title>kollacli.common.support &mdash; kollacli 1.0.0.dev379 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev368',
+        VERSION:     '1.0.0.dev379',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev368 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev379 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,28 +47,25 @@
           <div class="body">
             
   <h1>Source code for kollacli.common.support</h1><div class="highlight"><pre>
-<span class="c"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
-<span class="c">#</span>
-<span class="c">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
-<span class="c">#    not use this file except in compliance with the License. You may obtain</span>
-<span class="c">#    a copy of the License at</span>
-<span class="c">#</span>
-<span class="c">#         http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c">#</span>
-<span class="c">#    Unless required by applicable law or agreed to in writing, software</span>
-<span class="c">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
-<span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
-<span class="c">#    License for the specific language governing permissions and limitations</span>
-<span class="c">#    under the License.</span>
+<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
+<span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
+<span class="c1">#    a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#         http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
+<span class="c1">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
+<span class="c1">#    License for the specific language governing permissions and limitations</span>
+<span class="c1">#    under the License.</span>
 
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">traceback</span>
-
-<span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
 
 <span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">Inventory</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_etc</span>
@@ -87,84 +84,72 @@
 <span class="sd">    tar file so be given to support / development to help with</span>
 <span class="sd">    debugging problems.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="n">return_code</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
-        <span class="n">kolla_logs</span> <span class="o">=</span> <span class="n">get_kolla_log_dir</span><span class="p">()</span>
-        <span class="n">kolla_ansible</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span> <span class="s">&#39;ansible&#39;</span><span class="p">)</span>
-        <span class="n">kolla_docs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span> <span class="s">&#39;docs&#39;</span><span class="p">)</span>
-        <span class="n">kolla_etc</span> <span class="o">=</span> <span class="n">get_kolla_etc</span><span class="p">()</span>
-        <span class="n">kolla_config</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_etc</span><span class="p">,</span> <span class="s">&#39;config&#39;</span><span class="p">)</span>
-        <span class="n">kollacli_etc</span> <span class="o">=</span> <span class="n">get_kollacli_etc</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
-        <span class="n">ketc</span> <span class="o">=</span> <span class="s">&#39;kolla/etc/&#39;</span>
-        <span class="n">kshare</span> <span class="o">=</span> <span class="s">&#39;kolla/share/&#39;</span>
-        <span class="n">fd</span><span class="p">,</span> <span class="n">dump_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s">&#39;kollacli_dump_&#39;</span><span class="p">,</span>
-                                         <span class="n">suffix</span><span class="o">=</span><span class="s">&#39;.tgz&#39;</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>  <span class="c"># avoid fd leak</span>
-        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dump_path</span><span class="p">,</span> <span class="s">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
-            <span class="c"># Can&#39;t blanket add kolla_home because the .ssh dir is</span>
-            <span class="c"># accessible by the kolla user only (not kolla group)</span>
-            <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kolla_ansible</span><span class="p">,</span>
-                    <span class="n">arcname</span><span class="o">=</span><span class="n">kshare</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kolla_ansible</span><span class="p">))</span>
-            <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kolla_docs</span><span class="p">,</span>
-                    <span class="n">arcname</span><span class="o">=</span><span class="n">kshare</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kolla_docs</span><span class="p">))</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">kolla_logs</span> <span class="o">=</span> <span class="n">get_kolla_log_dir</span><span class="p">()</span>
+    <span class="n">kolla_ansible</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span> <span class="s1">&#39;ansible&#39;</span><span class="p">)</span>
+    <span class="n">kolla_docs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span> <span class="s1">&#39;docs&#39;</span><span class="p">)</span>
+    <span class="n">kolla_etc</span> <span class="o">=</span> <span class="n">get_kolla_etc</span><span class="p">()</span>
+    <span class="n">kolla_config</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_etc</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">)</span>
+    <span class="n">kollacli_etc</span> <span class="o">=</span> <span class="n">get_kollacli_etc</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="n">ketc</span> <span class="o">=</span> <span class="s1">&#39;kolla/etc/&#39;</span>
+    <span class="n">kshare</span> <span class="o">=</span> <span class="s1">&#39;kolla/share/&#39;</span>
+    <span class="n">fd</span><span class="p">,</span> <span class="n">dump_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;kollacli_dump_&#39;</span><span class="p">,</span>
+                                     <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.tgz&#39;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>  <span class="c1"># avoid fd leak</span>
+    <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dump_path</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+        <span class="c1"># Can&#39;t blanket add kolla_home because the .ssh dir is</span>
+        <span class="c1"># accessible by the kolla user only (not kolla group)</span>
+        <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kolla_ansible</span><span class="p">,</span>
+                <span class="n">arcname</span><span class="o">=</span><span class="n">kshare</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kolla_ansible</span><span class="p">))</span>
+        <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kolla_docs</span><span class="p">,</span>
+                <span class="n">arcname</span><span class="o">=</span><span class="n">kshare</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kolla_docs</span><span class="p">))</span>
 
-            <span class="c"># Can&#39;t blanket add kolla_etc because the passwords.yml</span>
-            <span class="c"># file is accessible by the kolla user only (not kolla group)</span>
-            <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kolla_config</span><span class="p">,</span>
-                    <span class="n">arcname</span><span class="o">=</span><span class="n">ketc</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kolla_config</span><span class="p">))</span>
-            <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kollacli_etc</span><span class="p">,</span>
-                    <span class="n">arcname</span><span class="o">=</span><span class="n">ketc</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kollacli_etc</span><span class="p">))</span>
+        <span class="c1"># Can&#39;t blanket add kolla_etc because the passwords.yml</span>
+        <span class="c1"># file is accessible by the kolla user only (not kolla group)</span>
+        <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kolla_config</span><span class="p">,</span>
+                <span class="n">arcname</span><span class="o">=</span><span class="n">ketc</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kolla_config</span><span class="p">))</span>
+        <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kollacli_etc</span><span class="p">,</span>
+                <span class="n">arcname</span><span class="o">=</span><span class="n">ketc</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kollacli_etc</span><span class="p">))</span>
 
-            <span class="c"># add kolla log files</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">kolla_logs</span><span class="p">):</span>
-                <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kolla_logs</span><span class="p">)</span>
+        <span class="c1"># add kolla log files</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">kolla_logs</span><span class="p">):</span>
+            <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kolla_logs</span><span class="p">)</span>
 
-            <span class="c"># add output of various commands</span>
-            <span class="n">_add_cmd_info</span><span class="p">(</span><span class="n">tar</span><span class="p">)</span>
+        <span class="c1"># add output of various commands</span>
+        <span class="n">_add_cmd_info</span><span class="p">(</span><span class="n">tar</span><span class="p">)</span>
 
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s">&#39;dump successful to {path}&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">dump_path</span><span class="p">)</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s">&#39;dump failed: {reason}&#39;</span><span class="p">)</span>
-               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()))</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="n">return_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-
-    <span class="k">return</span> <span class="n">return_code</span><span class="p">,</span> <span class="n">msg</span>
+    <span class="k">return</span> <span class="n">dump_path</span>
 
 </div>
 <span class="k">def</span> <span class="nf">_add_cmd_info</span><span class="p">(</span><span class="n">tar</span><span class="p">):</span>
-    <span class="c"># run all the kollacli list commands</span>
-    <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;kollacli --version&#39;</span><span class="p">,</span>
-            <span class="s">&#39;kollacli service listgroups&#39;</span><span class="p">,</span>
-            <span class="s">&#39;kollacli service list&#39;</span><span class="p">,</span>
-            <span class="s">&#39;kollacli group listservices&#39;</span><span class="p">,</span>
-            <span class="s">&#39;kollacli group listhosts&#39;</span><span class="p">,</span>
-            <span class="s">&#39;kollacli host list&#39;</span><span class="p">,</span>
-            <span class="s">&#39;kollacli property list&#39;</span><span class="p">,</span>
-            <span class="s">&#39;kollacli password list&#39;</span><span class="p">]</span>
+    <span class="c1"># run all the kollacli list commands</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;kollacli --version&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kollacli service listgroups&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kollacli service list&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kollacli group listservices&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kollacli group listhosts&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kollacli host list&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kollacli property list&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kollacli password list&#39;</span><span class="p">]</span>
 
-    <span class="c"># collect the json inventory output</span>
+    <span class="c1"># collect the json inventory output</span>
     <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
     <span class="n">inv_path</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">create_json_gen_file</span><span class="p">()</span>
     <span class="n">cmds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inv_path</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">fd</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s">&#39;.tmp&#39;</span><span class="p">)</span>
+        <span class="n">fd</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.tmp&#39;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">:</span>
                 <span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
-                <span class="n">tmp_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">$ </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">cmd</span><span class="p">)</span>
+                <span class="n">tmp_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">$ </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">cmd</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">err_msg</span><span class="p">:</span>
-                    <span class="n">tmp_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Error message: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">err_msg</span><span class="p">)</span>
+                    <span class="n">tmp_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Error message: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">err_msg</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
-                    <span class="n">tmp_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+                    <span class="n">tmp_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;kolla&#39;</span><span class="p">,</span> <span class="s">&#39;cmds_output&#39;</span><span class="p">))</span>
+        <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;kolla&#39;</span><span class="p">,</span> <span class="s1">&#39;cmds_output&#39;</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">e</span>
     <span class="k">finally</span><span class="p">:</span>
@@ -205,7 +190,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev368 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
