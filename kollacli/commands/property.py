@@ -15,12 +15,14 @@ import traceback
 
 import kollacli.i18n as u
 
+from kollacli.api.client import ClientApi
 from kollacli.commands.exceptions import CommandError
-from kollacli.common import properties
 from kollacli.common import utils
 
 from cliff.command import Command
 from cliff.lister import Lister
+
+CLIENT = ClientApi()
 
 
 def _get_names(args_list):
@@ -60,30 +62,18 @@ class PropertySet(Command):
                             'together.'))
 
                 host_names = _get_names(parsed_args.hosts)
-                ansible_properties = \
-                    properties.AnsibleProperties(load_globals=False,
-                                                 load_groups=False,
-                                                 load_hosts=True)
-                ansible_properties.set_host_property(property_name,
-                                                     property_value,
-                                                     host_names)
+
+                CLIENT.property_set(property_name, property_value,
+                                    'host', host_names)
 
             elif parsed_args.groups:
                 group_names = _get_names(parsed_args.groups)
-                ansible_properties = \
-                    properties.AnsibleProperties(load_globals=False,
-                                                 load_groups=True,
-                                                 load_hosts=False)
-                ansible_properties.set_group_property(property_name,
-                                                      property_value,
-                                                      group_names)
+
+                CLIENT.property_set(property_name, property_value,
+                                    'group', group_names)
             else:
-                ansible_properties = \
-                    properties.AnsibleProperties(load_globals=True,
-                                                 load_groups=False,
-                                                 load_hosts=False)
-                ansible_properties.set_property(property_name,
-                                                property_value)
+                CLIENT.property_set(property_name, property_value,
+                                    'global')
 
         except Exception:
             raise Exception(traceback.format_exc())
@@ -115,28 +105,16 @@ class PropertyClear(Command):
                             'together.'))
 
                 host_names = _get_names(parsed_args.hosts)
-                ansible_properties = \
-                    properties.AnsibleProperties(load_globals=False,
-                                                 load_groups=False,
-                                                 load_hosts=True)
-                ansible_properties.clear_host_property(property_name,
-                                                       host_names)
 
+                CLIENT.property_clear(property_name, 'host',
+                                      host_names)
             elif parsed_args.groups:
                 group_names = _get_names(parsed_args.groups)
-                ansible_properties = \
-                    properties.AnsibleProperties(load_globals=False,
-                                                 load_groups=True,
-                                                 load_hosts=False)
-                ansible_properties.clear_group_property(property_name,
-                                                        group_names)
 
+                CLIENT.property_clear(property_name, 'group',
+                                      group_names)
             else:
-                ansible_properties = \
-                    properties.AnsibleProperties(load_globals=True,
-                                                 load_groups=False,
-                                                 load_hosts=False)
-                ansible_properties.clear_property(property_name)
+                CLIENT.property_clear(property_name, 'global')
 
         except Exception:
             raise Exception(traceback.format_exc())
@@ -185,34 +163,20 @@ class PropertyList(Lister):
                 self.list_type = u._('Host')
                 host_names = _get_names(parsed_args.hosts)
 
-                ansible_properties = \
-                    properties.AnsibleProperties(load_globals=False,
-                                                 load_groups=False,
-                                                 load_hosts=True)
-                property_list = \
-                    ansible_properties.get_host_list(host_names)
+                property_list = CLIENT.property_get('host',
+                                                    host_names)
 
             elif parsed_args.groups:
                 self.is_global = False
                 self.list_type = u._('Group')
                 group_names = _get_names(parsed_args.groups)
-                ansible_properties = \
-                    properties.AnsibleProperties(load_globals=False,
-                                                 load_groups=True,
-                                                 load_hosts=False)
-                property_list = \
-                    ansible_properties.get_group_list(group_names)
+                property_list = CLIENT.property_get('group',
+                                                    group_names)
 
             else:
-                ansible_properties = \
-                    properties.AnsibleProperties(load_globals=True,
-                                                 load_groups=False,
-                                                 load_hosts=False)
+                property_list = CLIENT.property_get('global')
 
-                property_list = ansible_properties.get_all_unique()
-
-            override_flags = ansible_properties.get_all_override_flags()
-            data = self._get_list_data(property_list, override_flags)
+            data = self._get_list_data(property_list)
             header = self._get_list_header()
             return (header, data)
 
@@ -241,7 +205,7 @@ class PropertyList(Lister):
                           self.list_type)
         return header
 
-    def _get_list_data(self, property_list, override_flags):
+    def _get_list_data(self, property_list):
         data = []
         if property_list:
             property_length = utils.get_property_list_length()
@@ -260,14 +224,13 @@ class PropertyList(Lister):
                 ovr_global = '-'
                 ovr_group = '-'
                 ovr_host = '-'
-                if prop.name in override_flags:
-                    override_flag_set = override_flags[prop.name]
-                    if override_flag_set.ovr_global:
-                        ovr_global = '*'
-                    if override_flag_set.ovr_group:
-                        ovr_group = 'G'
-                    if override_flag_set.ovr_host:
-                        ovr_host = 'H'
+
+                if prop.ovr_global:
+                    ovr_global = '*'
+                if prop.ovr_group:
+                    ovr_group = 'G'
+                if prop.ovr_host:
+                    ovr_host = 'H'
 
                 prop_ovr = ovr_global + ovr_group + ovr_host
 

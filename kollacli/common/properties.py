@@ -36,8 +36,7 @@ ANSIBLE_DEFAULTS_PATH = 'defaults/main.yml'
 
 class AnsibleProperties(object):
 
-    def __init__(self, load_globals=True, load_groups=True,
-                 load_hosts=True):
+    def __init__(self):
         """initialize ansible property information
 
         property information is pulled from the following files

@@ -18,6 +18,7 @@ from kollacli.api.deploy import DeployApi
 from kollacli.api.group import GroupApi
 from kollacli.api.host import HostApi
 from kollacli.api.password import PasswordApi
+from kollacli.api.properties import PropertyApi
 from kollacli.api.service import ServiceApi
 from kollacli.api.support import SupportApi
 
@@ -30,6 +31,7 @@ class ClientApi(
         GroupApi,
         HostApi,
         PasswordApi,
+        PropertyApi,
         ServiceApi,
         SupportApi,
         ):
