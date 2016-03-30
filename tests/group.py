@@ -117,8 +117,7 @@ class TestFunctional(KollaCliTest):
         group1 = 'group_test1'
         group2 = 'group_test2'
         exp_groups = sorted([group1, group2])
-        CLIENT.group_add(group1)
-        CLIENT.group_add(group2)
+        CLIENT.group_add(exp_groups)
         groups = CLIENT.group_get([group1])
         groupnames = []
         for group in groups:
@@ -133,8 +132,7 @@ class TestFunctional(KollaCliTest):
             groupnames.append(group.name)
         self.assertEqual(exp_groups, sorted(groupnames), 'groups mismatch')
 
-        CLIENT.group_remove(group1)
-        CLIENT.group_remove(group2)
+        CLIENT.group_remove(exp_groups)
         try:
             CLIENT.group_get(exp_groups)
             self.assertTrue(False, 'Failed to raise NotInInventory exception')
@@ -144,8 +142,8 @@ class TestFunctional(KollaCliTest):
             raise e
 
         # check the type checking logic
-        self.check_types(CLIENT.group_add, [str])
-        self.check_types(CLIENT.group_remove, [str])
+        self.check_types(CLIENT.group_add, [list])
+        self.check_types(CLIENT.group_remove, [list])
 
     def check_group(self, groups):
         """check groups

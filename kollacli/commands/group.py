@@ -37,7 +37,7 @@ class GroupAdd(Command):
         try:
             groupname = parsed_args.groupname.strip()
 
-            CLIENT.group_add(groupname)
+            CLIENT.group_add([groupname])
         except ClientException as e:
             raise CommandError(str(e))
         except Exception as e:
@@ -57,7 +57,7 @@ class GroupRemove(Command):
         try:
             groupname = parsed_args.groupname.strip()
 
-            CLIENT.group_remove(groupname)
+            CLIENT.group_remove([groupname])
         except ClientException as e:
             raise CommandError(str(e))
         except Exception as e:

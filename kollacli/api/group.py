@@ -127,31 +127,34 @@ class GroupApi(object):
                 inventory.remove_host(hostname, self.name)
                 Inventory.save(inventory)
 
-    def group_add(self, groupname):
-        """Add a group to the inventory
+    def group_add(self, groupnames):
+        """Add groups to the inventory
 
-        :param groupname: name of the group to add to the inventory
-        :type groupname: string
+        :param groupnames: names of the groups to add to the inventory
+        :type groupnames: list of strings
 
         """
-        check_arg(groupname, u._('Group name'), str)
-        groupname = safe_decode(groupname)
+        check_arg(groupnames, u._('Group names'), list)
+        groupnames = safe_decode(groupnames)
 
         inventory = Inventory.load()
-        inventory.add_group(groupname)
+        for groupname in groupnames:
+            inventory.add_group(groupname)
         Inventory.save(inventory)
 
-    def group_remove(self, groupname):
-        """Remove a group from the inventory
+    def group_remove(self, groupnames):
+        """Remove groups from the inventory
 
-        :param groupname: name of the group to remove from the inventory
-        :type groupname: string
+        :param groupnames: names of the groups to remove from the inventory
+        :type groupnames: list of strings
 
         """
-        check_arg(groupname, u._('Group name'), str)
+        check_arg(groupnames, u._('Group names'), list)
+        groupnames = safe_decode(groupnames)
+
         inventory = Inventory.load()
-        groupname = safe_decode(groupname)
-        inventory.remove_group(groupname)
+        for groupname in groupnames:
+            inventory.remove_group(groupname)
         Inventory.save(inventory)
 
     def group_get_all(self):
