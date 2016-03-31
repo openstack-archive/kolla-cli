@@ -138,13 +138,10 @@ class AnsiblePlaybook(object):
     def _log_ansible_cmd(self, cmd, inventory_path):
         if self.verbose_level > 2:
             # log the ansible command
-            LOG.debug('cmd:' + cmd)
+            LOG.debug('cmd:\n%s' % cmd)
 
             if self.verbose_level > 3:
                 # log the inventory
-                dbg_gen = inventory_path
-                (inv, _) = \
-                    subprocess.Popen(dbg_gen.split(' '),  # nosec
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE).communicate()
-                LOG.debug(inv)
+                with open(inventory_path, 'r') as inv_file:
+                    inv = inv_file.read()
+                LOG.debug('\ninventory: \n%s' % inv)

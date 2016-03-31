@@ -194,7 +194,7 @@ def _is_service_enabled(servicename, inventory, properties):
     # Only bother looking at the parent service if the sub service
     # is enabled.
     if service_enabled:
-        servicename = sub_service.get_parent_service_name()
+        servicename = sub_service.get_parent_servicename()
         if servicename is None:
             servicename = _find_parent_service(sub_service.name, inventory)
 

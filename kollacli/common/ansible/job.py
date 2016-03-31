@@ -54,6 +54,7 @@ class AnsibleJob(object):
             tempfile.gettempdir(), '%s_%s' % (PIPE_PREFIX, self._deploy_id))
         self._fifo_fd = None
         self._process = None
+        self._process_std_err = None
         self._errors = []
         self._cmd_output = ''
 
@@ -102,10 +103,19 @@ class AnsibleJob(object):
         status = self._process.poll()
         self._read_from_callback()
         if status is not None:
+            # job has completed
             self._cleanup()
             status = 0
             if self._process.returncode != 0:
                 status = 1
+            if not self._process_std_err:
+                try:
+                    std_err = safe_decode(self._process.stderr.read())
+                    if std_err:
+                        self._process_std_err = std_err.strip()
+                except IOError:  # nosec
+                    # error can happen if stderr is empty
+                    pass
         try:
             out = safe_decode(self._process.stdout.read())
             if out:
@@ -120,6 +130,10 @@ class AnsibleJob(object):
         msg = ''
         for error in self._errors:
             msg = ''.join([msg, error, '\n'])
+
+        # if no error from the callback, check the process error
+        if not msg:
+            msg = self._process_std_err
         return msg
 
     def get_command_output(self):
@@ -233,9 +247,21 @@ class AnsibleJob(object):
         return msg
 
     def _format_error(self, taskname, host, status, results):
-        err_msg = ''
-        if 'msg' in results and results['msg']:
-            err_msg = results['msg']
+        err_msg = results.get('msg', '')
+
+        sub_results = results.get('results', None)
+        if sub_results:
+            # there may be more detailed error msgs under results
+            sub_errs = ' ['
+            comma = ''
+            for invocation in sub_results:
+                is_failed = invocation.get('failed', False)
+                if is_failed is True:
+                    sub_msg = invocation.get('msg', 'N/A')
+                    sub_errs = ''.join([sub_errs, comma, sub_msg])
+                    comma = ', '
+            err_msg = ''.join([err_msg, sub_errs, ']'])
+
         msg = ('Host: %s, Task: %s, Status: %s, Message: %s' %
                (host, taskname, status, err_msg))
         return msg
