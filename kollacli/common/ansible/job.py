@@ -102,27 +102,18 @@ class AnsibleJob(object):
         """
         status = self._process.poll()
         self._read_from_callback()
+        out = self._read_stream(self._process.stdout)
+        self._cmd_output = ''.join([self._cmd_output, out])
         if status is not None:
             # job has completed
-            self._cleanup()
-            status = 0
-            if self._process.returncode != 0:
+            status = self._process.returncode
+            if status != 0:
                 status = 1
             if not self._process_std_err:
-                try:
-                    std_err = safe_decode(self._process.stderr.read())
-                    if std_err:
-                        self._process_std_err = std_err.strip()
-                except IOError:  # nosec
-                    # error can happen if stderr is empty
-                    pass
-        try:
-            out = safe_decode(self._process.stdout.read())
-            if out:
-                self._cmd_output = ''.join([self._cmd_output, out])
-        except IOError:  # nosec
-            # error can happen if stdout is empty
-            pass
+                # read stderr from process
+                std_err = self._read_stream(self._process.stderr)
+                self._process_std_err = std_err.strip()
+            self._cleanup()
         return status
 
     def get_error_message(self):
@@ -143,14 +134,38 @@ class AnsibleJob(object):
         """
         return self._cmd_output
 
+    def _read_stream(self, stream):
+        out = ''
+        if stream and not stream.closed:
+            try:
+                out = safe_decode(stream.read())
+            except IOError:  # nosec
+                # error can happen if stream is empty
+                pass
+            if out is None:
+                out = ''
+        return out
+
     def _log_lines(self, lines):
         if self._print_output:
             for line in lines:
                 LOG.info(line)
 
     def _cleanup(self):
+        """cleanup job
+
+        - delete temp inventory
+        - close stdout and stderr
+        - close and delete named pipe (fifo)
+        """
         # delete temp inventory file
         remove_temp_inventory(self._temp_inv_path)
+
+        # close the process's stdout and stderr streams
+        if self._process.stdout and not self._process.stdout.closed:
+            self._process.stdout.close()
+        if self._process.stderr and not self._process.stderr.closed:
+            self._process.stderr.close()
 
         # close and delete the named pipe (fifo)
         if self._fifo_fd:

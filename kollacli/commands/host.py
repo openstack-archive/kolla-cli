@@ -95,6 +95,11 @@ class HostDestroy(Command):
             if status != 0:
                 raise CommandError(u._('Job failed:\n{msg}')
                                    .format(msg=job.get_error_message()))
+            elif verbose_level > 1:
+                # log any ansible warnings
+                msg = job.get_error_message()
+                if msg:
+                    LOG.warn(msg)
 
         except ClientException as e:
             raise CommandError(str(e))
@@ -194,7 +199,13 @@ class HostCheck(Command):
                 if status != 0:
                     raise CommandError(u._('Job failed:\n{msg}')
                                        .format(msg=job.get_error_message()))
+                elif verbose_level > 1:
+                    # log any ansible warnings
+                    msg = job.get_error_message()
+                    if msg:
+                        LOG.warn(msg)
             else:
+                # just do an ssh check
                 summary = CLIENT.host_ssh_check(hostnames)
                 all_ok = True
                 for hostname, info in summary.items():

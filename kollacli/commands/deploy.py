@@ -69,6 +69,11 @@ class Deploy(Command):
                 LOG.info(u._('DEBUG command output:\n{out}')
                          .format(out=job.get_console_output()))
             if status == 0:
+                if verbose_level > 1:
+                    # log any ansible warnings
+                    msg = job.get_error_message()
+                    if msg:
+                        LOG.warn(msg)
                 LOG.info(u._('Success'))
             else:
                 raise CommandError(u._('Job failed:\n{msg}')

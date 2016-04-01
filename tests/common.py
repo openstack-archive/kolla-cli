@@ -63,8 +63,6 @@ ENABLED_DATA_SERVICES = [
     'rabbitmq_data'
     ]
 
-UNKNOWN_HOST = 'Name or service not known'
-
 
 class KollaCliTest(testtools.TestCase):
 
