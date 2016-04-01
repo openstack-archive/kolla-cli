@@ -247,20 +247,34 @@ class AnsibleJob(object):
         return msg
 
     def _format_error(self, taskname, host, status, results):
+        # get the primary error message
         err_msg = results.get('msg', '')
 
+        # there may be more detailed error msgs under results
         sub_results = results.get('results', None)
         if sub_results:
-            # there may be more detailed error msgs under results
-            sub_errs = ' ['
+            sub_errs = ''
             comma = ''
             for invocation in sub_results:
                 is_failed = invocation.get('failed', False)
                 if is_failed is True:
-                    sub_msg = invocation.get('msg', 'N/A')
+                    sub_msg = invocation.get('msg', '')
                     sub_errs = ''.join([sub_errs, comma, sub_msg])
-                    comma = ', '
-            err_msg = ''.join([err_msg, sub_errs, ']'])
+                    if sub_msg:
+                        comma = ', '
+            if sub_errs:
+                err_msg = ''.join([err_msg, ' [', sub_errs, ']'])
+
+        if not err_msg:
+            # sometimes the error message is in std_out
+            # eg- "stdout": 'localhost | FAILED! => {"changed": false,
+            # "failed": true, "msg": "...msg..."}'
+            stdout = results.get('stdout', '')
+            if '"msg": "' in stdout:
+                err_msg = stdout.split('"msg": "')[1]
+                err_msg = err_msg.split('"')[0]
+            if not err_msg:
+                err_msg = stdout
 
         msg = ('Host: %s, Task: %s, Status: %s, Message: %s' %
                (host, taskname, status, err_msg))

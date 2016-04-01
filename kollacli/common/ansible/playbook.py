@@ -13,7 +13,6 @@
 #    under the License.
 import logging
 import os
-import subprocess  # nosec
 import traceback
 
 import kollacli.i18n as u
