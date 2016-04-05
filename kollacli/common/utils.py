@@ -11,7 +11,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import fcntl
 import grp
 import logging
 import os
@@ -19,6 +18,7 @@ import pexpect
 import pwd
 import six
 import sys
+import time
 
 import kollacli.i18n as u
 
@@ -249,23 +249,45 @@ def sync_read_file(path, mode='r'):
 
     return file data
     """
+    lock = None
     try:
+        lock = Lock(path + '.lock', 'sync_read')
+        locked = lock.wait_acquire(10)
+        if not locked:
+            raise Exception(
+                u._('unable to read file {path} '
+                    'as it was locked by {owner}:{pid}.')
+                .format(path=path, owner=lock.current_owner,
+                        pid=lock.current_pid))
         with open(path, mode) as data_file:
-            fcntl.flock(data_file, fcntl.LOCK_EX)
             data = data_file.read()
     except Exception as e:
         raise e
+    finally:
+        if lock:
+            lock.release()
     return data
 
 
 def sync_write_file(path, data, mode='w'):
     """synchronously write file"""
+    lock = None
     try:
+        lock = Lock(path + '.lock', 'sync_write')
+        locked = lock.wait_acquire(10)
+        if not locked:
+            raise Exception(
+                u._('unable to write file {path} '
+                    'as it was locked by {owner}:{pid}.')
+                .format(path=path, owner=lock.current_owner,
+                        pid=lock.current_pid))
         with open(path, mode) as data_file:
-            fcntl.flock(data_file, fcntl.LOCK_EX)
             data_file.write(data)
     except Exception as e:
         raise e
+    finally:
+        if lock:
+            lock.release()
 
 
 def safe_decode(obj_to_decode):
@@ -324,3 +346,74 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False):
         raise InvalidArgument(u._('{name} ({param}) is not a {type}')
                               .format(name=param_name, param=param,
                                       type=expected_type))
+
+
+class Lock(object):
+
+    def __init__(self, lockpath, owner='unknown owner'):
+        self.lockpath = lockpath
+        self.pid = str(os.getpid())
+        self.owner = owner
+        self.current_pid = -1
+        self.current_owner = ''
+
+    def acquire(self):
+        if not self.is_owned_by_me():
+            try:
+                fd = os.open(self.lockpath, os.O_CREAT | os.O_EXCL | os.O_RDWR)
+                with os.fdopen(fd, 'a') as f:
+                    f.write(self.pid + '\n' + self.owner)
+                return self.is_owned_by_me()
+            except Exception as e:
+                # it is ok to fail to acquire, we just return that we failed
+                LOG.debug('Exception in is_owned_by_me lock check '
+                          'path: %s pid: %s owner: %s error: %s' %
+                          (self.lockpath, self.pid, self.owner, str(e)))
+        return False
+
+    def wait_acquire(self, wait_duration, interval=0.1):
+        wait_time = 0
+        while (wait_time < wait_duration):
+            if not self.acquire():
+                time.sleep(interval)
+                wait_time += interval
+            else:
+                return True
+        return False
+
+    def is_owned_by_me(self):
+        """Returns True if we own the lock or False otherwise"""
+        try:
+            fd = os.open(self.lockpath, os.O_RDWR)
+            with os.fdopen(fd, 'r') as f:
+                contents = f.read(2048).strip().split('\n')
+                if len(contents) > 0:
+                    self.current_pid = contents[0]
+                if len(contents) > 1:
+                    self.current_owner = contents[1]
+
+                if contents[0] == str(self.pid):
+                    return True
+                else:
+                    return False
+        except Exception as e:
+            # it is ok to fail to acquire, we just return that we failed
+            LOG.debug('Exception in is_owned_by_me lock check '
+                      'path: %s pid: %s owner: %s error: %s' %
+                      (self.lockpath, self.pid, self.owner, str(e)))
+        return False
+
+    def release(self):
+        if self.is_owned_by_me():
+            try:
+                os.remove(self.lockpath)
+                return True
+            except Exception:
+                # this really shouldn't happen unless for some reason
+                # two areas in the same process try to release the lock
+                # at the same time and if that happens you want to see
+                # an error about it
+                LOG.error('Error releasing lock', exc_info=True)
+                return False
+        else:
+            return False
