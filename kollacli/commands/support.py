@@ -15,6 +15,7 @@ from cliff.command import Command
 from kollacli.api.client import ClientApi
 import kollacli.i18n as u
 import logging
+import tempfile
 import traceback
 
 LOG = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ class Dump(Command):
     """
     def take_action(self, parsed_args):
         try:
-            dump_path = CLIENT.support_dump()
+            dump_path = CLIENT.support_dump(tempfile.gettempdir())
             LOG.info(u._('Dump successful to {path}').format(path=dump_path))
         except Exception:
             msg = (u._('Dump failed: {reason}')

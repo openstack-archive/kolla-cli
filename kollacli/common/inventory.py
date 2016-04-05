@@ -542,24 +542,8 @@ class Inventory(object):
         return summary
 
     def ssh_check_host(self, hostname):
-        err_msg = None
-        command_string = '/usr/bin/sudo -u %s %s -vvv ' % \
-            (get_admin_user(), get_ansible_command())
-        gen_file_path = self.create_json_gen_file()
+        err_msg, output = self.run_ansible_command('-m ping', hostname)
         is_ok = True
-        try:
-            inventory_string = '-i ' + gen_file_path
-            ping_string = ' %s %s' % (hostname, '-m ping')
-            cmd = (command_string + inventory_string + ping_string)
-            err_msg, output = run_cmd(cmd, False)
-        except Exception as e:
-            is_ok = False
-            msg = (
-                u._('Host: ({host}) setup exception. : {error}')
-                .format(host=hostname, error=str(e)))
-        finally:
-            self.remove_json_gen_file(gen_file_path)
-
         if err_msg:
             is_ok = False
             msg = (
@@ -569,6 +553,21 @@ class Inventory(object):
             msg = (u._LI('Host ({host}) ssh check succeeded.')
                    .format(host=hostname))
         return is_ok, msg
+
+    def run_ansible_command(self, ansible_command, hostname):
+        err_msg = None
+        command_string = '/usr/bin/sudo -u %s %s -vvv' % \
+            (get_admin_user(), get_ansible_command())
+        gen_file_path = self.create_json_gen_file()
+        cmd = '%s %s -i %s %s' % (command_string, hostname, gen_file_path,
+                                  ansible_command)
+        try:
+            err_msg, output = run_cmd(cmd, False)
+        except Exception as e:
+            err_msg = str(e)
+        finally:
+            self.remove_json_gen_file(gen_file_path)
+        return err_msg, output
 
     def add_group(self, groupname):
 

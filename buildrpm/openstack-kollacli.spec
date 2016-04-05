@@ -38,7 +38,6 @@ BuildRequires:  python-pbr                  >= 1.3.0
 Requires:       openstack-kolla-ansible     >= 0.2.0
 Requires:       openstack-kolla-ansible     < 0.3.0
 Requires:       babel                       >= 2.0
-Requires:       pexpect                     >= 2.3
 Requires:       python-babel                >= 2.0
 Requires:       python-cliff                >= 1.13.0
 Requires:       python-cliff-tablib         >= 1.1
@@ -180,6 +179,9 @@ esac
 
 
 %changelog
+* Tue Apr 05 2016 - Steve Noyes <steve.noyes@oracle.com>
+- remove obsolete pexpect requirement
+
 * Tue Feb 23 2016 - Borne Mace <borne.mace@oracle.com>
 - added clean up of old egg-info directories during update
 

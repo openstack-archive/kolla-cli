@@ -17,26 +17,46 @@ import tarfile
 import unittest
 
 from common import KollaCliTest
+from common import TestConfig
+from kollacli.api.client import ClientApi
 from kollacli.common.utils import get_kollacli_home
 
 LOGS_PREFIX = '/tmp/kolla_support_logs_'
+CLIENT = ClientApi()
 
 
 class TestFunctional(KollaCliTest):
 
     def test_log_collector(self):
+        test_config = TestConfig()
+        test_config.load()
+
+        is_physical_hosts = True
+        hostnames = test_config.get_hostnames()
+        if not hostnames:
+            is_physical_hosts = False
+            hostnames = ['test_host1']
+        CLIENT.host_add(hostnames)
+
         zip_path = ''
-        host1 = 'host_test1'
         try:
             path = os.path.join(get_kollacli_home(),
                                 'tools', 'log_collector.py')
-            retval, msg = self.run_command('%s %s' % (path, host1))
-            self.assertEqual(0, retval,
-                             'log_collector command failed: %s' % msg)
-            self.assertIn(LOGS_PREFIX, msg)
-            zip_path = '/tmp' + msg.split('/tmp')[1].strip()
-            self.assertTrue(os.path.exists(zip_path),
-                            'Zip file %s does not exist' % zip_path)
+
+            # run the log_collector tool
+            retval, msg = self.run_command('%s %s' % (path, 'all'))
+
+            if is_physical_hosts:
+                self.assertEqual(0, retval,
+                                 'log_collector command failed: %s' % msg)
+                self.assertNotIn('ERROR', msg)
+                self.assertIn(LOGS_PREFIX, msg)
+                zip_path = '/tmp' + msg.split('/tmp')[1].strip()
+                self.assertTrue(os.path.exists(zip_path),
+                                'Zip file %s does not exist' % zip_path)
+            else:
+                # no host, this should fail
+                self.assertIn('error', msg.lower())
         except Exception as e:
             raise e
         finally:

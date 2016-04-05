@@ -14,9 +14,9 @@
 import grp
 import logging
 import os
-import pexpect
 import pwd
 import six
+import subprocess  # nosec
 import sys
 import time
 
@@ -146,42 +146,25 @@ def run_cmd(cmd, print_output=True):
     - err_msg:  empty string=command succeeded
                 not None=command failed
     - output:   string: all the output of the run command
-
-    If the command is an ansible playbook command, record the
-    output in an ansible log file.
     """
-    pwd_prompt = '[sudo] password'
-    err_msg = ''
-    output = ''
-    child = None
+    err = None
+    output = None
     try:
-        child = pexpect.spawn(cmd)
-        sniff = child.read(len(pwd_prompt))
-        sniff = safe_decode(sniff)
-        if sniff == pwd_prompt:
-            output = sniff + '\n'
-            raise Exception(
-                u._('Insufficient permissions to run command "{command}".')
-                .format(command=cmd))
-        child.maxsize = 1
-        child.timeout = 86400
-        for line in child:
-            line = safe_decode(line)
-            outline = sniff + line.rstrip()
-            sniff = ''
-            output = ''.join([output, outline, '\n'])
-            if print_output:
-                LOG.info(outline)
-
+        process = subprocess.Popen(cmd, shell=True,  # nosec
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
+        output, err = process.communicate()
     except Exception as e:
-        err_msg = '%s' % e
-    finally:
-        if child:
-            child.close()
-            if child.exitstatus != 0:
-                err_msg = (u._('Command failed. : {error}')
-                           .format(error=err_msg))
-    return err_msg, output
+        err = str(e)
+
+    err = safe_decode(err)
+    output = safe_decode(output)
+    if process.returncode != 0:
+        err = (u._('Command failed. : {error}')
+               .format(error=err))
+    if print_output:
+        LOG.info(output)
+    return err, output
 
 
 def change_property(file_path, property_key, property_value, clear=False):
