@@ -25,7 +25,11 @@ from copy import copy
 from pexpect import pxssh
 from shutil import copyfile
 
+from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import InvalidArgument
+
+CLIENT = ClientApi()
+CLIENT.enable_console_logging(logging.DEBUG)
 
 ARG_LIST = {
     bool: False,

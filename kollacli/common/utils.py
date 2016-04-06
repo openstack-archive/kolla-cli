@@ -349,7 +349,7 @@ class Lock(object):
                 return self.is_owned_by_me()
             except Exception as e:
                 # it is ok to fail to acquire, we just return that we failed
-                LOG.debug('Exception in is_owned_by_me lock check '
+                LOG.debug('Exception in acquire lock. '
                           'path: %s pid: %s owner: %s error: %s' %
                           (self.lockpath, self.pid, self.owner, str(e)))
         return False
@@ -367,6 +367,9 @@ class Lock(object):
     def is_owned_by_me(self):
         """Returns True if we own the lock or False otherwise"""
         try:
+            if not os.path.exists(self.lockpath):
+                # lock doesn't exist, just return
+                return False
             fd = os.open(self.lockpath, os.O_RDWR)
             with os.fdopen(fd, 'r') as f:
                 contents = f.read(2048).strip().split('\n')
@@ -381,7 +384,7 @@ class Lock(object):
                     return False
         except Exception as e:
             # it is ok to fail to acquire, we just return that we failed
-            LOG.debug('Exception in is_owned_by_me lock check '
+            LOG.debug('Exception in is_owned_by_me lock check. '
                       'path: %s pid: %s owner: %s error: %s' %
                       (self.lockpath, self.pid, self.owner, str(e)))
         return False

@@ -164,7 +164,6 @@ class TestFunctional(KollaCliTest):
         err_msg = job.get_error_message()
         self.log.info('job is complete. status: %s, err: %s'
                       % (status, err_msg))
-        self.log.info('ansible output:\n%s' % job.get_console_output())
         if is_physical_host:
             self.assertEqual(0, status, 'Job %s failed: %s' % (descr, err_msg))
         else:

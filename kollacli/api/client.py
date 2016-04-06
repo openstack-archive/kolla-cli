@@ -11,7 +11,13 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import kollacli.i18n as u
+
 import logging
+import os
+import sys
+
+from logging.handlers import RotatingFileHandler
 
 from kollacli.api.async import AsyncApi
 from kollacli.api.deploy import DeployApi
@@ -22,6 +28,9 @@ from kollacli.api.properties import PropertyApi
 from kollacli.api.service import ServiceApi
 from kollacli.api.support import SupportApi
 
+CONSOLE_MESSAGE_FORMAT = '%(message)s'
+LOG_FILE_MESSAGE_FORMAT = \
+    '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
 LOG = logging.getLogger(__name__)
 
 
@@ -36,5 +45,68 @@ class ClientApi(
         SupportApi,
         ):
 
+    def __init__(self):
+        self._configure_logging()
+
     def base_call(self):
         LOG.info('base call')
+
+    def enable_console_logging(self, level, enable=True):
+        """enable/disable console logging for the api
+
+        enable: True/False
+        level: logging.INFO, logging.DEBUG, logging.WARNING,
+        logging.CRITICAL...
+        """
+        root_logger = logging.getLogger('')
+        console = logging.StreamHandler(sys.stderr)
+        if enable:
+            console.setLevel(level)
+            formatter = logging.Formatter(CONSOLE_MESSAGE_FORMAT)
+            console.setFormatter(formatter)
+            root_logger.addHandler(console)
+        else:
+            root_logger.removeHandler(console)
+
+    def _configure_logging(self):
+        root_logger = logging.getLogger('')
+        root_logger.setLevel(logging.DEBUG)
+
+        handler_found = False
+        handlers = root_logger.handlers
+        for handler in handlers:
+            if isinstance(handler, RotatingFileHandler):
+                handler_found = True
+                break
+        if not handler_found:
+            # logger has not been set up
+            try:
+                rotate_handler = RotatingFileHandler(
+                    os.path.join(os.path.abspath(os.sep),
+                                 'var', 'log', 'kolla', 'kolla.log'),
+                    maxBytes=self._get_kolla_log_file_size(),
+                    backupCount=4)
+            except IOError as e:
+                # most likely the caller is not part of the kolla group
+                raise IOError(u._
+                              (str(e) +
+                               '\nPermission denied to run the kolla client.'
+                               '\nPlease add user to the kolla group and '
+                               'then log out and back in.'))
+
+            formatter = logging.Formatter(LOG_FILE_MESSAGE_FORMAT)
+            rotate_handler.setFormatter(formatter)
+            rotate_handler.setLevel(logging.INFO)
+            root_logger.addHandler(rotate_handler)
+
+    def _get_kolla_log_file_size(self):
+        envvar = 'KOLLA_LOG_FILE_SIZE'
+        size_str = os.environ.get(envvar, '500000')
+        try:
+            size = int(size_str)
+        except Exception:
+            LOG.error(('Environmental variable ({env_var}) is not an '
+                       'integer ({log_size}).')
+                      .format(env_var=envvar, log_size=size_str))
+            size = 50000
+        return size

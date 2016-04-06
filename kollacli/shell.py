@@ -21,10 +21,9 @@ from cliff.commandmanager import CommandManager
 
 import kollacli.i18n as u
 
+from kollacli.api.client import ClientApi
 from kollacli.commands.exceptions import CommandError
 from kollacli.common.inventory import INVENTORY_PATH
-from kollacli.common.utils import get_kolla_log_dir
-from kollacli.common.utils import get_kolla_log_file_size
 from kollacli.common.utils import get_kollacli_etc
 
 LOG = logging.getLogger(__name__)
@@ -47,41 +46,14 @@ class KollaCli(App):
                 'recreate the file.').format(inventory=inventory_path)
             raise CommandError(err_string)
 
-        # check that current user can access the inventory file
-        inventory_file = None
-        try:
-            inventory_file = open(inventory_path, 'r+')
-        except Exception:
-            raise CommandError(
-                u._('Permission denied to run the kollacli.\n'
-                    'Please add user to the kolla group and '
-                    'then log out and back in.'))
-        finally:
-            if inventory_file and inventory_file.close is False:
-                inventory_file.close()
+        # set up logging and test that user running shell is part
+        # of kolla group
+        ClientApi()
 
         # paramiko log is very chatty, tune it down
         logging.getLogger('paramiko').setLevel(logging.WARNING)
 
-        # set up logging
-        self.rotating_log_dir = get_kolla_log_dir()
-        self.max_bytes = get_kolla_log_file_size()
-        self.backup_count = 4
-
         self.dump_stack_trace = False
-
-        self.add_rotational_log()
-
-    def add_rotational_log(self):
-        root_logger = logging.getLogger('')
-        rotate_handler = logging.handlers.RotatingFileHandler(
-            os.path.join(self.rotating_log_dir, 'kolla.log'),
-            maxBytes=self.max_bytes,
-            backupCount=self.backup_count)
-        formatter = logging.Formatter(self.LOG_FILE_MESSAGE_FORMAT)
-        rotate_handler.setFormatter(formatter)
-        rotate_handler.setLevel(logging.INFO)
-        root_logger.addHandler(rotate_handler)
 
 
 def main(argv=sys.argv[1:]):
