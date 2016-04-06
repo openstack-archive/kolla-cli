@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.support &mdash; kollacli 1.0.0.dev379 documentation</title>
+    <title>kollacli.api.support &mdash; kollacli 1.0.0.dev386 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev379',
+        VERSION:     '1.0.0.dev386',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev379 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,36 +47,79 @@
           <div class="body">
             
   <h1>Source code for kollacli.api.support</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
-<span class="c1">#</span>
-<span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
-<span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
-<span class="c1">#    a copy of the License at</span>
-<span class="c1">#</span>
-<span class="c1">#         http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c1">#</span>
-<span class="c1">#    Unless required by applicable law or agreed to in writing, software</span>
-<span class="c1">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
-<span class="c1">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
-<span class="c1">#    License for the specific language governing permissions and limitations</span>
-<span class="c1">#    under the License.</span>
+<span class="c"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span class="c">#</span>
+<span class="c">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
+<span class="c">#    not use this file except in compliance with the License. You may obtain</span>
+<span class="c">#    a copy of the License at</span>
+<span class="c">#</span>
+<span class="c">#         http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c">#</span>
+<span class="c">#    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
+<span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
+<span class="c">#    License for the specific language governing permissions and limitations</span>
+<span class="c">#    under the License.</span>
+<span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">kollacli.api.exceptions</span> <span class="kn">import</span> <span class="n">InvalidArgument</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.support</span> <span class="kn">import</span> <span class="n">dump</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.support</span> <span class="kn">import</span> <span class="n">get_logs</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">check_arg</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">safe_decode</span>
 
 
 <div class="viewcode-block" id="SupportApi"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.support.SupportApi">[docs]</a><span class="k">class</span> <span class="nc">SupportApi</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-<div class="viewcode-block" id="SupportApi.support_dump"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.support.SupportApi.support_dump">[docs]</a>    <span class="k">def</span> <span class="nf">support_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SupportApi.support_dump"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.support.SupportApi.support_dump">[docs]</a>    <span class="k">def</span> <span class="nf">support_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Dumps configuration data for debugging.</span>
 
 <span class="sd">        Dumps most files in /etc/kolla and /usr/share/kolla into a</span>
 <span class="sd">        tar file so be given to support / development to help with</span>
 <span class="sd">        debugging problems.</span>
 
+<span class="sd">        :param dirpath: path to directory where dump will be placed</span>
+<span class="sd">        :type dirpath: string</span>
 <span class="sd">        :return: path to dump file</span>
 <span class="sd">        :rtype: string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dumpfile_path</span> <span class="o">=</span> <span class="n">dump</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">dumpfile_path</span></div></div>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Directory path&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="n">dirpath</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dirpath</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Directory path: {path} does not exist&#39;</span><span class="p">)</span>
+                                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">dirpath</span><span class="p">))</span>
+        <span class="n">dumpfile_path</span> <span class="o">=</span> <span class="n">dump</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dumpfile_path</span>
+</div>
+<div class="viewcode-block" id="SupportApi.support_get_logs"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.support.SupportApi.support_get_logs">[docs]</a>    <span class="k">def</span> <span class="nf">support_get_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicenames</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;get container logs</span>
+
+<span class="sd">        Fetch the container log files of services from the specified hosts.</span>
+<span class="sd">        The log files will be placed in the named directory. All the containers</span>
+<span class="sd">        for the host will be placed in a directory named hostname. The file</span>
+<span class="sd">        names for each log will be servicename_id.log.</span>
+
+<span class="sd">        :param servicenames: names of services (ie nova, glance, etc)</span>
+<span class="sd">        :type servicenames: list of strings</span>
+<span class="sd">        :param hostname: name of host to look for logs on</span>
+<span class="sd">        :type hostname: string</span>
+<span class="sd">        :param dirpath: path of directory where log files will be written</span>
+<span class="sd">        :type dirpath: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Directory path&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="n">dirpath</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dirpath</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Directory path: {path} does not exist&#39;</span><span class="p">)</span>
+                                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">dirpath</span><span class="p">))</span>
+
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">servicenames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">servicenames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">servicenames</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="n">hostname</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
+
+        <span class="n">get_logs</span><span class="p">(</span><span class="n">servicenames</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -110,7 +153,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

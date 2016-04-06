@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.commands.exceptions &mdash; kollacli 1.0.0.dev379 documentation</title>
+    <title>kollacli.commands.exceptions &mdash; kollacli 1.0.0.dev386 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev379',
+        VERSION:     '1.0.0.dev386',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev379 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,19 +47,19 @@
           <div class="body">
             
   <h1>Source code for kollacli.commands.exceptions</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
-<span class="c1">#</span>
-<span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
-<span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
-<span class="c1">#    a copy of the License at</span>
-<span class="c1">#</span>
-<span class="c1">#         http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c1">#</span>
-<span class="c1">#    Unless required by applicable law or agreed to in writing, software</span>
-<span class="c1">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
-<span class="c1">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
-<span class="c1">#    License for the specific language governing permissions and limitations</span>
-<span class="c1">#    under the License.</span>
+<span class="c"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span class="c">#</span>
+<span class="c">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
+<span class="c">#    not use this file except in compliance with the License. You may obtain</span>
+<span class="c">#    a copy of the License at</span>
+<span class="c">#</span>
+<span class="c">#         http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c">#</span>
+<span class="c">#    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
+<span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
+<span class="c">#    License for the specific language governing permissions and limitations</span>
+<span class="c">#    under the License.</span>
 <span class="sd">&quot;&quot;&quot;Exception definitions.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
 
@@ -67,7 +67,7 @@
 <div class="viewcode-block" id="CommandError"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.exceptions.CommandError">[docs]</a><span class="k">class</span> <span class="nc">CommandError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;CLI command error&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="n">prefix</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;ERROR: &#39;</span><span class="p">)</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;ERROR: &#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">message</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CommandError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
@@ -104,7 +104,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

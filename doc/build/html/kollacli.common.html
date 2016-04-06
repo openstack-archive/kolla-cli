@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common package &mdash; kollacli 1.0.0.dev379 documentation</title>
+    <title>kollacli.common package &mdash; kollacli 1.0.0.dev386 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.0.dev379',
+        VERSION:     '1.0.0.dev386',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev379 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -365,6 +365,11 @@ if group name is not none, remove host from group</p>
 <tt class="descname">remove_json_gen_file</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.remove_json_gen_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.remove_json_gen_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="kollacli.common.inventory.Inventory.run_ansible_command">
+<tt class="descname">run_ansible_command</tt><big>(</big><em>ansible_command</em>, <em>hostname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.run_ansible_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.run_ansible_command" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="staticmethod">
 <dt id="kollacli.common.inventory.Inventory.save">
 <em class="property">static </em><tt class="descname">save</tt><big>(</big><em>inventory</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.save" title="Permalink to this definition">¶</a></dt>
@@ -661,18 +666,86 @@ If it doesn&#8217;t exist, a new password will be added.</p>
 </div>
 <div class="section" id="module-kollacli.common.support">
 <span id="kollacli-common-support-module"></span><h2>kollacli.common.support module<a class="headerlink" href="#module-kollacli.common.support" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.common.support.HostLogs">
+<em class="property">class </em><tt class="descclassname">kollacli.common.support.</tt><tt class="descname">HostLogs</tt><big>(</big><em>hostname</em>, <em>inventory</em>, <em>servicenames</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/support.html#HostLogs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.support.HostLogs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.common.support.HostLogs.filter_services">
+<tt class="descname">filter_services</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/support.html#HostLogs.filter_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.support.HostLogs.filter_services" title="Permalink to this definition">¶</a></dt>
+<dd><p>filter services to only those of interest</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.support.HostLogs.get_log">
+<tt class="descname">get_log</tt><big>(</big><em>container_id</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/support.html#HostLogs.get_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.support.HostLogs.get_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>read the container log</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.support.HostLogs.load_container_info">
+<tt class="descname">load_container_info</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/support.html#HostLogs.load_container_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.support.HostLogs.load_container_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the list of containers on the host</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.support.HostLogs.write_logfile">
+<tt class="descname">write_logfile</tt><big>(</big><em>dirpath</em>, <em>logname</em>, <em>logdata</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/support.html#HostLogs.write_logfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.support.HostLogs.write_logfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>write out one log file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.support.HostLogs.write_logs">
+<tt class="descname">write_logs</tt><big>(</big><em>dirname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/support.html#HostLogs.write_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.support.HostLogs.write_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>write out the log files for all containers</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="kollacli.common.support.dump">
-<tt class="descclassname">kollacli.common.support.</tt><tt class="descname">dump</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/support.html#dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.support.dump" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">kollacli.common.support.</tt><tt class="descname">dump</tt><big>(</big><em>dirpath</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/support.html#dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.support.dump" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dumps configuration data for debugging</p>
 <p>Dumps most files in /etc/kolla and /usr/share/kolla into a
 tar file so be given to support / development to help with
 debugging problems.</p>
 </dd></dl>
 
+<dl class="function">
+<dt id="kollacli.common.support.get_logs">
+<tt class="descclassname">kollacli.common.support.</tt><tt class="descname">get_logs</tt><big>(</big><em>servicenames</em>, <em>hostname</em>, <em>dirname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/support.html#get_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.support.get_logs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-kollacli.common.utils">
 <span id="kollacli-common-utils-module"></span><h2>kollacli.common.utils module<a class="headerlink" href="#module-kollacli.common.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.common.utils.Lock">
+<em class="property">class </em><tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">Lock</tt><big>(</big><em>lockpath</em>, <em>owner='unknown owner'</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#Lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.Lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.common.utils.Lock.acquire">
+<tt class="descname">acquire</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#Lock.acquire"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.Lock.acquire" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.utils.Lock.is_owned_by_me">
+<tt class="descname">is_owned_by_me</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#Lock.is_owned_by_me"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.Lock.is_owned_by_me" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if we own the lock or False otherwise</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.utils.Lock.release">
+<tt class="descname">release</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#Lock.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.Lock.release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.utils.Lock.wait_acquire">
+<tt class="descname">wait_acquire</tt><big>(</big><em>wait_duration</em>, <em>interval=0.1</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#Lock.wait_acquire"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.Lock.wait_acquire" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="kollacli.common.utils.change_property">
 <tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">change_property</tt><big>(</big><em>file_path</em>, <em>property_key</em>, <em>property_value</em>, <em>clear=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#change_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.change_property" title="Permalink to this definition">¶</a></dt>
@@ -787,8 +860,6 @@ interpreter.</p>
 <ul class="simple">
 <li>output:   string: all the output of the run command</li>
 </ul>
-<p>If the command is an ansible playbook command, record the
-output in an ansible log file.</p>
 </dd></dl>
 
 <dl class="function">
@@ -871,7 +942,7 @@ unicode.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev379 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
