@@ -40,10 +40,11 @@ class AnsiblePlaybook(object):
     services = None
     serial = False
     deploy_id = None
-    inventory = Inventory.load()
+    inventory = None
 
     def run(self):
         try:
+            self.inventory = Inventory.load()
             inventory_path = self._make_temp_inventory()
             cmd = self._get_playbook_cmd(inventory_path)
             self._log_ansible_cmd(cmd, inventory_path)
