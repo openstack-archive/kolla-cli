@@ -50,8 +50,6 @@ Requires:       PyYAML                      >= 3.10
 
 Requires:       /usr/bin/ssh-keygen
 
-Conflicts:      pexpect                     = 3.3
-
 %description
 The KollaCLI simplifies OpenStack Kolla deployments.
 
@@ -105,7 +103,7 @@ rm -rf %{buildroot}
 %attr(-, root, root) %{python_sitelib}
 %attr(755, root, %{kolla_group}) %{_bindir}/kollacli
 %attr(550, %{kolla_user}, %{kolla_group}) %dir %{_datadir}/kolla/kollacli/tools
-%attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/passwd*
+%attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/kolla_actions*
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/log_*
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
@@ -154,18 +152,29 @@ sed -i "s/#retry_files_enabled = False/retry_files_enabled = False/" /etc/ansibl
 /usr/bin/kollacli complete >/etc/bash_completion.d/kollacli 2>/dev/null
 
 # Update the sudoers file
-if ! grep -q 'kollacli/tools/passwd_editor' /etc/sudoers.d/%{kolla_user}
+if ! grep -q 'kollacli/tools/kolla_actions' /etc/sudoers.d/%{kolla_user}
 then
     sed -i \
-        '/^Cmnd_Alias.*KOLLA_CMDS/ s:$:, %{_datadir}/kolla/kollacli/tools/passwd_editor.py:'\
+        '/^Cmnd_Alias.*KOLLA_CMDS/ s:$:, %{_datadir}/kolla/kollacli/tools/kolla_actions.py:'\
         /etc/sudoers.d/%{kolla_user}
 fi
+# remove obsolete password editor from sudoers file
+sed -i \
+    '/^Cmnd_Alias.*KOLLA_CMDS/ s:, /usr/share/kolla/kollacli/tools/passwd_editor.py::'\
+     /etc/sudoers.d/%{kolla_user}
 
 # remove obsolete json_generator script
 if test -f %{_datadir}/kolla/kollacli/tools/json_generator.py
 then
     rm -f %{_datadir}/kolla/kollacli/tools/json_generator.py
 fi
+
+# remove obsolete password editor script
+if test -f %{_datadir}/kolla/kollacli/tools/passwd_editor.py.py
+then
+    rm -f %{_datadir}/kolla/kollacli/tools/passwd_editor.py.py
+fi
+
 
 %postun
 case "$*" in
@@ -179,6 +188,9 @@ esac
 
 
 %changelog
+* Tue Apr 07 2016 - Steve Noyes <steve.noyes@oracle.com>
+- rename passwd_editor.py to kolla_actions.py
+
 * Tue Apr 05 2016 - Steve Noyes <steve.noyes@oracle.com>
 - remove obsolete pexpect requirement
 

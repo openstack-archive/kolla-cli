@@ -15,6 +15,7 @@ import fcntl
 import json
 import logging
 import os
+import pwd
 import subprocess  # nosec
 import tempfile
 import time
@@ -22,7 +23,11 @@ import time
 import kollacli.i18n as u
 
 from kollacli.common.inventory import remove_temp_inventory
+from kollacli.common.utils import PidManager
+from kollacli.common.utils import get_kolla_actions_path
 from kollacli.common.utils import get_admin_uids
+from kollacli.common.utils import get_admin_user
+from kollacli.common.utils import run_cmd
 from kollacli.common.utils import safe_decode
 
 LOG = logging.getLogger(__name__)
@@ -57,6 +62,7 @@ class AnsibleJob(object):
         self._process_std_err = None
         self._errors = []
         self._cmd_output = ''
+        self._kill_uname = None
 
     def run(self):
         try:
@@ -73,6 +79,7 @@ class AnsibleJob(object):
                                              stderr=subprocess.PIPE)
 
             # setup stdout to be read without blocking
+            LOG.debug('process pid: %s' % self._process.pid)
             flags = fcntl.fcntl(self._process.stdout, fcntl.F_GETFL)
             fcntl.fcntl(self._process.stdout, fcntl.F_SETFL,
                         (flags | os.O_NONBLOCK))
@@ -99,6 +106,7 @@ class AnsibleJob(object):
         - None: running
         - 0: done, success
         - 1: done, error
+        - 2: done, killed by user
         """
         status = self._process.poll()
         self._read_from_callback()
@@ -106,9 +114,14 @@ class AnsibleJob(object):
         self._cmd_output = ''.join([self._cmd_output, out])
         if status is not None:
             # job has completed
-            status = self._process.returncode
-            if status != 0:
-                status = 1
+            if self._kill_uname:
+                status = 2
+                msg = u._('Job killed by user (%s)' % self._kill_uname)
+                self._errors = [msg]
+            else:
+                status = self._process.returncode
+                if status != 0:
+                    status = 1
             if not self._process_std_err:
                 # read stderr from process
                 std_err = self._read_stream(self._process.stderr)
@@ -133,6 +146,31 @@ class AnsibleJob(object):
         get final output text from command execution
         """
         return self._cmd_output
+
+    def kill(self):
+        """kill job in progress
+
+        The process pid is owned by root, so
+        that is not killable. Need to kill all its children.
+        """
+        # the kill must be run as the kolla user so the
+        # kolla_actions program must be used.
+        actions_path = get_kolla_actions_path()
+        kolla_user = get_admin_user()
+        cmd_prefix = ('/usr/bin/sudo -u %s %s job -t -p '
+                      % (kolla_user, actions_path))
+
+        # kill the children from largest to smallest pids.
+        child_pids = PidManager.get_child_pids(self._process.pid)
+        for child_pid in sorted(child_pids, reverse=True):
+            cmd = ''.join([cmd_prefix, child_pid])
+            err_msg, output = run_cmd(cmd, print_output=False)
+            if err_msg:
+                LOG.debug('kill failed: %s %s' % (err_msg, output))
+
+        # record the name of user who killed the job
+        cur_uid = os.getuid()
+        self._kill_uname = pwd.getpwuid(cur_uid)[0]
 
     def _read_stream(self, stream):
         out = ''

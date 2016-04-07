@@ -56,6 +56,10 @@ def get_kolla_log_dir():
     return '/var/log/kolla/'
 
 
+def get_kolla_actions_path():
+    return os.path.join(get_kollacli_home(), 'tools', 'kolla_actions.py')
+
+
 def get_admin_uids():
     """get uid and gid of admin user"""
     user_info = pwd.getpwnam(get_admin_user())
@@ -403,3 +407,30 @@ class Lock(object):
                 return False
         else:
             return False
+
+
+class PidManager():
+    @staticmethod
+    def get_child_pids(pid, child_pids=[]):
+        """get child pids of parent pid"""
+        # This ps command will return child pids of parent pid, separated by
+        # newlines.
+        err_msg, output = run_cmd('ps --ppid %s -o pid=""' % pid,
+                                  print_output=False)
+
+        # err_msg is expected when pid has no children
+        if not err_msg:
+            output = output.strip()
+
+            if '\n' in output:
+                ps_pids = output.split('\n')
+            else:
+                ps_pids = [output]
+
+            if ps_pids:
+                child_pids.extend(ps_pids)
+
+                # recurse through children to get all child pids
+                for ps_pid in ps_pids:
+                    PidManager.get_child_pids(ps_pid, child_pids)
+        return child_pids

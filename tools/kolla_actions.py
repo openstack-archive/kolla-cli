@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import getopt
+import os
+import signal
 import sys
 
 from kollacli.common.utils import change_property
@@ -35,17 +37,17 @@ def _print_pwd_keys(path):
     print(pwd_keys)
 
 
-def main():
-    """edit password in passwords.yml file
+def _password_cmd(argv):
+    """password command
 
-    sys.argv:
-    -p path  # path to passwords.yaml
-    -k key   # key of password
-    -v value # value of password
-    -c       # flag to clear the password
-    -l       # print to stdout a csv string of the existing keys
+    args for password command:
+      -p path  # path to passwords.yaml
+      -k key   # key of password
+      -v value # value of password
+      -c       # flag to clear the password
+      -l       # print to stdout a csv string of the existing keys
     """
-    opts, _ = getopt.getopt(sys.argv[1:], 'p:k:v:cl')
+    opts, _ = getopt.getopt(argv[2:], 'p:k:v:cl')
     path = ''
     pwd_key = ''
     pwd_value = ''
@@ -70,6 +72,50 @@ def main():
         # edit a password
         change_property(path, pwd_key, pwd_value, clear_flag)
 
+
+def _job_cmd(argv):
+    """jobs command
+
+    args for job command
+      -t       # terminate action
+      -p pid   # process pid
+    """
+    opts, _ = getopt.getopt(argv[2:], 'tp:')
+    pid = None
+    term_flag = False
+    for opt, arg in opts:
+        if opt == '-p':
+            pid = arg
+        elif opt == '-t':
+            term_flag = True
+
+    if term_flag:
+        try:
+            os.kill(int(pid), signal.SIGKILL)
+        except Exception as e:
+            raise Exception('%s, pid %s' % (str(e), pid))
+
+
+def main():
+    """perform actions on behalf of kolla user
+
+    sys.argv:
+    sys.argv[1]   # command
+
+    Supported commands:
+    - password
+    - job
+    """
+    if len(sys.argv) <= 1:
+        raise Exception('Invalid number of parameters')
+
+    command = sys.argv[1]
+    if command == 'password':
+        _password_cmd(sys.argv)
+    elif command == 'job':
+        _job_cmd(sys.argv)
+    else:
+        raise Exception('Invalid command %s' % command)
 
 if __name__ == '__main__':
     main()

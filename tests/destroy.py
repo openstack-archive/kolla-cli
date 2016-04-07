@@ -20,6 +20,8 @@ from common import TestConfig
 
 from kollacli.api.client import ClientApi
 
+import random
+import time
 import unittest
 
 TEST_GROUP_NAME = 'test_group'
@@ -93,8 +95,16 @@ class TestFunctional(KollaCliTest):
         for predeploy_cmd in predeploy_cmds:
             self.run_cli_cmd('%s' % predeploy_cmd)
 
-        # deploy limited services openstack
-        self.log.info('Start deploy')
+        # test killing a deploy
+        self.log.info('Kill a deployment')
+        job = CLIENT.async_deploy(verbose_level=2)
+        time.sleep(random.randint(1, 5))
+        job.kill()
+        self._process_job(job, 'deploy-kill',
+                          is_physical_host, expect_kill=True)
+
+        # do a deploy of a limited set of services
+        self.log.info('Start a deployment')
         job = CLIENT.async_deploy(verbose_level=2)
         self._process_job(job, 'deploy', is_physical_host)
 
@@ -159,19 +169,24 @@ class TestFunctional(KollaCliTest):
                                  'is running on host: %s ' % hostname +
                                  'after destroy.')
 
-    def _process_job(self, job, descr, is_physical_host):
+    def _process_job(self, job, descr, is_physical_host, expect_kill=False):
         status = job.wait()
         err_msg = job.get_error_message()
         self.log.info('job is complete. status: %s, err: %s'
                       % (status, err_msg))
-        if is_physical_host:
-            self.assertEqual(0, status, 'Job %s failed: %s' % (descr, err_msg))
+        if expect_kill:
+            self.assertEqual(2, status, 'Job %s does not have killed status %s'
+                             % (descr, err_msg))
         else:
-            self.assertEqual(1, status, 'Job %s ' % descr +
-                             'succeeded when it should have failed')
-            self.assertIn(UNREACHABLE,
-                          'Job %s: No hosts, but got wrong error: %s'
-                          % (descr, err_msg))
+            if is_physical_host:
+                self.assertEqual(0, status, 'Job %s failed: %s'
+                                 % (descr, err_msg))
+            else:
+                self.assertEqual(1, status, 'Job %s ' % descr +
+                                 'succeeded when it should have failed')
+                self.assertIn(UNREACHABLE,
+                              'Job %s: No hosts, but got wrong error: %s'
+                              % (descr, err_msg))
 
 if __name__ == '__main__':
     unittest.main()

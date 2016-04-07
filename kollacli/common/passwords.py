@@ -19,7 +19,6 @@ from kollacli.api.exceptions import FailedOperation
 from kollacli.common import utils
 
 PWDS_FILENAME = 'passwords.yml'
-PWD_EDITOR_FILENAME = 'passwd_editor.py'
 
 
 def set_password(pwd_key, pwd_value):
@@ -61,12 +60,10 @@ def get_password_names():
 
 
 def _get_cmd_prefix():
-    editor_path = os.path.join(utils.get_kollacli_home(),
-                               'tools',
-                               PWD_EDITOR_FILENAME)
+    actions_path = utils.get_kolla_actions_path()
     pwd_file_path = os.path.join(utils.get_kolla_etc(),
                                  PWDS_FILENAME)
     user = utils.get_admin_user()
-    prefix = '/usr/bin/sudo -u %s %s -p %s ' % (user,
-                                                editor_path, pwd_file_path)
+    prefix = ('/usr/bin/sudo -u %s %s password -p %s '
+              % (user, actions_path, pwd_file_path))
     return prefix

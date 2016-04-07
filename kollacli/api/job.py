@@ -29,7 +29,10 @@ class Job(object):
     def get_status(self):
         """Get status of job
 
-        :return: None if job still running, 0 if job succeeded, 1 if job failed
+        :return: None: job is still running
+                 0: job succeeded
+                 1: job failed
+                 2: job killed by user
         :rtype: int or None
         """
         return self._ansible_job.get_status()
@@ -49,3 +52,7 @@ class Job(object):
         :rtype: string
         """
         return self._ansible_job.get_command_output()
+
+    def kill(self):
+        """kill the job"""
+        self._ansible_job.kill()
