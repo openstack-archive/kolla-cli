@@ -88,11 +88,10 @@ class ClientApi(
                     backupCount=4)
             except IOError as e:
                 # most likely the caller is not part of the kolla group
-                raise IOError(u._
-                              (str(e) +
-                               '\nPermission denied to run the kolla client.'
-                               '\nPlease add user to the kolla group and '
-                               'then log out and back in.'))
+                raise IOError(u._('Permission denied to run the kolla client.'
+                                  '\nPlease add user to the kolla group and '
+                                  'then log out and back in. {error}')
+                              .format(error=str(e)))
 
             formatter = logging.Formatter(LOG_FILE_MESSAGE_FORMAT)
             rotate_handler.setFormatter(formatter)

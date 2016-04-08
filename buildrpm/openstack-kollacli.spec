@@ -133,6 +133,13 @@ fi
 %post
 setfacl -m d:g:%{kolla_group}:rw %{_var}/log/kolla
 
+if ! test -f %{_sysconfdir}/kolla/kollacli/ansible.lock
+then
+    touch %{_sysconfdir}/kolla/kollacli/ansible.lock
+    chown %{kolla_user}:%{kolla_group} %{_sysconfdir}/kolla/kollacli/ansible.lock
+    chmod 0660 %{_sysconfdir}/kolla/kollacli/ansible.lock
+fi
+
 if ! test -f ~%{kolla_user}/.ssh/id_rsa
 then
     runuser -m -s /bin/bash -c \
@@ -188,7 +195,10 @@ esac
 
 
 %changelog
-* Tue Apr 07 2016 - Steve Noyes <steve.noyes@oracle.com>
+* Thu Apr 07 2016 - Borne Mace <borne.mace@oracle.com>
+- added ansible.lock file to coordinate ansible synchronization
+
+* Thu Apr 07 2016 - Steve Noyes <steve.noyes@oracle.com>
 - rename passwd_editor.py to kolla_actions.py
 
 * Tue Apr 05 2016 - Steve Noyes <steve.noyes@oracle.com>

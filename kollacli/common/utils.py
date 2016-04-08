@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import fcntl
 import grp
 import logging
 import os
@@ -54,6 +55,10 @@ def get_host_vars_dir():
 
 def get_kolla_log_dir():
     return '/var/log/kolla/'
+
+
+def get_ansible_lock_path():
+    return os.path.join(get_kollacli_etc(), 'ansible/ansible.lock')
 
 
 def get_kolla_actions_path():
@@ -238,14 +243,13 @@ def sync_read_file(path, mode='r'):
     """
     lock = None
     try:
-        lock = Lock(path + '.lock', 'sync_read')
-        locked = lock.wait_acquire(10)
+        lock = Lock(path, 'sync_read')
+        locked = lock.wait_acquire()
         if not locked:
             raise Exception(
                 u._('unable to read file {path} '
-                    'as it was locked by {owner}:{pid}.')
-                .format(path=path, owner=lock.current_owner,
-                        pid=lock.current_pid))
+                    'as it was locked.')
+                .format(path=path))
         with open(path, mode) as data_file:
             data = data_file.read()
     except Exception as e:
@@ -258,21 +262,31 @@ def sync_read_file(path, mode='r'):
 
 def sync_write_file(path, data, mode='w'):
     """synchronously write file"""
+    ansible_lock = None
     lock = None
     try:
-        lock = Lock(path + '.lock', 'sync_write')
-        locked = lock.wait_acquire(10)
+        ansible_lock = Lock(get_ansible_lock_path(), 'sync_write')
+        locked = ansible_lock.wait_acquire()
+        if not locked:
+            raise Exception(
+                u._('unable to get ansible lock while writing to {path} '
+                    'as it was locked.')
+                .format(path=path))
+
+        lock = Lock(path, 'sync_write')
+        locked = lock.wait_acquire()
         if not locked:
             raise Exception(
                 u._('unable to write file {path} '
-                    'as it was locked by {owner}:{pid}.')
-                .format(path=path, owner=lock.current_owner,
-                        pid=lock.current_pid))
+                    'as it was locked.')
+                .format(path=path))
         with open(path, mode) as data_file:
             data_file.write(data)
     except Exception as e:
         raise e
     finally:
+        if ansible_lock:
+            ansible_lock.release()
         if lock:
             lock.release()
 
@@ -336,29 +350,48 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False):
 
 
 class Lock(object):
+    """ Object which represents an exclusive resource lock
 
-    def __init__(self, lockpath, owner='unknown owner'):
+    flock usage is the default behavior but a separate pidfile mechanism
+    is also available.  flock doesn't have the same orphaned lock issue
+    that pidfile usage does.  both need to be tests on NFS.  if flock
+    works then it seems better / less complicated for our needs.
+    """
+
+    def __init__(self, lockpath, owner='unknown owner', use_flock=True):
         self.lockpath = lockpath
         self.pid = str(os.getpid())
+        self.fd = None
         self.owner = owner
         self.current_pid = -1
         self.current_owner = ''
+        self.use_flock = use_flock
 
     def acquire(self):
-        if not self.is_owned_by_me():
             try:
-                fd = os.open(self.lockpath, os.O_CREAT | os.O_EXCL | os.O_RDWR)
-                with os.fdopen(fd, 'a') as f:
-                    f.write(self.pid + '\n' + self.owner)
-                return self.is_owned_by_me()
+                if self.use_flock:
+                    return self._acquire_flock()
+                else:
+                    return self._acquire_pidfile()
             except Exception as e:
                 # it is ok to fail to acquire, we just return that we failed
                 LOG.debug('Exception in acquire lock. '
                           'path: %s pid: %s owner: %s error: %s' %
                           (self.lockpath, self.pid, self.owner, str(e)))
-        return False
 
-    def wait_acquire(self, wait_duration, interval=0.1):
+    def _acquire_pidfile(self):
+        if not self.is_owned_by_me():
+            fd = os.open(self.lockpath, os.O_CREAT | os.O_EXCL | os.O_RDWR)
+            with os.fdopen(fd, 'a') as f:
+                f.write(self.pid + '\n' + self.owner)
+            return self.is_owned_by_me()
+
+    def _acquire_flock(self):
+        self.fd = os.open(self.lockpath, os.O_RDWR)
+        fcntl.flock(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return True
+
+    def wait_acquire(self, wait_duration=3, interval=0.1):
         wait_time = 0
         while (wait_time < wait_duration):
             if not self.acquire():
@@ -371,10 +404,14 @@ class Lock(object):
     def is_owned_by_me(self):
         """Returns True if we own the lock or False otherwise"""
         try:
+            if self.use_flock:
+                raise Exception(u._('Invalid use of is_owned_by_me while'
+                                    'using flock'))
+
             if not os.path.exists(self.lockpath):
                 # lock doesn't exist, just return
                 return False
-            fd = os.open(self.lockpath, os.O_RDWR)
+            fd = os.open(self.lockpath, os.O_RDONLY)
             with os.fdopen(fd, 'r') as f:
                 contents = f.read(2048).strip().split('\n')
                 if len(contents) > 0:
@@ -394,22 +431,31 @@ class Lock(object):
         return False
 
     def release(self):
-        if self.is_owned_by_me():
-            try:
-                os.remove(self.lockpath)
-                return True
-            except Exception:
-                # this really shouldn't happen unless for some reason
-                # two areas in the same process try to release the lock
-                # at the same time and if that happens you want to see
-                # an error about it
-                LOG.error('Error releasing lock', exc_info=True)
-                return False
-        else:
+        try:
+            if self.use_flock:
+                self._release_flock()
+            else:
+                self._release_pidfile()
+        except Exception:
+            # this really shouldn't happen unless for some reason
+            # two areas in the same process try to release the lock
+            # at the same time and if that happens you want to see
+            # an error about it
+            LOG.error('Error releasing lock', exc_info=True)
             return False
 
+    def _release_pidfile(self):
+        if self.is_owned_by_me():
+            os.remove(self.lockpath)
+            return True
 
-class PidManager():
+    def _release_flock(self):
+        fcntl.flock(self.fd, fcntl.LOCK_UN)
+        os.close(self.fd)
+        return True
+
+
+class PidManager(object):
     @staticmethod
     def get_child_pids(pid, child_pids=[]):
         """get child pids of parent pid"""

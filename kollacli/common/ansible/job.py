@@ -27,6 +27,8 @@ from kollacli.common.utils import PidManager
 from kollacli.common.utils import get_kolla_actions_path
 from kollacli.common.utils import get_admin_uids
 from kollacli.common.utils import get_admin_user
+from kollacli.common.utils import get_ansible_lock_path
+from kollacli.common.utils import Lock
 from kollacli.common.utils import run_cmd
 from kollacli.common.utils import safe_decode
 
@@ -63,9 +65,19 @@ class AnsibleJob(object):
         self._errors = []
         self._cmd_output = ''
         self._kill_uname = None
+        self._ansible_lock = Lock(get_ansible_lock_path(), 'ansible_job')
 
     def run(self):
         try:
+            locked = self._ansible_lock.wait_acquire()
+            if not locked:
+                raise Exception(
+                    u._('unable to run ansible job {cmd} '
+                        'as we couldn\'t get lock held by {owner}:{pid}.')
+                    .format(cmd=self._command,
+                            owner=self._ansible_lock.current_owner,
+                            pid=self._ansible_lock.current_pid))
+
             # create and open named pipe, must be owned by kolla group
             os.mkfifo(self._fifo_path, 0o660)
             _, grp_id = get_admin_uids()
@@ -196,13 +208,18 @@ class AnsibleJob(object):
         - close stdout and stderr
         - close and delete named pipe (fifo)
         """
+        # try to clear the ansible lock
+        self._ansible_lock.release()
+
         # delete temp inventory file
         remove_temp_inventory(self._temp_inv_path)
 
         # close the process's stdout and stderr streams
-        if self._process.stdout and not self._process.stdout.closed:
+        if (self._process and self._process.stdout and not
+           self._process.stdout.closed):
             self._process.stdout.close()
-        if self._process.stderr and not self._process.stderr.closed:
+        if (self._process and self._process.stderr and not
+           self._process.stderr.closed):
             self._process.stderr.close()
 
         # close and delete the named pipe (fifo)
