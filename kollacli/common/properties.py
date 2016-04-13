@@ -286,7 +286,6 @@ class AnsibleProperties(object):
             for group in group_list:
                 tmp_dict = copy.copy(property_dict)
                 file_path = os.path.join(get_group_vars_dir(), group.name)
-                LOG.info('!changing property %s at path %s' % (str(property_dict), file_path))
                 change_property(file_path, tmp_dict,
                                 clear=False)
         except Exception as e:
