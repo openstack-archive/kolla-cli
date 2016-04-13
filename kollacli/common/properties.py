@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import copy
 import logging
 import os
 import six
@@ -283,8 +284,10 @@ class AnsibleProperties(object):
                 group_list.append(group)
         try:
             for group in group_list:
+                tmp_dict = copy.copy(property_dict)
                 file_path = os.path.join(get_group_vars_dir(), group.name)
-                change_property(file_path, property_dict,
+                LOG.info('!changing property %s at path %s' % (str(property_dict), file_path))
+                change_property(file_path, tmp_dict,
                                 clear=False)
         except Exception as e:
             raise e

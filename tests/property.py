@@ -227,8 +227,8 @@ class TestFunctional(KollaCliTest):
                             target_map[target] = 'ok'
             for target, state in target_map.items():
                 if state == 'missing':
-                    error_msg += ('%s:%s is missing in %s\n'
-                                  % (key, value, target))
+                    error_msg += ('%s:%s is missing in %s\n output:%s\n'
+                                  % (key, value, target, json_str))
         return error_msg
 
     def _is_size_ok(self, sizes, idx0, comparator, idx1):

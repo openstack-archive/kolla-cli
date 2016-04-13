@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import copy
 import fcntl
 import grp
 import logging
@@ -189,6 +190,7 @@ def change_property(file_path, property_dict, clear=False):
     If not clear, and key is found, edit property in place.
     """
     try:
+        cloned_dict = copy.copy(property_dict)
         group_info = grp.getgrnam('kolla')
         if not os.path.exists(file_path):
             with open(file_path, 'a'):
@@ -214,19 +216,19 @@ def change_property(file_path, property_dict, clear=False):
             if len(split_line) > 1:
                 split_key = split_line[0]
                 split_key.rstrip()
-                if split_key in property_dict:
+                if split_key in cloned_dict:
                     if clear:
                         # clear existing property
                         continue
                     # edit existing property
-                    line = '%s: "%s"' % (split_key, property_dict[split_key])
+                    line = '%s: "%s"' % (split_key, cloned_dict[split_key])
                     # clear out the key after we are done, all existing keys
                     # will be appended at the end (or for clear, ignored)
-                    del property_dict[split_key]
+                    del cloned_dict[split_key]
             new_contents.append(line)
         if not clear:
             # add new properties to file
-            for key, value in property_dict.items():
+            for key, value in cloned_dict.items():
                 line = '%s: "%s"' % (key, value)
                 new_contents.append(line)
 
