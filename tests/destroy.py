@@ -85,11 +85,15 @@ class TestFunctional(KollaCliTest):
         self.log.info('updating various properties for the test')
 
         # disable most services so the test is quicker
+        disabled_service_props = {}
         for disabled_service in DISABLED_SERVICES:
-            CLIENT.property_set('enable_%s' % disabled_service, 'no')
+            disabled_service_props['enable_%s' % disabled_service] = 'no'
+        CLIENT.property_set(disabled_service_props)
 
+        enabled_service_props = {}
         for enabled_service in ENABLED_SERVICES:
-            CLIENT.property_set('enable_%s' % enabled_service, 'yes')
+            enabled_service_props['enable_%s' % enabled_service] = 'yes'
+        CLIENT.property_set(enabled_service_props)
 
         predeploy_cmds = test_config.get_predeploy_cmds()
         for predeploy_cmd in predeploy_cmds:

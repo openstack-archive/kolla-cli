@@ -242,14 +242,14 @@ class AnsibleProperties(object):
             new_contents[key] = value
         return new_contents
 
-    def set_property(self, property_key, property_value):
+    def set_property(self, property_dict):
         try:
-            change_property(self.globals_path, property_key,
-                            property_value, clear=False)
+            change_property(self.globals_path, property_dict,
+                            clear=False)
         except Exception as e:
             raise e
 
-    def set_host_property(self, property_key, property_value, hosts):
+    def set_host_property(self, property_dict, hosts):
         # if hosts is None set the property on all hosts
         inventory = Inventory.load()
         host_list = []
@@ -264,12 +264,12 @@ class AnsibleProperties(object):
         try:
             for host in host_list:
                 file_path = os.path.join(get_host_vars_dir(), host.name)
-                change_property(file_path, property_key,
-                                property_value, clear=False)
+                change_property(file_path, property_dict,
+                                clear=False)
         except Exception as e:
             raise e
 
-    def set_group_property(self, property_key, property_value, groups):
+    def set_group_property(self, property_dict, groups):
         # if groups is None set the property on all hosts
         inventory = Inventory.load()
         group_list = []
@@ -284,19 +284,20 @@ class AnsibleProperties(object):
         try:
             for group in group_list:
                 file_path = os.path.join(get_group_vars_dir(), group.name)
-                change_property(file_path, property_key,
-                                property_value, clear=False)
+                change_property(file_path, property_dict,
+                                clear=False)
         except Exception as e:
             raise e
 
-    def clear_property(self, property_key):
+    def clear_property(self, property_list):
         try:
-            change_property(self.globals_path, property_key,
-                            None, clear=True)
+            change_property(self.globals_path,
+                            self._list_to_dict(property_list),
+                            clear=True)
         except Exception as e:
             raise e
 
-    def clear_host_property(self, property_key, hosts):
+    def clear_host_property(self, property_list, hosts):
         # if hosts is None set the property on all hosts
         inventory = Inventory.load()
         host_list = []
@@ -311,12 +312,12 @@ class AnsibleProperties(object):
         try:
             for host in host_list:
                 file_path = os.path.join(get_host_vars_dir(), host.name)
-                change_property(file_path, property_key,
-                                None, clear=True)
+                change_property(file_path, self._list_to_dict(property_list),
+                                clear=True)
         except Exception as e:
             raise e
 
-    def clear_group_property(self, property_key, groups):
+    def clear_group_property(self, property_list, groups):
         # if hosts is None set the property on all hosts
         inventory = Inventory.load()
         group_list = []
@@ -331,10 +332,16 @@ class AnsibleProperties(object):
         try:
             for group in group_list:
                 file_path = os.path.join(get_group_vars_dir(), group.name)
-                change_property(file_path, property_key,
-                                None, clear=True)
+                change_property(file_path, self._list_to_dict(property_list),
+                                clear=True)
         except Exception as e:
             raise e
+
+    def _list_to_dict(self, property_list):
+        property_dict = {}
+        for key in property_list:
+            property_dict[key] = ''
+        return property_dict
 
 
 class AnsibleProperty(object):

@@ -70,7 +70,9 @@ def _password_cmd(argv):
         _print_pwd_keys(path)
     else:
         # edit a password
-        change_property(path, pwd_key, pwd_value, clear_flag)
+        property_dict = {}
+        property_dict[pwd_key] = pwd_value
+        change_property(path, property_dict, clear_flag)
 
 
 def _job_cmd(argv):

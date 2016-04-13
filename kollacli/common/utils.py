@@ -176,12 +176,11 @@ def run_cmd(cmd, print_output=True):
     return err, output
 
 
-def change_property(file_path, property_key, property_value, clear=False):
+def change_property(file_path, property_dict, clear=False):
     """change property with a file
 
     file_path:         path to property file
-    property_key:      property name
-    property value:    property value
+    property_dict:     dictionary of property names and values
     clear:             flag to remove property
 
     If clear, and property exists, remove it from the property file.
@@ -199,8 +198,6 @@ def change_property(file_path, property_key, property_value, clear=False):
         new_contents = []
         read_data = sync_read_file(file_path)
         lines = read_data.split('\n')
-        new_line = '%s: "%s"' % (property_key, property_value)
-        property_key_found = False
         last_line_empty = False
         for line in lines:
             line = line.rstrip()
@@ -217,17 +214,21 @@ def change_property(file_path, property_key, property_value, clear=False):
             if len(split_line) > 1:
                 split_key = split_line[0]
                 split_key.rstrip()
-                if split_key == property_key:
-                    property_key_found = True
+                if split_key in property_dict:
                     if clear:
                         # clear existing property
                         continue
                     # edit existing property
-                    line = new_line
+                    line = '%s: "%s"' % (split_key, property_dict[split_key])
+                    # clear out the key after we are done, all existing keys
+                    # will be appended at the end (or for clear, ignored)
+                    del property_dict[split_key]
             new_contents.append(line)
-        if not property_key_found and not clear:
-            # add new property to file
-            new_contents.append(new_line)
+        if not clear:
+            # add new properties to file
+            for key, value in property_dict.items():
+                line = '%s: "%s"' % (key, value)
+                new_contents.append(line)
 
         write_data = '\n'.join(new_contents)
         sync_write_file(file_path, write_data)
@@ -310,6 +311,16 @@ def safe_decode(obj_to_decode):
                 # py3 will raise if text is already a string
                 pass
             new_obj.append(text)
+    elif isinstance(obj_to_decode, dict):
+        new_obj = {}
+        for key, value in obj_to_decode.items():
+            try:
+                new_key = key.decode('utf-8')
+                new_value = value.decode('utf-8')
+                new_obj[new_key] = new_value
+            except AttributeError:  # nosec
+                # py3 will raise if it is already a string
+                pass
     else:
         try:
             new_obj = obj_to_decode.decode('utf-8')
@@ -350,7 +361,7 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False):
 
 
 class Lock(object):
-    """ Object which represents an exclusive resource lock
+    """Object which represents an exclusive resource lock
 
     flock usage is the default behavior but a separate pidfile mechanism
     is also available.  flock doesn't have the same orphaned lock issue

@@ -63,14 +63,12 @@ class PropertyApi(object):
                 self.ovr_group = False
                 self.ovr_host = False
 
-    def property_set(self, key, value,
+    def property_set(self, property_dict,
                      property_type=GLOBAL_TYPE, change_set=None):
         """Set a property
 
-        :param key: property key
-        :type key: string
-        :param value: property value
-        :type value: string
+        :param property_dict: property dictionary containing key / values
+        :type property_dict: dictionary
         :param property_type: one of 'global', 'group' or 'host'
         :type property_type: string
         :param change_set: for group or host sets this is the list of groups
@@ -78,10 +76,11 @@ class PropertyApi(object):
         :type change_set: list of strings
 
         """
-        check_arg(key, u._('Property Key'), str)
-        key = safe_decode(key)
-        check_arg(value, u._('Property Value'), str)
-        value = safe_decode(value)
+        for key, value in property_dict.items():
+            check_arg(key, u._('Property Key'), str)
+            check_arg(value, u._('Property Value'), str)
+        property_dict = safe_decode(property_dict)
+
         self._check_type(property_type)
         if property_type is not GLOBAL_TYPE:
             check_arg(change_set, u._('Change Set'), list, none_ok=True)
@@ -90,18 +89,18 @@ class PropertyApi(object):
         ansible_properties = AnsibleProperties()
 
         if property_type == GLOBAL_TYPE:
-            ansible_properties.set_property(key, value)
+            ansible_properties.set_property(property_dict)
         elif property_type == GROUP_TYPE:
-            ansible_properties.set_group_property(key, value, change_set)
+            ansible_properties.set_group_property(property_dict, change_set)
         else:
-            ansible_properties.set_host_property(key, value, change_set)
+            ansible_properties.set_host_property(property_dict, change_set)
 
-    def property_clear(self, key, property_type=GLOBAL_TYPE,
+    def property_clear(self, property_list, property_type=GLOBAL_TYPE,
                        change_set=None):
         """Clear a property
 
-        :param key: property key
-        :type key: string
+        :param property_list: property list
+        :type property_list: list
         :param property_type: one of 'global', 'group' or 'host'
         :type property_type: string
         :param change_set: for group or host clears this is the list of
@@ -109,8 +108,9 @@ class PropertyApi(object):
         :type change_set: list of strings
 
         """
-        check_arg(key, u._('Property Key'), str)
-        key = safe_decode(key)
+        check_arg(property_list, u._('Property List'), list)
+        property_list = safe_decode(property_list)
+
         self._check_type(property_type)
         if property_type is not GLOBAL_TYPE:
             check_arg(change_set, u._('Change Set'), list, none_ok=True)
@@ -119,11 +119,11 @@ class PropertyApi(object):
         ansible_properties = AnsibleProperties()
 
         if property_type == GLOBAL_TYPE:
-            ansible_properties.clear_property(key)
+            ansible_properties.clear_property(property_list)
         elif property_type == GROUP_TYPE:
-            ansible_properties.clear_group_property(key, change_set)
+            ansible_properties.clear_group_property(property_list, change_set)
         else:
-            ansible_properties.clear_host_property(key, change_set)
+            ansible_properties.clear_host_property(property_list, change_set)
 
     def property_get(self, property_type=GLOBAL_TYPE, get_set=None):
         """Returns a list of Property objects

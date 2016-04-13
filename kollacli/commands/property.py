@@ -54,6 +54,8 @@ class PropertySet(Command):
         try:
             property_name = parsed_args.propertyname.strip()
             property_value = parsed_args.propertyvalue.strip()
+            property_dict = {}
+            property_dict[property_name] = property_value
 
             if parsed_args.hosts:
                 if parsed_args.groups:
@@ -63,16 +65,16 @@ class PropertySet(Command):
 
                 host_names = _get_names(parsed_args.hosts)
 
-                CLIENT.property_set(property_name, property_value,
+                CLIENT.property_set(property_dict,
                                     'host', host_names)
 
             elif parsed_args.groups:
                 group_names = _get_names(parsed_args.groups)
 
-                CLIENT.property_set(property_name, property_value,
+                CLIENT.property_set(property_dict,
                                     'group', group_names)
             else:
-                CLIENT.property_set(property_name, property_value,
+                CLIENT.property_set(property_dict,
                                     'global')
 
         except Exception:
@@ -97,6 +99,8 @@ class PropertyClear(Command):
     def take_action(self, parsed_args):
         try:
             property_name = parsed_args.propertyname.strip()
+            property_list = []
+            property_list.append(property_name)
 
             if parsed_args.hosts:
                 if parsed_args.groups:
@@ -106,15 +110,15 @@ class PropertyClear(Command):
 
                 host_names = _get_names(parsed_args.hosts)
 
-                CLIENT.property_clear(property_name, 'host',
+                CLIENT.property_clear(property_list, 'host',
                                       host_names)
             elif parsed_args.groups:
                 group_names = _get_names(parsed_args.groups)
 
-                CLIENT.property_clear(property_name, 'group',
+                CLIENT.property_clear(property_list, 'group',
                                       group_names)
             else:
-                CLIENT.property_clear(property_name, 'global')
+                CLIENT.property_clear(property_list, 'global')
 
         except Exception:
             raise Exception(traceback.format_exc())
