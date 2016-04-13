@@ -133,7 +133,7 @@ esac
 
 if [[ "${inst_type}" == "update" ]]
 then
-    rm -rf %{python_sitelib}/kollacli-*egg-info
+    rm -rf %{python_sitelib}/kollacli-*egg-info 2> /dev/null
 fi
 
 %post
@@ -160,21 +160,21 @@ then
 fi
 
 # disable ansible retry files (bug 22806271)
-sed -i "s/#retry_files_enabled = False/retry_files_enabled = False/" /etc/ansible/ansible.cfg
+sed -i "s/#retry_files_enabled = False/retry_files_enabled = False/" %{ansible_cfg}
 
-/usr/bin/kollacli complete >/etc/bash_completion.d/kollacli 2>/dev/null
+/usr/bin/kollacli complete >%{_sysconfdir}/bash_completion.d/kollacli 2>/dev/null
 
 # Update the sudoers file
-if ! grep -q 'kollacli/tools/kolla_actions' /etc/sudoers.d/%{kolla_user}
+if ! grep -q 'kollacli/tools/kolla_actions' %{_sysconfdir}/sudoers.d/%{kolla_user}
 then
     sed -i \
         '/^Cmnd_Alias.*KOLLA_CMDS/ s:$:, %{_datadir}/kolla/kollacli/tools/kolla_actions.py:'\
-        /etc/sudoers.d/%{kolla_user}
+        %{_sysconfdir}/sudoers.d/%{kolla_user}
 fi
 # remove obsolete password editor from sudoers file
 sed -i \
-    '/^Cmnd_Alias.*KOLLA_CMDS/ s:, /usr/share/kolla/kollacli/tools/passwd_editor.py::'\
-     /etc/sudoers.d/%{kolla_user}
+    '/^Cmnd_Alias.*KOLLA_CMDS/ s:, %{_datadir}/kolla/kollacli/tools/passwd_editor.py::'\
+     %{_sysconfdir}/sudoers.d/%{kolla_user}
 
 # remove obsolete json_generator script
 if test -f %{_datadir}/kolla/kollacli/tools/json_generator.py
@@ -240,11 +240,11 @@ then
 fi
 
 
-
-
 %changelog
 * Wed Apr 13 2016 - Steve Noyes <steve.noyes@oracle.com>
 - add kolla-ansible-plugin subpackage
+- suppress warning on egg removal
+- remove etc and usr/share refs
 
 * Thu Apr 07 2016 - Borne Mace <borne.mace@oracle.com>
 - added ansible.lock file to coordinate ansible synchronization

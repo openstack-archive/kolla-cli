@@ -23,12 +23,12 @@ import time
 import kollacli.i18n as u
 
 from kollacli.common.inventory import remove_temp_inventory
-from kollacli.common.utils import PidManager
-from kollacli.common.utils import get_kolla_actions_path
 from kollacli.common.utils import get_admin_uids
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_lock_path
+from kollacli.common.utils import get_kolla_actions_path
 from kollacli.common.utils import Lock
+from kollacli.common.utils import PidManager
 from kollacli.common.utils import run_cmd
 from kollacli.common.utils import safe_decode
 
@@ -128,7 +128,8 @@ class AnsibleJob(object):
             # job has completed
             if self._kill_uname:
                 status = 2
-                msg = u._('Job killed by user (%s)' % self._kill_uname)
+                msg = (u._('Job killed by user ({name})')
+                       .format(name=self._kill_uname))
                 self._errors = [msg]
             else:
                 status = self._process.returncode
@@ -335,7 +336,7 @@ class AnsibleJob(object):
             if sub_errs:
                 err_msg = ''.join([err_msg, ' [', sub_errs, ']'])
 
-        if not err_msg:
+        if not err_msg or not err_msg.strip():
             # sometimes the error message is in std_out
             # eg- "stdout": 'localhost | FAILED! => {"changed": false,
             # "failed": true, "msg": "...msg..."}'
@@ -346,6 +347,12 @@ class AnsibleJob(object):
             if not err_msg:
                 err_msg = stdout
 
+            if not err_msg or not err_msg.strip():
+                # if still no err_msg, provide entire result
+                try:
+                    err_msg = json.dumps(results)
+                except Exception as e:
+                    LOG.debug('unable to convert results to string' % str(e))
         msg = ('Host: %s, Task: %s, Status: %s, Message: %s' %
                (host, taskname, status, err_msg))
         return msg

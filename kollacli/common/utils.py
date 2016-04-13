@@ -260,7 +260,7 @@ def sync_read_file(path, mode='r'):
     finally:
         if lock:
             lock.release()
-    return data
+    return safe_decode(data)
 
 
 def sync_write_file(path, data, mode='w'):
@@ -295,9 +295,9 @@ def sync_write_file(path, data, mode='w'):
 
 
 def safe_decode(obj_to_decode):
-    """Convert bytes or string to unicode string
+    """Convert bytes or strings to unicode string
 
-    Convert either a string or list of strings to
+    Converts strings, lists, or dictionaries to
     unicode.
     """
     if obj_to_decode is None:
@@ -307,22 +307,15 @@ def safe_decode(obj_to_decode):
     if isinstance(obj_to_decode, list):
         new_obj = []
         for text in obj_to_decode:
-            try:
-                text = text.decode('utf-8')
-            except AttributeError:   # nosec
-                # py3 will raise if text is already a string
-                pass
+            text = safe_decode(text)
             new_obj.append(text)
     elif isinstance(obj_to_decode, dict):
         new_obj = {}
         for key, value in obj_to_decode.items():
-            try:
-                new_key = key.decode('utf-8')
-                new_value = value.decode('utf-8')
-                new_obj[new_key] = new_value
-            except AttributeError:  # nosec
-                # py3 will raise if it is already a string
-                pass
+            key = safe_decode(key)
+            value = safe_decode(value)
+            new_obj[key] = value
+
     else:
         try:
             new_obj = obj_to_decode.decode('utf-8')
@@ -387,6 +380,10 @@ class Lock(object):
                 else:
                     return self._acquire_pidfile()
             except Exception as e:
+                if not os.path.exists(self.lockpath):
+                    raise Exception('Lock file (%s) is missing'
+                                    % self.lockpath)
+
                 # it is ok to fail to acquire, we just return that we failed
                 LOG.debug('Exception in acquire lock. '
                           'path: %s pid: %s owner: %s error: %s' %
