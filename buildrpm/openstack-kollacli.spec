@@ -22,6 +22,10 @@
 %global kolla_user      kolla
 %global kolla_group     %{kolla_user}
 
+# kolla ansible plugin related vars
+%global plugin_dir      %{_datadir}/ansible_plugins/callback_plugins
+%global plugin_name     kolla_callback
+%global ansible_cfg     %{_sysconfdir}/ansible/ansible.cfg
 
 Summary:        OpenStack Kolla CLI
 Name:           openstack-kollacli
@@ -53,10 +57,8 @@ Requires:       /usr/bin/ssh-keygen
 %description
 The KollaCLI simplifies OpenStack Kolla deployments.
 
-
 %prep
 %setup -q -n %{name}-%{version}
-
 
 %build
 # Generate a temporary pkg-info file to make pbr happy
@@ -92,6 +94,10 @@ cp -r ansible/* %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 # Create an empty inventory file
 touch %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
 chmod 0664 %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
+
+# copy over plugin
+mkdir -p %{buildroot}/%{plugin_dir}
+cp -r ansible_plugins/%{plugin_name}.py %{buildroot}/%{plugin_dir}/
 
 %clean
 rm -rf %{buildroot}
@@ -194,7 +200,52 @@ case "$*" in
 esac
 
 
+# kolla ansible plugin rpm specific work
+%package -n openstack-kolla-ansible-plugin
+
+Summary:        OpenStack Kolla Ansible Plugin
+License:        GNU General Public License, Version 3
+Group:          Applications/System
+
+%description -n openstack-kolla-ansible-plugin
+This ansible plugin supplies playbook activity to the
+openstack-kollacli client.
+
+%files -n openstack-kolla-ansible-plugin
+%defattr(-, %{kolla_user}, %{kolla_group})
+%attr(-, root, root) %doc ansible_plugins/LICENSE
+%attr(755, %{kolla_user}, %{kolla_group}) %{plugin_dir}/*
+
+%post -n openstack-kolla-ansible-plugin
+# add plugin to whitelist
+if ! grep -q '^callback_whitelist =' %{ansible_cfg}
+then
+    # create whitelist param
+    sed -i \
+        '/^\[defaults\]/a callback_whitelist = ' %{ansible_cfg}
+fi
+if ! grep -q '%{plugin_name}' %{ansible_cfg}
+then
+    # append kolla callback to whitelist
+    sed -i \
+        '/^callback_whitelist =/ s:$:, %{plugin_name}:' %{ansible_cfg}
+fi
+
+%postun -n openstack-kolla-ansible-plugin
+# remove kolla callback from whitelist
+if grep -q '%{plugin_name}' %{ansible_cfg}
+then
+    sed -i \
+        '/^callback_whitelist =/ s:, %{plugin_name}::' %{ansible_cfg}
+fi
+
+
+
+
 %changelog
+* Wed Apr 13 2016 - Steve Noyes <steve.noyes@oracle.com>
+- add kolla-ansible-plugin subpackage
+
 * Thu Apr 07 2016 - Borne Mace <borne.mace@oracle.com>
 - added ansible.lock file to coordinate ansible synchronization
 
