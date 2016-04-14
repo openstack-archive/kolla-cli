@@ -181,7 +181,7 @@ class AnsibleProperties(object):
     def get_host_list(self, host_list):
         self._load_properties()
         prop_list = []
-        inventory = Inventory.load()
+        inventory = Inventory.load()  # nosec
         if host_list is not None:
             for host_name in host_list:
                 host = inventory.get_host(host_name)
@@ -199,7 +199,7 @@ class AnsibleProperties(object):
     def get_group_list(self, group_list):
         self._load_properties()
         prop_list = []
-        inventory = Inventory.load()
+        inventory = Inventory.load()  # nosec
         if group_list is not None:
             for group_name in group_list:
                 group = inventory.get_group(group_name)
@@ -257,7 +257,7 @@ class AnsibleProperties(object):
 
     def set_host_property(self, property_dict, hosts):
         # if hosts is None set the property on all hosts
-        inventory = Inventory.load()
+        inventory = Inventory.load()  # nosec
         host_list = []
         if hosts is None:
             host_list = inventory.get_hosts()
@@ -277,7 +277,7 @@ class AnsibleProperties(object):
 
     def set_group_property(self, property_dict, groups):
         # if groups is None set the property on all hosts
-        inventory = Inventory.load()
+        inventory = Inventory.load()  # nosec
         group_list = []
         if groups is None:
             group_list = inventory.get_groups()
@@ -306,7 +306,7 @@ class AnsibleProperties(object):
 
     def clear_host_property(self, property_list, hosts):
         # if hosts is None set the property on all hosts
-        inventory = Inventory.load()
+        inventory = Inventory.load()  # nosec
         host_list = []
         if hosts is None:
             host_list = inventory.get_hosts()
@@ -326,7 +326,7 @@ class AnsibleProperties(object):
 
     def clear_group_property(self, property_list, groups):
         # if hosts is None set the property on all hosts
-        inventory = Inventory.load()
+        inventory = Inventory.load()  # nosec
         group_list = []
         if groups is None:
             group_list = inventory.get_groups()
