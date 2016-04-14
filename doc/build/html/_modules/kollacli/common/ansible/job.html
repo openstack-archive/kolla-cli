@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible.job &mdash; kollacli 1.0.0.dev386 documentation</title>
+    <title>kollacli.common.ansible.job &mdash; kollacli 1.0.0.dev396 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.0.dev386',
+        VERSION:     '1.0.0.dev396',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="../../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev396 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -64,6 +64,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pwd</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>  <span class="c"># nosec</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -72,6 +73,12 @@
 
 <span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">remove_temp_inventory</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_admin_uids</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_admin_user</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_ansible_lock_path</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_actions_path</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">PidManager</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">run_cmd</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">safe_decode</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
@@ -106,9 +113,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_process_std_err</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_output</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kill_uname</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ansible_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">(</span><span class="n">get_ansible_lock_path</span><span class="p">(),</span> <span class="s">&#39;ansible_job&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AnsibleJob.run"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.job.AnsibleJob.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ansible_lock</span><span class="o">.</span><span class="n">wait_acquire</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;unable to run ansible job {cmd} &#39;</span>
+                        <span class="s">&#39;as we couldn</span><span class="se">\&#39;</span><span class="s">t get lock held by {owner}:{pid}.&#39;</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">,</span>
+                            <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ansible_lock</span><span class="o">.</span><span class="n">current_owner</span><span class="p">,</span>
+                            <span class="n">pid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ansible_lock</span><span class="o">.</span><span class="n">current_pid</span><span class="p">))</span>
+
             <span class="c"># create and open named pipe, must be owned by kolla group</span>
             <span class="n">os</span><span class="o">.</span><span class="n">mkfifo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">,</span> <span class="mi">0</span><span class="n">o660</span><span class="p">)</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">grp_id</span> <span class="o">=</span> <span class="n">get_admin_uids</span><span class="p">()</span>
@@ -122,6 +140,7 @@
                                              <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
 
             <span class="c"># setup stdout to be read without blocking</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;process pid: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
             <span class="n">flags</span> <span class="o">=</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">fcntl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">F_GETFL</span><span class="p">)</span>
             <span class="n">fcntl</span><span class="o">.</span><span class="n">fcntl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">F_SETFL</span><span class="p">,</span>
                         <span class="p">(</span><span class="n">flags</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_NONBLOCK</span><span class="p">))</span>
@@ -148,6 +167,7 @@
 <span class="sd">        - None: running</span>
 <span class="sd">        - 0: done, success</span>
 <span class="sd">        - 1: done, error</span>
+<span class="sd">        - 2: done, killed by user</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_read_from_callback</span><span class="p">()</span>
@@ -155,9 +175,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_output</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmd_output</span><span class="p">,</span> <span class="n">out</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="c"># job has completed</span>
-            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">returncode</span>
-            <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">status</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kill_uname</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Job killed by user ({name})&#39;</span><span class="p">)</span>
+                       <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_kill_uname</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span> <span class="o">=</span> <span class="p">[</span><span class="n">msg</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">returncode</span>
+                <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_std_err</span><span class="p">:</span>
                 <span class="c"># read stderr from process</span>
                 <span class="n">std_err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_stream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
@@ -183,6 +209,31 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_output</span>
 </div>
+<div class="viewcode-block" id="AnsibleJob.kill"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.job.AnsibleJob.kill">[docs]</a>    <span class="k">def</span> <span class="nf">kill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;kill job in progress</span>
+
+<span class="sd">        The process pid is owned by root, so</span>
+<span class="sd">        that is not killable. Need to kill all its children.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># the kill must be run as the kolla user so the</span>
+        <span class="c"># kolla_actions program must be used.</span>
+        <span class="n">actions_path</span> <span class="o">=</span> <span class="n">get_kolla_actions_path</span><span class="p">()</span>
+        <span class="n">kolla_user</span> <span class="o">=</span> <span class="n">get_admin_user</span><span class="p">()</span>
+        <span class="n">cmd_prefix</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;/usr/bin/sudo -u </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> job -t -p &#39;</span>
+                      <span class="o">%</span> <span class="p">(</span><span class="n">kolla_user</span><span class="p">,</span> <span class="n">actions_path</span><span class="p">))</span>
+
+        <span class="c"># kill the children from largest to smallest pids.</span>
+        <span class="n">child_pids</span> <span class="o">=</span> <span class="n">PidManager</span><span class="o">.</span><span class="n">get_child_pids</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">child_pid</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">child_pids</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cmd_prefix</span><span class="p">,</span> <span class="n">child_pid</span><span class="p">])</span>
+            <span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">print_output</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err_msg</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;kill failed: </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span><span class="p">))</span>
+
+        <span class="c"># record the name of user who killed the job</span>
+        <span class="n">cur_uid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kill_uname</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwuid</span><span class="p">(</span><span class="n">cur_uid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</div>
     <span class="k">def</span> <span class="nf">_read_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
         <span class="n">out</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="k">if</span> <span class="n">stream</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">stream</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
@@ -207,13 +258,18 @@
 <span class="sd">        - close stdout and stderr</span>
 <span class="sd">        - close and delete named pipe (fifo)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># try to clear the ansible lock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ansible_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
         <span class="c"># delete temp inventory file</span>
         <span class="n">remove_temp_inventory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_temp_inv_path</span><span class="p">)</span>
 
         <span class="c"># close the process&#39;s stdout and stderr streams</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span> <span class="ow">and</span> <span class="ow">not</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">closed</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stderr</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stderr</span> <span class="ow">and</span> <span class="ow">not</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">closed</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="c"># close and delete the named pipe (fifo)</span>
@@ -329,7 +385,7 @@
             <span class="k">if</span> <span class="n">sub_errs</span><span class="p">:</span>
                 <span class="n">err_msg</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">err_msg</span><span class="p">,</span> <span class="s">&#39; [&#39;</span><span class="p">,</span> <span class="n">sub_errs</span><span class="p">,</span> <span class="s">&#39;]&#39;</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">err_msg</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">err_msg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">err_msg</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
             <span class="c"># sometimes the error message is in std_out</span>
             <span class="c"># eg- &quot;stdout&quot;: &#39;localhost | FAILED! =&gt; {&quot;changed&quot;: false,</span>
             <span class="c"># &quot;failed&quot;: true, &quot;msg&quot;: &quot;...msg...&quot;}&#39;</span>
@@ -340,6 +396,12 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">err_msg</span><span class="p">:</span>
                 <span class="n">err_msg</span> <span class="o">=</span> <span class="n">stdout</span>
 
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">err_msg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">err_msg</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="c"># if still no err_msg, provide entire result</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">err_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to convert results to string&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Host: </span><span class="si">%s</span><span class="s">, Task: </span><span class="si">%s</span><span class="s">, Status: </span><span class="si">%s</span><span class="s">, Message: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span>
                <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">taskname</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">msg</span>
@@ -417,7 +479,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

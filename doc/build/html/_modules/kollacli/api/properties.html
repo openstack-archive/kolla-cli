@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.properties &mdash; kollacli 1.0.0.dev386 documentation</title>
+    <title>kollacli.api.properties &mdash; kollacli 1.0.0.dev396 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev386',
+        VERSION:     '1.0.0.dev396',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev396 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -112,14 +112,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">ovr_group</span> <span class="o">=</span> <span class="bp">False</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ovr_host</span> <span class="o">=</span> <span class="bp">False</span>
 </div>
-<div class="viewcode-block" id="PropertyApi.property_set"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi.property_set">[docs]</a>    <span class="k">def</span> <span class="nf">property_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>
+<div class="viewcode-block" id="PropertyApi.property_set"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi.property_set">[docs]</a>    <span class="k">def</span> <span class="nf">property_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_dict</span><span class="p">,</span>
                      <span class="n">property_type</span><span class="o">=</span><span class="n">GLOBAL_TYPE</span><span class="p">,</span> <span class="n">change_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set a property</span>
 
-<span class="sd">        :param key: property key</span>
-<span class="sd">        :type key: string</span>
-<span class="sd">        :param value: property value</span>
-<span class="sd">        :type value: string</span>
+<span class="sd">        :param property_dict: property dictionary containing key / values</span>
+<span class="sd">        :type property_dict: dictionary</span>
 <span class="sd">        :param property_type: one of &#39;global&#39;, &#39;group&#39; or &#39;host&#39;</span>
 <span class="sd">        :type property_type: string</span>
 <span class="sd">        :param change_set: for group or host sets this is the list of groups</span>
@@ -127,10 +125,11 @@
 <span class="sd">        :type change_set: list of strings</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">check_arg</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property Key&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">check_arg</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property Value&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">property_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">check_arg</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property Key&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="n">check_arg</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property Value&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="n">property_dict</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">property_dict</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">property_type</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">property_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">GLOBAL_TYPE</span><span class="p">:</span>
             <span class="n">check_arg</span><span class="p">(</span><span class="n">change_set</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Change Set&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">,</span> <span class="n">none_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -139,18 +138,18 @@
         <span class="n">ansible_properties</span> <span class="o">=</span> <span class="n">AnsibleProperties</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">property_type</span> <span class="o">==</span> <span class="n">GLOBAL_TYPE</span><span class="p">:</span>
-            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="n">property_dict</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">property_type</span> <span class="o">==</span> <span class="n">GROUP_TYPE</span><span class="p">:</span>
-            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">set_group_property</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">change_set</span><span class="p">)</span>
+            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">set_group_property</span><span class="p">(</span><span class="n">property_dict</span><span class="p">,</span> <span class="n">change_set</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">set_host_property</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">change_set</span><span class="p">)</span>
+            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">set_host_property</span><span class="p">(</span><span class="n">property_dict</span><span class="p">,</span> <span class="n">change_set</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="PropertyApi.property_clear"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi.property_clear">[docs]</a>    <span class="k">def</span> <span class="nf">property_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">property_type</span><span class="o">=</span><span class="n">GLOBAL_TYPE</span><span class="p">,</span>
+<div class="viewcode-block" id="PropertyApi.property_clear"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi.property_clear">[docs]</a>    <span class="k">def</span> <span class="nf">property_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_list</span><span class="p">,</span> <span class="n">property_type</span><span class="o">=</span><span class="n">GLOBAL_TYPE</span><span class="p">,</span>
                        <span class="n">change_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Clear a property</span>
 
-<span class="sd">        :param key: property key</span>
-<span class="sd">        :type key: string</span>
+<span class="sd">        :param property_list: property list</span>
+<span class="sd">        :type property_list: list</span>
 <span class="sd">        :param property_type: one of &#39;global&#39;, &#39;group&#39; or &#39;host&#39;</span>
 <span class="sd">        :type property_type: string</span>
 <span class="sd">        :param change_set: for group or host clears this is the list of</span>
@@ -158,8 +157,9 @@
 <span class="sd">        :type change_set: list of strings</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">check_arg</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property Key&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">property_list</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property List&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">property_list</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">property_list</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">property_type</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">property_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">GLOBAL_TYPE</span><span class="p">:</span>
             <span class="n">check_arg</span><span class="p">(</span><span class="n">change_set</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Change Set&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">,</span> <span class="n">none_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -168,11 +168,11 @@
         <span class="n">ansible_properties</span> <span class="o">=</span> <span class="n">AnsibleProperties</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">property_type</span> <span class="o">==</span> <span class="n">GLOBAL_TYPE</span><span class="p">:</span>
-            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">clear_property</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">clear_property</span><span class="p">(</span><span class="n">property_list</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">property_type</span> <span class="o">==</span> <span class="n">GROUP_TYPE</span><span class="p">:</span>
-            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">clear_group_property</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">change_set</span><span class="p">)</span>
+            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">clear_group_property</span><span class="p">(</span><span class="n">property_list</span><span class="p">,</span> <span class="n">change_set</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">clear_host_property</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">change_set</span><span class="p">)</span>
+            <span class="n">ansible_properties</span><span class="o">.</span><span class="n">clear_host_property</span><span class="p">(</span><span class="n">property_list</span><span class="p">,</span> <span class="n">change_set</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="PropertyApi.property_get"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi.property_get">[docs]</a>    <span class="k">def</span> <span class="nf">property_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_type</span><span class="o">=</span><span class="n">GLOBAL_TYPE</span><span class="p">,</span> <span class="n">get_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns a list of Property objects</span>
@@ -245,7 +245,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

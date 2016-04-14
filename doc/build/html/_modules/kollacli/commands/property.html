@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.commands.property &mdash; kollacli 1.0.0.dev386 documentation</title>
+    <title>kollacli.commands.property &mdash; kollacli 1.0.0.dev396 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev386',
+        VERSION:     '1.0.0.dev396',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev396 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -103,6 +103,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">property_name</span> <span class="o">=</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">propertyname</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="n">property_value</span> <span class="o">=</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">propertyvalue</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">property_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">property_dict</span><span class="p">[</span><span class="n">property_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">property_value</span>
 
             <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
@@ -112,16 +114,16 @@
 
                 <span class="n">host_names</span> <span class="o">=</span> <span class="n">_get_names</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hosts</span><span class="p">)</span>
 
-                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_set</span><span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="n">property_value</span><span class="p">,</span>
+                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_set</span><span class="p">(</span><span class="n">property_dict</span><span class="p">,</span>
                                     <span class="s">&#39;host&#39;</span><span class="p">,</span> <span class="n">host_names</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
                 <span class="n">group_names</span> <span class="o">=</span> <span class="n">_get_names</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
 
-                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_set</span><span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="n">property_value</span><span class="p">,</span>
+                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_set</span><span class="p">(</span><span class="n">property_dict</span><span class="p">,</span>
                                     <span class="s">&#39;group&#39;</span><span class="p">,</span> <span class="n">group_names</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_set</span><span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="n">property_value</span><span class="p">,</span>
+                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_set</span><span class="p">(</span><span class="n">property_dict</span><span class="p">,</span>
                                     <span class="s">&#39;global&#39;</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -146,6 +148,8 @@
 <div class="viewcode-block" id="PropertyClear.take_action"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.property.PropertyClear.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">property_name</span> <span class="o">=</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">propertyname</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">property_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">property_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
@@ -155,15 +159,15 @@
 
                 <span class="n">host_names</span> <span class="o">=</span> <span class="n">_get_names</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hosts</span><span class="p">)</span>
 
-                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_clear</span><span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="s">&#39;host&#39;</span><span class="p">,</span>
+                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_clear</span><span class="p">(</span><span class="n">property_list</span><span class="p">,</span> <span class="s">&#39;host&#39;</span><span class="p">,</span>
                                       <span class="n">host_names</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
                 <span class="n">group_names</span> <span class="o">=</span> <span class="n">_get_names</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
 
-                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_clear</span><span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="s">&#39;group&#39;</span><span class="p">,</span>
+                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_clear</span><span class="p">(</span><span class="n">property_list</span><span class="p">,</span> <span class="s">&#39;group&#39;</span><span class="p">,</span>
                                       <span class="n">group_names</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_clear</span><span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="s">&#39;global&#39;</span><span class="p">)</span>
+                <span class="n">CLIENT</span><span class="o">.</span><span class="n">property_clear</span><span class="p">(</span><span class="n">property_list</span><span class="p">,</span> <span class="s">&#39;global&#39;</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
@@ -342,7 +346,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.client &mdash; kollacli 1.0.0.dev386 documentation</title>
+    <title>kollacli.api.client &mdash; kollacli 1.0.0.dev396 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev386',
+        VERSION:     '1.0.0.dev396',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev396 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -60,7 +60,13 @@
 <span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
 <span class="c">#    License for the specific language governing permissions and limitations</span>
 <span class="c">#    under the License.</span>
+<span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
+
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">logging.handlers</span> <span class="kn">import</span> <span class="n">RotatingFileHandler</span>
 
 <span class="kn">from</span> <span class="nn">kollacli.api.async</span> <span class="kn">import</span> <span class="n">AsyncApi</span>
 <span class="kn">from</span> <span class="nn">kollacli.api.deploy</span> <span class="kn">import</span> <span class="n">DeployApi</span>
@@ -71,6 +77,9 @@
 <span class="kn">from</span> <span class="nn">kollacli.api.service</span> <span class="kn">import</span> <span class="n">ServiceApi</span>
 <span class="kn">from</span> <span class="nn">kollacli.api.support</span> <span class="kn">import</span> <span class="n">SupportApi</span>
 
+<span class="n">CONSOLE_MESSAGE_FORMAT</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%(message)s</span><span class="s">&#39;</span>
+<span class="n">LOG_FILE_MESSAGE_FORMAT</span> <span class="o">=</span> \
+    <span class="s">&#39;[</span><span class="si">%(asctime)s</span><span class="s">] </span><span class="si">%(levelname)-8s</span><span class="s"> </span><span class="si">%(name)s</span><span class="s"> </span><span class="si">%(message)s</span><span class="s">&#39;</span>
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
@@ -85,8 +94,70 @@
         <span class="n">SupportApi</span><span class="p">,</span>
         <span class="p">):</span>
 
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configure_logging</span><span class="p">()</span>
+
 <div class="viewcode-block" id="ClientApi.base_call"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.client.ClientApi.base_call">[docs]</a>    <span class="k">def</span> <span class="nf">base_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;base call&#39;</span><span class="p">)</span></div></div>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;base call&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ClientApi.enable_console_logging"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.client.ClientApi.enable_console_logging">[docs]</a>    <span class="k">def</span> <span class="nf">enable_console_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">enable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;enable/disable console logging for the api</span>
+
+<span class="sd">        enable: True/False</span>
+<span class="sd">        level: logging.INFO, logging.DEBUG, logging.WARNING,</span>
+<span class="sd">        logging.CRITICAL...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">enable</span><span class="p">:</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">CONSOLE_MESSAGE_FORMAT</span><span class="p">)</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+            <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">root_logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_configure_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">root_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+        <span class="n">handler_found</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">handlers</span> <span class="o">=</span> <span class="n">root_logger</span><span class="o">.</span><span class="n">handlers</span>
+        <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">handlers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">RotatingFileHandler</span><span class="p">):</span>
+                <span class="n">handler_found</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">handler_found</span><span class="p">:</span>
+            <span class="c"># logger has not been set up</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">rotate_handler</span> <span class="o">=</span> <span class="n">RotatingFileHandler</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span>
+                                 <span class="s">&#39;var&#39;</span><span class="p">,</span> <span class="s">&#39;log&#39;</span><span class="p">,</span> <span class="s">&#39;kolla&#39;</span><span class="p">,</span> <span class="s">&#39;kolla.log&#39;</span><span class="p">),</span>
+                    <span class="n">maxBytes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_kolla_log_file_size</span><span class="p">(),</span>
+                    <span class="n">backupCount</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c"># most likely the caller is not part of the kolla group</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Permission denied to run the kolla client.&#39;</span>
+                                  <span class="s">&#39;</span><span class="se">\n</span><span class="s">Please add user to the kolla group and &#39;</span>
+                                  <span class="s">&#39;then log out and back in. {error}&#39;</span><span class="p">)</span>
+                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">LOG_FILE_MESSAGE_FORMAT</span><span class="p">)</span>
+            <span class="n">rotate_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+            <span class="n">rotate_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">rotate_handler</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_kolla_log_file_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">envvar</span> <span class="o">=</span> <span class="s">&#39;KOLLA_LOG_FILE_SIZE&#39;</span>
+        <span class="n">size_str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">envvar</span><span class="p">,</span> <span class="s">&#39;500000&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size_str</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">((</span><span class="s">&#39;Environmental variable ({env_var}) is not an &#39;</span>
+                       <span class="s">&#39;integer ({log_size}).&#39;</span><span class="p">)</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_var</span><span class="o">=</span><span class="n">envvar</span><span class="p">,</span> <span class="n">log_size</span><span class="o">=</span><span class="n">size_str</span><span class="p">))</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="mi">50000</span>
+        <span class="k">return</span> <span class="n">size</span></div>
 </pre></div>
 
           </div>
@@ -120,7 +191,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

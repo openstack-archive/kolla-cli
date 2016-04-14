@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.utils &mdash; kollacli 1.0.0.dev386 documentation</title>
+    <title>kollacli.common.utils &mdash; kollacli 1.0.0.dev396 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev386',
+        VERSION:     '1.0.0.dev396',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev396 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -60,6 +60,8 @@
 <span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
 <span class="c">#    License for the specific language governing permissions and limitations</span>
 <span class="c">#    under the License.</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">fcntl</span>
 <span class="kn">import</span> <span class="nn">grp</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -103,6 +105,14 @@
 </div>
 <div class="viewcode-block" id="get_kolla_log_dir"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kolla_log_dir">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_log_dir</span><span class="p">():</span>
     <span class="k">return</span> <span class="s">&#39;/var/log/kolla/&#39;</span>
+
+</div>
+<div class="viewcode-block" id="get_ansible_lock_path"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_ansible_lock_path">[docs]</a><span class="k">def</span> <span class="nf">get_ansible_lock_path</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_etc</span><span class="p">(),</span> <span class="s">&#39;ansible/ansible.lock&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_kolla_actions_path"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kolla_actions_path">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_actions_path</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_home</span><span class="p">(),</span> <span class="s">&#39;tools&#39;</span><span class="p">,</span> <span class="s">&#39;kolla_actions.py&#39;</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="get_admin_uids"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_admin_uids">[docs]</a><span class="k">def</span> <span class="nf">get_admin_uids</span><span class="p">():</span>
@@ -216,12 +226,11 @@
     <span class="k">return</span> <span class="n">err</span><span class="p">,</span> <span class="n">output</span>
 
 </div>
-<div class="viewcode-block" id="change_property"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.change_property">[docs]</a><span class="k">def</span> <span class="nf">change_property</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">property_key</span><span class="p">,</span> <span class="n">property_value</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="change_property"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.change_property">[docs]</a><span class="k">def</span> <span class="nf">change_property</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">property_dict</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;change property with a file</span>
 
 <span class="sd">    file_path:         path to property file</span>
-<span class="sd">    property_key:      property name</span>
-<span class="sd">    property value:    property value</span>
+<span class="sd">    property_dict:     dictionary of property names and values</span>
 <span class="sd">    clear:             flag to remove property</span>
 
 <span class="sd">    If clear, and property exists, remove it from the property file.</span>
@@ -230,6 +239,7 @@
 <span class="sd">    If not clear, and key is found, edit property in place.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="n">cloned_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">property_dict</span><span class="p">)</span>
         <span class="n">group_info</span> <span class="o">=</span> <span class="n">grp</span><span class="o">.</span><span class="n">getgrnam</span><span class="p">(</span><span class="s">&#39;kolla&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">):</span>
@@ -239,8 +249,6 @@
         <span class="n">new_contents</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">read_data</span> <span class="o">=</span> <span class="n">sync_read_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">read_data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
-        <span class="n">new_line</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">property_key</span><span class="p">,</span> <span class="n">property_value</span><span class="p">)</span>
-        <span class="n">property_key_found</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="n">last_line_empty</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
@@ -257,17 +265,21 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">split_key</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">split_key</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">split_key</span> <span class="o">==</span> <span class="n">property_key</span><span class="p">:</span>
-                    <span class="n">property_key_found</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">if</span> <span class="n">split_key</span> <span class="ow">in</span> <span class="n">cloned_dict</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">clear</span><span class="p">:</span>
                         <span class="c"># clear existing property</span>
                         <span class="k">continue</span>
                     <span class="c"># edit existing property</span>
-                    <span class="n">line</span> <span class="o">=</span> <span class="n">new_line</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">split_key</span><span class="p">,</span> <span class="n">cloned_dict</span><span class="p">[</span><span class="n">split_key</span><span class="p">])</span>
+                    <span class="c"># clear out the key after we are done, all existing keys</span>
+                    <span class="c"># will be appended at the end (or for clear, ignored)</span>
+                    <span class="k">del</span> <span class="n">cloned_dict</span><span class="p">[</span><span class="n">split_key</span><span class="p">]</span>
             <span class="n">new_contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">property_key_found</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">clear</span><span class="p">:</span>
-            <span class="c"># add new property to file</span>
-            <span class="n">new_contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">clear</span><span class="p">:</span>
+            <span class="c"># add new properties to file</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cloned_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">new_contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="n">write_data</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_contents</span><span class="p">)</span>
         <span class="n">sync_write_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">write_data</span><span class="p">)</span>
@@ -283,14 +295,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">lock</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s">&#39;.lock&#39;</span><span class="p">,</span> <span class="s">&#39;sync_read&#39;</span><span class="p">)</span>
-        <span class="n">locked</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="n">wait_acquire</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;sync_read&#39;</span><span class="p">)</span>
+        <span class="n">locked</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="n">wait_acquire</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;unable to read file {path} &#39;</span>
-                    <span class="s">&#39;as it was locked by {owner}:{pid}.&#39;</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">lock</span><span class="o">.</span><span class="n">current_owner</span><span class="p">,</span>
-                        <span class="n">pid</span><span class="o">=</span><span class="n">lock</span><span class="o">.</span><span class="n">current_pid</span><span class="p">))</span>
+                    <span class="s">&#39;as it was locked.&#39;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">))</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">data_file</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -298,34 +309,44 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">lock</span><span class="p">:</span>
             <span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">data</span>
+    <span class="k">return</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="sync_write_file"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.sync_write_file">[docs]</a><span class="k">def</span> <span class="nf">sync_write_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;synchronously write file&quot;&quot;&quot;</span>
+    <span class="n">ansible_lock</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">lock</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s">&#39;.lock&#39;</span><span class="p">,</span> <span class="s">&#39;sync_write&#39;</span><span class="p">)</span>
-        <span class="n">locked</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="n">wait_acquire</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">ansible_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">(</span><span class="n">get_ansible_lock_path</span><span class="p">(),</span> <span class="s">&#39;sync_write&#39;</span><span class="p">)</span>
+        <span class="n">locked</span> <span class="o">=</span> <span class="n">ansible_lock</span><span class="o">.</span><span class="n">wait_acquire</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;unable to get ansible lock while writing to {path} &#39;</span>
+                    <span class="s">&#39;as it was locked.&#39;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">))</span>
+
+        <span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;sync_write&#39;</span><span class="p">)</span>
+        <span class="n">locked</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="n">wait_acquire</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;unable to write file {path} &#39;</span>
-                    <span class="s">&#39;as it was locked by {owner}:{pid}.&#39;</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">lock</span><span class="o">.</span><span class="n">current_owner</span><span class="p">,</span>
-                        <span class="n">pid</span><span class="o">=</span><span class="n">lock</span><span class="o">.</span><span class="n">current_pid</span><span class="p">))</span>
+                    <span class="s">&#39;as it was locked.&#39;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">))</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">data_file</span><span class="p">:</span>
             <span class="n">data_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">e</span>
     <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ansible_lock</span><span class="p">:</span>
+            <span class="n">ansible_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">lock</span><span class="p">:</span>
             <span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
 
 </div>
 <div class="viewcode-block" id="safe_decode"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.safe_decode">[docs]</a><span class="k">def</span> <span class="nf">safe_decode</span><span class="p">(</span><span class="n">obj_to_decode</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert bytes or string to unicode string</span>
+    <span class="sd">&quot;&quot;&quot;Convert bytes or strings to unicode string</span>
 
-<span class="sd">    Convert either a string or list of strings to</span>
+<span class="sd">    Converts strings, lists, or dictionaries to</span>
 <span class="sd">    unicode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">obj_to_decode</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -335,12 +356,15 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj_to_decode</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">new_obj</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">obj_to_decode</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>   <span class="c"># nosec</span>
-                <span class="c"># py3 will raise if text is already a string</span>
-                <span class="k">pass</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
             <span class="n">new_obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj_to_decode</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">new_obj</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">obj_to_decode</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">new_obj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">new_obj</span> <span class="o">=</span> <span class="n">obj_to_decode</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
@@ -381,29 +405,52 @@
 
 </div>
 <div class="viewcode-block" id="Lock"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.Lock">[docs]</a><span class="k">class</span> <span class="nc">Lock</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Object which represents an exclusive resource lock</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockpath</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="s">&#39;unknown owner&#39;</span><span class="p">):</span>
+<span class="sd">    flock usage is the default behavior but a separate pidfile mechanism</span>
+<span class="sd">    is also available.  flock doesn&#39;t have the same orphaned lock issue</span>
+<span class="sd">    that pidfile usage does.  both need to be tests on NFS.  if flock</span>
+<span class="sd">    works then it seems better / less complicated for our needs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockpath</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="s">&#39;unknown owner&#39;</span><span class="p">,</span> <span class="n">use_flock</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span> <span class="o">=</span> <span class="n">lockpath</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">owner</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_pid</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_owner</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_flock</span> <span class="o">=</span> <span class="n">use_flock</span>
 
 <div class="viewcode-block" id="Lock.acquire"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.Lock.acquire">[docs]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_owned_by_me</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_CREAT</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_EXCL</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">)</span>
-                <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">)</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_owned_by_me</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_flock</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acquire_flock</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acquire_pidfile</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Lock file (</span><span class="si">%s</span><span class="s">) is missing&#39;</span>
+                                    <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">)</span>
+
                 <span class="c"># it is ok to fail to acquire, we just return that we failed</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exception in is_owned_by_me lock check &#39;</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exception in acquire lock. &#39;</span>
                           <span class="s">&#39;path: </span><span class="si">%s</span><span class="s"> pid: </span><span class="si">%s</span><span class="s"> owner: </span><span class="si">%s</span><span class="s"> error: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span>
                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
-        <span class="k">return</span> <span class="bp">False</span>
 </div>
-<div class="viewcode-block" id="Lock.wait_acquire"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.Lock.wait_acquire">[docs]</a>    <span class="k">def</span> <span class="nf">wait_acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait_duration</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_acquire_pidfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_owned_by_me</span><span class="p">():</span>
+            <span class="n">fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_CREAT</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_EXCL</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_owned_by_me</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_acquire_flock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">)</span>
+        <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_EX</span> <span class="o">|</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_NB</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="Lock.wait_acquire"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.Lock.wait_acquire">[docs]</a>    <span class="k">def</span> <span class="nf">wait_acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait_duration</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
         <span class="n">wait_time</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="p">(</span><span class="n">wait_time</span> <span class="o">&lt;</span> <span class="n">wait_duration</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">acquire</span><span class="p">():</span>
@@ -416,7 +463,14 @@
 <div class="viewcode-block" id="Lock.is_owned_by_me"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.Lock.is_owned_by_me">[docs]</a>    <span class="k">def</span> <span class="nf">is_owned_by_me</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns True if we own the lock or False otherwise&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_flock</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Invalid use of is_owned_by_me while&#39;</span>
+                                    <span class="s">&#39;using flock&#39;</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">):</span>
+                <span class="c"># lock doesn&#39;t exist, just return</span>
+                <span class="k">return</span> <span class="bp">False</span>
+            <span class="n">fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">contents</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -430,25 +484,61 @@
                     <span class="k">return</span> <span class="bp">False</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c"># it is ok to fail to acquire, we just return that we failed</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exception in is_owned_by_me lock check &#39;</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exception in is_owned_by_me lock check. &#39;</span>
                       <span class="s">&#39;path: </span><span class="si">%s</span><span class="s"> pid: </span><span class="si">%s</span><span class="s"> owner: </span><span class="si">%s</span><span class="s"> error: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span>
                       <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
         <span class="k">return</span> <span class="bp">False</span>
 </div>
 <div class="viewcode-block" id="Lock.release"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.Lock.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_flock</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_release_flock</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_release_pidfile</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c"># this really shouldn&#39;t happen unless for some reason</span>
+            <span class="c"># two areas in the same process try to release the lock</span>
+            <span class="c"># at the same time and if that happens you want to see</span>
+            <span class="c"># an error about it</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Error releasing lock&#39;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+</div>
+    <span class="k">def</span> <span class="nf">_release_pidfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_owned_by_me</span><span class="p">():</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">)</span>
-                <span class="k">return</span> <span class="bp">True</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="c"># this really shouldn&#39;t happen unless for some reason</span>
-                <span class="c"># two areas in the same process try to release the lock</span>
-                <span class="c"># at the same time and if that happens you want to see</span>
-                <span class="c"># an error about it</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Error releasing lock&#39;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-                <span class="k">return</span> <span class="bp">False</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">False</span></div></div>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockpath</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">_release_flock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_UN</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+</div>
+<div class="viewcode-block" id="PidManager"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.PidManager">[docs]</a><span class="k">class</span> <span class="nc">PidManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="PidManager.get_child_pids"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.PidManager.get_child_pids">[docs]</a>    <span class="k">def</span> <span class="nf">get_child_pids</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">child_pids</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;get child pids of parent pid&quot;&quot;&quot;</span>
+        <span class="c"># This ps command will return child pids of parent pid, separated by</span>
+        <span class="c"># newlines.</span>
+        <span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s">&#39;ps --ppid </span><span class="si">%s</span><span class="s"> -o pid=&quot;&quot;&#39;</span> <span class="o">%</span> <span class="n">pid</span><span class="p">,</span>
+                                  <span class="n">print_output</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="c"># err_msg is expected when pid has no children</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">err_msg</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+                <span class="n">ps_pids</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ps_pids</span> <span class="o">=</span> <span class="p">[</span><span class="n">output</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">ps_pids</span><span class="p">:</span>
+                <span class="n">child_pids</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ps_pids</span><span class="p">)</span>
+
+                <span class="c"># recurse through children to get all child pids</span>
+                <span class="k">for</span> <span class="n">ps_pid</span> <span class="ow">in</span> <span class="n">ps_pids</span><span class="p">:</span>
+                    <span class="n">PidManager</span><span class="o">.</span><span class="n">get_child_pids</span><span class="p">(</span><span class="n">ps_pid</span><span class="p">,</span> <span class="n">child_pids</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">child_pids</span></div></div>
 </pre></div>
 
           </div>
@@ -482,7 +572,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

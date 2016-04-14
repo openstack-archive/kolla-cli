@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api package &mdash; kollacli 1.0.0.dev386 documentation</title>
+    <title>kollacli.api package &mdash; kollacli 1.0.0.dev396 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.0.dev386',
+        VERSION:     '1.0.0.dev396',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 1.0.0.dev396 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -159,6 +159,15 @@ already been deployed to.
 <dt id="kollacli.api.client.ClientApi.base_call">
 <tt class="descname">base_call</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.base_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.base_call" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.client.ClientApi.enable_console_logging">
+<tt class="descname">enable_console_logging</tt><big>(</big><em>level</em>, <em>enable=True</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.enable_console_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.enable_console_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>enable/disable console logging for the api</p>
+<p>enable: True/False
+level: logging.INFO, logging.DEBUG, logging.WARNING,
+logging.CRITICAL...</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -638,12 +647,21 @@ The uname entry is optional.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None if job still running, 0 if job succeeded, 1 if job failed</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None: job is still running
+0: job succeeded
+1: job failed
+2: job killed by user</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int or None</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.job.Job.kill">
+<tt class="descname">kill</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/job.html#Job.kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.job.Job.kill" title="Permalink to this definition">¶</a></dt>
+<dd><p>kill the job</p>
 </dd></dl>
 
 <dl class="method">
@@ -753,14 +771,14 @@ The uname entry is optional.</p>
 
 <dl class="method">
 <dt id="kollacli.api.properties.PropertyApi.property_clear">
-<tt class="descclassname">PropertyApi.</tt><tt class="descname">property_clear</tt><big>(</big><em>key</em>, <em>property_type='global'</em>, <em>change_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_clear" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">PropertyApi.</tt><tt class="descname">property_clear</tt><big>(</big><em>property_list</em>, <em>property_type='global'</em>, <em>change_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear a property</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>string</em>) &#8211; property key</li>
+<li><strong>property_list</strong> (<em>list</em>) &#8211; property list</li>
 <li><strong>property_type</strong> (<em>string</em>) &#8211; one of &#8216;global&#8217;, &#8216;group&#8217; or &#8216;host&#8217;</li>
 <li><strong>change_set</strong> (<em>list of strings</em>) &#8211; for group or host clears this is the list of
 groups or hosts to clear the property for</li>
@@ -798,15 +816,14 @@ getting group or host related property lists</li>
 
 <dl class="method">
 <dt id="kollacli.api.properties.PropertyApi.property_set">
-<tt class="descclassname">PropertyApi.</tt><tt class="descname">property_set</tt><big>(</big><em>key</em>, <em>value</em>, <em>property_type='global'</em>, <em>change_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_set" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">PropertyApi.</tt><tt class="descname">property_set</tt><big>(</big><em>property_dict</em>, <em>property_type='global'</em>, <em>change_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a property</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>string</em>) &#8211; property key</li>
-<li><strong>value</strong> (<em>string</em>) &#8211; property value</li>
+<li><strong>property_dict</strong> (<em>dictionary</em>) &#8211; property dictionary containing key / values</li>
 <li><strong>property_type</strong> (<em>string</em>) &#8211; one of &#8216;global&#8217;, &#8216;group&#8217; or &#8216;host&#8217;</li>
 <li><strong>change_set</strong> (<em>list of strings</em>) &#8211; for group or host sets this is the list of groups
 or hosts to set the property for</li>
@@ -1081,7 +1098,7 @@ names for each log will be servicename_id.log.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

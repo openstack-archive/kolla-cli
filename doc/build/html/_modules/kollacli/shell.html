@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.shell &mdash; kollacli 1.0.0.dev386 documentation</title>
+    <title>kollacli.shell &mdash; kollacli 1.0.0.dev396 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0.0.dev386',
+        VERSION:     '1.0.0.dev396',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev386 documentation" href="../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev396 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -70,10 +70,9 @@
 
 <span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
 
+<span class="kn">from</span> <span class="nn">kollacli.api.client</span> <span class="kn">import</span> <span class="n">ClientApi</span>
 <span class="kn">from</span> <span class="nn">kollacli.commands.exceptions</span> <span class="kn">import</span> <span class="n">CommandError</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">INVENTORY_PATH</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_log_dir</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_log_file_size</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kollacli_etc</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
@@ -96,43 +95,16 @@
                 <span class="s">&#39;recreate the file.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inventory</span><span class="o">=</span><span class="n">inventory_path</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">CommandError</span><span class="p">(</span><span class="n">err_string</span><span class="p">)</span>
 
-        <span class="c"># check that current user can access the inventory file</span>
-        <span class="n">inventory_file</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">inventory_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">,</span> <span class="s">&#39;r+&#39;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">CommandError</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Permission denied to run the kollacli.</span><span class="se">\n</span><span class="s">&#39;</span>
-                    <span class="s">&#39;Please add user to the kolla group and &#39;</span>
-                    <span class="s">&#39;then log out and back in.&#39;</span><span class="p">))</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">inventory_file</span> <span class="ow">and</span> <span class="n">inventory_file</span><span class="o">.</span><span class="n">close</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
-                <span class="n">inventory_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c"># set up logging and test that user running shell is part</span>
+        <span class="c"># of kolla group</span>
+        <span class="n">ClientApi</span><span class="p">()</span>
 
         <span class="c"># paramiko log is very chatty, tune it down</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;paramiko&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
 
-        <span class="c"># set up logging</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rotating_log_dir</span> <span class="o">=</span> <span class="n">get_kolla_log_dir</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_bytes</span> <span class="o">=</span> <span class="n">get_kolla_log_file_size</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backup_count</span> <span class="o">=</span> <span class="mi">4</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">dump_stack_trace</span> <span class="o">=</span> <span class="bp">False</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_rotational_log</span><span class="p">()</span>
-
-<div class="viewcode-block" id="KollaCli.add_rotational_log"><a class="viewcode-back" href="../../kollacli.html#kollacli.shell.KollaCli.add_rotational_log">[docs]</a>    <span class="k">def</span> <span class="nf">add_rotational_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
-        <span class="n">rotate_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rotating_log_dir</span><span class="p">,</span> <span class="s">&#39;kolla.log&#39;</span><span class="p">),</span>
-            <span class="n">maxBytes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bytes</span><span class="p">,</span>
-            <span class="n">backupCount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backup_count</span><span class="p">)</span>
-        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LOG_FILE_MESSAGE_FORMAT</span><span class="p">)</span>
-        <span class="n">rotate_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-        <span class="n">rotate_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-        <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">rotate_handler</span><span class="p">)</span>
-
-</div></div>
+</div>
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../kollacli.html#kollacli.shell.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
     <span class="n">shell</span> <span class="o">=</span> <span class="n">KollaCli</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">shell</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
@@ -172,7 +144,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">kollacli 1.0.0.dev386 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
