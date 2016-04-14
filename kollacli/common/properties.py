@@ -49,18 +49,22 @@ class AnsibleProperties(object):
         KOLLA_HOME/ansible/host_vars/*
         KOLLA_ETC/passwords.yml
         """
-        self.globals_path = ''
+        self.globals_path = os.path.join(get_kolla_home(), GLOBALS_PATH)
         self.global_props = []
         self.unique_global_props = {}
         self.unique_override_flags = {}
         self.group_props = {}
         self.host_props = {}
+        self.properties_loaded = False
 
-        self._load_properties_roles()
-        self._load_properties_all()
-        self._load_properties_global()
-        self._load_properties_hostvars()
-        self._load_properties_groupvars()
+    def _load_properties(self):
+        if not self.properties_loaded:
+            self._load_properties_roles()
+            self._load_properties_all()
+            self._load_properties_global()
+            self._load_properties_hostvars()
+            self._load_properties_groupvars()
+            self.properties_loaded = True
 
     def _load_properties_roles(self):
         start_dir = os.path.join(get_kolla_home(), ANSIBLE_ROLES_PATH)
@@ -95,7 +99,6 @@ class AnsibleProperties(object):
                 self.unique_global_props[key] = ansible_prop
 
     def _load_properties_global(self):
-        self.globals_path = os.path.join(get_kolla_home(), GLOBALS_PATH)
         globals_data = sync_read_file(self.globals_path)
         globals_contents = yaml.safe_load(globals_data)
         if not globals_contents:
@@ -175,10 +178,8 @@ class AnsibleProperties(object):
                     props.append(ansible_prop)
             self.group_props[groupfile] = props
 
-    def get_all(self):
-        return sorted(self.global_props, key=lambda x: x.name)
-
     def get_host_list(self, host_list):
+        self._load_properties()
         prop_list = []
         inventory = Inventory.load()
         if host_list is not None:
@@ -196,6 +197,7 @@ class AnsibleProperties(object):
         return prop_list
 
     def get_group_list(self, group_list):
+        self._load_properties()
         prop_list = []
         inventory = Inventory.load()
         if group_list is not None:
@@ -213,6 +215,7 @@ class AnsibleProperties(object):
         return prop_list
 
     def get_property(self, property_name):
+        self._load_properties()
         prop_val = None
         if property_name in self.unique_global_props:
             prop = self.unique_global_props[property_name]
@@ -220,12 +223,14 @@ class AnsibleProperties(object):
         return prop_val
 
     def get_all_unique(self):
+        self._load_properties()
         unique_list = []
         for _, value in self.unique_global_props.items():
             unique_list.append(value)
         return sorted(unique_list, key=lambda x: x.name)
 
     def get_all_override_flags(self):
+        self._load_properties()
         return self.unique_override_flags
 
     # TODO(bmace) -- if this isn't used for 2.1.x it should be removed
