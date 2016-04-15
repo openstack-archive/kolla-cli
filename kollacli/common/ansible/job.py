@@ -73,10 +73,8 @@ class AnsibleJob(object):
             if not locked:
                 raise Exception(
                     u._('unable to run ansible job {cmd} '
-                        'as we couldn\'t get lock held by {owner}:{pid}.')
-                    .format(cmd=self._command,
-                            owner=self._ansible_lock.current_owner,
-                            pid=self._ansible_lock.current_pid))
+                        'as we couldn\'t get lock.')
+                    .format(cmd=self._command))
 
             # create and open named pipe, must be owned by kolla group
             os.mkfifo(self._fifo_path, 0o660)
