@@ -317,17 +317,21 @@ class AnsibleJob(object):
 
     def _format_error(self, taskname, host, status, results):
         # get the primary error message
-        err_msg = results.get('msg', '')
+        err_msg = self._safe_get(results, 'msg')
 
         # there may be more detailed error msgs under results
-        sub_results = results.get('results', None)
+        sub_results = self._safe_get(results, 'results')
         if sub_results:
             sub_errs = ''
             comma = ''
             for invocation in sub_results:
                 is_failed = invocation.get('failed', False)
                 if is_failed is True:
-                    sub_msg = invocation.get('msg', '')
+                    sub_msg = self._safe_get(invocation, 'msg')
+                    if not sub_msg:
+                        sub_msg = self._safe_get(invocation, 'stderr')
+                        if not sub_msg:
+                            self._safe_get(invocation, 'stdout')
                     sub_errs = ''.join([sub_errs, comma, sub_msg])
                     if sub_msg:
                         comma = ', '
@@ -338,7 +342,7 @@ class AnsibleJob(object):
             # sometimes the error message is in std_out
             # eg- "stdout": 'localhost | FAILED! => {"changed": false,
             # "failed": true, "msg": "...msg..."}'
-            stdout = results.get('stdout', '')
+            stdout = self._safe_get(results, 'stdout')
             if '"msg": "' in stdout:
                 err_msg = stdout.split('"msg": "')[1]
                 err_msg = err_msg.split('"')[0]
@@ -354,6 +358,13 @@ class AnsibleJob(object):
         msg = ('Host: %s, Task: %s, Status: %s, Message: %s' %
                (host, taskname, status, err_msg))
         return msg
+
+    def _safe_get(self, dictionary, key):
+        """get value, never return None"""
+        val = dictionary.get(key, '')
+        if val is None:
+            val = ''
+        return val
 
     def _add_filler(self, msg, length, filler):
         num_stars = max(length - len(msg), 0)
