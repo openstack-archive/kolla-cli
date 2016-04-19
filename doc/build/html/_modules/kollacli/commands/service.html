@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.commands.service &mdash; kollacli 1.0.0.dev396 documentation</title>
+    <title>kollacli.commands.service &mdash; kollacli 1.0.0.dev401 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev396',
+        VERSION:     '1.0.0.dev401',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev396 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev401 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev401 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,19 +47,19 @@
           <div class="body">
             
   <h1>Source code for kollacli.commands.service</h1><div class="highlight"><pre>
-<span class="c"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
-<span class="c">#</span>
-<span class="c">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
-<span class="c">#    not use this file except in compliance with the License. You may obtain</span>
-<span class="c">#    a copy of the License at</span>
-<span class="c">#</span>
-<span class="c">#         http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c">#</span>
-<span class="c">#    Unless required by applicable law or agreed to in writing, software</span>
-<span class="c">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
-<span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
-<span class="c">#    License for the specific language governing permissions and limitations</span>
-<span class="c">#    under the License.</span>
+<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
+<span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
+<span class="c1">#    a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#         http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
+<span class="c1">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
+<span class="c1">#    License for the specific language governing permissions and limitations</span>
+<span class="c1">#    under the License.</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
 
 <span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
@@ -83,10 +83,10 @@
 
 <div class="viewcode-block" id="ServiceAddGroup.get_parser"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.service.ServiceAddGroup.get_parser">[docs]</a>    <span class="k">def</span> <span class="nf">get_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog_name</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ServiceAddGroup</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_parser</span><span class="p">(</span><span class="n">prog_name</span><span class="p">)</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;servicename&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;&lt;servicename&gt;&#39;</span><span class="p">,</span>
-                            <span class="n">help</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service name&#39;</span><span class="p">))</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;groupname&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;&lt;groupname&gt;&#39;</span><span class="p">,</span>
-                            <span class="n">help</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group name&#39;</span><span class="p">))</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;servicename&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;servicename&gt;&#39;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service name&#39;</span><span class="p">))</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;groupname&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;groupname&gt;&#39;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group name&#39;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">parser</span>
 </div>
 <div class="viewcode-block" id="ServiceAddGroup.take_action"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.service.ServiceAddGroup.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
@@ -108,10 +108,10 @@
 
 <div class="viewcode-block" id="ServiceRemoveGroup.get_parser"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.service.ServiceRemoveGroup.get_parser">[docs]</a>    <span class="k">def</span> <span class="nf">get_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog_name</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ServiceRemoveGroup</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_parser</span><span class="p">(</span><span class="n">prog_name</span><span class="p">)</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;servicename&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;&lt;servicename&gt;&#39;</span><span class="p">,</span>
-                            <span class="n">help</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service name&#39;</span><span class="p">))</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;groupname&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;&lt;groupname&gt;&#39;</span><span class="p">,</span>
-                            <span class="n">help</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group name&#39;</span><span class="p">))</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;servicename&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;servicename&gt;&#39;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service name&#39;</span><span class="p">))</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;groupname&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;groupname&gt;&#39;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group name&#39;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">parser</span>
 </div>
 <div class="viewcode-block" id="ServiceRemoveGroup.take_action"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.service.ServiceRemoveGroup.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
@@ -133,23 +133,23 @@
 
 <div class="viewcode-block" id="ServiceListGroups.take_action"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.service.ServiceListGroups.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)]</span>
             <span class="n">services</span> <span class="o">=</span> <span class="n">CLIENT</span><span class="o">.</span><span class="n">service_get_all</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">services</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
-                    <span class="n">inh_str</span> <span class="o">=</span> <span class="s">&#39;-&#39;</span>
+                    <span class="n">inh_str</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span>
                     <span class="n">groupnames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">get_groups</span><span class="p">())</span>
                     <span class="n">parentname</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">parentname</span><span class="p">:</span>
-                        <span class="c"># this is a subservice</span>
-                        <span class="n">inh_str</span> <span class="o">=</span> <span class="s">&#39;no&#39;</span>
+                        <span class="c1"># this is a subservice</span>
+                        <span class="n">inh_str</span> <span class="o">=</span> <span class="s1">&#39;no&#39;</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">groupnames</span><span class="p">:</span>
-                            <span class="c"># sub-service is inheriting groups from parent</span>
-                            <span class="n">inh_str</span> <span class="o">=</span> <span class="s">&#39;yes&#39;</span>
-                            <span class="n">groupnames</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+                            <span class="c1"># sub-service is inheriting groups from parent</span>
+                            <span class="n">inh_str</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span>
+                            <span class="n">groupnames</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
                     <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">,</span> <span class="n">inh_str</span><span class="p">))</span>
-            <span class="k">return</span> <span class="p">((</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service&#39;</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Groups&#39;</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Inherited&#39;</span><span class="p">)),</span>
+            <span class="k">return</span> <span class="p">((</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service&#39;</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Groups&#39;</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Inherited&#39;</span><span class="p">)),</span>
                     <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
         <span class="k">except</span> <span class="n">ClientException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">CommandError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -162,15 +162,15 @@
 
 <div class="viewcode-block" id="ServiceList.take_action"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.service.ServiceList.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)]</span>
             <span class="n">services</span> <span class="o">=</span> <span class="n">CLIENT</span><span class="o">.</span><span class="n">service_get_all</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">services</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">service</span><span class="o">.</span><span class="n">get_parent</span><span class="p">():</span>
-                        <span class="c"># this is a service, not a subservice</span>
+                        <span class="c1"># this is a service, not a subservice</span>
                         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">service</span><span class="o">.</span><span class="n">get_children</span><span class="p">()))</span>
-            <span class="k">return</span> <span class="p">((</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service&#39;</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Sub-Services&#39;</span><span class="p">)),</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">((</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service&#39;</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Sub-Services&#39;</span><span class="p">)),</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 
         <span class="k">except</span> <span class="n">ClientException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">CommandError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -209,7 +209,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev396 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev401 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
