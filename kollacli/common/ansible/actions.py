@@ -67,15 +67,13 @@ def destroy_hosts(hostnames, destroy_type,
     return job
 
 
-def deploy(hostnames=[], groupnames=[], servicenames=[],
+def deploy(hostnames=[],
            serial_flag=False, verbose_level=1):
     playbook = AnsiblePlaybook()
     kolla_home = get_kolla_home()
     playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/site.yml')
     playbook.hosts = hostnames
-    playbook.groups = groupnames
-    playbook.services = servicenames
     playbook.serial = serial_flag
 
     playbook.verbose_level = verbose_level
@@ -119,6 +117,23 @@ def upgrade(verbose_level=1):
 def _run_deploy_rules(playbook):
     properties = AnsibleProperties()
     inventory = Inventory.load()
+
+    # if we are doing a targeted host deploy make sure we are doing it
+    # to only compute nodes
+    if playbook.hosts:
+        inventory.validate_hostnames(playbook.hosts)
+        host_groups = inventory.get_host_groups()
+        invalid_host_list = []
+        for host in playbook.hosts:
+            groups = host_groups.get(host, None)
+            if not groups or len(groups) != 1 or 'compute' not in groups:
+                invalid_host_list.append(host)
+        if len(invalid_host_list) > 0:
+            raise InvalidArgument(
+                u._('Invalid hosts for host targeted deploy. '
+                    'Hosts must be in the compute group only.'
+                    'Invalid hosts: {hosts}')
+                .format(hosts=invalid_host_list))
 
     # cannot have both groups and hosts
     if playbook.hosts and playbook.groups:

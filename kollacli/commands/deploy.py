@@ -32,36 +32,22 @@ class Deploy(Command):
         parser.add_argument('--hosts', nargs='?',
                             metavar='<host_list>',
                             help=u._('Deployment host list'))
-        parser.add_argument('--groups', nargs='?',
-                            metavar='<group_list>',
-                            help=u._('Deployment group list'))
-        parser.add_argument('--services', nargs='?',
-                            metavar='<service_list>',
-                            help=u._('Deployment service list'))
         parser.add_argument('--serial', action='store_true',
                             help=u._('Deploy serially'))
         return parser
 
     def take_action(self, parsed_args):
         hosts = None
-        groups = None
-        services = None
         serial_flag = False
         verbose_level = self.app.options.verbose_level
         try:
             if parsed_args.hosts:
                 host_list = parsed_args.hosts.strip()
                 hosts = host_list.split(',')
-            if parsed_args.groups:
-                group_list = parsed_args.groups.strip()
-                groups = group_list.split(',')
-            if parsed_args.services:
-                service_list = parsed_args.services.strip()
-                services = service_list.split(',')
             if parsed_args.serial:
                 serial_flag = True
 
-            job = CLIENT.async_deploy(hosts, groups, services, serial_flag,
+            job = CLIENT.async_deploy(hosts, serial_flag,
                                       verbose_level)
             status = job.wait()
             if verbose_level > 2:

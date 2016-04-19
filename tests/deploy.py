@@ -137,7 +137,24 @@ class TestFunctional(KollaCliTest):
 
         self.run_cli_cmd('deploy')
         self.run_cli_cmd('deploy --serial -v')
-        self.run_cli_cmd('deploy --groups=control -vv')
+
+        # run compute host deploy to invalid host
+        err_msg = 'Status: unreachable'
+        msg = ''
+        try:
+            self.run_cli_cmd('host add dummy_host')
+            self.run_cli_cmd('group addhost compute dummy_host')
+            (retval, msg) = self.run_command(
+                'kollacli deploy --host dummy_host -v')
+            self.assertNotEqual(retval, 0,
+                                'host only deploy ran ok but shouldn\'t have')
+            self.assertIn(err_msg, msg,
+                          'host only deploy test failed %s' % msg)
+        except Exception:
+            self.assertEqual(0, 1,
+                             'host only deploy threw exception %s' % msg)
+        finally:
+            self.run_cli_cmd('host remove dummy_host')
 
     def test_upgrade(self):
         # test will upgrade an environment with no hosts, mostly a NOP,

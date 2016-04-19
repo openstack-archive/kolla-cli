@@ -23,9 +23,7 @@ from kollacli.common.utils import safe_decode
 
 class AsyncApi(object):
 
-    # TODO(bmace) -- update this to only take host names
-    # and we will probably only support compute host individual deploys
-    def async_deploy(self, hostnames=[], groupnames=[], servicenames=[],
+    def async_deploy(self, hostnames=[],
                      serial_flag=False, verbose_level=1):
         """Deploy.
 
@@ -46,17 +44,11 @@ class AsyncApi(object):
         """
         check_arg(hostnames, u._('Host names'), list,
                   empty_ok=True, none_ok=True)
-        check_arg(groupnames, u._('Group names'), list,
-                  empty_ok=True, none_ok=True)
-        check_arg(servicenames, u._('Service names'), list,
-                  empty_ok=True, none_ok=True)
         check_arg(serial_flag, u._('Serial flag'), bool)
         check_arg(verbose_level, u._('Verbose level'), int)
         hostnames = safe_decode(hostnames)
-        groupnames = safe_decode(groupnames)
-        servicenames = safe_decode(servicenames)
 
-        ansible_job = actions.deploy(hostnames, groupnames, servicenames,
+        ansible_job = actions.deploy(hostnames,
                                      serial_flag, verbose_level)
         return Job(ansible_job)
 
