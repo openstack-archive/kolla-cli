@@ -31,10 +31,6 @@ class AsyncApi(object):
 
         :param hostnames: hosts to deploy to. If empty, then deploy to all.
         :type hostnames: list of strings
-        :param groupnames: names of groups
-        :type groupnames: list of strings
-        :param servicenames: names of services
-        :type servicenames: list of strings
         :param serial_flag: if true, deploy will be done one host at a time
         :type serial_flag: boolean
         :param verbose_level: the higher the number, the more verbose
