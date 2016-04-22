@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.inventory &mdash; kollacli 1.0.0.dev401 documentation</title>
+    <title>kollacli.common.inventory &mdash; kollacli 1.0.0.dev404 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev401',
+        VERSION:     '1.0.0.dev404',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev401 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev404 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev401 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,19 +47,19 @@
           <div class="body">
             
   <h1>Source code for kollacli.common.inventory</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
-<span class="c1">#</span>
-<span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
-<span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
-<span class="c1">#    a copy of the License at</span>
-<span class="c1">#</span>
-<span class="c1">#         http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c1">#</span>
-<span class="c1">#    Unless required by applicable law or agreed to in writing, software</span>
-<span class="c1">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
-<span class="c1">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
-<span class="c1">#    License for the specific language governing permissions and limitations</span>
-<span class="c1">#    under the License.</span>
+<span class="c"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span class="c">#</span>
+<span class="c">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
+<span class="c">#    not use this file except in compliance with the License. You may obtain</span>
+<span class="c">#    a copy of the License at</span>
+<span class="c">#</span>
+<span class="c">#         http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c">#</span>
+<span class="c">#    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
+<span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
+<span class="c">#    License for the specific language governing permissions and limitations</span>
+<span class="c">#    under the License.</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">jsonpickle</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -86,17 +86,17 @@
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">sync_read_file</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">sync_write_file</span>
 
-<span class="n">ANSIBLE_SSH_USER</span> <span class="o">=</span> <span class="s1">&#39;ansible_ssh_user&#39;</span>
-<span class="n">ANSIBLE_CONNECTION</span> <span class="o">=</span> <span class="s1">&#39;ansible_connection&#39;</span>
-<span class="n">ANSIBLE_BECOME</span> <span class="o">=</span> <span class="s1">&#39;ansible_become&#39;</span>
+<span class="n">ANSIBLE_SSH_USER</span> <span class="o">=</span> <span class="s">&#39;ansible_ssh_user&#39;</span>
+<span class="n">ANSIBLE_CONNECTION</span> <span class="o">=</span> <span class="s">&#39;ansible_connection&#39;</span>
+<span class="n">ANSIBLE_BECOME</span> <span class="o">=</span> <span class="s">&#39;ansible_become&#39;</span>
 
-<span class="n">INVENTORY_PATH</span> <span class="o">=</span> <span class="s1">&#39;ansible/inventory.json&#39;</span>
+<span class="n">INVENTORY_PATH</span> <span class="o">=</span> <span class="s">&#39;ansible/inventory.json&#39;</span>
 
-<span class="n">COMPUTE_GRP_NAME</span> <span class="o">=</span> <span class="s1">&#39;compute&#39;</span>
-<span class="n">CONTROL_GRP_NAME</span> <span class="o">=</span> <span class="s1">&#39;control&#39;</span>
-<span class="n">NETWORK_GRP_NAME</span> <span class="o">=</span> <span class="s1">&#39;network&#39;</span>
-<span class="n">STORAGE_GRP_NAME</span> <span class="o">=</span> <span class="s1">&#39;storage&#39;</span>
-<span class="n">DATABASE_GRP_NAME</span> <span class="o">=</span> <span class="s1">&#39;database&#39;</span>
+<span class="n">COMPUTE_GRP_NAME</span> <span class="o">=</span> <span class="s">&#39;compute&#39;</span>
+<span class="n">CONTROL_GRP_NAME</span> <span class="o">=</span> <span class="s">&#39;control&#39;</span>
+<span class="n">NETWORK_GRP_NAME</span> <span class="o">=</span> <span class="s">&#39;network&#39;</span>
+<span class="n">STORAGE_GRP_NAME</span> <span class="o">=</span> <span class="s">&#39;storage&#39;</span>
+<span class="n">DATABASE_GRP_NAME</span> <span class="o">=</span> <span class="s">&#39;database&#39;</span>
 
 <span class="n">DEPLOY_GROUPS</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">COMPUTE_GRP_NAME</span><span class="p">,</span>
@@ -107,57 +107,57 @@
     <span class="p">]</span>
 
 <span class="n">SERVICES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;ceilometer&#39;</span><span class="p">:</span>   <span class="p">[</span><span class="s1">&#39;ceilometer-alarm-evaluator&#39;</span><span class="p">,</span> <span class="s1">&#39;ceilometer-alarm-notifier&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;ceilometer-api&#39;</span><span class="p">,</span> <span class="s1">&#39;ceilometer-central&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;ceilometer-collector&#39;</span><span class="p">,</span> <span class="s1">&#39;ceilometer-notification&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;cinder&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="s1">&#39;cinder-api&#39;</span><span class="p">,</span> <span class="s1">&#39;cinder-scheduler&#39;</span><span class="p">,</span> <span class="s1">&#39;cinder-backup&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;cinder-volume&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;glance&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="s1">&#39;glance-api&#39;</span><span class="p">,</span> <span class="s1">&#39;glance-registry&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;haproxy&#39;</span><span class="p">:</span>      <span class="p">[],</span>
-    <span class="s1">&#39;heat&#39;</span><span class="p">:</span>         <span class="p">[</span><span class="s1">&#39;heat-api&#39;</span><span class="p">,</span> <span class="s1">&#39;heat-api-cfn&#39;</span><span class="p">,</span> <span class="s1">&#39;heat-engine&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;horizon&#39;</span><span class="p">:</span>      <span class="p">[],</span>
-    <span class="s1">&#39;keystone&#39;</span><span class="p">:</span>     <span class="p">[],</span>
-    <span class="s1">&#39;memcached&#39;</span><span class="p">:</span>    <span class="p">[],</span>
-    <span class="s1">&#39;murano&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="s1">&#39;murano-api&#39;</span><span class="p">,</span> <span class="s1">&#39;murano-engine&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;mysqlcluster&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mysqlcluster-api&#39;</span><span class="p">,</span> <span class="s1">&#39;mysqlcluster-mgmt&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;mysqlcluster-ndb&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;neutron&#39;</span><span class="p">:</span>      <span class="p">[</span><span class="s1">&#39;neutron-server&#39;</span><span class="p">,</span> <span class="s1">&#39;neutron-agents&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;nova&#39;</span><span class="p">:</span>         <span class="p">[</span><span class="s1">&#39;nova-api&#39;</span><span class="p">,</span> <span class="s1">&#39;nova-conductor&#39;</span><span class="p">,</span> <span class="s1">&#39;nova-consoleauth&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;nova-novncproxy&#39;</span><span class="p">,</span> <span class="s1">&#39;nova-scheduler&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;rabbitmq&#39;</span><span class="p">:</span>     <span class="p">[],</span>
-    <span class="s1">&#39;swift&#39;</span><span class="p">:</span>        <span class="p">[</span><span class="s1">&#39;swift-proxy-server&#39;</span><span class="p">,</span> <span class="s1">&#39;swift-account-server&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;swift-container-server&#39;</span><span class="p">,</span> <span class="s1">&#39;swift-object-server&#39;</span><span class="p">],</span>
+    <span class="s">&#39;ceilometer&#39;</span><span class="p">:</span>   <span class="p">[</span><span class="s">&#39;ceilometer-alarm-evaluator&#39;</span><span class="p">,</span> <span class="s">&#39;ceilometer-alarm-notifier&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;ceilometer-api&#39;</span><span class="p">,</span> <span class="s">&#39;ceilometer-central&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;ceilometer-collector&#39;</span><span class="p">,</span> <span class="s">&#39;ceilometer-notification&#39;</span><span class="p">],</span>
+    <span class="s">&#39;cinder&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="s">&#39;cinder-api&#39;</span><span class="p">,</span> <span class="s">&#39;cinder-scheduler&#39;</span><span class="p">,</span> <span class="s">&#39;cinder-backup&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;cinder-volume&#39;</span><span class="p">],</span>
+    <span class="s">&#39;glance&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="s">&#39;glance-api&#39;</span><span class="p">,</span> <span class="s">&#39;glance-registry&#39;</span><span class="p">],</span>
+    <span class="s">&#39;haproxy&#39;</span><span class="p">:</span>      <span class="p">[],</span>
+    <span class="s">&#39;heat&#39;</span><span class="p">:</span>         <span class="p">[</span><span class="s">&#39;heat-api&#39;</span><span class="p">,</span> <span class="s">&#39;heat-api-cfn&#39;</span><span class="p">,</span> <span class="s">&#39;heat-engine&#39;</span><span class="p">],</span>
+    <span class="s">&#39;horizon&#39;</span><span class="p">:</span>      <span class="p">[],</span>
+    <span class="s">&#39;keystone&#39;</span><span class="p">:</span>     <span class="p">[],</span>
+    <span class="s">&#39;memcached&#39;</span><span class="p">:</span>    <span class="p">[],</span>
+    <span class="s">&#39;murano&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="s">&#39;murano-api&#39;</span><span class="p">,</span> <span class="s">&#39;murano-engine&#39;</span><span class="p">],</span>
+    <span class="s">&#39;mysqlcluster&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;mysqlcluster-api&#39;</span><span class="p">,</span> <span class="s">&#39;mysqlcluster-mgmt&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;mysqlcluster-ndb&#39;</span><span class="p">],</span>
+    <span class="s">&#39;neutron&#39;</span><span class="p">:</span>      <span class="p">[</span><span class="s">&#39;neutron-server&#39;</span><span class="p">,</span> <span class="s">&#39;neutron-agents&#39;</span><span class="p">],</span>
+    <span class="s">&#39;nova&#39;</span><span class="p">:</span>         <span class="p">[</span><span class="s">&#39;nova-api&#39;</span><span class="p">,</span> <span class="s">&#39;nova-conductor&#39;</span><span class="p">,</span> <span class="s">&#39;nova-consoleauth&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;nova-novncproxy&#39;</span><span class="p">,</span> <span class="s">&#39;nova-scheduler&#39;</span><span class="p">],</span>
+    <span class="s">&#39;rabbitmq&#39;</span><span class="p">:</span>     <span class="p">[],</span>
+    <span class="s">&#39;swift&#39;</span><span class="p">:</span>        <span class="p">[</span><span class="s">&#39;swift-proxy-server&#39;</span><span class="p">,</span> <span class="s">&#39;swift-account-server&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;swift-container-server&#39;</span><span class="p">,</span> <span class="s">&#39;swift-object-server&#39;</span><span class="p">],</span>
     <span class="p">}</span>
 
 <span class="n">DEFAULT_GROUPS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;ceilometer&#39;</span><span class="p">:</span>               <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;cinder&#39;</span><span class="p">:</span>                   <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;glance&#39;</span><span class="p">:</span>                   <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;haproxy&#39;</span><span class="p">:</span>                  <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;heat&#39;</span><span class="p">:</span>                     <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;horizon&#39;</span><span class="p">:</span>                  <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;keystone&#39;</span><span class="p">:</span>                 <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;memcached&#39;</span><span class="p">:</span>                <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;murano&#39;</span><span class="p">:</span>                   <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;mysqlcluster&#39;</span><span class="p">:</span>             <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;neutron&#39;</span><span class="p">:</span>                  <span class="n">NETWORK_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;nova&#39;</span><span class="p">:</span>                     <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;rabbitmq&#39;</span><span class="p">:</span>                 <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;swift&#39;</span><span class="p">:</span>                    <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;ceilometer&#39;</span><span class="p">:</span>               <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;cinder&#39;</span><span class="p">:</span>                   <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;glance&#39;</span><span class="p">:</span>                   <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;haproxy&#39;</span><span class="p">:</span>                  <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;heat&#39;</span><span class="p">:</span>                     <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;horizon&#39;</span><span class="p">:</span>                  <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;keystone&#39;</span><span class="p">:</span>                 <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;memcached&#39;</span><span class="p">:</span>                <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;murano&#39;</span><span class="p">:</span>                   <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;mysqlcluster&#39;</span><span class="p">:</span>             <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;neutron&#39;</span><span class="p">:</span>                  <span class="n">NETWORK_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;nova&#39;</span><span class="p">:</span>                     <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;rabbitmq&#39;</span><span class="p">:</span>                 <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;swift&#39;</span><span class="p">:</span>                    <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
     <span class="p">}</span>
 
 <span class="n">DEFAULT_OVERRIDES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;cinder-backup&#39;</span><span class="p">:</span>            <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;cinder-volume&#39;</span><span class="p">:</span>            <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;mysqlcluster-ndb&#39;</span><span class="p">:</span>         <span class="n">DATABASE_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;neutron-server&#39;</span><span class="p">:</span>           <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;swift-account-server&#39;</span><span class="p">:</span>     <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;swift-container-server&#39;</span><span class="p">:</span>   <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
-    <span class="s1">&#39;swift-object-server&#39;</span><span class="p">:</span>      <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;cinder-backup&#39;</span><span class="p">:</span>            <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;cinder-volume&#39;</span><span class="p">:</span>            <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;mysqlcluster-ndb&#39;</span><span class="p">:</span>         <span class="n">DATABASE_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;neutron-server&#39;</span><span class="p">:</span>           <span class="n">CONTROL_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;swift-account-server&#39;</span><span class="p">:</span>     <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;swift-container-server&#39;</span><span class="p">:</span>   <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
+    <span class="s">&#39;swift-object-server&#39;</span><span class="p">:</span>      <span class="n">STORAGE_GRP_NAME</span><span class="p">,</span>
     <span class="p">}</span>
 
 
-<span class="c1"># these groups cannot be deleted, they are required by kolla</span>
+<span class="c"># these groups cannot be deleted, they are required by kolla</span>
 <span class="n">PROTECTED_GROUPS</span> <span class="o">=</span> <span class="p">[</span><span class="n">COMPUTE_GRP_NAME</span><span class="p">]</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
@@ -178,9 +178,9 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">hostname</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_mgmt</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hypervisor</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hypervisor</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">class_version</span>
 
@@ -228,14 +228,14 @@
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 </div>
 <div class="viewcode-block" id="HostGroup.set_remote"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.HostGroup.set_remote">[docs]</a>    <span class="k">def</span> <span class="nf">set_remote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_flag</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_var</span><span class="p">(</span><span class="n">ANSIBLE_BECOME</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_var</span><span class="p">(</span><span class="n">ANSIBLE_BECOME</span><span class="p">,</span> <span class="s">&#39;yes&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">remote_flag</span><span class="p">:</span>
-            <span class="c1"># set the ssh info for all the servers in the group</span>
+            <span class="c"># set the ssh info for all the servers in the group</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_var</span><span class="p">(</span><span class="n">ANSIBLE_SSH_USER</span><span class="p">,</span> <span class="n">get_admin_user</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clear_var</span><span class="p">(</span><span class="n">ANSIBLE_CONNECTION</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># remove ssh info, add local connection type</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_var</span><span class="p">(</span><span class="n">ANSIBLE_CONNECTION</span><span class="p">,</span> <span class="s1">&#39;local&#39;</span><span class="p">)</span>
+            <span class="c"># remove ssh info, add local connection type</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_var</span><span class="p">(</span><span class="n">ANSIBLE_CONNECTION</span><span class="p">,</span> <span class="s">&#39;local&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clear_var</span><span class="p">(</span><span class="n">ANSIBLE_SSH_USER</span><span class="p">)</span>
 
 </div></div>
@@ -280,7 +280,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
-        <span class="c1"># groups and parent services are mutually exclusive</span>
+        <span class="c"># groups and parent services are mutually exclusive</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_groupnames</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parent_servicename</span> <span class="o">=</span> <span class="bp">None</span>
 
@@ -298,7 +298,7 @@
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groupnames</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_groupnames</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groupnames</span><span class="p">:</span>
-            <span class="c1"># no groups left, re-associate to the parent</span>
+            <span class="c"># no groups left, re-associate to the parent</span>
             <span class="k">for</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="n">SERVICES</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">SERVICES</span><span class="p">[</span><span class="n">servicename</span><span class="p">]:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">set_parent_servicename</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
@@ -325,50 +325,50 @@
 <span class="sd">    1: initial release</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="p">{}</span>           <span class="c1"># kv = name:object</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span> <span class="o">=</span> <span class="p">{}</span>            <span class="c1"># kv = name:object</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_services</span> <span class="o">=</span> <span class="p">{}</span>         <span class="c1"># kv = name:object</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span> <span class="o">=</span> <span class="p">{}</span>     <span class="c1"># kv = name:object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="p">{}</span>           <span class="c"># kv = name:object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span> <span class="o">=</span> <span class="p">{}</span>            <span class="c"># kv = name:object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_services</span> <span class="o">=</span> <span class="p">{}</span>         <span class="c"># kv = name:object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span> <span class="o">=</span> <span class="p">{}</span>     <span class="c"># kv = name:object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">class_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remote_mode</span> <span class="o">=</span> <span class="bp">True</span>
 
-        <span class="c1"># initialize the inventory to its defaults</span>
+        <span class="c"># initialize the inventory to its defaults</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_default_inventory</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Inventory.upgrade"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.upgrade">[docs]</a>    <span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># upgrade from inventory v1</span>
+            <span class="c"># upgrade from inventory v1</span>
 
-            <span class="c1"># add ceilometer to inventory</span>
-            <span class="n">svc_name</span> <span class="o">=</span> <span class="s1">&#39;ceilometer&#39;</span>
+            <span class="c"># add ceilometer to inventory</span>
+            <span class="n">svc_name</span> <span class="o">=</span> <span class="s">&#39;ceilometer&#39;</span>
             <span class="n">svc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service</span><span class="p">(</span><span class="n">svc_name</span><span class="p">)</span>
 
-            <span class="c1"># associate ceilometer with all groups that heat is in.</span>
-            <span class="n">clone_svc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="s1">&#39;heat&#39;</span><span class="p">)</span>
+            <span class="c"># associate ceilometer with all groups that heat is in.</span>
+            <span class="n">clone_svc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="s">&#39;heat&#39;</span><span class="p">)</span>
             <span class="n">groups</span> <span class="o">=</span> <span class="n">clone_svc</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
                 <span class="n">svc</span><span class="o">.</span><span class="n">add_groupname</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
 
-            <span class="c1"># stitch sub-service to service and set override</span>
-            <span class="c1"># groups</span>
+            <span class="c"># stitch sub-service to service and set override</span>
+            <span class="c"># groups</span>
             <span class="k">for</span> <span class="n">sub_svc_name</span> <span class="ow">in</span> <span class="n">SERVICES</span><span class="p">[</span><span class="n">svc_name</span><span class="p">]:</span>
                 <span class="n">sub_svc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_sub_service</span><span class="p">(</span><span class="n">sub_svc_name</span><span class="p">)</span>
                 <span class="n">sub_svc</span><span class="o">.</span><span class="n">set_parent_servicename</span><span class="p">(</span><span class="n">svc_name</span><span class="p">)</span>
                 <span class="n">svc</span><span class="o">.</span><span class="n">add_sub_servicename</span><span class="p">(</span><span class="n">sub_svc_name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="c1"># upgrade from inventory v2</span>
+            <span class="c"># upgrade from inventory v2</span>
 
-            <span class="c1"># some sub-services may be missing their parent associations.</span>
-            <span class="c1"># they are now needed in v3.</span>
+            <span class="c"># some sub-services may be missing their parent associations.</span>
+            <span class="c"># they are now needed in v3.</span>
             <span class="k">for</span> <span class="n">svc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">sub_svcname</span> <span class="ow">in</span> <span class="n">svc</span><span class="o">.</span><span class="n">get_sub_servicenames</span><span class="p">():</span>
                     <span class="n">sub_svc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sub_service</span><span class="p">(</span><span class="n">sub_svcname</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">sub_svc</span><span class="o">.</span><span class="n">get_parent_servicename</span><span class="p">():</span>
                         <span class="n">sub_svc</span><span class="o">.</span><span class="n">set_parent_servicename</span><span class="p">(</span><span class="n">svc</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="c1"># update the version and save upgraded inventory file</span>
+        <span class="c"># update the version and save upgraded inventory file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">class_version</span>
         <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </div>
@@ -376,30 +376,30 @@
 <div class="viewcode-block" id="Inventory.load"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;load the inventory from a pickle file&quot;&quot;&quot;</span>
         <span class="n">inventory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_etc</span><span class="p">(),</span> <span class="n">INVENTORY_PATH</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">):</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">sync_read_file</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">)</span>
 
-                <span class="c1"># The inventory path changed between v1 and v2. Need to change</span>
-                <span class="c1"># path throughout the inventory. This has to be done before</span>
-                <span class="c1"># the pickle decode.</span>
-                <span class="k">if</span> <span class="s1">&#39;kollacli.common.inventory&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="c"># The inventory path changed between v1 and v2. Need to change</span>
+                <span class="c"># path throughout the inventory. This has to be done before</span>
+                <span class="c"># the pickle decode.</span>
+                <span class="k">if</span> <span class="s">&#39;kollacli.common.inventory&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                     <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.ansible.inventory.&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.inventory.&#39;</span><span class="p">)</span>
+                        <span class="s">&#39;&quot;py/object&quot;: &quot;kollacli.ansible.inventory.&#39;</span><span class="p">,</span>
+                        <span class="s">&#39;&quot;py/object&quot;: &quot;kollacli.common.inventory.&#39;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
                 <span class="n">inventory</span> <span class="o">=</span> <span class="n">jsonpickle</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-                <span class="c1"># upgrade version handling</span>
+                <span class="c"># upgrade version handling</span>
                 <span class="k">if</span> <span class="n">inventory</span><span class="o">.</span><span class="n">version</span> <span class="o">!=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">class_version</span><span class="p">:</span>
                     <span class="n">inventory</span><span class="o">.</span><span class="n">upgrade</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">FailedOperation</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Loading inventory failed. : {error}&#39;</span><span class="p">)</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Loading inventory failed. : {error}&#39;</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()))</span>
         <span class="k">return</span> <span class="n">inventory</span>
 </div>
@@ -408,7 +408,7 @@
         <span class="sd">&quot;&quot;&quot;Save the inventory in a pickle file&quot;&quot;&quot;</span>
         <span class="n">inventory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_etc</span><span class="p">(),</span> <span class="n">INVENTORY_PATH</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># multiple trips thru json to render a readable inventory file</span>
+            <span class="c"># multiple trips thru json to render a readable inventory file</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">jsonpickle</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
             <span class="n">data_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="n">pretty_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_str</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -416,16 +416,16 @@
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">FailedOperation</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Saving inventory failed. : {error}&#39;</span><span class="p">)</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Saving inventory failed. : {error}&#39;</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
 </div>
     <span class="k">def</span> <span class="nf">_create_default_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="c1"># create the default groups</span>
+        <span class="c"># create the default groups</span>
         <span class="k">for</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="n">DEPLOY_GROUPS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_group</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
 
-        <span class="c1"># create the default services/sub_services &amp; their default groups</span>
+        <span class="c"># create the default services/sub_services &amp; their default groups</span>
         <span class="k">for</span> <span class="n">svcname</span> <span class="ow">in</span> <span class="n">SERVICES</span><span class="p">:</span>
             <span class="n">svc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service</span><span class="p">(</span><span class="n">svcname</span><span class="p">)</span>
             <span class="n">default_grpname</span> <span class="o">=</span> <span class="n">DEFAULT_GROUPS</span><span class="p">[</span><span class="n">svcname</span><span class="p">]</span>
@@ -433,7 +433,7 @@
             <span class="n">sub_svcnames</span> <span class="o">=</span> <span class="n">SERVICES</span><span class="p">[</span><span class="n">svcname</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">sub_svcnames</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">sub_svcname</span> <span class="ow">in</span> <span class="n">sub_svcnames</span><span class="p">:</span>
-                    <span class="c1"># create a subservice</span>
+                    <span class="c"># create a subservice</span>
                     <span class="n">svc</span><span class="o">.</span><span class="n">add_sub_servicename</span><span class="p">(</span><span class="n">sub_svcname</span><span class="p">)</span>
                     <span class="n">sub_svc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_sub_service</span><span class="p">(</span><span class="n">sub_svcname</span><span class="p">)</span>
                     <span class="n">sub_svc</span><span class="o">.</span><span class="n">set_parent_servicename</span><span class="p">(</span><span class="n">svc</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -459,26 +459,26 @@
 <span class="sd">        if group name is not none, add host to group</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">and</span> <span class="n">groupname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group&#39;</span><span class="p">),</span> <span class="n">groupname</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group&#39;</span><span class="p">),</span> <span class="n">groupname</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">and</span> <span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span><span class="p">:</span>
-            <span class="c1"># if a groupname is specified, the host must already exist</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host&#39;</span><span class="p">),</span> <span class="n">hostname</span><span class="p">)</span>
+            <span class="c"># if a groupname is specified, the host must already exist</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host&#39;</span><span class="p">),</span> <span class="n">hostname</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">groupname</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_mode</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidConfiguration</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cannot have more than one host when in local deploy &#39;</span>
-                    <span class="s1">&#39;mode.&#39;</span><span class="p">))</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Cannot have more than one host when in local deploy &#39;</span>
+                    <span class="s">&#39;mode.&#39;</span><span class="p">))</span>
 
         <span class="n">changed</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="c1"># create new host if it doesn&#39;t exist</span>
+        <span class="c"># create new host if it doesn&#39;t exist</span>
         <span class="n">host</span> <span class="o">=</span> <span class="n">Host</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_hostnames</span><span class="p">():</span>
-            <span class="c1"># a new host is being added to the inventory</span>
+            <span class="c"># a new host is being added to the inventory</span>
             <span class="n">changed</span> <span class="o">=</span> <span class="bp">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="n">host</span>
 
-        <span class="c1"># a host is to be added to an existing group</span>
+        <span class="c"># a host is to be added to an existing group</span>
         <span class="k">elif</span> <span class="n">groupname</span><span class="p">:</span>
             <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">groupname</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">get_hostnames</span><span class="p">():</span>
@@ -500,7 +500,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">changed</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">and</span> <span class="n">groupname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group&#39;</span><span class="p">),</span> <span class="n">groupname</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group&#39;</span><span class="p">),</span> <span class="n">groupname</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">changed</span>
@@ -535,44 +535,44 @@
         <span class="k">for</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">host_info</span> <span class="ow">in</span> <span class="n">hosts_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">host</span><span class="p">:</span>
-                <span class="n">failed_hosts</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Host doesn&#39;t exist.&quot;</span><span class="p">)</span>
+                <span class="n">failed_hosts</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Host doesn&#39;t exist.&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">host_info</span> <span class="ow">or</span> <span class="s1">&#39;password&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">host_info</span><span class="p">:</span>
-                <span class="n">failed_hosts</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;No password in yml file.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">host_info</span> <span class="ow">or</span> <span class="s">&#39;password&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">host_info</span><span class="p">:</span>
+                <span class="n">failed_hosts</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;No password in yml file.&#39;</span><span class="p">)</span>
                 <span class="k">continue</span>
-            <span class="n">passwd</span> <span class="o">=</span> <span class="n">host_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+            <span class="n">passwd</span> <span class="o">=</span> <span class="n">host_info</span><span class="p">[</span><span class="s">&#39;password&#39;</span><span class="p">]</span>
             <span class="n">uname</span> <span class="o">=</span> <span class="bp">None</span>
-            <span class="k">if</span> <span class="s1">&#39;uname&#39;</span> <span class="ow">in</span> <span class="n">host_info</span><span class="p">:</span>
-                <span class="n">uname</span> <span class="o">=</span> <span class="n">host_info</span><span class="p">[</span><span class="s1">&#39;uname&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s">&#39;uname&#39;</span> <span class="ow">in</span> <span class="n">host_info</span><span class="p">:</span>
+                <span class="n">uname</span> <span class="o">=</span> <span class="n">host_info</span><span class="p">[</span><span class="s">&#39;uname&#39;</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">setup_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">uname</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">failed_hosts</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span>
+                <span class="n">failed_hosts</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span>
         <span class="k">if</span> <span class="n">failed_hosts</span><span class="p">:</span>
-            <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="n">summary</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
             <span class="k">for</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">failed_hosts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span> <span class="o">+</span> <span class="s1">&#39;- </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span> <span class="o">+</span> <span class="s">&#39;- </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">HostError</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Not all hosts were set up. : {reasons}&#39;</span><span class="p">)</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Not all hosts were set up. : {reasons}&#39;</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">reasons</span><span class="o">=</span><span class="n">summary</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s1">&#39;All hosts were successfully set up.&#39;</span><span class="p">))</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s">&#39;All hosts were successfully set up.&#39;</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="Inventory.setup_host"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.setup_host">[docs]</a>    <span class="k">def</span> <span class="nf">setup_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">uname</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s1">&#39;Starting setup of host ({host}).&#39;</span><span class="p">)</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s">&#39;Starting setup of host ({host}).&#39;</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">hostname</span><span class="p">))</span>
             <span class="n">ssh_setup_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">uname</span><span class="p">)</span>
             <span class="n">check_ok</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssh_check_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">check_ok</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Post-setup ssh check failed. {err}&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Post-setup ssh check failed. {err}&#39;</span><span class="p">)</span>
                                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">msg</span><span class="p">))</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s1">&#39;Host ({host}) setup succeeded.&#39;</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s">&#39;Host ({host}) setup succeeded.&#39;</span><span class="p">)</span>
                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">hostname</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">HostError</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host ({host}) setup failed : {error}&#39;</span><span class="p">)</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host ({host}) setup failed : {error}&#39;</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">hostname</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
         <span class="k">return</span> <span class="bp">True</span>
 </div>
@@ -586,29 +586,29 @@
         <span class="k">for</span> <span class="n">hostname</span> <span class="ow">in</span> <span class="n">hostnames</span><span class="p">:</span>
             <span class="n">is_ok</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssh_check_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
             <span class="n">summary</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">summary</span><span class="p">[</span><span class="n">hostname</span><span class="p">][</span><span class="s1">&#39;success&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_ok</span>
-            <span class="n">summary</span><span class="p">[</span><span class="n">hostname</span><span class="p">][</span><span class="s1">&#39;msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg</span>
+            <span class="n">summary</span><span class="p">[</span><span class="n">hostname</span><span class="p">][</span><span class="s">&#39;success&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_ok</span>
+            <span class="n">summary</span><span class="p">[</span><span class="n">hostname</span><span class="p">][</span><span class="s">&#39;msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg</span>
         <span class="k">return</span> <span class="n">summary</span>
 </div>
 <div class="viewcode-block" id="Inventory.ssh_check_host"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.ssh_check_host">[docs]</a>    <span class="k">def</span> <span class="nf">ssh_check_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
-        <span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_ansible_command</span><span class="p">(</span><span class="s1">&#39;-m ping&#39;</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
+        <span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_ansible_command</span><span class="p">(</span><span class="s">&#39;-m ping&#39;</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
         <span class="n">is_ok</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">if</span> <span class="n">err_msg</span><span class="p">:</span>
             <span class="n">is_ok</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host ({host}) ssh check failed. : {error} {message}&#39;</span><span class="p">)</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host ({host}) ssh check failed. : {error} {message}&#39;</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">hostname</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">err_msg</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">output</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s1">&#39;Host ({host}) ssh check succeeded.&#39;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s">&#39;Host ({host}) ssh check succeeded.&#39;</span><span class="p">)</span>
                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">hostname</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">is_ok</span><span class="p">,</span> <span class="n">msg</span>
 </div>
 <div class="viewcode-block" id="Inventory.run_ansible_command"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.run_ansible_command">[docs]</a>    <span class="k">def</span> <span class="nf">run_ansible_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansible_command</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
         <span class="n">err_msg</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="n">command_string</span> <span class="o">=</span> <span class="s1">&#39;/usr/bin/sudo -u </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> -vvv&#39;</span> <span class="o">%</span> \
+        <span class="n">command_string</span> <span class="o">=</span> <span class="s">&#39;/usr/bin/sudo -u </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> -vvv&#39;</span> <span class="o">%</span> \
             <span class="p">(</span><span class="n">get_admin_user</span><span class="p">(),</span> <span class="n">get_ansible_command</span><span class="p">())</span>
         <span class="n">gen_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_json_gen_file</span><span class="p">()</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> -i </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">command_string</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">gen_file_path</span><span class="p">,</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> -i </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">command_string</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">gen_file_path</span><span class="p">,</span>
                                   <span class="n">ansible_command</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
@@ -620,11 +620,11 @@
 </div>
 <div class="viewcode-block" id="Inventory.add_group"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.add_group">[docs]</a>    <span class="k">def</span> <span class="nf">add_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupname</span><span class="p">):</span>
 
-        <span class="c1"># Group names cannot overlap with service names:</span>
+        <span class="c"># Group names cannot overlap with service names:</span>
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span> <span class="ow">or</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid group name. A service name &#39;</span>
-                    <span class="s1">&#39;cannot be used for a group name.&#39;</span><span class="p">))</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Invalid group name. A service name &#39;</span>
+                    <span class="s">&#39;cannot be used for a group name.&#39;</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">groupname</span><span class="p">]</span> <span class="o">=</span> <span class="n">HostGroup</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
@@ -638,10 +638,10 @@
 <div class="viewcode-block" id="Inventory.remove_group"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.remove_group">[docs]</a>    <span class="k">def</span> <span class="nf">remove_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupname</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="n">PROTECTED_GROUPS</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cannot remove {group} group. It is required by kolla.&#39;</span><span class="p">)</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Cannot remove {group} group. It is required by kolla.&#39;</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="n">groupname</span><span class="p">))</span>
 
-        <span class="c1"># remove group from services &amp; subservices</span>
+        <span class="c"># remove group from services &amp; subservices</span>
         <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">service</span><span class="o">.</span><span class="n">remove_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
 
@@ -649,7 +649,7 @@
             <span class="n">subservice</span><span class="o">.</span><span class="n">remove_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
 
         <span class="n">group_vars</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_group_vars_dir</span><span class="p">(),</span> <span class="n">groupname</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">group_vars</span><span class="p">)</span> <span class="ow">and</span> <span class="n">groupname</span> <span class="o">!=</span> <span class="s1">&#39;__GLOBAL__&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">group_vars</span><span class="p">)</span> <span class="ow">and</span> <span class="n">groupname</span> <span class="o">!=</span> <span class="s">&#39;__GLOBAL__&#39;</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">group_vars</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
@@ -739,7 +739,7 @@
 </div>
 <div class="viewcode-block" id="Inventory.add_group_to_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.add_group_to_service">[docs]</a>    <span class="k">def</span> <span class="nf">add_group_to_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupname</span><span class="p">,</span> <span class="n">servicename</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group&#39;</span><span class="p">),</span> <span class="n">groupname</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group&#39;</span><span class="p">),</span> <span class="n">groupname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">:</span>
             <span class="n">service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
             <span class="n">service</span><span class="o">.</span><span class="n">add_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
@@ -747,11 +747,11 @@
                 <span class="n">sub_service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sub_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
                 <span class="n">sub_service</span><span class="o">.</span><span class="n">add_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service&#39;</span><span class="p">),</span> <span class="n">servicename</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service&#39;</span><span class="p">),</span> <span class="n">servicename</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="Inventory.remove_group_from_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.remove_group_from_service">[docs]</a>    <span class="k">def</span> <span class="nf">remove_group_from_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupname</span><span class="p">,</span> <span class="n">servicename</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">groupname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group&#39;</span><span class="p">),</span> <span class="n">groupname</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group&#39;</span><span class="p">),</span> <span class="n">groupname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">:</span>
             <span class="n">service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
             <span class="n">service</span><span class="o">.</span><span class="n">remove_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
@@ -759,7 +759,7 @@
                 <span class="n">sub_service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sub_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
                 <span class="n">sub_service</span><span class="o">.</span><span class="n">remove_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service&#39;</span><span class="p">),</span> <span class="n">servicename</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service&#39;</span><span class="p">),</span> <span class="n">servicename</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="Inventory.create_sub_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.create_sub_service">[docs]</a>    <span class="k">def</span> <span class="nf">create_sub_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_servicename</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">sub_servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">:</span>
@@ -794,7 +794,7 @@
 <div class="viewcode-block" id="Inventory.set_deploy_mode"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.set_deploy_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_deploy_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_flag</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">remote_flag</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidConfiguration</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cannot set local deploy mode when multiple hosts exist.&#39;</span><span class="p">))</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Cannot set local deploy mode when multiple hosts exist.&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remote_mode</span> <span class="o">=</span> <span class="n">remote_flag</span>
 
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_groups</span><span class="p">():</span>
@@ -836,58 +836,58 @@
 <span class="sd">    &quot;&quot;&quot;</span>
         <span class="n">jdict</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="c1"># if no filter provided, use all groups, all hosts</span>
+        <span class="c"># if no filter provided, use all groups, all hosts</span>
         <span class="n">deploy_hostnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_hostnames</span><span class="p">()</span>
         <span class="n">deploy_groupnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">inventory_filter</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;deploy_hosts&#39;</span> <span class="ow">in</span> <span class="n">inventory_filter</span><span class="p">:</span>
-                <span class="n">deploy_hostnames</span> <span class="o">=</span> <span class="n">inventory_filter</span><span class="p">[</span><span class="s1">&#39;deploy_hosts&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s1">&#39;deploy_groups&#39;</span> <span class="ow">in</span> <span class="n">inventory_filter</span><span class="p">:</span>
-                <span class="n">deploy_groupnames</span> <span class="o">=</span> <span class="n">inventory_filter</span><span class="p">[</span><span class="s1">&#39;deploy_groups&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s">&#39;deploy_hosts&#39;</span> <span class="ow">in</span> <span class="n">inventory_filter</span><span class="p">:</span>
+                <span class="n">deploy_hostnames</span> <span class="o">=</span> <span class="n">inventory_filter</span><span class="p">[</span><span class="s">&#39;deploy_hosts&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s">&#39;deploy_groups&#39;</span> <span class="ow">in</span> <span class="n">inventory_filter</span><span class="p">:</span>
+                <span class="n">deploy_groupnames</span> <span class="o">=</span> <span class="n">inventory_filter</span><span class="p">[</span><span class="s">&#39;deploy_groups&#39;</span><span class="p">]</span>
 
-        <span class="c1"># add hostgroups</span>
+        <span class="c"># add hostgroups</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_groups</span><span class="p">():</span>
             <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;hosts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;hosts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">deploy_groupnames</span><span class="p">:</span>
-                <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;hosts&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;hosts&#39;</span><span class="p">]</span> <span class="o">=</span> \
                     <span class="bp">self</span><span class="o">.</span><span class="n">_filter_hosts</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">get_hostnames</span><span class="p">(),</span> <span class="n">deploy_hostnames</span><span class="p">)</span>
-            <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;vars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span>
+            <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;vars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span>
 
-        <span class="c1"># add top-level services and what groups they are in</span>
+        <span class="c"># add top-level services and what groups they are in</span>
         <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">():</span>
             <span class="n">jdict</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">jdict</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">()</span>
+            <span class="n">jdict</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">()</span>
 
-        <span class="c1"># add sub-services and their groups</span>
+        <span class="c"># add sub-services and their groups</span>
         <span class="k">for</span> <span class="n">sub_svc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sub_services</span><span class="p">():</span>
             <span class="n">jdict</span><span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">groupnames</span> <span class="o">=</span> <span class="n">sub_svc</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">groupnames</span><span class="p">:</span>
-                <span class="c1"># sub-service is associated with a group(s)</span>
-                <span class="n">jdict</span><span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groupnames</span>
+                <span class="c"># sub-service is associated with a group(s)</span>
+                <span class="n">jdict</span><span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groupnames</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># sub-service is associated with parent service</span>
-                <span class="n">jdict</span><span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="c"># sub-service is associated with parent service</span>
+                <span class="n">jdict</span><span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> \
                     <span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">get_parent_servicename</span><span class="p">()]</span>
 
-        <span class="c1"># temporarily create group containing all hosts. this is needed for</span>
-        <span class="c1"># ansible commands that are performed on hosts not yet in groups.</span>
-        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_group</span><span class="p">(</span><span class="s1">&#39;__GLOBAL__&#39;</span><span class="p">)</span>
+        <span class="c"># temporarily create group containing all hosts. this is needed for</span>
+        <span class="c"># ansible commands that are performed on hosts not yet in groups.</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_group</span><span class="p">(</span><span class="s">&#39;__GLOBAL__&#39;</span><span class="p">)</span>
         <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;hosts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deploy_hostnames</span>
-        <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;vars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span>
+        <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;hosts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deploy_hostnames</span>
+        <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;vars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_group</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="c1"># process hosts vars</span>
-        <span class="n">jdict</span><span class="p">[</span><span class="s1">&#39;_meta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">jdict</span><span class="p">[</span><span class="s1">&#39;_meta&#39;</span><span class="p">][</span><span class="s1">&#39;hostvars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c"># process hosts vars</span>
+        <span class="n">jdict</span><span class="p">[</span><span class="s">&#39;_meta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">jdict</span><span class="p">[</span><span class="s">&#39;_meta&#39;</span><span class="p">][</span><span class="s">&#39;hostvars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">hostname</span> <span class="ow">in</span> <span class="n">deploy_hostnames</span><span class="p">:</span>
             <span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">host</span><span class="p">:</span>
-                <span class="n">jdict</span><span class="p">[</span><span class="s1">&#39;_meta&#39;</span><span class="p">][</span><span class="s1">&#39;hostvars&#39;</span><span class="p">][</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span>
+                <span class="n">jdict</span><span class="p">[</span><span class="s">&#39;_meta&#39;</span><span class="p">][</span><span class="s">&#39;hostvars&#39;</span><span class="p">][</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">jdict</span><span class="p">)</span>
 </div>
     <span class="k">def</span> <span class="nf">_filter_hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_hostnames</span><span class="p">,</span> <span class="n">deploy_hostnames</span><span class="p">):</span>
@@ -913,19 +913,19 @@
         <span class="n">json_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ansible_json</span><span class="p">(</span><span class="n">inventory_filter</span><span class="p">)</span>
 
         <span class="n">deploy_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
-        <span class="n">dirname</span> <span class="o">=</span> <span class="s1">&#39;kolla_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">deploy_id</span>
+        <span class="n">dirname</span> <span class="o">=</span> <span class="s">&#39;kolla_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">deploy_id</span>
         <span class="n">dirpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">(),</span> <span class="n">dirname</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span>
-        <span class="n">json_gen_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="s1">&#39;temp_inventory.py&#39;</span><span class="p">)</span>
+        <span class="n">json_gen_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="s">&#39;temp_inventory.py&#39;</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_gen_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_gen_file</span><span class="p">:</span>
-            <span class="n">json_gen_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#!/usr/bin/env python</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="c1"># the quotes here are significant. The json_out has double quotes</span>
-            <span class="c1"># embedded in it so single quotes are needed to wrap it.</span>
-            <span class="n">json_gen_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;print(&#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="n">json_out</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_gen_path</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_gen_file</span><span class="p">:</span>
+            <span class="n">json_gen_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;#!/usr/bin/env python</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="c"># the quotes here are significant. The json_out has double quotes</span>
+            <span class="c"># embedded in it so single quotes are needed to wrap it.</span>
+            <span class="n">json_gen_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;print(&#39;</span><span class="si">%s</span><span class="s">&#39;)&quot;</span> <span class="o">%</span> <span class="n">json_out</span><span class="p">)</span>
 
-        <span class="c1"># set executable by group</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">json_gen_path</span><span class="p">,</span> <span class="mi">0</span><span class="n">o555</span><span class="p">)</span>  <span class="c1"># nosec</span>
+        <span class="c"># set executable by group</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">json_gen_path</span><span class="p">,</span> <span class="mi">0</span><span class="n">o555</span><span class="p">)</span>  <span class="c"># nosec</span>
         <span class="k">return</span> <span class="n">json_gen_path</span>
 </div>
 <div class="viewcode-block" id="Inventory.remove_json_gen_file"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.remove_json_gen_file">[docs]</a>    <span class="k">def</span> <span class="nf">remove_json_gen_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
@@ -933,34 +933,34 @@
 </div>
 <div class="viewcode-block" id="Inventory.validate_hostnames"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.validate_hostnames">[docs]</a>    <span class="k">def</span> <span class="nf">validate_hostnames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">hostnames</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host name(s)&#39;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host name(s)&#39;</span><span class="p">))</span>
         <span class="n">invalid_hosts</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">hostname</span> <span class="ow">in</span> <span class="n">hostnames</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span><span class="p">:</span>
                 <span class="n">invalid_hosts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">invalid_hosts</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host&#39;</span><span class="p">),</span> <span class="n">invalid_hosts</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host&#39;</span><span class="p">),</span> <span class="n">invalid_hosts</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="Inventory.validate_groupnames"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.validate_groupnames">[docs]</a>    <span class="k">def</span> <span class="nf">validate_groupnames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">groupnames</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group name(s)&#39;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group name(s)&#39;</span><span class="p">))</span>
         <span class="n">invalid_groups</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="n">groupnames</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">groupname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
                 <span class="n">invalid_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">invalid_groups</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group&#39;</span><span class="p">),</span> <span class="n">invalid_groups</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group&#39;</span><span class="p">),</span> <span class="n">invalid_groups</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="Inventory.validate_servicenames"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.validate_servicenames">[docs]</a>    <span class="k">def</span> <span class="nf">validate_servicenames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicenames</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">servicenames</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service name(s)&#39;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service name(s)&#39;</span><span class="p">))</span>
         <span class="n">invalid_services</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="n">servicenames</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span> <span class="ow">and</span>
                     <span class="n">servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">):</span>
                 <span class="n">invalid_services</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">invalid_services</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service&#39;</span><span class="p">),</span> <span class="n">invalid_services</span><span class="p">)</span></div></div>
+            <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service&#39;</span><span class="p">),</span> <span class="n">invalid_services</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -994,7 +994,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev401 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
