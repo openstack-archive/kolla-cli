@@ -13,6 +13,7 @@
 #   under the License.
 #
 import os
+import shutil
 import tarfile
 import unittest
 
@@ -20,9 +21,12 @@ from common import KollaCliTest
 from common import TestConfig
 from kollacli.api.client import ClientApi
 from kollacli.common.utils import get_kollacli_home
+from kollacli.common.utils import safe_decode
 
 LOGS_PREFIX = '/tmp/kolla_support_logs_'
 CLIENT = ClientApi()
+
+LOGDIR = '/tmp/utest_blaze_logs'
 
 
 class TestFunctional(KollaCliTest):
@@ -62,6 +66,44 @@ class TestFunctional(KollaCliTest):
         finally:
             if zip_path and os.path.exists(zip_path):
                 os.remove(zip_path)
+
+    def test_log_collector_api(self):
+        if os.path.exists(LOGDIR):
+            shutil.rmtree(LOGDIR)
+        os.mkdir(LOGDIR)
+
+        test_config = TestConfig()
+        test_config.load()
+
+        is_physical_hosts = True
+        hostnames = test_config.get_hostnames()
+        if not hostnames:
+            is_physical_hosts = False
+            hostnames = ['test_host1']
+        CLIENT.host_add(hostnames)
+
+        maj_services = []
+        services = CLIENT.service_get_all()
+        for service in services:
+            if not service.get_parent():
+                # top level service
+                maj_services.append(service.name)
+        try:
+            for hostname in hostnames:
+                CLIENT.support_get_logs(maj_services, safe_decode(hostname),
+                                        LOGDIR)
+            if not is_physical_hosts:
+                raise Exception('get_logs command succeeded without physical '
+                                'hosts')
+        except Exception as e:
+            if not is_physical_hosts:
+                self.assertIn('UNREACHABLE', str(e),
+                              'unexpected failure in get_logs: %s' % str(e))
+            else:
+                raise e
+        finally:
+            if os.path.exists(LOGDIR):
+                shutil.rmtree(LOGDIR)
 
     def test_dump(self):
         check_files = [

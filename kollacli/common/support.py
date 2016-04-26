@@ -43,7 +43,8 @@ class HostLogs(object):
         err_msg, output = \
             self.inventory.run_ansible_command('-a "docker ps -a"', hostname)
         if err_msg:
-            msg = 'Error accessing host %s : %s ' % (hostname, err_msg)
+            msg = 'Error accessing host %s : %s %s' % (hostname, err_msg,
+                                                       output)
             raise FailedOperation(msg)
 
         if not output:

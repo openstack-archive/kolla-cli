@@ -341,12 +341,16 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False):
         # None arg
         raise MissingArgument(param_name)
 
-    if ((isinstance(param, str) or
+    if ((isinstance(param, six.string_types) or
             isinstance(param, dict) or
             isinstance(param, list)) and
             not param and not empty_ok):
         # empty string, dict or list
         raise MissingArgument(param_name)
+
+    # normalize expected string types for py2 and py3
+    if expected_type is str:
+        expected_type = six.string_types
 
     if not isinstance(param, expected_type):
         # wrong type
