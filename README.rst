@@ -4,22 +4,11 @@ KollaCLI
 
 The following steps can be used to build / run the kollacli
 
-* install ansible and docker
+* install blaze
 * virtualenv .venv
 * . .venv/bin/activate
 * pip install -r requirements.txt
 * python setup.py install
-* mkdir /usr/share/kolla
-* cp -r openstack-kolla/ansible to /usr/share/kolla
-* mkdir /etc/kolla
-* mkdir /etc/kolla/kollacli
-* mkdir /etc/kolla/kollacli/ansible
-* cp -r openstack-kolla/etc/kolla/* to /etc/kolla
-* mkdir /usr/share/kolla/kollacli
-* mkdir /usr/share/kolla/kollacli/tools
-* mkdir /usr/share/kolla/kollacli/ansible
-* cp openstack-kollacli/tools /usr/share/kolla/kollacli/tools
-* cp openstack-kollacli/ansible /usr/share/kolla/kollacli/ansible
 * kollacli
 
 At that point you will be dropped into the kollacli shell where

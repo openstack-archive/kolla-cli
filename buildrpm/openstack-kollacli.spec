@@ -22,11 +22,6 @@
 %global kolla_user      kolla
 %global kolla_group     %{kolla_user}
 
-# kolla ansible plugin related vars
-%global plugin_dir      %{_datadir}/ansible_plugins/callback_plugins
-%global plugin_name     kolla_callback
-%global ansible_cfg     %{_sysconfdir}/ansible/ansible.cfg
-
 Summary:        OpenStack Kolla CLI
 Name:           openstack-kollacli
 Version:        %{package_version}
@@ -39,20 +34,15 @@ BuildArch:      noarch
 BuildRequires:  python                      >= 2.7
 BuildRequires:  python-setuptools           >= 0.9.8
 BuildRequires:  python-pbr                  >= 1.3.0
-Requires:       openstack-kolla-ansible     >= 0.2.0
-Requires:       openstack-kolla-ansible     < 0.3.0
 Requires:       babel                       >= 2.0
 Requires:       python-babel                >= 2.0
 Requires:       python-cliff                >= 1.13.0
 Requires:       python-cliff-tablib         >= 1.1
-Requires:       python-jsonpickle           >= 0.9.2
 Requires:       python-oslo-i18n            >= 2.5.0
 Requires:       python-paramiko             >= 1.15.1
 Requires:       python-pbr                  >= 1.6.0
 Requires:       python-six                  >= 1.9.0
 Requires:       PyYAML                      >= 3.10
-
-Requires:       /usr/bin/ssh-keygen
 
 %description
 The KollaCLI simplifies OpenStack Kolla deployments.
@@ -78,27 +68,6 @@ __EOF__
 # Install the package
 %{__python} setup.py install --skip-build --root %{buildroot}
 
-# Create the required directory structures
-mkdir -m 0755 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli
-mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
-mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
-mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/ansible
-
-# Create a kolla log directory
-mkdir -m 0770 -p %{buildroot}/%{_var}/log/kolla
-
-# Install the required OpenStack Kolla files
-cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
-cp -r ansible/* %{buildroot}/%{_datadir}/kolla/kollacli/ansible
-
-# Create an empty inventory file
-touch %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
-chmod 0664 %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
-
-# copy over plugin
-mkdir -p %{buildroot}/%{plugin_dir}
-cp -r ansible_plugins/%{plugin_name}.py %{buildroot}/%{plugin_dir}/
-
 %clean
 rm -rf %{buildroot}
 
@@ -108,10 +77,6 @@ rm -rf %{buildroot}
 %attr(-, root, root) %doc LICENSE
 %attr(-, root, root) %{python_sitelib}
 %attr(755, root, %{kolla_group}) %{_bindir}/kollacli
-%attr(550, %{kolla_user}, %{kolla_group}) %dir %{_datadir}/kolla/kollacli/tools
-%attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/kolla_actions*
-%attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/log_*
-%attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
 %attr(2770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
 
@@ -137,15 +102,6 @@ then
 fi
 
 %post
-setfacl -m d:g:%{kolla_group}:rw %{_var}/log/kolla
-
-if ! test -f %{_sysconfdir}/kolla/kollacli/ansible.lock
-then
-    touch %{_sysconfdir}/kolla/kollacli/ansible.lock
-    chown %{kolla_user}:%{kolla_group} %{_sysconfdir}/kolla/kollacli/ansible.lock
-    chmod 0660 %{_sysconfdir}/kolla/kollacli/ansible.lock
-fi
-
 if ! test -f ~%{kolla_user}/.ssh/id_rsa
 then
     runuser -m -s /bin/bash -c \
@@ -159,36 +115,6 @@ then
     chmod 0440 %{_sysconfdir}/kolla/kollacli/id_rsa.pub
 fi
 
-# disable ansible retry files (bug 22806271)
-sed -i "s/#retry_files_enabled = False/retry_files_enabled = False/" %{ansible_cfg}
-
-/usr/bin/kollacli complete >%{_sysconfdir}/bash_completion.d/kollacli 2>/dev/null
-
-# Update the sudoers file
-if ! grep -q 'kollacli/tools/kolla_actions' %{_sysconfdir}/sudoers.d/%{kolla_user}
-then
-    sed -i \
-        '/^Cmnd_Alias.*KOLLA_CMDS/ s:$:, %{_datadir}/kolla/kollacli/tools/kolla_actions.py:'\
-        %{_sysconfdir}/sudoers.d/%{kolla_user}
-fi
-# remove obsolete password editor from sudoers file
-sed -i \
-    '/^Cmnd_Alias.*KOLLA_CMDS/ s:, %{_datadir}/kolla/kollacli/tools/passwd_editor.py::'\
-     %{_sysconfdir}/sudoers.d/%{kolla_user}
-
-# remove obsolete json_generator script
-if test -f %{_datadir}/kolla/kollacli/tools/json_generator.py
-then
-    rm -f %{_datadir}/kolla/kollacli/tools/json_generator.py
-fi
-
-# remove obsolete password editor script
-if test -f %{_datadir}/kolla/kollacli/tools/passwd_editor.py.py
-then
-    rm -f %{_datadir}/kolla/kollacli/tools/passwd_editor.py.py
-fi
-
-
 %postun
 case "$*" in
     0)
@@ -200,47 +126,10 @@ case "$*" in
 esac
 
 
-# kolla ansible plugin rpm specific work
-%package -n openstack-kolla-ansible-plugin
-
-Summary:        OpenStack Kolla Ansible Plugin
-License:        GNU General Public License, Version 3
-Group:          Applications/System
-
-%description -n openstack-kolla-ansible-plugin
-This ansible plugin supplies playbook activity to the
-openstack-kollacli client.
-
-%files -n openstack-kolla-ansible-plugin
-%defattr(-, %{kolla_user}, %{kolla_group})
-%attr(-, root, root) %doc ansible_plugins/LICENSE
-%attr(755, %{kolla_user}, %{kolla_group}) %{plugin_dir}/*
-
-%post -n openstack-kolla-ansible-plugin
-# add plugin to whitelist
-if ! grep -q '^callback_whitelist =' %{ansible_cfg}
-then
-    # create whitelist param
-    sed -i \
-        '/^\[defaults\]/a callback_whitelist = ' %{ansible_cfg}
-fi
-if ! grep -q '%{plugin_name}' %{ansible_cfg}
-then
-    # append kolla callback to whitelist
-    sed -i \
-        '/^callback_whitelist =/ s:$:, %{plugin_name}:' %{ansible_cfg}
-fi
-
-%postun -n openstack-kolla-ansible-plugin
-# remove kolla callback from whitelist
-if grep -q '%{plugin_name}' %{ansible_cfg}
-then
-    sed -i \
-        '/^callback_whitelist =/ s:, %{plugin_name}::' %{ansible_cfg}
-fi
-
-
 %changelog
+* Tue Apr 26 2016 - Steve Noyes <steve.noyes@oracle.com>
+- remove blaze components
+
 * Wed Apr 13 2016 - Steve Noyes <steve.noyes@oracle.com>
 - add kolla-ansible-plugin subpackage
 - suppress warning on egg removal

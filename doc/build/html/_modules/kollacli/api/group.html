@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.group &mdash; kollacli 1.0.0.dev404 documentation</title>
+    <title>kollacli.api.group &mdash; kollacli 1.0.0.dev406 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev404',
+        VERSION:     '1.0.0.dev406',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev404 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev406 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev406 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -60,21 +60,17 @@
 <span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
 <span class="c">#    License for the specific language governing permissions and limitations</span>
 <span class="c">#    under the License.</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
-<span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
-
-<span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">Inventory</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">check_arg</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">safe_decode</span>
+<span class="kn">from</span> <span class="nn">blaze.api.group</span> <span class="kn">import</span> <span class="n">GroupApi</span> <span class="k">as</span> <span class="n">BlazeGroupApi</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">reraise</span>
 
 
 <div class="viewcode-block" id="GroupApi"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi">[docs]</a><span class="k">class</span> <span class="nc">GroupApi</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
 <div class="viewcode-block" id="GroupApi.Group"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.Group">[docs]</a>    <span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupname</span><span class="p">,</span> <span class="n">servicenames</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">BlazeGroupApi</span><span class="o">.</span><span class="n">Group</span><span class="p">(</span><span class="n">groupname</span><span class="p">,</span> <span class="n">servicenames</span><span class="p">,</span>
+                                             <span class="n">hostnames</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">groupname</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_servicenames</span> <span class="o">=</span> <span class="n">servicenames</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostnames</span> <span class="o">=</span> <span class="n">hostnames</span>
 
 <div class="viewcode-block" id="GroupApi.Group.get_name"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.Group.get_name">[docs]</a>        <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Get name</span>
@@ -90,7 +86,10 @@
 <span class="sd">            :return: service names</span>
 <span class="sd">            :rtype: list of strings</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_servicenames</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">get_services</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="GroupApi.Group.add_service"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.Group.add_service">[docs]</a>        <span class="k">def</span> <span class="nf">add_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicename</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Add service to group</span>
@@ -99,17 +98,10 @@
 <span class="sd">            :type servicename: string</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">check_arg</span><span class="p">(</span><span class="n">servicename</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service name&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
-            <span class="n">servicename</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
-            <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-            <span class="n">inventory</span><span class="o">.</span><span class="n">validate_servicenames</span><span class="p">([</span><span class="n">servicename</span><span class="p">])</span>
-
-            <span class="n">group_services</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_group_services</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_servicenames</span> <span class="o">=</span> <span class="n">group_services</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servicenames</span><span class="p">:</span>
-                <span class="c"># service not associated with group, add it</span>
-                <span class="n">inventory</span><span class="o">.</span><span class="n">add_group_to_service</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">servicename</span><span class="p">)</span>
-                <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">add_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="GroupApi.Group.remove_service"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.Group.remove_service">[docs]</a>        <span class="k">def</span> <span class="nf">remove_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicename</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Remove service from group</span>
@@ -118,17 +110,10 @@
 <span class="sd">            :type servicename: string</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">check_arg</span><span class="p">(</span><span class="n">servicename</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Service name&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
-            <span class="n">servicename</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
-            <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-            <span class="n">inventory</span><span class="o">.</span><span class="n">validate_servicenames</span><span class="p">([</span><span class="n">servicename</span><span class="p">])</span>
-
-            <span class="n">group_services</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_group_services</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_servicenames</span> <span class="o">=</span> <span class="n">group_services</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servicenames</span><span class="p">:</span>
-                <span class="c"># service is associated with group, remove it</span>
-                <span class="n">inventory</span><span class="o">.</span><span class="n">remove_group_from_service</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">servicename</span><span class="p">)</span>
-                <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">remove_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="GroupApi.Group.get_hosts"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.Group.get_hosts">[docs]</a>        <span class="k">def</span> <span class="nf">get_hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Get names of hosts associated with this group.</span>
@@ -136,7 +121,10 @@
 <span class="sd">            :return: host names</span>
 <span class="sd">            :rtype: list of strings</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostnames</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">get_hosts</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="GroupApi.Group.add_host"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.Group.add_host">[docs]</a>        <span class="k">def</span> <span class="nf">add_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Add host to group</span>
@@ -145,17 +133,10 @@
 <span class="sd">            :type hostname: string</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">check_arg</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host name&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
-            <span class="n">hostname</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
-            <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-            <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">([</span><span class="n">hostname</span><span class="p">])</span>
-
-            <span class="n">group</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostnames</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">get_hostnames</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hostnames</span><span class="p">:</span>
-                <span class="c"># host not associated with group, add it</span>
-                <span class="n">inventory</span><span class="o">.</span><span class="n">add_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">add_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="GroupApi.Group.remove_host"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.Group.remove_host">[docs]</a>        <span class="k">def</span> <span class="nf">remove_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Remove host from group</span>
@@ -164,17 +145,10 @@
 <span class="sd">            :type hostname: string</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">check_arg</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host name&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
-            <span class="n">hostname</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
-            <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-            <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">([</span><span class="n">hostname</span><span class="p">])</span>
-
-            <span class="n">group</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostnames</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">get_hostnames</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">hostname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hostnames</span><span class="p">:</span>
-                <span class="c"># host is associated with group, remove it</span>
-                <span class="n">inventory</span><span class="o">.</span><span class="n">remove_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">remove_host</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </div></div>
 <div class="viewcode-block" id="GroupApi.group_add"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.group_add">[docs]</a>    <span class="k">def</span> <span class="nf">group_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add groups to the inventory</span>
@@ -183,13 +157,10 @@
 <span class="sd">        :type groupnames: list of strings</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">check_arg</span><span class="p">(</span><span class="n">groupnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
-        <span class="n">groupnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">groupnames</span><span class="p">)</span>
-
-        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="n">groupnames</span><span class="p">:</span>
-            <span class="n">inventory</span><span class="o">.</span><span class="n">add_group</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
-        <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">BlazeGroupApi</span><span class="p">()</span><span class="o">.</span><span class="n">group_add</span><span class="p">(</span><span class="n">groupnames</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="GroupApi.group_remove"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.group_remove">[docs]</a>    <span class="k">def</span> <span class="nf">group_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove groups from the inventory</span>
@@ -198,13 +169,10 @@
 <span class="sd">        :type groupnames: list of strings</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">check_arg</span><span class="p">(</span><span class="n">groupnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
-        <span class="n">groupnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">groupnames</span><span class="p">)</span>
-
-        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="n">groupnames</span><span class="p">:</span>
-            <span class="n">inventory</span><span class="o">.</span><span class="n">remove_group</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
-        <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">BlazeGroupApi</span><span class="p">()</span><span class="o">.</span><span class="n">group_remove</span><span class="p">(</span><span class="n">groupnames</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="GroupApi.group_get_all"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.group_get_all">[docs]</a>    <span class="k">def</span> <span class="nf">group_get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get all groups in the inventory</span>
@@ -212,7 +180,16 @@
 <span class="sd">        :return: groups</span>
 <span class="sd">        :rtype: list of Group objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_groups</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">BlazeGroupApi</span><span class="p">()</span><span class="o">.</span><span class="n">group_get_all</span><span class="p">()</span>
+            <span class="n">new_groups</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+                <span class="n">new_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Group</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">get_services</span><span class="p">(),</span>
+                                       <span class="n">group</span><span class="o">.</span><span class="n">get_hosts</span><span class="p">())</span>
+                <span class="n">new_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_group</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">new_groups</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="GroupApi.group_get"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.group.GroupApi.group_get">[docs]</a>    <span class="k">def</span> <span class="nf">group_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get selected groups in the inventory</span>
@@ -222,25 +199,16 @@
 <span class="sd">        :return: groups</span>
 <span class="sd">        :rtype: list of Group objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">check_arg</span><span class="p">(</span><span class="n">groupnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
-        <span class="n">groupnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">groupnames</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_groups</span><span class="p">(</span><span class="n">groupnames</span><span class="p">)</span>
-</div>
-    <span class="k">def</span> <span class="nf">_get_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-        <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">groupnames</span><span class="p">:</span>
-            <span class="n">inventory</span><span class="o">.</span><span class="n">validate_groupnames</span><span class="p">(</span><span class="n">groupnames</span><span class="p">)</span>
-
-        <span class="n">group_services</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_group_services</span><span class="p">()</span>
-        <span class="n">inv_groups</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_groups</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">inv_group</span> <span class="ow">in</span> <span class="n">inv_groups</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">get_all</span> <span class="ow">or</span> <span class="n">inv_group</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">groupnames</span><span class="p">:</span>
-                <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Group</span><span class="p">(</span><span class="n">inv_group</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                   <span class="n">group_services</span><span class="p">[</span><span class="n">inv_group</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
-                                   <span class="n">inv_group</span><span class="o">.</span><span class="n">get_hostnames</span><span class="p">())</span>
-                <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">groups</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">BlazeGroupApi</span><span class="p">()</span><span class="o">.</span><span class="n">group_get</span><span class="p">(</span><span class="n">groupnames</span><span class="p">)</span>
+            <span class="n">new_groups</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+                <span class="n">new_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Group</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">get_services</span><span class="p">(),</span>
+                                       <span class="n">group</span><span class="o">.</span><span class="n">get_hosts</span><span class="p">())</span>
+                <span class="n">new_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_group</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">new_groups</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -274,7 +242,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev406 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

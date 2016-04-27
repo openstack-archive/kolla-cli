@@ -11,12 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from copy import copy
-import kollacli.i18n as u
-
-from kollacli.common.inventory import Inventory
-from kollacli.common.utils import check_arg
-from kollacli.common.utils import safe_decode
+from blaze.api.service import ServiceApi as BlazeServiceApi
+from kollacli.common.utils import reraise
 
 
 class ServiceApi(object):
@@ -42,9 +38,9 @@ class ServiceApi(object):
         def __init__(self, servicename, parentname=None,
                      childnames=[], groupnames=[]):
             self.name = servicename
-            self.parentname = parentname
-            self._childnames = childnames
-            self._groupnames = groupnames
+            self.service = BlazeServiceApi.Service(servicename, parentname,
+                                                   childnames, groupnames)
+            self.parentname = self.service.parentname
 
         def get_name(self):
             """Get name
@@ -68,7 +64,7 @@ class ServiceApi(object):
             :return: child names
             :rtype: list of strings
             """
-            return copy(self._childnames)
+            return self.service.get_children()
 
         def get_groups(self):
             """Get names of the groups associated with this service
@@ -76,7 +72,7 @@ class ServiceApi(object):
             :return: group names
             :rtype: list of strings
             """
-            return copy(self._groupnames)
+            return self.service.get_groups()
 
     def service_get_all(self):
         """Get all services in the inventory
@@ -84,7 +80,18 @@ class ServiceApi(object):
         :return: services
         :rtype: List of Service objects
         """
-        return self._get_services(None, get_all=True)
+        try:
+            services = BlazeServiceApi().service_get_all()
+            new_services = []
+            for service in services:
+                new_service = self.Service(service.name,
+                                           service.parentname,
+                                           service.get_children(),
+                                           service.get_groups())
+                new_services.append(new_service)
+            return new_services
+        except Exception as e:
+            reraise(e)
 
     def service_get(self, servicenames):
         """Get selected services in the inventory
@@ -94,31 +101,15 @@ class ServiceApi(object):
         :return: services
         :rtype: list of Service objects
         """
-        check_arg(servicenames, u._('Service names'), list)
-        servicenames = safe_decode(servicenames)
-        return self._get_services(servicenames)
-
-    def _get_services(self, servicenames, get_all=False):
-        services = []
-        inventory = Inventory.load()
-        if servicenames:
-            inventory.validate_servicenames(servicenames)
-
-        inv_services = inventory.get_services()
-        inv_subservices = inventory.get_sub_services()
-
-        for inv_service in inv_services:
-            if get_all or inv_service.name in servicenames:
-                service = self.Service(inv_service.name,
-                                       None,
-                                       inv_service.get_sub_servicenames(),
-                                       inv_service.get_groupnames())
-                services.append(service)
-        for inv_subservice in inv_subservices:
-            if get_all or inv_subservice.name in servicenames:
-                service = self.Service(inv_subservice.name,
-                                       inv_subservice.get_parent_servicename(),
-                                       [],
-                                       inv_subservice.get_groupnames())
-                services.append(service)
-        return services
+        try:
+            services = BlazeServiceApi().service_get(servicenames)
+            new_services = []
+            for service in services:
+                new_service = self.Service(service.name,
+                                           service.parentname,
+                                           service.get_children(),
+                                           service.get_groups())
+                new_services.append(new_service)
+            return new_services
+        except Exception as e:
+            reraise(e)

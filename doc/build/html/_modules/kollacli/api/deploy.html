@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.deploy &mdash; kollacli 1.0.0.dev404 documentation</title>
+    <title>kollacli.api.deploy &mdash; kollacli 1.0.0.dev406 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev404',
+        VERSION:     '1.0.0.dev406',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev404 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 1.0.0.dev406 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev406 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -60,14 +60,8 @@
 <span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
 <span class="c">#    License for the specific language governing permissions and limitations</span>
 <span class="c">#    under the License.</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-
-<span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
-
-<span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">Inventory</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">check_arg</span>
-
-<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">blaze.api.deploy</span> <span class="kn">import</span> <span class="n">DeployApi</span> <span class="k">as</span> <span class="n">BlazeDeployApi</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">reraise</span>
 
 
 <div class="viewcode-block" id="DeployApi"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.deploy.DeployApi">[docs]</a><span class="k">class</span> <span class="nc">DeployApi</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -82,10 +76,10 @@
 <span class="sd">        :param remote_mode: if remote mode is True deployment is done via ssh</span>
 <span class="sd">        :type remote_mode: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">check_arg</span><span class="p">(</span><span class="n">remote_mode</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Remote mode&#39;</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
-        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="n">inventory</span><span class="o">.</span><span class="n">set_deploy_mode</span><span class="p">(</span><span class="n">remote_mode</span><span class="p">)</span>
-        <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span></div></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">BlazeDeployApi</span><span class="p">()</span><span class="o">.</span><span class="n">deploy_set_mode</span><span class="p">(</span><span class="n">remote_mode</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">reraise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -119,7 +113,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 1.0.0.dev406 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

@@ -19,8 +19,9 @@ import unittest
 
 from common import KollaCliTest
 from common import TestConfig
+
+from blaze.common.utils import get_kollacli_home
 from kollacli.api.client import ClientApi
-from kollacli.common.utils import get_kollacli_home
 from kollacli.common.utils import safe_decode
 
 LOGS_PREFIX = '/tmp/kolla_support_logs_'

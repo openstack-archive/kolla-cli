@@ -13,7 +13,6 @@
 #    under the License.
 """Command-line interface to Kolla"""
 import logging
-import os
 import sys
 
 from cliff.app import App
@@ -22,9 +21,6 @@ from cliff.commandmanager import CommandManager
 import kollacli.i18n as u
 
 from kollacli.api.client import ClientApi
-from kollacli.commands.exceptions import CommandError
-from kollacli.common.inventory import INVENTORY_PATH
-from kollacli.common.utils import get_kollacli_etc
 
 LOG = logging.getLogger(__name__)
 
@@ -36,15 +32,6 @@ class KollaCli(App):
             version='0.2',
             command_manager=CommandManager('kolla.cli'),
             )
-
-        inventory_path = os.path.join(get_kollacli_etc(),
-                                      INVENTORY_PATH)
-        if os.path.isfile(inventory_path) is False:
-            err_string = u._(
-                'Required file ({inventory}) does not exist.\n'
-                'Please re-install the kollacli to '
-                'recreate the file.').format(inventory=inventory_path)
-            raise CommandError(err_string)
 
         # set up logging and test that user running shell is part
         # of kolla group

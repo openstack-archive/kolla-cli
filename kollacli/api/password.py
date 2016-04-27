@@ -11,12 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import kollacli.i18n as u
-
-from kollacli.common.passwords import clear_password
-from kollacli.common.passwords import get_password_names
-from kollacli.common.passwords import set_password
-from kollacli.common.utils import check_arg
+from blaze.api.password import PasswordApi as BlazePasswordApi
+from kollacli.common.utils import reraise
 
 
 class PasswordApi(object):
@@ -29,8 +25,10 @@ class PasswordApi(object):
         :param value: value of the password
         :type value: string
         """
-        check_arg(name, u._('Password name'), str)
-        set_password(name, value)
+        try:
+            BlazePasswordApi().password_set(name, value)
+        except Exception as e:
+            reraise(e)
 
     def password_clear(self, name):
         """Clear password
@@ -38,8 +36,10 @@ class PasswordApi(object):
         :param name: name of the password
         :type name: string
         """
-        check_arg(name, u._('Password name'), str)
-        clear_password(name)
+        try:
+            BlazePasswordApi().password_clear(name)
+        except Exception as e:
+            reraise(e)
 
     def password_get_names(self):
         """Get password names
@@ -47,4 +47,7 @@ class PasswordApi(object):
         :return: password names
         :rtype: list of strings
         """
-        return get_password_names()
+        try:
+            return BlazePasswordApi().password_get_names()
+        except Exception as e:
+            reraise(e)

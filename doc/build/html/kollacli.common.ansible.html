@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible package &mdash; kollacli 1.0.0.dev404 documentation</title>
+    <title>kollacli.common.ansible package &mdash; kollacli 1.0.0.dev406 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.0.dev404',
+        VERSION:     '1.0.0.dev406',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev404 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 1.0.0.dev406 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev406 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -49,164 +49,17 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-kollacli.common.ansible.actions">
-<span id="kollacli-common-ansible-actions-module"></span><h2>kollacli.common.ansible.actions module<a class="headerlink" href="#module-kollacli.common.ansible.actions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="kollacli.common.ansible.actions.deploy">
-<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">deploy</tt><big>(</big><em>hostnames=[]</em>, <em>serial_flag=False</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.deploy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="kollacli.common.ansible.actions.destroy_hosts">
-<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">destroy_hosts</tt><big>(</big><em>hostnames</em>, <em>destroy_type</em>, <em>verbose_level=1</em>, <em>include_data=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#destroy_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.destroy_hosts" title="Permalink to this definition">¶</a></dt>
-<dd><p>destroy containers on a set of hosts.</p>
-<p>The containers on the specified hosts will be stopped
-or killed. That will be determined by the destroy_type,
-which can either be &#8216;stop&#8217; or &#8216;kill&#8217;.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="kollacli.common.ansible.actions.precheck">
-<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">precheck</tt><big>(</big><em>hostnames</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#precheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.precheck" title="Permalink to this definition">¶</a></dt>
-<dd><p>run check playbooks on a set of hosts</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="kollacli.common.ansible.actions.upgrade">
-<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">upgrade</tt><big>(</big><em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.upgrade" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="kollacli-common-ansible-actions-module">
+<h2>kollacli.common.ansible.actions module<a class="headerlink" href="#kollacli-common-ansible-actions-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-kollacli.common.ansible.job">
-<span id="kollacli-common-ansible-job-module"></span><h2>kollacli.common.ansible.job module<a class="headerlink" href="#module-kollacli.common.ansible.job" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="kollacli.common.ansible.job.AnsibleJob">
-<em class="property">class </em><tt class="descclassname">kollacli.common.ansible.job.</tt><tt class="descname">AnsibleJob</tt><big>(</big><em>cmd</em>, <em>deploy_id</em>, <em>print_output</em>, <em>inventory_path</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/job.html#AnsibleJob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.job.AnsibleJob" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>class for running ansible commands</p>
-<dl class="method">
-<dt id="kollacli.common.ansible.job.AnsibleJob.get_command_output">
-<tt class="descname">get_command_output</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/job.html#AnsibleJob.get_command_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.job.AnsibleJob.get_command_output" title="Permalink to this definition">¶</a></dt>
-<dd><p>get command output</p>
-<p>get final output text from command execution</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.ansible.job.AnsibleJob.get_error_message">
-<tt class="descname">get_error_message</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/job.html#AnsibleJob.get_error_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.job.AnsibleJob.get_error_message" title="Permalink to this definition">¶</a></dt>
-<dd><p>&#8220;get error message</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.ansible.job.AnsibleJob.get_status">
-<tt class="descname">get_status</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/job.html#AnsibleJob.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.job.AnsibleJob.get_status" title="Permalink to this definition">¶</a></dt>
-<dd><p>get process status</p>
-<p>status:
-- None: running
-- 0: done, success
-- 1: done, error
-- 2: done, killed by user</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.ansible.job.AnsibleJob.kill">
-<tt class="descname">kill</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/job.html#AnsibleJob.kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.job.AnsibleJob.kill" title="Permalink to this definition">¶</a></dt>
-<dd><p>kill job in progress</p>
-<p>The process pid is owned by root, so
-that is not killable. Need to kill all its children.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.ansible.job.AnsibleJob.run">
-<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/job.html#AnsibleJob.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.job.AnsibleJob.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.ansible.job.AnsibleJob.wait">
-<tt class="descname">wait</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/job.html#AnsibleJob.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.job.AnsibleJob.wait" title="Permalink to this definition">¶</a></dt>
-<dd><p>wait for job to complete</p>
-<p>return status of job (see get_status for status values)</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="kollacli-common-ansible-job-module">
+<h2>kollacli.common.ansible.job module<a class="headerlink" href="#kollacli-common-ansible-job-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-kollacli.common.ansible.playbook">
-<span id="kollacli-common-ansible-playbook-module"></span><h2>kollacli.common.ansible.playbook module<a class="headerlink" href="#module-kollacli.common.ansible.playbook" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook">
-<em class="property">class </em><tt class="descclassname">kollacli.common.ansible.playbook.</tt><tt class="descname">AnsiblePlaybook</tt><a class="reference internal" href="_modules/kollacli/common/ansible/playbook.html#AnsiblePlaybook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.deploy_id">
-<tt class="descname">deploy_id</tt><em class="property"> = None</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.deploy_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.extra_vars">
-<tt class="descname">extra_vars</tt><em class="property"> = ''</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.extra_vars" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.flush_cache">
-<tt class="descname">flush_cache</tt><em class="property"> = True</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.flush_cache" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.groups">
-<tt class="descname">groups</tt><em class="property"> = None</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.groups" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.hosts">
-<tt class="descname">hosts</tt><em class="property"> = None</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.hosts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.include_passwords">
-<tt class="descname">include_passwords</tt><em class="property"> = True</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.include_passwords" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.inventory">
-<tt class="descname">inventory</tt><em class="property"> = None</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.inventory" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.playbook_path">
-<tt class="descname">playbook_path</tt><em class="property"> = ''</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.playbook_path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.print_output">
-<tt class="descname">print_output</tt><em class="property"> = True</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.print_output" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.run">
-<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/playbook.html#AnsiblePlaybook.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.serial">
-<tt class="descname">serial</tt><em class="property"> = False</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.serial" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.services">
-<tt class="descname">services</tt><em class="property"> = None</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.services" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.verbose_level">
-<tt class="descname">verbose_level</tt><em class="property"> = 0</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.verbose_level" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="kollacli-common-ansible-playbook-module">
+<h2>kollacli.common.ansible.playbook module<a class="headerlink" href="#kollacli-common-ansible-playbook-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-kollacli.common.ansible">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-kollacli.common.ansible" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -220,10 +73,10 @@ that is not killable. Need to kill all its children.</p>
   <ul>
 <li><a class="reference internal" href="#">kollacli.common.ansible package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-kollacli.common.ansible.actions">kollacli.common.ansible.actions module</a></li>
-<li><a class="reference internal" href="#module-kollacli.common.ansible.job">kollacli.common.ansible.job module</a></li>
-<li><a class="reference internal" href="#module-kollacli.common.ansible.playbook">kollacli.common.ansible.playbook module</a></li>
-<li><a class="reference internal" href="#module-kollacli.common.ansible">Module contents</a></li>
+<li><a class="reference internal" href="#kollacli-common-ansible-actions-module">kollacli.common.ansible.actions module</a></li>
+<li><a class="reference internal" href="#kollacli-common-ansible-job-module">kollacli.common.ansible.job module</a></li>
+<li><a class="reference internal" href="#kollacli-common-ansible-playbook-module">kollacli.common.ansible.playbook module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -259,7 +112,7 @@ that is not killable. Need to kill all its children.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 1.0.0.dev406 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

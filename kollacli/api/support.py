@@ -11,15 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import kollacli.i18n as u
-
-import os
-
-from kollacli.api.exceptions import InvalidArgument
-from kollacli.common.support import dump
-from kollacli.common.support import get_logs
-from kollacli.common.utils import check_arg
-from kollacli.common.utils import safe_decode
+from blaze.api.support import SupportApi as BlazeSupportApi
+from kollacli.common.utils import reraise
 
 
 class SupportApi(object):
@@ -36,13 +29,10 @@ class SupportApi(object):
         :return: path to dump file
         :rtype: string
         """
-        check_arg(dirpath, u._('Directory path'), str)
-        dirpath = safe_decode(dirpath)
-        if not os.path.exists(dirpath):
-            raise InvalidArgument(u._('Directory path: {path} does not exist')
-                                  .format(path=dirpath))
-        dumpfile_path = dump(dirpath)
-        return dumpfile_path
+        try:
+            return BlazeSupportApi().support_dump(dirpath)
+        except Exception as e:
+            reraise(e)
 
     def support_get_logs(self, servicenames, hostname, dirpath):
         """get container logs
@@ -59,15 +49,8 @@ class SupportApi(object):
         :param dirpath: path of directory where log files will be written
         :type dirpath: string
         """
-        check_arg(dirpath, u._('Directory path'), str)
-        dirpath = safe_decode(dirpath)
-        if not os.path.exists(dirpath):
-            raise InvalidArgument(u._('Directory path: {path} does not exist')
-                                  .format(path=dirpath))
-
-        check_arg(servicenames, u._('Service names'), list)
-        servicenames = safe_decode(servicenames)
-        check_arg(hostname, u._('Host names'), str)
-        hostname = safe_decode(hostname)
-
-        get_logs(servicenames, hostname, dirpath)
+        try:
+            BlazeSupportApi().support_get_logs(servicenames, hostname,
+                                               dirpath)
+        except Exception as e:
+            reraise(e)

@@ -16,7 +16,7 @@ from common import KollaCliTest
 import os
 import unittest
 
-from kollacli.common.utils import get_kolla_etc
+from blaze.common.utils import get_kolla_etc
 
 
 class TestFunctional(KollaCliTest):

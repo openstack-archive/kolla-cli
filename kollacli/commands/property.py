@@ -27,7 +27,7 @@ CLIENT = ClientApi()
 
 def _get_names(args_list):
     csv_list = args_list[0].strip()
-    names = utils.convert_to_unicode(csv_list).split(',')
+    names = utils.safe_decode(csv_list).split(',')
     if 'all' in names:
         names = None
     return names

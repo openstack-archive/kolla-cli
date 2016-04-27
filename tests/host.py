@@ -217,6 +217,7 @@ class TestFunctional(KollaCliTest):
         except NotInInventory:
             pass
         except Exception as e:
+            print(str(e))
             raise e
 
         # check the type checking logic

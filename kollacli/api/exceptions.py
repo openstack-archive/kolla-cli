@@ -25,20 +25,7 @@ class ClientException(Exception):
 
 class NotInInventory(ClientException):
     """Not in inventory exception"""
-    def __init__(self, obj_type, obj_names, *args):
-        if isinstance(obj_names, list):
-            # list of names
-            invalid_objs = ''
-            comma = ''
-            for obj_name in obj_names:
-                invalid_objs = ''.join([invalid_objs, comma, obj_name])
-                comma = ','
-        else:
-            # single object name
-            invalid_objs = obj_names
-        message = (u._('{type} ({objs}) does not exist.')
-                   .format(type=obj_type, objs=invalid_objs))
-        super(NotInInventory, self).__init__(message, *args)
+    pass
 
 
 class HostError(ClientException):
@@ -46,16 +33,7 @@ class HostError(ClientException):
 
 
 class HostsSshCheckError(ClientException):
-    """Host failed its ssh check"""
-    def __init__(self, hostnames, *args):
-        failed_hosts = ''
-        comma = ''
-        for hostname in hostnames:
-            failed_hosts = ''.join([failed_hosts, comma, hostname])
-            comma = ','
-        message = (u._('Host(s) ssh check failed: {hosts}')
-                   .format(hosts=failed_hosts))
-        super(HostsSshCheckError, self).__init__(message, *args)
+    pass
 
 
 class InvalidArgument(ClientException):
@@ -73,8 +51,4 @@ class FailedOperation(ClientException):
 
 
 class MissingArgument(ClientException):
-    """Missing argument"""
-    def __init__(self, argname, *args):
-        message = (u._('Argument is missing: {name}')
-                   .format(name=argname))
-        super(MissingArgument, self).__init__(message, *args)
+    pass

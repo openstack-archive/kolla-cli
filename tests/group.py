@@ -17,11 +17,11 @@ from common import KollaCliTest
 import json
 import unittest
 
+from blaze.common.inventory import DEFAULT_GROUPS
+from blaze.common.inventory import DEFAULT_OVERRIDES
+from blaze.common.inventory import DEPLOY_GROUPS
 from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import NotInInventory
-from kollacli.common.inventory import DEFAULT_GROUPS
-from kollacli.common.inventory import DEFAULT_OVERRIDES
-from kollacli.common.inventory import DEPLOY_GROUPS
 
 CLIENT = ClientApi()
 

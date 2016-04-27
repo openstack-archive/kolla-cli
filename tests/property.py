@@ -18,11 +18,11 @@ import json
 import os
 import unittest
 
-from kollacli.common.utils import get_group_vars_dir
-from kollacli.common.utils import get_host_vars_dir
-from kollacli.common.utils import get_kolla_home
+from blaze.common.utils import get_group_vars_dir
+from blaze.common.utils import get_host_vars_dir
+from blaze.common.utils import get_kolla_home
 
-from kollacli.common.inventory import Inventory
+from blaze.common.inventory import Inventory
 
 
 class TestFunctional(KollaCliTest):

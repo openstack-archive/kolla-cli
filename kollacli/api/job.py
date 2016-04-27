@@ -11,12 +11,13 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from kollacli.common.utils import reraise
 
 
 class Job(object):
     """Job"""
-    def __init__(self, ansible_job):
-        self._ansible_job = ansible_job
+    def __init__(self, mesos_job):
+        self._mesos_job = mesos_job
 
     def wait(self):
         """Wait for job to complete
@@ -24,7 +25,10 @@ class Job(object):
         :return: 0 if job succeeded, 1 if job failed
         :rtype: int
         """
-        return self._ansible_job.wait()
+        try:
+            return self._mesos_job.wait()
+        except Exception as e:
+            reraise(e)
 
     def get_status(self):
         """Get status of job
@@ -35,7 +39,10 @@ class Job(object):
                  2: job killed by user
         :rtype: int or None
         """
-        return self._ansible_job.get_status()
+        try:
+            return self._mesos_job.get_status()
+        except Exception as e:
+            reraise(e)
 
     def get_error_message(self):
         """Get error message
@@ -43,7 +50,10 @@ class Job(object):
         :return: if job failed, this will return the error message.
         :rtype: string
         """
-        return self._ansible_job.get_error_message()
+        try:
+            return self._mesos_job.get_error_message()
+        except Exception as e:
+            reraise(e)
 
     def get_console_output(self):
         """Get the console output from the job
@@ -51,8 +61,14 @@ class Job(object):
         :return: console output useful for debugging failed jobs.
         :rtype: string
         """
-        return self._ansible_job.get_command_output()
+        try:
+            return self._mesos_job.get_console_output()
+        except Exception as e:
+            reraise(e)
 
     def kill(self):
         """kill the job"""
-        self._ansible_job.kill()
+        try:
+            return self._mesos_job.kill()
+        except Exception as e:
+            reraise(e)

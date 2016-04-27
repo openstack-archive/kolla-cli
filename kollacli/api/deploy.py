@@ -11,14 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
-
-import kollacli.i18n as u
-
-from kollacli.common.inventory import Inventory
-from kollacli.common.utils import check_arg
-
-LOG = logging.getLogger(__name__)
+from blaze.api.deploy import DeployApi as BlazeDeployApi
+from kollacli.common.utils import reraise
 
 
 class DeployApi(object):
@@ -33,7 +27,7 @@ class DeployApi(object):
         :param remote_mode: if remote mode is True deployment is done via ssh
         :type remote_mode: bool
         """
-        check_arg(remote_mode, u._('Remote mode'), bool)
-        inventory = Inventory.load()
-        inventory.set_deploy_mode(remote_mode)
-        Inventory.save(inventory)
+        try:
+            BlazeDeployApi().deploy_set_mode(remote_mode)
+        except Exception as e:
+            reraise(e)

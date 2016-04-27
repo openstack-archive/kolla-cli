@@ -11,12 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from copy import copy
-import kollacli.i18n as u
-
-from kollacli.common.inventory import Inventory
-from kollacli.common.utils import check_arg
-from kollacli.common.utils import safe_decode
+from blaze.api.host import HostApi as BlazeHostApi
+from kollacli.common.utils import reraise
 
 
 class HostApi(object):
@@ -24,8 +20,8 @@ class HostApi(object):
     class Host(object):
         """Host"""
         def __init__(self, hostname, groupnames):
+            self.host = BlazeHostApi.Host(hostname, groupnames)
             self.name = hostname
-            self._groupnames = groupnames
 
         def get_name(self):
             """Get name
@@ -41,41 +37,27 @@ class HostApi(object):
             :return: group names
             :rtype: list of strings
             """
-            return copy(self._groupnames)
+            return self.host.get_groups()
 
     def host_add(self, hostnames):
         """Add hosts to the inventory
 
         :param hostnames: list of strings
         """
-        check_arg(hostnames, u._('Host names'), list)
-        hostnames = safe_decode(hostnames)
-
-        inventory = Inventory.load()
-        any_changed = False
-        for hostname in hostnames:
-            changed = inventory.add_host(hostname)
-            if changed:
-                any_changed = True
-        if any_changed:
-            Inventory.save(inventory)
+        try:
+            BlazeHostApi().host_add(hostnames)
+        except Exception as e:
+            reraise(e)
 
     def host_remove(self, hostnames):
         """Remove hosts from the inventory
 
         :param hostnames: list of strings
         """
-        check_arg(hostnames, u._('Host names'), list)
-        hostnames = safe_decode(hostnames)
-
-        inventory = Inventory.load()
-        any_changed = False
-        for hostname in hostnames:
-            changed = inventory.remove_host(hostname)
-            if changed:
-                any_changed = True
-        if any_changed:
-            Inventory.save(inventory)
+        try:
+            BlazeHostApi().host_remove(hostnames)
+        except Exception as e:
+            reraise(e)
 
     def host_get_all(self):
         """Get all hosts in the inventory
@@ -83,12 +65,15 @@ class HostApi(object):
         :return: Hosts
         :rtype: Host
         """
-        inventory = Inventory.load()
-        hosts = []
-        host_groups = inventory.get_host_groups()
-        for hostname, groupnames in host_groups.items():
-            hosts.append(self.Host(hostname, groupnames))
-        return hosts
+        try:
+            hosts = BlazeHostApi().host_get_all()
+            new_hosts = []
+            for host in hosts:
+                new_host = self.Host(host.name, host.get_groups())
+                new_hosts.append(new_host)
+            return new_hosts
+        except Exception as e:
+            reraise(e)
 
     def host_get(self, hostnames):
         """Get selected hosts in the inventory
@@ -97,16 +82,15 @@ class HostApi(object):
         :return: hosts
         :rtype: Host
         """
-        check_arg(hostnames, u._('Host names'), list)
-        hostnames = safe_decode(hostnames)
-        inventory = Inventory.load()
-        inventory.validate_hostnames(hostnames)
-
-        hosts = []
-        host_groups = inventory.get_host_groups()
-        for hostname in hostnames:
-            hosts.append(self.Host(hostname, host_groups[hostname]))
-        return hosts
+        try:
+            hosts = BlazeHostApi().host_get(hostnames)
+            new_hosts = []
+            for host in hosts:
+                new_host = self.Host(host.name, host.get_groups())
+                new_hosts.append(new_host)
+            return new_hosts
+        except Exception as e:
+            reraise(e)
 
     def host_ssh_check(self, hostnames):
         """Check hosts for ssh connectivity
@@ -122,12 +106,10 @@ class HostApi(object):
         :return: check status
         :rtype: dictionary
         """
-        check_arg(hostnames, u._('Host names'), list)
-        inventory = Inventory.load()
-        hostnames = safe_decode(hostnames)
-        inventory.validate_hostnames(hostnames)
-        summary = inventory.ssh_check_hosts(hostnames)
-        return summary
+        try:
+            return BlazeHostApi().host_ssh_check(hostnames)
+        except Exception as e:
+            reraise(e)
 
     def host_setup(self, hosts_info):
         """Setup multiple hosts for ssh access
@@ -142,7 +124,7 @@ class HostApi(object):
 
         :param hosts_info: dictionary
         """
-        check_arg(hosts_info, u._('Hosts info'), dict)
-        inventory = Inventory.load()
-        inventory.validate_hostnames(hosts_info.keys())
-        inventory.setup_hosts(hosts_info)
+        try:
+            BlazeHostApi().host_setup(hosts_info)
+        except Exception as e:
+            reraise(e)

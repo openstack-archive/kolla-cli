@@ -20,9 +20,9 @@ import os
 import shutil
 import unittest
 
+from blaze.common.inventory import SERVICES
+from blaze.common.utils import get_kollacli_etc
 from kollacli.api.client import ClientApi
-from kollacli.common.inventory import SERVICES
-from kollacli.common.utils import get_kollacli_etc
 
 INV_NAME = 'inventory.json'
 

@@ -11,14 +11,10 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import kollacli.i18n as u
+from blaze.api.async import AsyncApi as BlazeAsyncApi
 
-from kollacli.api.exceptions import InvalidArgument
 from kollacli.api.job import Job
-from kollacli.common.ansible import actions
-from kollacli.common.inventory import Inventory
-from kollacli.common.utils import check_arg
-from kollacli.common.utils import safe_decode
+from kollacli.common.utils import reraise
 
 
 class AsyncApi(object):
@@ -38,15 +34,13 @@ class AsyncApi(object):
         :return: Job object
         :rtype: Job
         """
-        check_arg(hostnames, u._('Host names'), list,
-                  empty_ok=True, none_ok=True)
-        check_arg(serial_flag, u._('Serial flag'), bool)
-        check_arg(verbose_level, u._('Verbose level'), int)
-        hostnames = safe_decode(hostnames)
-
-        ansible_job = actions.deploy(hostnames,
-                                     serial_flag, verbose_level)
-        return Job(ansible_job)
+        try:
+            mesos_job = BlazeAsyncApi().async_deploy(hostnames,
+                                                     serial_flag,
+                                                     verbose_level)
+            return Job(mesos_job)
+        except Exception as e:
+            reraise(e)
 
     def async_upgrade(self, verbose_level=1):
         """Upgrade.
@@ -59,9 +53,11 @@ class AsyncApi(object):
         Upgrade containers to new version specified by the property
         "openstack_release."
         """
-        check_arg(verbose_level, u._('Verbose level'), int)
-        ansible_job = actions.upgrade(verbose_level)
-        return Job(ansible_job)
+        try:
+            mesos_job = BlazeAsyncApi().async_upgrade(verbose_level)
+            return Job(mesos_job)
+        except Exception as e:
+            reraise(e)
 
     def async_host_destroy(self, hostnames, destroy_type, verbose_level=1,
                            include_data=False):
@@ -82,22 +78,14 @@ class AsyncApi(object):
         :rtype: Job
 
         """
-        check_arg(hostnames, u._('Host names'), list)
-        check_arg(destroy_type, u._('Destroy type'), str)
-        check_arg(verbose_level, u._('Verbose level'), int)
-        check_arg(include_data, u._('Include data'), bool)
-        if destroy_type not in ['stop', 'kill']:
-            raise InvalidArgument(
-                u._('Invalid destroy type ({type}). Must be either '
-                    '"stop" or "kill".').format(type=destroy_type))
-
-        hostnames = safe_decode(hostnames)
-        inventory = Inventory.load()
-        inventory.validate_hostnames(hostnames)
-
-        ansible_job = actions.destroy_hosts(hostnames, destroy_type,
-                                            verbose_level, include_data)
-        return Job(ansible_job)
+        try:
+            mesos_job = BlazeAsyncApi().async_host_destroy(hostnames,
+                                                           destroy_type,
+                                                           verbose_level,
+                                                           include_data)
+            return Job(mesos_job)
+        except Exception as e:
+            reraise(e)
 
     def async_host_precheck(self, hostnames, verbose_level=1):
         """Check pre-deployment configuration of hosts.
@@ -112,11 +100,9 @@ class AsyncApi(object):
         :return: Job object
         :rtype: Job
         """
-        check_arg(hostnames, u._('Host names'), list)
-        check_arg(verbose_level, u._('Verbose level'), int)
-        hostnames = safe_decode(hostnames)
-        inventory = Inventory.load()
-        inventory.validate_hostnames(hostnames)
-
-        ansible_job = actions.precheck(hostnames, verbose_level)
-        return Job(ansible_job)
+        try:
+            mesos_job = BlazeAsyncApi().async_host_precheck(hostnames,
+                                                            verbose_level)
+            return Job(mesos_job)
+        except Exception as e:
+            reraise(e)
