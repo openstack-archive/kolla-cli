@@ -16,7 +16,7 @@
 %{expand: %%define pyver %(python -c 'import sys;print(sys.version[0:3])')}
 
 # Package version
-%global package_version 1.0
+%global package_version 4.0
 
 # Kolla user name and group name (DO NOT CHANGE THESE!)
 %global kolla_user      kolla
@@ -77,8 +77,6 @@ rm -rf %{buildroot}
 %attr(-, root, root) %doc LICENSE
 %attr(-, root, root) %{python_sitelib}
 %attr(755, root, %{kolla_group}) %{_bindir}/kollacli
-%attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
-%attr(2770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
 
 %pre
 case "$*" in
