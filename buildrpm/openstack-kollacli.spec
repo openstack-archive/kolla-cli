@@ -139,11 +139,11 @@ fi
 %post
 setfacl -m d:g:%{kolla_group}:rw %{_var}/log/kolla
 
-if ! test -f %{_sysconfdir}/kolla/kollacli/ansible.lock
+if ! test -f %{_datadir}/kolla/kollacli/ansible.lock
 then
-    touch %{_sysconfdir}/kolla/kollacli/ansible.lock
-    chown %{kolla_user}:%{kolla_group} %{_sysconfdir}/kolla/kollacli/ansible.lock
-    chmod 0660 %{_sysconfdir}/kolla/kollacli/ansible.lock
+    touch %{_datadir}/kolla/kollacli/ansible.lock
+    chown %{kolla_user}:%{kolla_group} %{_datadir}/kolla/kollacli/ansible.lock
+    chmod 0660 %{_datadir}/kolla/kollacli/ansible.lock
 fi
 
 if ! test -f ~%{kolla_user}/.ssh/id_rsa

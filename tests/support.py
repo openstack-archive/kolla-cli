@@ -48,7 +48,7 @@ class TestFunctional(KollaCliTest):
                                 'tools', 'log_collector.py')
 
             # run the log_collector tool
-            retval, msg = self.run_command('%s %s' % (path, 'all'))
+            retval, msg = self.run_command('python %s %s' % (path, 'all'))
 
             if is_physical_hosts:
                 self.assertEqual(0, retval,

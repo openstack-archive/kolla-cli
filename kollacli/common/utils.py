@@ -59,7 +59,7 @@ def get_kolla_log_dir():
 
 
 def get_ansible_lock_path():
-    return os.path.join(get_kollacli_etc(), 'ansible/ansible.lock')
+    return os.path.join(get_kollacli_home(), 'ansible.lock')
 
 
 def get_kolla_actions_path():
