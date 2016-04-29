@@ -16,7 +16,7 @@
 %{expand: %%define pyver %(python -c 'import sys;print(sys.version[0:3])')}
 
 # Package version
-%global package_version 3.0
+%global package_version 3.0.0
 
 # Kolla user name and group name (DO NOT CHANGE THESE!)
 %global kolla_user      kolla
@@ -39,8 +39,8 @@ BuildArch:      noarch
 BuildRequires:  python                      >= 2.7
 BuildRequires:  python-setuptools           >= 0.9.8
 BuildRequires:  python-pbr                  >= 1.3.0
-Requires:       openstack-kolla-ansible     >= 0.2.0
-Requires:       openstack-kolla-ansible     < 0.3.0
+Requires:       openstack-kolla-ansible     >= 3.0.0
+Requires:       openstack-kolla-ansible     < 4.0.0
 Requires:       babel                       >= 2.0
 Requires:       python-babel                >= 2.0
 Requires:       python-cliff                >= 1.13.0
@@ -241,6 +241,9 @@ fi
 
 
 %changelog
+* Fri Apr 29 2016 - Wiekus Beukes <wiekus.beukes@oracle.com>
+- Updated the kolla-ansible requirement to 3.0.0
+
 * Wed Apr 13 2016 - Steve Noyes <steve.noyes@oracle.com>
 - add kolla-ansible-plugin subpackage
 - suppress warning on egg removal
