@@ -41,6 +41,7 @@ BuildRequires:  python-setuptools           >= 0.9.8
 BuildRequires:  python-pbr                  >= 1.3.0
 Requires:       openstack-kolla-ansible     >= 3.0.0
 Requires:       openstack-kolla-ansible     < 4.0.0
+Requires:       openstack-kolla-ansible-plugin >= 3.0.0
 Requires:       babel                       >= 2.0
 Requires:       python-babel                >= 2.0
 Requires:       python-cliff                >= 1.13.0
@@ -204,6 +205,7 @@ esac
 %package -n openstack-kolla-ansible-plugin
 
 Summary:        OpenStack Kolla Ansible Plugin
+Version:        %{package_version}
 License:        GNU General Public License, Version 3
 Group:          Applications/System
 
