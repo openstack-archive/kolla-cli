@@ -39,8 +39,6 @@ BuildArch:      noarch
 BuildRequires:  python                      >= 2.7
 BuildRequires:  python-setuptools           >= 0.9.8
 BuildRequires:  python-pbr                  >= 1.3.0
-Requires:       openstack-kolla-ansible     >= 3.0.0
-Requires:       openstack-kolla-ansible     < 4.0.0
 Requires:       openstack-kolla-ansible-plugin >= 3.0.0
 Requires:       babel                       >= 2.0
 Requires:       python-babel                >= 2.0
@@ -208,6 +206,10 @@ Summary:        OpenStack Kolla Ansible Plugin
 Version:        %{package_version}
 License:        GNU General Public License, Version 3
 Group:          Applications/System
+# The plugin needs ansible 2.1 which is in the
+# requirement for openstack-kolla-ansible
+Requires:       openstack-kolla-ansible     >= 3.0.0
+Requires:       openstack-kolla-ansible     < 4.0.0
 
 %description -n openstack-kolla-ansible-plugin
 This ansible plugin supplies playbook activity to the

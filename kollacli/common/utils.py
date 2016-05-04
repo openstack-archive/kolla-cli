@@ -30,6 +30,16 @@ from kollacli.api.exceptions import MissingArgument
 LOG = logging.getLogger(__name__)
 
 
+def get_ansible_plugin_dir():
+    return os.environ.get("ANSIBLE_PLUGINS",
+                          "/usr/share/ansible_plugins/callback_plugins/")
+
+
+def get_ansible_etc():
+    return os.environ.get("ANSIBLE_ETC",
+                          "/etc/ansible/")
+
+
 def get_kolla_home():
     return os.environ.get("KOLLA_HOME", "/usr/share/kolla/")
 

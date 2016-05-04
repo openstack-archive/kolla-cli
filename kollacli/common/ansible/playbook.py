@@ -21,6 +21,8 @@ from kollacli.api.exceptions import NotInInventory
 from kollacli.common.ansible.job import AnsibleJob
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
+from kollacli.common.utils import get_ansible_etc
+from kollacli.common.utils import get_ansible_plugin_dir
 from kollacli.common.utils import get_kolla_etc
 
 from kollacli.common.inventory import Inventory
@@ -44,6 +46,7 @@ class AnsiblePlaybook(object):
 
     def run(self):
         try:
+            self._check_for_plugin()
             self.inventory = Inventory.load()
             inventory_path = self._make_temp_inventory()
             cmd = self._get_playbook_cmd(inventory_path)
@@ -57,6 +60,28 @@ class AnsiblePlaybook(object):
 
         except Exception:
             raise Exception(traceback.format_exc())
+
+    def _check_for_plugin(self):
+        """check that plug-in is properly installed"""
+        pi_dir = get_ansible_plugin_dir()
+        pi_path = os.path.join(pi_dir, 'kolla_callback.py')
+        if not os.path.exists(pi_path):
+            LOG.warning(u._('WARNING: kolla callback plug-in is missing. '
+                            'Should be here: {path}\n').format(path=pi_path))
+        else:
+            ansible_cfg_path = os.path.join(
+                get_ansible_etc(), 'ansible.cfg')
+            with open(ansible_cfg_path, 'r') as cfg:
+                whitelist_ok = False
+                for line in cfg:
+                    if (line.startswith('callback_whitelist') and
+                            'kolla_callback' in line):
+                        whitelist_ok = True
+                        break
+            if not whitelist_ok:
+                LOG.warning(u._('WARNING: kolla callback plug-in is not '
+                                'whitelisted '
+                                'in {path}\n').format(path=ansible_cfg_path))
 
     def _get_playbook_cmd(self, inventory_path):
         flag = ''
