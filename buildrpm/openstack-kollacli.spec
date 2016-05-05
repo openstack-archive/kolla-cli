@@ -234,12 +234,6 @@ then
     sed -i \
         '/^callback_whitelist =/ s:$:, %{plugin_name}:' %{ansible_cfg}
 fi
-if ! grep -q '^callback_plugins =' %{ansible_cfg}
-then
-    # set callback plugin path directory
-    sed -i \
-        '/^\[defaults\]/a callback_plugins = /usr/share/ansible/plugins/callback' %{ansible_cfg}
-fi
 
 %postun -n openstack-kolla-ansible-plugin
 # remove kolla callback from whitelist
@@ -253,7 +247,6 @@ fi
 %changelog
 * Thu May 5 2016 - James McCarthy <james.m.mccarthy@oracle.com>
 - Updated plugin_dir to be in line with paths in default file
-- Update callback_plugins path in ansible configuration if not set
 
 * Fri Apr 29 2016 - Wiekus Beukes <wiekus.beukes@oracle.com>
 - Updated the kolla-ansible requirement to 3.0.0
