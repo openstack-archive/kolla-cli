@@ -15,6 +15,7 @@
 from common import ALL_SERVICES
 from common import KollaCliTest
 
+from kollacli.common.ansible import job
 from kollacli.common.inventory import Inventory
 from kollacli.common.inventory import SERVICES
 
@@ -160,6 +161,28 @@ class TestFunctional(KollaCliTest):
         # test will upgrade an environment with no hosts, mostly a NOP,
         # but it will go through the client code paths.
         self.run_cli_cmd('upgrade -v')
+
+    def test_deserialize(self):
+        # create a dummy ansible job
+        j = job.AnsibleJob('', 123, True, '')
+        line1 = '"This is line1."\n'
+        line2_frag1 = '"This is line2 start. '
+        line2_frag2 = 'This is line2 end."\n'
+        line3 = '"This is line3."\n'
+
+        exp_results = [
+            'This is line1.',
+            'This is line2 start. This is line2 end.',
+            'This is line3.']
+
+        packet1 = line1 + line2_frag1
+        packet2 = line2_frag2 + line3
+
+        results = []
+        results.extend(j._deserialize_packets(packet1))
+        results.extend(j._deserialize_packets(packet2))
+
+        self.assertEqual(exp_results, results, 'packet mis-match')
 
     def check_json(self, msg, groups, hosts, included_groups, included_hosts):
         err_msg = ('included groups: %s\n' % included_groups +

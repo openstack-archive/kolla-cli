@@ -383,26 +383,35 @@ class AnsibleJob(object):
         has_fragment = True
         if data.endswith('\n'):
             has_fragment = False
+        else:
+            LOG.debug('fragment found: %s' % data)
         i = 0
         lines = data.split('\n')
         num_lines = len(lines)
         for line in lines:
-            if not line:
-                # ignore empty string lines
-                continue
             i += 1
             if i == 1:
                 # first line
                 line = self._fragment + line
                 self._fragment = ''
-            elif i == num_lines - 1:
-                # last line
-                if has_fragment:
-                    self._fragment = line
-                    continue
-            try:
-                packets.append(json.loads(line))
-            except Exception as e:
-                LOG.error('invalid line for json encoding: %s' % line)
-                raise e
+            if i == num_lines and has_fragment:
+                # last line is incomplete, save as fragment
+                self._fragment = line
+                break
+            if not line:
+                # ignore empty string lines
+                continue
+            info = self.json_load(line)
+            if info:
+                packets.append(info)
         return packets
+
+    def json_load(self, string_var, raise_on_err=False):
+        retval = None
+        try:
+            retval = json.loads(string_var)
+        except Exception as e:
+            LOG.error('invalid string for json encoding: %s' % string_var)
+            if raise_on_err:
+                raise e
+        return retval
