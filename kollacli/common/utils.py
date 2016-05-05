@@ -32,7 +32,7 @@ LOG = logging.getLogger(__name__)
 
 def get_ansible_plugin_dir():
     return os.environ.get("ANSIBLE_PLUGINS",
-                          "/usr/share/ansible_plugins/callback_plugins/")
+                          "/usr/share/ansible/plugins/callback/")
 
 
 def get_ansible_etc():
