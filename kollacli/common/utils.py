@@ -30,6 +30,15 @@ from kollacli.api.exceptions import MissingArgument
 LOG = logging.getLogger(__name__)
 
 
+def get_log_level():
+    evar = os.environ.get('KOLLA_LOG_LEVEL', 'info')
+    if evar.lower() == 'debug':
+        level = logging.DEBUG
+    else:
+        level = logging.INFO
+    return level
+
+
 def get_ansible_plugin_dir():
     return os.environ.get("ANSIBLE_PLUGINS",
                           "/usr/share/ansible/plugins/callback/")

@@ -167,20 +167,23 @@ class TestFunctional(KollaCliTest):
         j = job.AnsibleJob('', 123, True, '')
         line1 = '"This is line1."\n'
         line2_frag1 = '"This is line2 start. '
-        line2_frag2 = 'This is line2 end."\n'
+        line2_frag2 = 'This is line2 middle. '
+        line2_frag3 = 'This is line2 end."\n'
         line3 = '"This is line3."\n'
 
         exp_results = [
             'This is line1.',
-            'This is line2 start. This is line2 end.',
+            'This is line2 start. This is line2 middle. This is line2 end.',
             'This is line3.']
 
         packet1 = line1 + line2_frag1
-        packet2 = line2_frag2 + line3
+        packet2 = line2_frag2
+        packet3 = line2_frag3 + line3
 
         results = []
         results.extend(j._deserialize_packets(packet1))
         results.extend(j._deserialize_packets(packet2))
+        results.extend(j._deserialize_packets(packet3))
 
         self.assertEqual(exp_results, results, 'packet mis-match')
 

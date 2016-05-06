@@ -27,11 +27,12 @@ from kollacli.api.password import PasswordApi
 from kollacli.api.properties import PropertyApi
 from kollacli.api.service import ServiceApi
 from kollacli.api.support import SupportApi
+from kollacli.common.utils import get_log_level
 
 CONSOLE_MESSAGE_FORMAT = '%(message)s'
 LOG_FILE_MESSAGE_FORMAT = \
     '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
-LOG = logging.getLogger(__name__)
+LOG = None
 
 
 class ClientApi(
@@ -69,6 +70,7 @@ class ClientApi(
             root_logger.removeHandler(console)
 
     def _configure_logging(self):
+        global LOG
         root_logger = logging.getLogger('')
         root_logger.setLevel(logging.DEBUG)
 
@@ -86,6 +88,7 @@ class ClientApi(
                                  'var', 'log', 'kolla', 'kolla.log'),
                     maxBytes=self._get_kolla_log_file_size(),
                     backupCount=4)
+
             except IOError as e:
                 # most likely the caller is not part of the kolla group
                 raise IOError(u._('Permission denied to run the kolla client.'
@@ -95,8 +98,9 @@ class ClientApi(
 
             formatter = logging.Formatter(LOG_FILE_MESSAGE_FORMAT)
             rotate_handler.setFormatter(formatter)
-            rotate_handler.setLevel(logging.INFO)
+            rotate_handler.setLevel(get_log_level())
             root_logger.addHandler(rotate_handler)
+            LOG = logging.getLogger(__name__)
 
     def _get_kolla_log_file_size(self):
         envvar = 'KOLLA_LOG_FILE_SIZE'
@@ -104,8 +108,5 @@ class ClientApi(
         try:
             size = int(size_str)
         except Exception:
-            LOG.error(('Environmental variable ({env_var}) is not an '
-                       'integer ({log_size}).')
-                      .format(env_var=envvar, log_size=size_str))
             size = 50000
         return size

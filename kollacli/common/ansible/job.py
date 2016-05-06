@@ -241,6 +241,7 @@ class AnsibleJob(object):
             # error can happen if fifo is empty
             pass
         if data:
+            LOG.debug('callback packets: %s' % data)
             packets = self._deserialize_packets(data)
             for packet in packets:
                 formatted_data = self._format_packet(packet)
