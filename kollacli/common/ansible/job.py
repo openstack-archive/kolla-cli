@@ -36,7 +36,7 @@ LOG = logging.getLogger(__name__)
 
 LINE_LENGTH = 80
 
-PIPE_PREFIX = '.kolla_pipe_'
+PIPE_NAME = '.kolla_pipe'
 
 # action defs
 ACTION_PLAY_START = 'play_start'
@@ -58,7 +58,9 @@ class AnsibleJob(object):
         self._fragment = ''
         self._is_first_packet = True
         self._fifo_path = os.path.join(
-            tempfile.gettempdir(), '%s_%s' % (PIPE_PREFIX, self._deploy_id))
+            tempfile.gettempdir(),
+            'kolla_%s' % deploy_id,
+            '%s' % PIPE_NAME)
         self._fifo_fd = None
         self._process = None
         self._process_std_err = None
@@ -210,9 +212,6 @@ class AnsibleJob(object):
         # try to clear the ansible lock
         self._ansible_lock.release()
 
-        # delete temp inventory file
-        remove_temp_inventory(self._temp_inv_path)
-
         # close the process's stdout and stderr streams
         if (self._process and self._process.stdout and not
            self._process.stdout.closed):
@@ -230,6 +229,9 @@ class AnsibleJob(object):
                 pass
         if self._fifo_path and os.path.exists(self._fifo_path):
             os.remove(self._fifo_path)
+
+        # delete temp inventory file
+        remove_temp_inventory(self._temp_inv_path)
 
     def _read_from_callback(self):
         """read lines from callback in real-time"""

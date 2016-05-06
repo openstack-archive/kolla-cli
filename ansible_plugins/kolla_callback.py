@@ -26,7 +26,7 @@ from ansible.plugins.callback import CallbackBase
 KOLLA_LOG_PATH = '/tmp/ansible'
 DEBUG = False
 
-PIPE_PREFIX = '.kolla_pipe_'
+PIPE_NAME = '.kolla_pipe'
 
 # action defs
 ACTION_PLAY_START = 'play_start'
@@ -151,8 +151,8 @@ class CallbackModule(CallbackBase):
 
                 if deploy_id:
                     fifo_path = os.path.join(tempfile.gettempdir(),
-                                             '%s_%s' % (PIPE_PREFIX,
-                                                        deploy_id))
+                                             'kolla_%s' % deploy_id,
+                                             '%s' % PIPE_NAME)
 
         def get_id(self):
             return str(self.ansible_play._uuid)
