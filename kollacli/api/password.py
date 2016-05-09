@@ -11,8 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from blaze.api.password import PasswordApi as BlazePasswordApi
 from kollacli.common.utils import reraise
+from kottos.api.password import PasswordApi as KottosPasswordApi
 
 
 class PasswordApi(object):
@@ -26,7 +26,7 @@ class PasswordApi(object):
         :type value: string
         """
         try:
-            BlazePasswordApi().password_set(name, value)
+            KottosPasswordApi().password_set(name, value)
         except Exception as e:
             reraise(e)
 
@@ -37,7 +37,7 @@ class PasswordApi(object):
         :type name: string
         """
         try:
-            BlazePasswordApi().password_clear(name)
+            KottosPasswordApi().password_clear(name)
         except Exception as e:
             reraise(e)
 
@@ -48,6 +48,6 @@ class PasswordApi(object):
         :rtype: list of strings
         """
         try:
-            return BlazePasswordApi().password_get_names()
+            return KottosPasswordApi().password_get_names()
         except Exception as e:
             reraise(e)

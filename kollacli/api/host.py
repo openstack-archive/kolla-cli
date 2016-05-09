@@ -11,8 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from blaze.api.host import HostApi as BlazeHostApi
 from kollacli.common.utils import reraise
+from kottos.api.host import HostApi as KottosHostApi
 
 
 class HostApi(object):
@@ -20,7 +20,7 @@ class HostApi(object):
     class Host(object):
         """Host"""
         def __init__(self, hostname, groupnames):
-            self.host = BlazeHostApi.Host(hostname, groupnames)
+            self.host = KottosHostApi.Host(hostname, groupnames)
             self.name = hostname
 
         def get_name(self):
@@ -45,7 +45,7 @@ class HostApi(object):
         :param hostnames: list of strings
         """
         try:
-            BlazeHostApi().host_add(hostnames)
+            KottosHostApi().host_add(hostnames)
         except Exception as e:
             reraise(e)
 
@@ -55,7 +55,7 @@ class HostApi(object):
         :param hostnames: list of strings
         """
         try:
-            BlazeHostApi().host_remove(hostnames)
+            KottosHostApi().host_remove(hostnames)
         except Exception as e:
             reraise(e)
 
@@ -66,7 +66,7 @@ class HostApi(object):
         :rtype: Host
         """
         try:
-            hosts = BlazeHostApi().host_get_all()
+            hosts = KottosHostApi().host_get_all()
             new_hosts = []
             for host in hosts:
                 new_host = self.Host(host.name, host.get_groups())
@@ -83,7 +83,7 @@ class HostApi(object):
         :rtype: Host
         """
         try:
-            hosts = BlazeHostApi().host_get(hostnames)
+            hosts = KottosHostApi().host_get(hostnames)
             new_hosts = []
             for host in hosts:
                 new_host = self.Host(host.name, host.get_groups())
@@ -107,7 +107,7 @@ class HostApi(object):
         :rtype: dictionary
         """
         try:
-            return BlazeHostApi().host_ssh_check(hostnames)
+            return KottosHostApi().host_ssh_check(hostnames)
         except Exception as e:
             reraise(e)
 
@@ -125,6 +125,6 @@ class HostApi(object):
         :param hosts_info: dictionary
         """
         try:
-            BlazeHostApi().host_setup(hosts_info)
+            KottosHostApi().host_setup(hosts_info)
         except Exception as e:
             reraise(e)

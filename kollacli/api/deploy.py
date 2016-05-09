@@ -11,8 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from blaze.api.deploy import DeployApi as BlazeDeployApi
 from kollacli.common.utils import reraise
+from kottos.api.deploy import DeployApi as KottosDeployApi
 
 
 class DeployApi(object):
@@ -28,6 +28,6 @@ class DeployApi(object):
         :type remote_mode: bool
         """
         try:
-            BlazeDeployApi().deploy_set_mode(remote_mode)
+            KottosDeployApi().deploy_set_mode(remote_mode)
         except Exception as e:
             reraise(e)

@@ -11,8 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from blaze.api.support import SupportApi as BlazeSupportApi
 from kollacli.common.utils import reraise
+from kottos.api.support import SupportApi as KottosSupportApi
 
 
 class SupportApi(object):
@@ -30,7 +30,7 @@ class SupportApi(object):
         :rtype: string
         """
         try:
-            return BlazeSupportApi().support_dump(dirpath)
+            return KottosSupportApi().support_dump(dirpath)
         except Exception as e:
             reraise(e)
 
@@ -50,7 +50,7 @@ class SupportApi(object):
         :type dirpath: string
         """
         try:
-            BlazeSupportApi().support_get_logs(servicenames, hostname,
-                                               dirpath)
+            KottosSupportApi().support_get_logs(servicenames, hostname,
+                                                dirpath)
         except Exception as e:
             reraise(e)

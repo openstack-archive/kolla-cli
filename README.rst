@@ -4,7 +4,7 @@ KollaCLI
 
 The following steps can be used to build / run the kollacli
 
-* install blaze
+* install kottos
 * virtualenv .venv
 * . .venv/bin/activate
 * pip install -r requirements.txt

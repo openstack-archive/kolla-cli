@@ -11,16 +11,16 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from blaze.api.group import GroupApi as BlazeGroupApi
 from kollacli.common.utils import reraise
+from kottos.api.group import GroupApi as KottosGroupApi
 
 
 class GroupApi(object):
 
     class Group(object):
         def __init__(self, groupname, servicenames, hostnames):
-            self.group = BlazeGroupApi.Group(groupname, servicenames,
-                                             hostnames)
+            self.group = KottosGroupApi.Group(groupname, servicenames,
+                                              hostnames)
             self.name = groupname
 
         def get_name(self):
@@ -109,7 +109,7 @@ class GroupApi(object):
 
         """
         try:
-            BlazeGroupApi().group_add(groupnames)
+            KottosGroupApi().group_add(groupnames)
         except Exception as e:
             reraise(e)
 
@@ -121,7 +121,7 @@ class GroupApi(object):
 
         """
         try:
-            BlazeGroupApi().group_remove(groupnames)
+            KottosGroupApi().group_remove(groupnames)
         except Exception as e:
             reraise(e)
 
@@ -132,7 +132,7 @@ class GroupApi(object):
         :rtype: list of Group objects
         """
         try:
-            groups = BlazeGroupApi().group_get_all()
+            groups = KottosGroupApi().group_get_all()
             new_groups = []
             for group in groups:
                 new_group = self.Group(group.name, group.get_services(),
@@ -151,7 +151,7 @@ class GroupApi(object):
         :rtype: list of Group objects
         """
         try:
-            groups = BlazeGroupApi().group_get(groupnames)
+            groups = KottosGroupApi().group_get(groupnames)
             new_groups = []
             for group in groups:
                 new_group = self.Group(group.name, group.get_services(),

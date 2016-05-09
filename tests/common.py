@@ -23,7 +23,7 @@ from copy import copy
 from pexpect import pxssh
 from shutil import copyfile
 
-from blaze.common import utils
+from kottos.common import utils
 
 from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import InvalidArgument

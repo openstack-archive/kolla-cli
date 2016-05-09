@@ -16,7 +16,7 @@
 %{expand: %%define pyver %(python -c 'import sys;print(sys.version[0:3])')}
 
 # Package version
-%global package_version 4.0
+%global package_version 4.0.1
 
 # Kolla user name and group name (DO NOT CHANGE THESE!)
 %global kolla_user      kolla
@@ -124,7 +124,7 @@ esac
 
 %changelog
 * Tue Apr 26 2016 - Steve Noyes <steve.noyes@oracle.com>
-- remove blaze components
+- remove non-cli components
 
 * Wed Apr 13 2016 - Steve Noyes <steve.noyes@oracle.com>
 - add kolla-ansible-plugin subpackage

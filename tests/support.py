@@ -20,14 +20,14 @@ import unittest
 from common import KollaCliTest
 from common import TestConfig
 
-from blaze.common.utils import get_kollacli_home
 from kollacli.api.client import ClientApi
 from kollacli.common.utils import safe_decode
+from kottos.common.utils import get_kollacli_home
 
 LOGS_PREFIX = '/tmp/kolla_support_logs_'
 CLIENT = ClientApi()
 
-LOGDIR = '/tmp/utest_blaze_logs'
+LOGDIR = '/tmp/utest_kottos_logs'
 
 
 class TestFunctional(KollaCliTest):

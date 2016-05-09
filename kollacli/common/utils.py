@@ -13,31 +13,31 @@
 #    under the License.
 import os
 
-import blaze.api.exceptions
 import kollacli.api.exceptions
 import kollacli.i18n as u
+import kottos.api.exceptions
 
 
 def reraise(exception):
-    """convert mesos exception to cli exception
+    """convert kottos exception to cli exception
 
     This is a temporary measure until the rest api is available.
     """
-    if isinstance(exception, blaze.api.exceptions.FailedOperation):
+    if isinstance(exception, kottos.api.exceptions.FailedOperation):
         raise kollacli.api.exceptions.FailedOperation(exception)
-    elif isinstance(exception, blaze.api.exceptions.HostError):
+    elif isinstance(exception, kottos.api.exceptions.HostError):
         raise kollacli.api.exceptions.HostError(exception)
     elif isinstance(exception,
-                    blaze.api.exceptions.HostsSshCheckError):
+                    kottos.api.exceptions.HostsSshCheckError):
         raise kollacli.api.exceptions.HostsSshCheckError(exception)
-    elif isinstance(exception, blaze.api.exceptions.InvalidArgument):
+    elif isinstance(exception, kottos.api.exceptions.InvalidArgument):
         raise kollacli.api.exceptions.InvalidArgument(exception)
     elif isinstance(exception,
-                    blaze.api.exceptions.InvalidConfiguration):
+                    kottos.api.exceptions.InvalidConfiguration):
         raise kollacli.api.exceptions.InvalidConfiguration(exception)
-    elif isinstance(exception, blaze.api.exceptions.MissingArgument):
+    elif isinstance(exception, kottos.api.exceptions.MissingArgument):
         raise kollacli.api.exceptions.MissingArgument(exception)
-    elif isinstance(exception, blaze.api.exceptions.NotInInventory):
+    elif isinstance(exception, kottos.api.exceptions.NotInInventory):
         raise kollacli.api.exceptions.NotInInventory(exception)
     raise exception
 

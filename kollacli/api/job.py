@@ -16,8 +16,8 @@ from kollacli.common.utils import reraise
 
 class Job(object):
     """Job"""
-    def __init__(self, mesos_job):
-        self._mesos_job = mesos_job
+    def __init__(self, kottos_job):
+        self._kottos_job = kottos_job
 
     def wait(self):
         """Wait for job to complete
@@ -26,7 +26,7 @@ class Job(object):
         :rtype: int
         """
         try:
-            return self._mesos_job.wait()
+            return self._kottos_job.wait()
         except Exception as e:
             reraise(e)
 
@@ -40,7 +40,7 @@ class Job(object):
         :rtype: int or None
         """
         try:
-            return self._mesos_job.get_status()
+            return self._kottos_job.get_status()
         except Exception as e:
             reraise(e)
 
@@ -51,7 +51,7 @@ class Job(object):
         :rtype: string
         """
         try:
-            return self._mesos_job.get_error_message()
+            return self._kottos_job.get_error_message()
         except Exception as e:
             reraise(e)
 
@@ -62,13 +62,13 @@ class Job(object):
         :rtype: string
         """
         try:
-            return self._mesos_job.get_console_output()
+            return self._kottos_job.get_console_output()
         except Exception as e:
             reraise(e)
 
     def kill(self):
         """kill the job"""
         try:
-            return self._mesos_job.kill()
+            return self._kottos_job.kill()
         except Exception as e:
             reraise(e)

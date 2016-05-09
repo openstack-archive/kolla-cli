@@ -11,8 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from blaze.api.properties import PropertyApi as BlazePropertyApi
 from kollacli.common.utils import reraise
+from kottos.api.properties import PropertyApi as KottosPropertyApi
 
 GLOBAL_TYPE = 'global'
 
@@ -61,8 +61,8 @@ class PropertyApi(object):
 
         """
         try:
-            BlazePropertyApi().property_set(property_dict,
-                                            property_type, change_set)
+            KottosPropertyApi().property_set(property_dict,
+                                             property_type, change_set)
         except Exception as e:
             reraise(e)
 
@@ -80,8 +80,8 @@ class PropertyApi(object):
 
         """
         try:
-            BlazePropertyApi().property_clear(property_list,
-                                              property_type, change_set)
+            KottosPropertyApi().property_clear(property_list,
+                                               property_type, change_set)
         except Exception as e:
             reraise(e)
 
@@ -97,14 +97,14 @@ class PropertyApi(object):
         :rtype: list of Property objects
         """
         try:
-            properties = BlazePropertyApi().property_get(property_type,
-                                                         get_set)
+            properties = KottosPropertyApi().property_get(property_type,
+                                                          get_set)
             new_properties = []
             for prop in properties:
                 new_prop = self.Property()
                 new_prop.name = prop.name
                 new_prop.value = prop.value
-                new_prop.file_name = prop.file_name
+                new_prop.file_name = prop.zk_path
                 new_prop.overrides = prop.overrides
                 new_prop.orig_value = prop.orig_value
                 new_prop.target = prop.target

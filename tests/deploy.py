@@ -15,8 +15,8 @@
 from common import ALL_SERVICES
 from common import KollaCliTest
 
-from blaze.common.inventory import Inventory
-from blaze.common.inventory import SERVICES
+from kottos.common.inventory import Inventory
+from kottos.common.inventory import SERVICES
 
 import json
 import unittest

@@ -11,8 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from blaze.api.service import ServiceApi as BlazeServiceApi
 from kollacli.common.utils import reraise
+from kottos.api.service import ServiceApi as KottosServiceApi
 
 
 class ServiceApi(object):
@@ -38,8 +38,8 @@ class ServiceApi(object):
         def __init__(self, servicename, parentname=None,
                      childnames=[], groupnames=[]):
             self.name = servicename
-            self.service = BlazeServiceApi.Service(servicename, parentname,
-                                                   childnames, groupnames)
+            self.service = KottosServiceApi.Service(servicename, parentname,
+                                                    childnames, groupnames)
             self.parentname = self.service.parentname
 
         def get_name(self):
@@ -81,7 +81,7 @@ class ServiceApi(object):
         :rtype: List of Service objects
         """
         try:
-            services = BlazeServiceApi().service_get_all()
+            services = KottosServiceApi().service_get_all()
             new_services = []
             for service in services:
                 new_service = self.Service(service.name,
@@ -102,7 +102,7 @@ class ServiceApi(object):
         :rtype: list of Service objects
         """
         try:
-            services = BlazeServiceApi().service_get(servicenames)
+            services = KottosServiceApi().service_get(servicenames)
             new_services = []
             for service in services:
                 new_service = self.Service(service.name,

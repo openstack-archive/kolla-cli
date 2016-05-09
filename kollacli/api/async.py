@@ -11,7 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from blaze.api.async import AsyncApi as BlazeAsyncApi
+from kottos.api.async import AsyncApi as KottosAsyncApi
 
 from kollacli.api.job import Job
 from kollacli.common.utils import reraise
@@ -35,10 +35,10 @@ class AsyncApi(object):
         :rtype: Job
         """
         try:
-            mesos_job = BlazeAsyncApi().async_deploy(hostnames,
-                                                     serial_flag,
-                                                     verbose_level)
-            return Job(mesos_job)
+            kottos_job = KottosAsyncApi().async_deploy(hostnames,
+                                                       serial_flag,
+                                                       verbose_level)
+            return Job(kottos_job)
         except Exception as e:
             reraise(e)
 
@@ -54,8 +54,8 @@ class AsyncApi(object):
         "openstack_release."
         """
         try:
-            mesos_job = BlazeAsyncApi().async_upgrade(verbose_level)
-            return Job(mesos_job)
+            kottos_job = KottosAsyncApi().async_upgrade(verbose_level)
+            return Job(kottos_job)
         except Exception as e:
             reraise(e)
 
@@ -79,11 +79,11 @@ class AsyncApi(object):
 
         """
         try:
-            mesos_job = BlazeAsyncApi().async_host_destroy(hostnames,
-                                                           destroy_type,
-                                                           verbose_level,
-                                                           include_data)
-            return Job(mesos_job)
+            kottos_job = KottosAsyncApi().async_host_destroy(hostnames,
+                                                             destroy_type,
+                                                             verbose_level,
+                                                             include_data)
+            return Job(kottos_job)
         except Exception as e:
             reraise(e)
 
@@ -101,8 +101,8 @@ class AsyncApi(object):
         :rtype: Job
         """
         try:
-            mesos_job = BlazeAsyncApi().async_host_precheck(hostnames,
-                                                            verbose_level)
-            return Job(mesos_job)
+            kottos_job = KottosAsyncApi().async_host_precheck(hostnames,
+                                                              verbose_level)
+            return Job(kottos_job)
         except Exception as e:
             reraise(e)

@@ -17,9 +17,9 @@ from common import KollaCliTest
 import json
 import unittest
 
-from blaze.common.inventory import DEFAULT_GROUPS
-from blaze.common.inventory import DEFAULT_OVERRIDES
-from blaze.common.inventory import SERVICES
+from kottos.common.inventory import DEFAULT_GROUPS
+from kottos.common.inventory import DEFAULT_OVERRIDES
+from kottos.common.inventory import SERVICES
 
 
 class TestFunctional(KollaCliTest):
