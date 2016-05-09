@@ -79,9 +79,10 @@ class AnsibleJob(object):
                     .format(cmd=self._command))
 
             # create and open named pipe, must be owned by kolla group
-            os.mkfifo(self._fifo_path, 0o660)
+            os.mkfifo(self._fifo_path)
             _, grp_id = get_admin_uids()
             os.chown(self._fifo_path, os.getuid(), grp_id)
+            os.chmod(self._fifo_path, 0o660)
             self._fifo_fd = os.open(self._fifo_path,
                                     os.O_RDONLY | os.O_NONBLOCK)
 
