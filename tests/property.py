@@ -21,7 +21,6 @@ import unittest
 from kottos.common.inventory import Inventory
 from kottos.common.utils import get_group_vars_dir
 from kottos.common.utils import get_host_vars_dir
-from kottos.common.utils import get_kolla_home
 
 
 class TestFunctional(KollaCliTest):
@@ -111,10 +110,8 @@ class TestFunctional(KollaCliTest):
         switch = ''
         if groups:
             switch = '--groups'
-            dir_name = 'group_vars'
         elif hosts:
             switch = '--hosts'
-            dir_name = 'host_vars'
 
         key = 'TeStKeY'
         value = 'TeStVaLuE:123:abc'
@@ -132,21 +129,14 @@ class TestFunctional(KollaCliTest):
             targets_csv = 'all'
 
         comma = ''
-        sizes = {}  # key = path, value = [size1, size2, etc]
         for target in targets:
             self.run_cli_cmd('property clear %s %s %s'
                              % (switch, target, key))
             if targets_csv != 'all':
                 targets_csv += comma + target
                 comma = ','
-            path = os.path.join(get_kolla_home(),
-                                'ansible', dir_name, target)
-            sizes[path] = [os.path.getsize(path)]
         if not switch:
             self.run_cli_cmd('property clear %s' % key)
-            path = os.path.join(get_kolla_home(),
-                                'ansible/group_vars/__GLOBAL__')
-            sizes[path] = [os.path.getsize(path)]
 
         # test append
         self.run_cli_cmd('property set %s %s %s %s'
@@ -161,11 +151,6 @@ class TestFunctional(KollaCliTest):
                          'set failed property not in output: %s, %s (%s %s)'
                          % (key, value, switch, targets_csv))
 
-        bad_path = self._is_size_ok(sizes, 0, '<', 1)
-        self.assertIsNone(bad_path, 'Size of file %s did not ' % bad_path +
-                          'increase after append (%s %s)'
-                          % (switch, targets_csv))
-
         # test modify existing
         value += '2'
         self.run_cli_cmd('property set %s %s %s %s'
@@ -176,11 +161,6 @@ class TestFunctional(KollaCliTest):
         self.assertEqual(err_msg, '',
                          'set failed property not in output: %s, %s (%s %s)'
                          % (key, value, switch, targets_csv))
-        bad_path = self._is_size_ok(sizes, 1, '<', 2)
-        self.assertIsNone(bad_path, 'Size of file %s did not ' % bad_path +
-                          'increase after modify (%s %s)'
-                          % (switch, targets_csv))
-
         # test clear
         self.run_cli_cmd('property clear %s %s %s'
                          % (switch, targets_csv, key))
@@ -191,11 +171,6 @@ class TestFunctional(KollaCliTest):
                         'clear failed, property still in output: ' +
                         '%s, %s (%s %s)'
                         % (key, value, switch, targets_csv))
-        bad_path = self._is_size_ok(sizes, 0, '=', 3)
-        self.assertIsNone(bad_path, 'Size of file %s is ' % bad_path +
-                          'different from initial size '
-                          '(%s %s)'
-                          % (switch, targets_csv))
 
     def _check_property_values(self, key, value, json_str,
                                targets=[]):
@@ -229,22 +204,6 @@ class TestFunctional(KollaCliTest):
                     error_msg += ('%s:%s is missing in %s\n output:%s\n'
                                   % (key, value, target, json_str))
         return error_msg
-
-    def _is_size_ok(self, sizes, idx0, comparator, idx1):
-        bad_path = None
-        for path, path_sizes in sizes.items():
-            if idx1 > len(path_sizes) - 1:
-                # get new sizes
-                sizes[path].append(os.path.getsize(path))
-            if comparator == '=':
-                if sizes[path][idx0] != sizes[path][idx1]:
-                    bad_path = path
-                    break
-            elif comparator == '<':
-                if sizes[path][idx0] >= sizes[path][idx1]:
-                    bad_path = path
-                    break
-        return bad_path
 
     def _override_test(self, json_str, key, value, ovr_string,
                        host=None, group=None):
