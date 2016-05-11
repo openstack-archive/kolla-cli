@@ -129,8 +129,8 @@ class KollaCliTest(testtools.TestCase):
         # the py dev debugger adds a string at the line start, remove it
         if err:
             msg = utils.safe_decode(err)
-        else:
-            msg = utils.safe_decode(out)
+        if out:
+            msg = ''.join([msg, '\n', utils.safe_decode(out)])
         if msg.startswith('pydev debugger'):
             msg = msg.split('\n', 1)[1]
         return (retval, msg)

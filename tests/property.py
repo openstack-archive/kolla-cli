@@ -15,12 +15,9 @@
 from common import KollaCliTest
 
 import json
-import os
 import unittest
 
 from kottos.common.inventory import Inventory
-from kottos.common.utils import get_group_vars_dir
-from kottos.common.utils import get_host_vars_dir
 
 
 class TestFunctional(KollaCliTest):
@@ -89,22 +86,6 @@ class TestFunctional(KollaCliTest):
         msg = self._override_test(json_str, ovr_key,
                                   ovr_value, '*GH', group=group)
         self.assertEqual(msg, '', 'group override check failed: %s' % msg)
-
-        # check that group_var files are deleted
-        # when groups are deleted
-        for group in groups:
-            path = os.path.join(get_group_vars_dir(), group)
-            self.assertTrue(os.path.exists(path))
-            self.run_cli_cmd('group remove %s' % group)
-            self.assertFalse(os.path.exists(path))
-
-        # check that host_var files are deleted
-        # when hosts are deleted
-        for host in hosts:
-            path = os.path.join(get_host_vars_dir(), host)
-            self.assertTrue(os.path.exists(path))
-            self.run_cli_cmd('host remove %s' % host)
-            self.assertFalse(os.path.exists(path))
 
     def _properties_test(self, groups=[], hosts=[]):
         switch = ''

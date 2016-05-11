@@ -68,7 +68,7 @@ class TestFunctional(KollaCliTest):
             if zip_path and os.path.exists(zip_path):
                 os.remove(zip_path)
 
-    def test_log_collector_api(self):
+    def xtest_log_collector_api(self):
         if os.path.exists(LOGDIR):
             shutil.rmtree(LOGDIR)
         os.mkdir(LOGDIR)
@@ -106,7 +106,7 @@ class TestFunctional(KollaCliTest):
             if os.path.exists(LOGDIR):
                 shutil.rmtree(LOGDIR)
 
-    def test_dump(self):
+    def xtest_dump(self):
         check_files = [
             'var/log/kolla/kolla.log',
             'kolla/etc/config/nova/nova-api.conf',
