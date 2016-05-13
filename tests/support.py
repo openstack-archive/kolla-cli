@@ -22,7 +22,7 @@ from common import TestConfig
 
 from kollacli.api.client import ClientApi
 from kollacli.common.utils import safe_decode
-from kottos.common.utils import get_kollacli_home
+from kottos.common.utils import get_kottos_home
 
 LOGS_PREFIX = '/tmp/kolla_support_logs_'
 CLIENT = ClientApi()
@@ -45,7 +45,7 @@ class TestFunctional(KollaCliTest):
 
         zip_path = ''
         try:
-            path = os.path.join(get_kollacli_home(),
+            path = os.path.join(get_kottos_home(),
                                 'tools', 'log_collector.py')
 
             # run the log_collector tool
