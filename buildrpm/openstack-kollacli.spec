@@ -161,6 +161,9 @@ fi
 # disable ansible retry files (bug 22806271)
 sed -i "s/#retry_files_enabled = False/retry_files_enabled = False/" %{ansible_cfg}
 
+# enable pipelining (bug 23282017)
+sed -i "s/#pipelining = False/pipelining = True/" %{ansible_cfg}
+
 /usr/bin/kollacli complete >%{_sysconfdir}/bash_completion.d/kollacli 2>/dev/null
 
 # Update the sudoers file
@@ -243,8 +246,13 @@ then
         '/^callback_whitelist =/ s:, %{plugin_name}::' %{ansible_cfg}
 fi
 
+# restore original commented setting (bug 23282017)
+sed -i "s/pipelining = True/#pipelining = False/" %{ansible_cfg}
 
 %changelog
+* Tue May 17 2016 - James McCarthy <james.m.mccarthy@oracle.com>
+- Updated pipeling setting in line with bug 23282017
+
 * Thu May 5 2016 - James McCarthy <james.m.mccarthy@oracle.com>
 - Updated plugin_dir to be in line with paths in default file
 
