@@ -112,11 +112,11 @@ class HostApi(object):
         """Check hosts for ssh connectivity
 
         Check status is a dictionary of form:
-        - {hostname: {
+            - {hostname: {
               'success':<True|False>,
               'msg':message_string},
-           ...
-          }
+              ...
+              }
 
         :param hostnames: list of strings
         :return: check status
@@ -133,11 +133,12 @@ class HostApi(object):
         """Setup multiple hosts for ssh access
 
         hosts_info is a dictionary of form:
-        {hostname': {
-            'password': password
-            'uname': user_name},
-         ...
-        }
+            - {hostname': {
+              'password': password
+              'uname': user_name},
+              ...
+              }
+
         The uname entry is optional.
 
         :param hosts_info: dictionary

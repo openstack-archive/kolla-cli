@@ -85,10 +85,13 @@ class Setdeploy(Command):
     def take_action(self, parsed_args):
         try:
             mode = parsed_args.mode.strip()
-            remote_flag = False
-            if mode == 'remote':
-                remote_flag = True
-            elif mode != 'local':
+            remote_flag = True
+            if mode == 'local':
+                remote_flag = False
+                LOG.info(u._('Please note that local mode is not supported '
+                             'and should never be used in production '
+                             'environments.'))
+            elif mode != 'remote':
                 raise CommandError(
                     u._('Invalid deploy mode. Mode must be '
                         'either "local" or "remote".'))

@@ -30,6 +30,9 @@ class DeployApi(object):
         that the openstack deployment will be to the local host.
         Remote means that the deployment is executed via ssh.
 
+        NOTE: local mode is not supported and should never be used
+        in production environments.
+
         :param remote_mode: if remote mode is True deployment is done via ssh
         :type remote_mode: bool
         """
