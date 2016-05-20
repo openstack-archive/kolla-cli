@@ -14,6 +14,7 @@
 #
 import logging
 import os
+import shutil
 import subprocess
 import sys
 import testtools
@@ -213,8 +214,9 @@ class KollaCliTest(testtools.TestCase):
     def _save_dir(self, src_dir):
         dirname = os.path.basename(src_dir)
         save_dir = os.path.join('/tmp', dirname + '.utest.save')
-        if not os.path.exists(save_dir):
-            os.mkdir(save_dir)
+        if os.path.exists(save_dir):
+            shutil.rmtree(save_dir)
+        os.mkdir(save_dir)
         fnames = os.listdir(src_dir)
         for fname in fnames:
             src_path = os.path.join(src_dir, fname)

@@ -56,8 +56,10 @@ class AnsibleProperties(object):
         self.group_props = {}
         self.host_props = {}
         self.properties_loaded = False
+        self._inventory = None
 
     def _load_properties(self):
+        self._load_inventory()
         if not self.properties_loaded:
             self._load_properties_roles()
             self._load_properties_all()
@@ -121,7 +123,11 @@ class AnsibleProperties(object):
 
     def _load_properties_hostvars(self):
         host_dir = get_host_vars_dir()
+        hostnames = self._inventory.get_hostnames()
         for hostfile in os.listdir(host_dir):
+            if hostfile not in hostnames:
+                # skip any host files that don't match existing hosts
+                continue
             self.host_props[hostfile] = []
             with open(os.path.join(host_dir, hostfile)) as host_data:
                 host_contents = yaml.safe_load(host_data)
@@ -148,12 +154,10 @@ class AnsibleProperties(object):
 
     def _load_properties_groupvars(self):
         group_dir = get_group_vars_dir()
+        groupnames = self._inventory.get_groupnames()
         for groupfile in os.listdir(group_dir):
-            if (groupfile == 'all.yml'):
-                continue
-            self.group_props[groupfile] = []
-            # don't load __GLOBAL__ as a group property list as it is globals
-            if groupfile == '__GLOBAL__':
+            if groupfile not in groupnames:
+                # skip any files that don't match existing groups
                 continue
             with open(os.path.join(group_dir, groupfile)) as group_data:
                 group_contents = yaml.safe_load(group_data)
@@ -178,19 +182,22 @@ class AnsibleProperties(object):
                     props.append(ansible_prop)
             self.group_props[groupfile] = props
 
+    def _load_inventory(self):
+        if not self._inventory:
+            self._inventory = Inventory.load()  # nosec
+
     def get_host_list(self, host_list):
         self._load_properties()
         prop_list = []
-        inventory = Inventory.load()  # nosec
         if host_list is not None:
             for host_name in host_list:
-                host = inventory.get_host(host_name)
+                host = self._inventory.get_host(host_name)
                 if host is None:
                     raise NotInInventory(u._('Host'), host_name)
                 if host_name in self.host_props:
                     prop_list += self.host_props[host_name]
         else:
-            hosts = inventory.get_hosts()
+            hosts = self._inventory.get_hosts()
             for host in hosts:
                 if host.name in self.host_props:
                     prop_list += self.host_props[host.name]
@@ -199,16 +206,15 @@ class AnsibleProperties(object):
     def get_group_list(self, group_list):
         self._load_properties()
         prop_list = []
-        inventory = Inventory.load()  # nosec
         if group_list is not None:
             for group_name in group_list:
-                group = inventory.get_group(group_name)
+                group = self._inventory.get_group(group_name)
                 if group is None:
                     raise NotInInventory(u._('Group'), group_name)
                 if group_name in self.group_props:
                     prop_list += self.group_props[group_name]
         else:
-            groups = inventory.get_groups()
+            groups = self._inventory.get_groups()
             for group in groups:
                 if group.name in self.group_props:
                     prop_list += self.group_props[group.name]
@@ -257,13 +263,13 @@ class AnsibleProperties(object):
 
     def set_host_property(self, property_dict, hosts):
         # if hosts is None set the property on all hosts
-        inventory = Inventory.load()  # nosec
+        self._load_inventory()
         host_list = []
         if hosts is None:
-            host_list = inventory.get_hosts()
+            host_list = self._inventory.get_hosts()
         else:
             for host_name in hosts:
-                host = inventory.get_host(host_name)
+                host = self._inventory.get_host(host_name)
                 if host is None:
                     raise NotInInventory(u._('Host'), host_name)
                 host_list.append(host)
@@ -277,13 +283,13 @@ class AnsibleProperties(object):
 
     def set_group_property(self, property_dict, groups):
         # if groups is None set the property on all hosts
-        inventory = Inventory.load()  # nosec
+        self._load_inventory()
         group_list = []
         if groups is None:
-            group_list = inventory.get_groups()
+            group_list = self._inventory.get_groups()
         else:
             for group_name in groups:
-                group = inventory.get_group(group_name)
+                group = self._inventory.get_group(group_name)
                 if group is None:
                     raise NotInInventory(u._('Group'), group_name)
                 group_list.append(group)
@@ -306,13 +312,13 @@ class AnsibleProperties(object):
 
     def clear_host_property(self, property_list, hosts):
         # if hosts is None set the property on all hosts
-        inventory = Inventory.load()  # nosec
+        self._load_inventory()
         host_list = []
         if hosts is None:
-            host_list = inventory.get_hosts()
+            host_list = self._inventory.get_hosts()
         else:
             for host_name in hosts:
-                host = inventory.get_host(host_name)
+                host = self._inventory.get_host(host_name)
                 if host is None:
                     raise NotInInventory(u._('Host'), host_name)
                 host_list.append(host)
@@ -326,13 +332,13 @@ class AnsibleProperties(object):
 
     def clear_group_property(self, property_list, groups):
         # if hosts is None set the property on all hosts
-        inventory = Inventory.load()  # nosec
+        self._load_inventory()
         group_list = []
         if groups is None:
-            group_list = inventory.get_groups()
+            group_list = self._inventory.get_groups()
         else:
             for group_name in groups:
-                group = inventory.get_group(group_name)
+                group = self._inventory.get_group(group_name)
                 if group is None:
                     raise NotInInventory(u._('Group'), group_name)
                 group_list.append(group)

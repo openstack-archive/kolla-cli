@@ -28,12 +28,14 @@ from kollacli.common.utils import get_kollacli_etc
 
 LOG = logging.getLogger(__name__)
 
+VERSION = '0.3'
+
 
 class KollaCli(App):
     def __init__(self):
         super(KollaCli, self).__init__(
             description=u._('Command-Line Client for OpenStack Kolla'),
-            version='0.2',
+            version=VERSION,
             command_manager=CommandManager('kolla.cli'),
             )
 

@@ -34,6 +34,8 @@ LOG_FILE_MESSAGE_FORMAT = \
     '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
 LOG = None
 
+VERSION = '1.0'
+
 
 class ClientApi(
         AsyncApi,
@@ -48,6 +50,9 @@ class ClientApi(
 
     def __init__(self):
         self._configure_logging()
+
+    def get_version(self):
+        return VERSION
 
     def base_call(self):
         LOG.info('base call')
