@@ -25,7 +25,6 @@
 # kolla ansible plugin related vars
 %global plugin_dir      %{_datadir}/ansible/plugins/callback
 %global plugin_name     kolla_callback
-%global ansible_cfg     %{_sysconfdir}/ansible/ansible.cfg
 
 Summary:        OpenStack Kolla CLI
 Name:           openstack-kollacli
@@ -158,12 +157,6 @@ then
     chmod 0440 %{_sysconfdir}/kolla/kollacli/id_rsa.pub
 fi
 
-# disable ansible retry files (bug 22806271)
-sed -i "s/#retry_files_enabled = False/retry_files_enabled = False/" %{ansible_cfg}
-
-# enable pipelining (bug 23282017)
-sed -i "s/#pipelining = False/pipelining = True/" %{ansible_cfg}
-
 /usr/bin/kollacli complete >%{_sysconfdir}/bash_completion.d/kollacli 2>/dev/null
 
 # Update the sudoers file
@@ -223,33 +216,10 @@ openstack-kollacli client.
 %attr(-, root, root) %doc ansible_plugins/LICENSE
 %attr(755, %{kolla_user}, %{kolla_group}) %{plugin_dir}/*
 
-%post -n openstack-kolla-ansible-plugin
-# add plugin to whitelist
-if ! grep -q '^callback_whitelist =' %{ansible_cfg}
-then
-    # create whitelist param
-    sed -i \
-        '/^\[defaults\]/a callback_whitelist = ' %{ansible_cfg}
-fi
-if ! grep -q '%{plugin_name}' %{ansible_cfg}
-then
-    # append kolla callback to whitelist
-    sed -i \
-        '/^callback_whitelist =/ s:$:, %{plugin_name}:' %{ansible_cfg}
-fi
-
-%postun -n openstack-kolla-ansible-plugin
-# remove kolla callback from whitelist
-if grep -q '%{plugin_name}' %{ansible_cfg}
-then
-    sed -i \
-        '/^callback_whitelist =/ s:, %{plugin_name}::' %{ansible_cfg}
-fi
-
-# restore original commented setting (bug 23282017)
-sed -i "s/pipelining = True/#pipelining = False/" %{ansible_cfg}
-
 %changelog
+* Mon May 23 2016 - Steve Noyes <steve.noyes@oracle.com>
+- Removed all ansible cfg references, will be handled by kolla buildspec
+
 * Tue May 17 2016 - James McCarthy <james.m.mccarthy@oracle.com>
 - Updated pipeling setting in line with bug 23282017
 

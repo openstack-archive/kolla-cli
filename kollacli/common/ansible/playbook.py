@@ -21,9 +21,9 @@ from kollacli.api.exceptions import NotInInventory
 from kollacli.common.ansible.job import AnsibleJob
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
-from kollacli.common.utils import get_ansible_etc
 from kollacli.common.utils import get_ansible_plugin_dir
 from kollacli.common.utils import get_kolla_etc
+from kollacli.common.utils import get_kolla_home
 
 from kollacli.common.inventory import Inventory
 
@@ -70,7 +70,7 @@ class AnsiblePlaybook(object):
                             'Should be here: {path}\n').format(path=pi_path))
         else:
             ansible_cfg_path = os.path.join(
-                get_ansible_etc(), 'ansible.cfg')
+                get_kolla_home(), '.ansible.cfg')
             with open(ansible_cfg_path, 'r') as cfg:
                 whitelist_ok = False
                 for line in cfg:
