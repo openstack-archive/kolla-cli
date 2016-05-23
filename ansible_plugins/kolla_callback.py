@@ -17,14 +17,16 @@
 # <http://www.gnu.org/licenses/>.#
 import json
 import os
+import shutil
 import tempfile
 import time
 import traceback
 
 from ansible.plugins.callback import CallbackBase
 
-KOLLA_LOG_PATH = '/tmp/ansible'
-DEBUG = False
+DEBUG_LOG_DIR = '/tmp/ansible_debug'
+DEBUG_FLAG_FNAME = '/tmp/ENABLE_ANSIBLE_PLUGIN_DEBUG'
+DEBUG_LOG_FNAME = 'plugin.log'
 
 PIPE_NAME = '.kolla_pipe'
 
@@ -358,6 +360,16 @@ def _send_msg(msg):
 
 
 def log(msg):
-    if DEBUG:
-        with open('%s/kolla.log' % KOLLA_LOG_PATH, 'a') as f:
+    if os.path.exists(DEBUG_FLAG_FNAME):
+        if not os.path.exists(DEBUG_LOG_DIR):
+            os.mkdir(DEBUG_LOG_DIR)
+        log_path = os.path.join(DEBUG_LOG_DIR, DEBUG_LOG_FNAME)
+        if os.path.exists(log_path):
+            size = os.stat(log_path).st_size
+            if size > 10000000:
+                old_path = '%s.1' % log_path
+                shutil.copyfile(log_path, old_path)
+                os.remove(log_path)
+
+        with open(log_path, 'a') as f:
             f.write('%s: %s\n' % (time.ctime(), msg))
