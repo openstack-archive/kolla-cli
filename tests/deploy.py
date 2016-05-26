@@ -12,12 +12,11 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from common import ALL_SERVICES
 from common import KollaCliTest
 
+from kollacli.common.allinone import AllInOne
 from kollacli.common.ansible import job
 from kollacli.common.inventory import Inventory
-from kollacli.common.inventory import SERVICES
 
 import json
 import unittest
@@ -44,9 +43,12 @@ class TestFunctional(KollaCliTest):
         self.assertIn(host1, msg, '%s not in json_gen output: %s'
                       % (host1, msg))
 
-        for service, subservices in SERVICES.items():
-            self.assertIn(service, msg, '%s not in json_gen output: %s'
-                          % (service, msg))
+        allinone = AllInOne()
+        services = allinone.services
+        for servicename, service in services.items():
+            self.assertIn(servicename, msg, '%s not in json_gen output: %s'
+                          % (servicename, msg))
+            subservices = service.get_sub_servicenames()
             for subservice in subservices:
                 self.assertIn(subservice, msg, '%s not in json_gen output: %s'
                               % (subservice, msg))
@@ -133,7 +135,8 @@ class TestFunctional(KollaCliTest):
         # test will start with no hosts in the inventory
         # deploy will throw an exception if it fails
         # disable all services first as without it empty groups cause errors
-        for service in ALL_SERVICES:
+        allinone = AllInOne()
+        for service in allinone.services.keys():
             self.run_cli_cmd('property set enable_%s no' % service)
 
         self.run_cli_cmd('deploy')

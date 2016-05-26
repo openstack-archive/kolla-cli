@@ -19,9 +19,7 @@ import unittest
 
 from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import NotInInventory
-from kollacli.common.inventory import DEFAULT_GROUPS
-from kollacli.common.inventory import DEFAULT_OVERRIDES
-from kollacli.common.inventory import DEPLOY_GROUPS
+from kollacli.common.allinone import AllInOne
 
 CLIENT = ClientApi()
 
@@ -220,16 +218,19 @@ class TestFunctional(KollaCliTest):
                       }
         }
         """
+        allinone = AllInOne()
+        groupnames = allinone.groups
         groups = {}
-        for groupname in DEPLOY_GROUPS:
+        for groupname in groupnames:
             groups[groupname] = {'Services': [],
                                  'Hosts': []}
 
-        for servicename, groupname in DEFAULT_GROUPS.items():
-            groups[groupname]['Services'].append(servicename)
-
-        for servicename, groupname in DEFAULT_OVERRIDES.items():
-            groups[groupname]['Services'].append(servicename)
+            for servicename, service in allinone.services.items():
+                if groupname in service.get_groupnames():
+                    groups[groupname]['Services'].append(servicename)
+            for subservicename, subservice in allinone.sub_services.items():
+                if groupname in subservice.get_groupnames():
+                    groups[groupname]['Services'].append(subservicename)
 
         return groups
 

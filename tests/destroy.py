@@ -12,9 +12,6 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from common import DISABLED_SERVICES
-from common import ENABLED_DATA_SERVICES
-from common import ENABLED_SERVICES
 from common import KollaCliTest
 from common import TestConfig
 
@@ -29,6 +26,20 @@ CLIENT = ClientApi()
 
 NOT_KNOWN = 'Name or service not known'
 UNREACHABLE = 'Status: unreachable'
+
+ENABLED_SERVICES = [
+    'rabbitmq'
+    ]
+
+# after deploy
+EXPECTED_CONTAINERS_1 = [
+    'rabbitmq', 'rabbitmq_data'
+    ]
+
+# after destroy --includedata
+EXPECTED_CONTAINERS_2 = [
+    'rabbitmq_data'
+    ]
 
 
 class TestFunctional(KollaCliTest):
@@ -72,9 +83,10 @@ class TestFunctional(KollaCliTest):
         # out of control over to the new group, then move them back to
         # control once we are done
         control = CLIENT.group_get(['control'])[0]
-        for service in ENABLED_SERVICES:
-            control.remove_service(service)
-            group.add_service(service)
+        for servicename in control.get_services():
+            if servicename in ENABLED_SERVICES:
+                control.remove_service(servicename)
+                group.add_service(servicename)
 
         # destroy services, initialize server
         self.log.info('Start destroy #1')
@@ -85,15 +97,16 @@ class TestFunctional(KollaCliTest):
         self.log.info('updating various properties for the test')
 
         # disable most services so the test is quicker
-        disabled_service_props = {}
-        for disabled_service in DISABLED_SERVICES:
-            disabled_service_props['enable_%s' % disabled_service] = 'no'
-        CLIENT.property_set(disabled_service_props)
-
-        enabled_service_props = {}
-        for enabled_service in ENABLED_SERVICES:
-            enabled_service_props['enable_%s' % enabled_service] = 'yes'
-        CLIENT.property_set(enabled_service_props)
+        enable_service_props = {}
+        for service in CLIENT.service_get_all():
+            if service.get_parent():
+                # skip subservices
+                continue
+            enable = 'no'
+            if service.name in ENABLED_SERVICES:
+                enable = 'yes'
+            enable_service_props['enable_%s' % service.name] = enable
+        CLIENT.property_set(enable_service_props)
 
         predeploy_cmds = test_config.get_predeploy_cmds()
         for predeploy_cmd in predeploy_cmds:
@@ -101,7 +114,7 @@ class TestFunctional(KollaCliTest):
 
         # test killing a deploy
         self.log.info('Kill a deployment')
-        job = CLIENT.async_deploy(verbose_level=2)
+        job = CLIENT.async_deploy()
         time.sleep(random.randint(1, 5))
         job.kill()
         self._process_job(job, 'deploy-kill',
@@ -109,69 +122,58 @@ class TestFunctional(KollaCliTest):
 
         # do a deploy of a limited set of services
         self.log.info('Start a deployment')
-        job = CLIENT.async_deploy(verbose_level=2)
+        job = CLIENT.async_deploy()
         self._process_job(job, 'deploy', is_physical_host)
 
         if is_physical_host:
             docker_ps = test_config.run_remote_cmd('docker ps', hostname)
             docker_ps = docker_ps.replace('\r', '\n')
-            for disabled_service in DISABLED_SERVICES:
-                self.assertNotIn(disabled_service, docker_ps,
-                                 'disabled service: %s ' % disabled_service +
-                                 'is running on host: %s ' % hostname +
-                                 'after deploy.')
-
-            for enabled_service in ENABLED_SERVICES:
-                self.assertIn(enabled_service, docker_ps,
-                              'enabled service: %s ' % enabled_service +
+            for service in CLIENT.service_get_all():
+                if service.name not in ENABLED_SERVICES:
+                    self.assertNotIn(service.name, docker_ps,
+                                     'disabled service: %s ' % service.name +
+                                     'is running on host: %s ' % hostname +
+                                     'after deploy.')
+            for servicename in EXPECTED_CONTAINERS_1:
+                self.assertIn(servicename, docker_ps,
+                              'enabled service: %s ' % servicename +
                               'is not running on host: %s ' % hostname +
                               'after deploy.')
 
         # destroy non-data services (via --stop flag)
         # this should leave only data containers running
-        self.log.info('Start destroy #2')
+        self.log.info('Start destroy #2, do not include data')
         job = CLIENT.async_host_destroy(hostnames, destroy_type='stop',
                                         include_data=False)
         self._process_job(job, 'destroy #2', is_physical_host)
 
         if is_physical_host:
             docker_ps = test_config.run_remote_cmd('docker ps', hostname)
-            for disabled_service in DISABLED_SERVICES:
-                self.assertNotIn(disabled_service, docker_ps,
-                                 'disabled service: %s ' % disabled_service +
-                                 'is running on host: %s ' % hostname +
-                                 'after destroy.')
-
-            for enabled_service in ENABLED_DATA_SERVICES:
-                self.assertIn(enabled_service, docker_ps,
-                              'enabled service: %s ' % enabled_service +
+            for service in CLIENT.service_get_all():
+                if service.name not in ENABLED_SERVICES:
+                    self.assertNotIn(service.name, docker_ps,
+                                     'disabled service: %s ' % service.name +
+                                     'is running on host: %s ' % hostname +
+                                     'after destroy (no data).')
+            for servicename in EXPECTED_CONTAINERS_2:
+                self.assertIn(servicename, docker_ps,
+                              'enabled service: %s ' % servicename +
                               'is not running on host: %s ' % hostname +
-                              'after no-data destroy.')
+                              'after destroy (no data).')
 
-        self.log.info('Start destroy #3')
+        self.log.info('Start destroy #3, include data')
         job = CLIENT.async_host_destroy(hostnames, destroy_type='stop',
                                         include_data=True)
         self._process_job(job, 'destroy #3', is_physical_host)
 
         if is_physical_host:
             docker_ps = test_config.run_remote_cmd('docker ps', hostname)
-            for disabled_service in DISABLED_SERVICES:
-                self.assertNotIn(disabled_service, docker_ps,
-                                 'disabled service: %s ' % disabled_service +
-                                 'is running on host: %s ' % hostname +
-                                 'after destroy.')
-
-            for enabled_service in ENABLED_DATA_SERVICES:
-                self.assertNotIn(enabled_service, docker_ps,
-                                 'enabled service: %s ' % enabled_service +
-                                 'is running on host: %s ' % hostname +
-                                 'after destroy.')
-
-            for enabled_service in ENABLED_SERVICES:
-                self.assertNotIn(enabled_service, docker_ps,
-                                 'enabled service: %s ' % enabled_service +
-                                 'is running on host: %s ' % hostname +
-                                 'after destroy.')
+            for service in CLIENT.service_get_all():
+                if service.name not in ENABLED_SERVICES:
+                    self.assertNotIn(service.name, docker_ps,
+                                     'disabled service: %s ' % service.name +
+                                     'is running on host: %s ' % hostname +
+                                     'after destroy (data).')
 
     def _process_job(self, job, descr, is_physical_host, expect_kill=False):
         status = job.wait()

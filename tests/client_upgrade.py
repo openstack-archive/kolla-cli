@@ -14,14 +14,13 @@
 #
 from common import KollaCliTest
 
-from copy import copy
 import logging
 import os
 import shutil
 import unittest
 
 from kollacli.api.client import ClientApi
-from kollacli.common.inventory import SERVICES
+from kollacli.common.allinone import AllInOne
 from kollacli.common.utils import get_kollacli_etc
 
 INV_NAME = 'inventory.json'
@@ -110,9 +109,11 @@ class TestFunctional(KollaCliTest):
             # in v1 > v2, ceilometer was added, check that it's there
             # and verify that all ceilometer groups are in the same groups
             # as heat.
+            allinone = AllInOne()
             heat = CLIENT.service_get(['heat'])[0]
             expected_groups = sorted(heat.get_groups())
-            expected_services = copy(SERVICES['ceilometer'])
+            ceilometer = allinone.services['ceilometer']
+            expected_services = ceilometer.get_sub_servicenames()
             expected_services.append('ceilometer')
             expected_services = sorted(expected_services)
             services = CLIENT.service_get_all()
@@ -148,6 +149,10 @@ class TestFunctional(KollaCliTest):
                 self.assertIsNotNone(parent,
                                      'subservice: %s, is missing its parent'
                                      % service.name)
+
+        # ceilometer-alarm was removed in kolla v3.0.1, check that it is gone
+        self.assertNotIn('ceilometer-alarm', services,
+                         'ceilometer-alarm still exists.')
 
 if __name__ == '__main__':
     unittest.main()

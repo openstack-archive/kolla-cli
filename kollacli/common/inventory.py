@@ -27,7 +27,12 @@ from kollacli.api.exceptions import InvalidArgument
 from kollacli.api.exceptions import InvalidConfiguration
 from kollacli.api.exceptions import MissingArgument
 from kollacli.api.exceptions import NotInInventory
+from kollacli.common.allinone import AllInOne
+from kollacli.common.host import Host
+from kollacli.common.host_group import HostGroup
+from kollacli.common.service import Service
 from kollacli.common.sshutils import ssh_setup_host
+from kollacli.common.subservice import SubService
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
 from kollacli.common.utils import get_group_vars_dir
@@ -44,69 +49,6 @@ ANSIBLE_BECOME = 'ansible_become'
 INVENTORY_PATH = 'ansible/inventory.json'
 
 COMPUTE_GRP_NAME = 'compute'
-CONTROL_GRP_NAME = 'control'
-NETWORK_GRP_NAME = 'network'
-STORAGE_GRP_NAME = 'storage'
-DATABASE_GRP_NAME = 'database'
-
-DEPLOY_GROUPS = [
-    COMPUTE_GRP_NAME,
-    CONTROL_GRP_NAME,
-    NETWORK_GRP_NAME,
-    STORAGE_GRP_NAME,
-    DATABASE_GRP_NAME,
-    ]
-
-SERVICES = {
-    'ceilometer':   ['ceilometer-alarm-evaluator', 'ceilometer-alarm-notifier',
-                     'ceilometer-api', 'ceilometer-central',
-                     'ceilometer-collector', 'ceilometer-notification'],
-    'cinder':       ['cinder-api', 'cinder-scheduler', 'cinder-backup',
-                     'cinder-volume'],
-    'glance':       ['glance-api', 'glance-registry'],
-    'haproxy':      [],
-    'heat':         ['heat-api', 'heat-api-cfn', 'heat-engine'],
-    'horizon':      [],
-    'keystone':     [],
-    'memcached':    [],
-    'murano':       ['murano-api', 'murano-engine'],
-    'mysqlcluster': ['mysqlcluster-api', 'mysqlcluster-mgmt',
-                     'mysqlcluster-ndb'],
-    'neutron':      ['neutron-server', 'neutron-agents'],
-    'nova':         ['nova-api', 'nova-conductor', 'nova-consoleauth',
-                     'nova-novncproxy', 'nova-scheduler'],
-    'rabbitmq':     [],
-    'swift':        ['swift-proxy-server', 'swift-account-server',
-                     'swift-container-server', 'swift-object-server'],
-    }
-
-DEFAULT_GROUPS = {
-    'ceilometer':               CONTROL_GRP_NAME,
-    'cinder':                   CONTROL_GRP_NAME,
-    'glance':                   CONTROL_GRP_NAME,
-    'haproxy':                  CONTROL_GRP_NAME,
-    'heat':                     CONTROL_GRP_NAME,
-    'horizon':                  CONTROL_GRP_NAME,
-    'keystone':                 CONTROL_GRP_NAME,
-    'memcached':                CONTROL_GRP_NAME,
-    'murano':                   CONTROL_GRP_NAME,
-    'mysqlcluster':             CONTROL_GRP_NAME,
-    'neutron':                  NETWORK_GRP_NAME,
-    'nova':                     CONTROL_GRP_NAME,
-    'rabbitmq':                 CONTROL_GRP_NAME,
-    'swift':                    CONTROL_GRP_NAME,
-    }
-
-DEFAULT_OVERRIDES = {
-    'cinder-backup':            STORAGE_GRP_NAME,
-    'cinder-volume':            STORAGE_GRP_NAME,
-    'mysqlcluster-ndb':         DATABASE_GRP_NAME,
-    'neutron-server':           CONTROL_GRP_NAME,
-    'swift-account-server':     STORAGE_GRP_NAME,
-    'swift-container-server':   STORAGE_GRP_NAME,
-    'swift-object-server':      STORAGE_GRP_NAME,
-    }
-
 
 # these groups cannot be deleted, they are required by kolla
 PROTECTED_GROUPS = [COMPUTE_GRP_NAME]
@@ -122,150 +64,6 @@ def remove_temp_inventory(path):
         dirpath = os.path.dirname(path)
         if os.path.exists(dirpath):
             os.rmdir(dirpath)
-
-
-class Host(object):
-    class_version = 1
-
-    def __init__(self, hostname):
-        self.name = hostname
-        self.alias = ''
-        self.is_mgmt = False
-        self.hypervisor = ''
-        self.vars = {}
-        self.version = self.__class__.class_version
-
-    def get_vars(self):
-        return self.vars.copy()
-
-    def set_var(self, name, value):
-        self.vars[name] = value
-
-    def upgrade(self):
-        pass
-
-
-class HostGroup(object):
-    class_version = 1
-
-    def __init__(self, name):
-        self.name = name
-        self.hostnames = []
-        self.vars = {}
-        self.version = self.__class__.class_version
-
-    def upgrade(self):
-        pass
-
-    def add_host(self, host):
-        if host.name not in self.hostnames:
-            self.hostnames.append(host.name)
-
-    def remove_host(self, host):
-        if host.name in self.hostnames:
-            self.hostnames.remove(host.name)
-
-    def get_hostnames(self):
-        return self.hostnames
-
-    def get_vars(self):
-        return self.vars.copy()
-
-    def set_var(self, name, value):
-        self.vars[name] = value
-
-    def clear_var(self, name):
-        if name in self.vars:
-            del self.vars[name]
-
-    def set_remote(self, remote_flag):
-        self.set_var(ANSIBLE_BECOME, 'yes')
-        if remote_flag:
-            # set the ssh info for all the servers in the group
-            self.set_var(ANSIBLE_SSH_USER, get_admin_user())
-            self.clear_var(ANSIBLE_CONNECTION)
-        else:
-            # remove ssh info, add local connection type
-            self.set_var(ANSIBLE_CONNECTION, 'local')
-            self.clear_var(ANSIBLE_SSH_USER)
-
-
-class Service(object):
-    class_version = 1
-
-    def __init__(self, name):
-        self.name = name
-        self._sub_servicenames = []
-        self._groupnames = []
-        self._vars = {}
-        self.version = self.__class__.class_version
-
-    def upgrade(self):
-        pass
-
-    def add_groupname(self, groupname):
-        if groupname is not None and groupname not in self._groupnames:
-            self._groupnames.append(groupname)
-
-    def remove_groupname(self, groupname):
-        if groupname in self._groupnames:
-            self._groupnames.remove(groupname)
-
-    def get_groupnames(self):
-        return self._groupnames
-
-    def get_sub_servicenames(self):
-        return self._sub_servicenames
-
-    def add_sub_servicename(self, sub_servicename):
-        if sub_servicename not in self._sub_servicenames:
-            self._sub_servicenames.append(sub_servicename)
-
-    def get_vars(self):
-        return self._vars.copy()
-
-
-class SubService(object):
-    class_version = 1
-
-    def __init__(self, name):
-        self.name = name
-
-        # groups and parent services are mutually exclusive
-        self._groupnames = []
-        self._parent_servicename = None
-
-        self._vars = {}
-        self.version = self.__class__.class_version
-
-    def upgrade(self):
-        pass
-
-    def add_groupname(self, groupname):
-        if groupname not in self._groupnames:
-            self._groupnames.append(groupname)
-
-    def remove_groupname(self, groupname):
-        if groupname in self._groupnames:
-            self._groupnames.remove(groupname)
-        if not self._groupnames:
-            # no groups left, re-associate to the parent
-            for servicename in SERVICES:
-                if self.name in SERVICES[servicename]:
-                    self.set_parent_servicename(servicename)
-                    break
-
-    def get_groupnames(self):
-        return self._groupnames
-
-    def set_parent_servicename(self, parent_svc_name):
-        self._parent_servicename = parent_svc_name
-
-    def get_parent_servicename(self):
-        return self._parent_servicename
-
-    def get_vars(self):
-        return self.vars.copy()
 
 
 class Inventory(object):
@@ -288,25 +86,18 @@ class Inventory(object):
         self._create_default_inventory()
 
     def upgrade(self):
+        # check for new services or subservices in the all-in-one file
+        self._upgrade_services()
+
         if self.version <= 1:
             # upgrade from inventory v1
 
-            # add ceilometer to inventory
-            svc_name = 'ceilometer'
-            svc = self.create_service(svc_name)
-
-            # associate ceilometer with all groups that heat is in.
-            clone_svc = self.get_service('heat')
-            groups = clone_svc.get_groupnames()
+            # set ceilometer groups to that of heat
+            heat = self.get_service('heat')
+            ceilometer = self.get_service('ceilometer')
+            groups = heat.get_groupnames()
             for group in groups:
-                svc.add_groupname(group)
-
-            # stitch sub-service to service and set override
-            # groups
-            for sub_svc_name in SERVICES[svc_name]:
-                sub_svc = self.create_sub_service(sub_svc_name)
-                sub_svc.set_parent_servicename(svc_name)
-                svc.add_sub_servicename(sub_svc_name)
+                ceilometer.add_groupname(group)
 
         if self.version <= 2:
             # upgrade from inventory v2
@@ -322,6 +113,26 @@ class Inventory(object):
         # update the version and save upgraded inventory file
         self.version = self.__class__.class_version
         Inventory.save(self)
+
+    def _upgrade_services(self):
+        allinone = AllInOne()
+        # add new services
+        for servicename, service in allinone.services.items():
+            if servicename not in self._services:
+                self._services[servicename] = service
+        # add new subservices
+        for subservicename, subservice in allinone.sub_services.items():
+            if subservicename not in self._sub_services:
+                self._sub_services[subservicename] = subservice
+
+        # remove obsolete services
+        for servicename in self._services:
+            if servicename not in allinone.services:
+                del self._services[servicename]
+        # remove obsolete subservices
+        for subservicename in self._sub_services:
+            if subservicename not in allinone.sub_services:
+                del self._sub_services[subservicename]
 
     @staticmethod
     def load():
@@ -339,6 +150,22 @@ class Inventory(object):
                     data = data.replace(
                         '"py/object": "kollacli.ansible.inventory.',
                         '"py/object": "kollacli.common.inventory.')
+
+                # The Host, HostGroup, Service and SubService were moved out of
+                # inventory and into their own modules
+                if 'kollacli.common.service' not in data:
+                    data = data.replace(
+                        '"py/object": "kollacli.common.inventory.Service"',
+                        '"py/object": "kollacli.common.service.Service"')
+                    data = data.replace(
+                        '"py/object": "kollacli.common.inventory.SubService"',
+                        '"py/object": "kollacli.common.subservice.SubService"')
+                    data = data.replace(
+                        '"py/object": "kollacli.common.inventory.Host"',
+                        '"py/object": "kollacli.common.host.Host"')
+                    data = data.replace(
+                        '"py/object": "kollacli.common.inventory.HostGroup"',
+                        '"py/object": "kollacli.common.host_group.HostGroup"')
 
             if data.strip():
                 inventory = jsonpickle.decode(data)
@@ -369,27 +196,6 @@ class Inventory(object):
             raise FailedOperation(
                 u._('Saving inventory failed. : {error}')
                 .format(error=str(e)))
-
-    def _create_default_inventory(self):
-
-        # create the default groups
-        for groupname in DEPLOY_GROUPS:
-            self.add_group(groupname)
-
-        # create the default services/sub_services & their default groups
-        for svcname in SERVICES:
-            svc = self.create_service(svcname)
-            default_grpname = DEFAULT_GROUPS[svcname]
-            svc.add_groupname(default_grpname)
-            sub_svcnames = SERVICES[svcname]
-            if sub_svcnames:
-                for sub_svcname in sub_svcnames:
-                    # create a subservice
-                    svc.add_sub_servicename(sub_svcname)
-                    sub_svc = self.create_sub_service(sub_svcname)
-                    sub_svc.set_parent_servicename(svc.name)
-                    if sub_svc.name in DEFAULT_OVERRIDES:
-                        sub_svc.add_groupname(DEFAULT_OVERRIDES[sub_svc.name])
 
     def get_hosts(self):
         return self._hosts.values()
@@ -912,3 +718,12 @@ class Inventory(object):
                 invalid_services.append(servicename)
         if invalid_services:
             raise NotInInventory(u._('Service'), invalid_services)
+
+    def _create_default_inventory(self):
+        allin1 = AllInOne()
+        for groupname in allin1.groups:
+            self.add_group(groupname)
+        for servicename, service in allin1.services.items():
+            self._services[servicename] = service
+        for sub_servicename, sub_service in allin1.sub_services.items():
+            self._sub_services[sub_servicename] = sub_service
