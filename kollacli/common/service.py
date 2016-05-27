@@ -12,6 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+from copy import copy
 
 
 class Service(object):
@@ -36,10 +37,10 @@ class Service(object):
             self._groupnames.remove(groupname)
 
     def get_groupnames(self):
-        return self._groupnames
+        return copy(self._groupnames)
 
     def get_sub_servicenames(self):
-        return self._sub_servicenames
+        return copy(self._sub_servicenames)
 
     def add_sub_servicename(self, sub_servicename):
         if sub_servicename not in self._sub_servicenames:

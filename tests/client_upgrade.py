@@ -139,10 +139,12 @@ class TestFunctional(KollaCliTest):
                              'ceilometer subservices mismatch')
 
     def _test_v2_upgrade(self):
-        # this is a v2 inventory
-        # in v2 upgrade, all subservices were fixed up to have a parent service
+        # this is a v2 inventory. In the v2 to v3 upgrade, all subservices were
+        # fixed up to have a parent service
         services = CLIENT.service_get_all()
+        servicenames = []
         for service in services:
+            servicenames.append(service.name)
             if '-' in service.name:
                 # this is a subservice
                 parent = service.get_parent()
@@ -150,9 +152,16 @@ class TestFunctional(KollaCliTest):
                                      'subservice: %s, is missing its parent'
                                      % service.name)
 
-        # ceilometer-alarm was removed in kolla v3.0.1, check that it is gone
-        self.assertNotIn('ceilometer-alarm', services,
-                         'ceilometer-alarm still exists.')
+        # ceilometer-alarms were removed in kolla v3.0.1,
+        # check that they're gone
+        self.assertNotIn('ceilometer-alarm-evaluator', servicenames,
+                         'ceilometer-alarm-evaluator still exists.')
+        self.assertNotIn('ceilometer-alarm-notifier', servicenames,
+                         'ceilometer-alarm-notifier still exists.')
+
+        # aodh and ceph were added in 3.0.1
+        self.assertIn('aodh', servicenames, 'aodh not in inventory')
+        self.assertIn('ceph', servicenames, 'ceph not in inventory')
 
 if __name__ == '__main__':
     unittest.main()

@@ -12,6 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+from copy import copy
 from kollacli.common.utils import get_admin_user
 
 ANSIBLE_BECOME = 'ansible_become'
@@ -40,7 +41,7 @@ class HostGroup(object):
             self.hostnames.remove(host.name)
 
     def get_hostnames(self):
-        return self.hostnames
+        return copy(self.hostnames)
 
     def get_vars(self):
         return self.vars.copy()

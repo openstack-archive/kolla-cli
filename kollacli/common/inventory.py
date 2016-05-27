@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from copy import copy
 import json
 import jsonpickle
 import logging
@@ -68,10 +69,13 @@ def remove_temp_inventory(path):
 
 class Inventory(object):
     class_version = 3
-
     """class version history
 
-    1: initial release
+    3: (v3.0.1):
+        - added aodh, ceph
+        - fix to ensure all sub-services have service as parent
+    2: (v2.1.1) added ceilometer
+    1: (v2.0.1) initial release
     """
     def __init__(self):
         self._groups = {}           # kv = name:object
@@ -125,14 +129,14 @@ class Inventory(object):
             if subservicename not in self._sub_services:
                 self._sub_services[subservicename] = subservice
 
-        # remove obsolete services
-        for servicename in self._services:
-            if servicename not in allinone.services:
-                del self._services[servicename]
         # remove obsolete subservices
-        for subservicename in self._sub_services:
+        for subservicename in copy(self._sub_services).keys():
             if subservicename not in allinone.sub_services:
-                del self._sub_services[subservicename]
+                self.delete_sub_service(subservicename)
+        # remove obsolete services
+        for servicename in copy(self._services).keys():
+            if servicename not in allinone.services:
+                self.delete_service(servicename)
 
     @staticmethod
     def load():
@@ -483,6 +487,9 @@ class Inventory(object):
 
     def delete_service(self, servicename):
         if servicename in self._services:
+            service = self._services[servicename]
+            for sub_servicename in service.get_sub_servicenames():
+                self.delete_sub_service(sub_servicename)
             del self._services[servicename]
 
     def get_services(self):
@@ -526,6 +533,11 @@ class Inventory(object):
 
     def delete_sub_service(self, sub_servicename):
         if sub_servicename in self._sub_services:
+            sub_service = self._sub_services[sub_servicename]
+            parentname = sub_service.get_parent_servicename()
+            parent = self._services[parentname]
+            if sub_servicename in parent._sub_servicenames:
+                parent._sub_servicenames.remove(sub_servicename)
             del self._sub_services[sub_servicename]
 
     def get_sub_services(self):

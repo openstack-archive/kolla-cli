@@ -151,11 +151,9 @@ then
         %{kolla_user}
 fi
 
-if ! test -f %{_sysconfdir}/kolla/kollacli/id_rsa.pub
-then
-    cp -p ~%{kolla_user}/.ssh/id_rsa.pub %{_sysconfdir}/kolla/kollacli/id_rsa.pub
-    chmod 0440 %{_sysconfdir}/kolla/kollacli/id_rsa.pub
-fi
+# always copy the key over, in case it was re-created in kolla/.ssh
+cp -p ~%{kolla_user}/.ssh/id_rsa.pub %{_sysconfdir}/kolla/kollacli/id_rsa.pub
+chmod 0440 %{_sysconfdir}/kolla/kollacli/id_rsa.pub
 
 /usr/bin/kollacli complete >%{_sysconfdir}/bash_completion.d/kollacli 2>/dev/null
 
@@ -217,6 +215,9 @@ openstack-kollacli client.
 %attr(755, %{kolla_user}, %{kolla_group}) %{plugin_dir}/*
 
 %changelog
+* Fri May 27 2016 - Steve Noyes <steve.noyes@oracle.com>
+- always copy rsa_id.pub key to /etc/kolla/kollacli
+
 * Mon May 23 2016 - Steve Noyes <steve.noyes@oracle.com>
 - Removed all ansible cfg references, will be handled by kolla buildspec
 
