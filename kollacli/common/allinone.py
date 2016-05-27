@@ -51,7 +51,7 @@ class AllInOne(object):
 
     def _load(self):
         allineone_path = os.path.join(get_kolla_home(), 'ansible',
-                                      'inventory', 'all-in-one')
+                                      'inventory_samples', 'all-in-one')
         with open(allineone_path, 'r') as ain1:
             ain1_inv = ain1.read()
 
