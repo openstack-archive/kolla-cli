@@ -16,6 +16,7 @@ import json
 import logging
 import os
 import pwd
+import re
 import subprocess  # nosec
 import tempfile
 import time
@@ -44,6 +45,8 @@ ACTION_TASK_START = 'task_start'
 ACTION_TASK_END = 'task_end'
 ACTION_INCLUDE_FILE = 'includefile'
 ACTION_STATS = 'stats'
+
+ANSIBLE_1_OR_MORE = 'One or more items failed'
 
 
 class AnsibleJob(object):
@@ -74,9 +77,9 @@ class AnsibleJob(object):
             locked = self._ansible_lock.wait_acquire()
             if not locked:
                 raise Exception(
-                    u._('unable to run ansible job {cmd} '
-                        'as we couldn\'t get lock.')
-                    .format(cmd=self._command))
+                    u._('unable to get lock: {lock}, to run '
+                        'ansible job: {cmd} ')
+                    .format(lock=get_ansible_lock_path(), cmd=self._command))
 
             # create and open named pipe, must be owned by kolla group
             os.mkfifo(self._fifo_path)
@@ -150,6 +153,8 @@ class AnsibleJob(object):
             msg = ''.join([msg, error, '\n'])
 
         # if no error from the callback, check the process error
+        if ANSIBLE_1_OR_MORE in msg:
+            msg = self._get_msg_from_cmdout(msg)
         if not msg:
             msg = self._process_std_err
         return msg
@@ -185,6 +190,40 @@ class AnsibleJob(object):
         # record the name of user who killed the job
         cur_uid = os.getuid()
         self._kill_uname = pwd.getpwuid(cur_uid)[0]
+
+    def _get_msg_from_cmdout(self, msg):
+        """get message from command output
+
+        Not very pretty, but the only way to get the error detail out of
+        ansible when the callback gives you 'One or more items failed'.
+
+        This is where the error message is in cmd out-
+        \nfailed: [ol7-c5] (item=[u'/etc/kolla/config/aodh.conf',
+        u'/usr/share/kolla/templates/aodh/aodh.conf_augment']) =>
+        {"failed": true, "invocation": {"module_args": {"dest":
+        "/usr/share/kolla/templates/aodh/aodh.conf_augment",
+        "src": "/etc/kolla/config/aodh.conf"}, "module_name": "template"},
+        "item": ["/etc/kolla/config/aodh.conf",
+        "/usr/share/kolla/templates/aodh/aodh.conf_augment"],
+        "msg": "IOError: [Errno 2] No such file or directory:
+        u'/etc/kolla/config/aodh.conf'"}\n
+        """
+        fail_key = '\nfailed: '
+        hostnames = re.findall(fail_key + '\[(.+?)]', self._cmd_output)
+        msgs = re.findall(fail_key + '.+ => (.+?)\n', self._cmd_output)
+
+        for i in range(0, min(len(hostnames), len(msgs))):
+            err = ''
+            hostname = hostnames[i]
+            ans_dict_str = msgs[i]
+            try:
+                ans_dict = json.loads(ans_dict_str)
+                err = ans_dict.get('msg', '')
+            except Exception as e:
+                LOG.warn('Exception reading cmd_out ansible dictionary: %s'
+                         % str(e))
+            msg = ''.join([msg, 'Host: ', hostname, ', ', err, '\n'])
+        return msg
 
     def _read_stream(self, stream):
         out = ''
