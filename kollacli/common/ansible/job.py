@@ -174,22 +174,27 @@ class AnsibleJob(object):
         """
         # the kill must be run as the kolla user so the
         # kolla_actions program must be used.
-        actions_path = get_kolla_actions_path()
-        kolla_user = get_admin_user()
-        cmd_prefix = ('/usr/bin/sudo -u %s %s job -t -p '
-                      % (kolla_user, actions_path))
+        try:
+            actions_path = get_kolla_actions_path()
+            kolla_user = get_admin_user()
+            cmd_prefix = ('/usr/bin/sudo -u %s %s job -t -p '
+                          % (kolla_user, actions_path))
 
-        # kill the children from largest to smallest pids.
-        child_pids = PidManager.get_child_pids(self._process.pid)
-        for child_pid in sorted(child_pids, reverse=True):
-            cmd = ''.join([cmd_prefix, child_pid])
-            err_msg, output = run_cmd(cmd, print_output=False)
-            if err_msg:
-                LOG.debug('kill failed: %s %s' % (err_msg, output))
+            # kill the children from largest to smallest pids.
+            child_pids = PidManager.get_child_pids(self._process.pid)
+            for child_pid in sorted(child_pids, reverse=True):
+                cmd = ''.join([cmd_prefix, child_pid])
+                err_msg, output = run_cmd(cmd, print_output=False)
+                if err_msg:
+                    LOG.debug('kill failed: %s %s' % (err_msg, output))
+                else:
+                    LOG.debug('kill succeeded: %s' % child_pid)
 
-        # record the name of user who killed the job
-        cur_uid = os.getuid()
-        self._kill_uname = pwd.getpwuid(cur_uid)[0]
+            # record the name of user who killed the job
+            cur_uid = os.getuid()
+            self._kill_uname = pwd.getpwuid(cur_uid)[0]
+        finally:
+            self._cleanup()
 
     def _get_msg_from_cmdout(self, msg):
         """get message from command output

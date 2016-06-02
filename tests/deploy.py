@@ -142,6 +142,10 @@ class TestFunctional(KollaCliTest):
         self.run_cli_cmd('deploy')
         self.run_cli_cmd('deploy --serial -v')
 
+        # test deploy with timeout
+        msg = self.run_cli_cmd('deploy --timeout .001', expect_error=True)
+        self.assertIn('timed out', msg)
+
         # run compute host deploy to invalid host
         err_msg = 'Status: unreachable'
         msg = ''

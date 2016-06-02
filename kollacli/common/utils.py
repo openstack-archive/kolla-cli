@@ -483,8 +483,12 @@ class Lock(object):
             return True
 
     def _release_flock(self):
-        fcntl.flock(self.fd, fcntl.LOCK_UN)
-        os.close(self.fd)
+        try:
+            fcntl.flock(self.fd, fcntl.LOCK_UN)
+        except Exception as e:
+            LOG.debug('Exception while releasing lock: %s' % str(e))
+        finally:
+            os.close(self.fd)
         return True
 
 

@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import logging
+import time
 import traceback
 
 import kollacli.i18n as u
@@ -34,22 +35,42 @@ class Deploy(Command):
                             help=u._('Deployment host list'))
         parser.add_argument('--serial', action='store_true',
                             help=u._('Deploy serially'))
+        parser.add_argument('--timeout', nargs=1,
+                            metavar='<timeout>',
+                            help=u._('timeout (in minutes)'))
         return parser
 
     def take_action(self, parsed_args):
         hosts = None
         serial_flag = False
         verbose_level = self.app.options.verbose_level
+        timeout_target = 0
         try:
             if parsed_args.hosts:
                 host_list = parsed_args.hosts.strip()
                 hosts = host_list.split(',')
             if parsed_args.serial:
                 serial_flag = True
+            if parsed_args.timeout:
+                try:
+                    timeout = float(parsed_args.timeout[0])
+                except Exception:
+                    raise CommandError(u._('Timeout value is not a number.'))
+                timeout_target = time.time() + (60 * timeout)
 
             job = CLIENT.async_deploy(hosts, serial_flag,
                                       verbose_level)
-            status = job.wait()
+
+            # wait for job to complete
+            status = None
+            while status is None:
+                if timeout_target and time.time() > timeout_target:
+                    job.kill()
+                    raise CommandError(u._('Job timed out and was killed.'))
+                time.sleep(1)
+                status = job.get_status()
+
+            # job is done
             if verbose_level > 2:
                 LOG.info('\n\n' + 80 * '=')
                 LOG.info(u._('DEBUG command output:\n{out}')

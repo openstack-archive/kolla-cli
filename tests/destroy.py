@@ -115,7 +115,7 @@ class TestFunctional(KollaCliTest):
         # test killing a deploy
         self.log.info('Kill a deployment')
         job = CLIENT.async_deploy()
-        time.sleep(random.randint(1, 5))
+        time.sleep(random.randint(5, 8))
         job.kill()
         self._process_job(job, 'deploy-kill',
                           is_physical_host, expect_kill=True)
