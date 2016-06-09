@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.utils &mdash; kollacli 1.0.0.dev404 documentation</title>
+    <title>kollacli.common.utils &mdash; kollacli 3.0.1.dev429 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev404',
+        VERSION:     '3.0.1.dev429',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev404 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 3.0.1.dev429 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -79,6 +79,25 @@
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="get_log_level"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_log_level">[docs]</a><span class="k">def</span> <span class="nf">get_log_level</span><span class="p">():</span>
+    <span class="n">evar</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;KOLLA_LOG_LEVEL&#39;</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">evar</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;debug&#39;</span><span class="p">:</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
+    <span class="k">return</span> <span class="n">level</span>
+
+</div>
+<div class="viewcode-block" id="get_ansible_plugin_dir"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_ansible_plugin_dir">[docs]</a><span class="k">def</span> <span class="nf">get_ansible_plugin_dir</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;ANSIBLE_PLUGINS&quot;</span><span class="p">,</span>
+                          <span class="s">&quot;/usr/share/ansible/plugins/callback/&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_ansible_etc"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_ansible_etc">[docs]</a><span class="k">def</span> <span class="nf">get_ansible_etc</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;ANSIBLE_ETC&quot;</span><span class="p">,</span>
+                          <span class="s">&quot;/etc/ansible/&quot;</span><span class="p">)</span>
+
+</div>
 <div class="viewcode-block" id="get_kolla_home"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kolla_home">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_home</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;KOLLA_HOME&quot;</span><span class="p">,</span> <span class="s">&quot;/usr/share/kolla/&quot;</span><span class="p">)</span>
 
@@ -108,7 +127,7 @@
 
 </div>
 <div class="viewcode-block" id="get_ansible_lock_path"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_ansible_lock_path">[docs]</a><span class="k">def</span> <span class="nf">get_ansible_lock_path</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_etc</span><span class="p">(),</span> <span class="s">&#39;ansible/ansible.lock&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_home</span><span class="p">(),</span> <span class="s">&#39;ansible.lock&#39;</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="get_kolla_actions_path"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kolla_actions_path">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_actions_path</span><span class="p">():</span>
@@ -390,12 +409,16 @@
         <span class="c"># None arg</span>
         <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span>
+    <span class="k">if</span> <span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">)</span> <span class="ow">or</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span>
             <span class="ow">not</span> <span class="n">param</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">empty_ok</span><span class="p">):</span>
         <span class="c"># empty string, dict or list</span>
         <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+
+    <span class="c"># normalize expected string types for py2 and py3</span>
+    <span class="k">if</span> <span class="n">expected_type</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">expected_type</span> <span class="o">=</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">expected_type</span><span class="p">):</span>
         <span class="c"># wrong type</span>
@@ -509,8 +532,12 @@
             <span class="k">return</span> <span class="bp">True</span>
 
     <span class="k">def</span> <span class="nf">_release_flock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_UN</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_UN</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exception while releasing lock: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">True</span>
 
 </div>
@@ -572,7 +599,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

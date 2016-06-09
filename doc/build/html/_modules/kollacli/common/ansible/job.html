@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible.job &mdash; kollacli 1.0.0.dev404 documentation</title>
+    <title>kollacli.common.ansible.job &mdash; kollacli 3.0.1.dev429 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.0.dev404',
+        VERSION:     '3.0.1.dev429',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev404 documentation" href="../../../../index.html" />
+    <link rel="top" title="kollacli 3.0.1.dev429 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -65,6 +65,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pwd</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>  <span class="c"># nosec</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -85,7 +86,7 @@
 
 <span class="n">LINE_LENGTH</span> <span class="o">=</span> <span class="mi">80</span>
 
-<span class="n">PIPE_PREFIX</span> <span class="o">=</span> <span class="s">&#39;.kolla_pipe_&#39;</span>
+<span class="n">PIPE_NAME</span> <span class="o">=</span> <span class="s">&#39;.kolla_pipe&#39;</span>
 
 <span class="c"># action defs</span>
 <span class="n">ACTION_PLAY_START</span> <span class="o">=</span> <span class="s">&#39;play_start&#39;</span>
@@ -93,6 +94,8 @@
 <span class="n">ACTION_TASK_END</span> <span class="o">=</span> <span class="s">&#39;task_end&#39;</span>
 <span class="n">ACTION_INCLUDE_FILE</span> <span class="o">=</span> <span class="s">&#39;includefile&#39;</span>
 <span class="n">ACTION_STATS</span> <span class="o">=</span> <span class="s">&#39;stats&#39;</span>
+
+<span class="n">ANSIBLE_1_OR_MORE</span> <span class="o">=</span> <span class="s">&#39;One or more items failed&#39;</span>
 
 
 <div class="viewcode-block" id="AnsibleJob"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.job.AnsibleJob">[docs]</a><span class="k">class</span> <span class="nc">AnsibleJob</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -107,7 +110,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_fragment</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_first_packet</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">(),</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">PIPE_PREFIX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_id</span><span class="p">))</span>
+            <span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">(),</span>
+            <span class="s">&#39;kolla_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">deploy_id</span><span class="p">,</span>
+            <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">PIPE_NAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fifo_fd</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_process_std_err</span> <span class="o">=</span> <span class="bp">None</span>
@@ -121,14 +126,15 @@
             <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ansible_lock</span><span class="o">.</span><span class="n">wait_acquire</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                    <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;unable to run ansible job {cmd} &#39;</span>
-                        <span class="s">&#39;as we couldn</span><span class="se">\&#39;</span><span class="s">t get lock.&#39;</span><span class="p">)</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">))</span>
+                    <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;unable to get lock: {lock}, to run &#39;</span>
+                        <span class="s">&#39;ansible job: {cmd} &#39;</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lock</span><span class="o">=</span><span class="n">get_ansible_lock_path</span><span class="p">(),</span> <span class="n">cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">))</span>
 
             <span class="c"># create and open named pipe, must be owned by kolla group</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">mkfifo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">,</span> <span class="mi">0</span><span class="n">o660</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkfifo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">)</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">grp_id</span> <span class="o">=</span> <span class="n">get_admin_uids</span><span class="p">()</span>
             <span class="n">os</span><span class="o">.</span><span class="n">chown</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">(),</span> <span class="n">grp_id</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">,</span> <span class="mi">0</span><span class="n">o660</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_fifo_fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">,</span>
                                     <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_NONBLOCK</span><span class="p">)</span>
 
@@ -196,6 +202,8 @@
             <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">msg</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">])</span>
 
         <span class="c"># if no error from the callback, check the process error</span>
+        <span class="k">if</span> <span class="n">ANSIBLE_1_OR_MORE</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_msg_from_cmdout</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_std_err</span>
         <span class="k">return</span> <span class="n">msg</span>
@@ -215,23 +223,62 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c"># the kill must be run as the kolla user so the</span>
         <span class="c"># kolla_actions program must be used.</span>
-        <span class="n">actions_path</span> <span class="o">=</span> <span class="n">get_kolla_actions_path</span><span class="p">()</span>
-        <span class="n">kolla_user</span> <span class="o">=</span> <span class="n">get_admin_user</span><span class="p">()</span>
-        <span class="n">cmd_prefix</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;/usr/bin/sudo -u </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> job -t -p &#39;</span>
-                      <span class="o">%</span> <span class="p">(</span><span class="n">kolla_user</span><span class="p">,</span> <span class="n">actions_path</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">actions_path</span> <span class="o">=</span> <span class="n">get_kolla_actions_path</span><span class="p">()</span>
+            <span class="n">kolla_user</span> <span class="o">=</span> <span class="n">get_admin_user</span><span class="p">()</span>
+            <span class="n">cmd_prefix</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;/usr/bin/sudo -u </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> job -t -p &#39;</span>
+                          <span class="o">%</span> <span class="p">(</span><span class="n">kolla_user</span><span class="p">,</span> <span class="n">actions_path</span><span class="p">))</span>
 
-        <span class="c"># kill the children from largest to smallest pids.</span>
-        <span class="n">child_pids</span> <span class="o">=</span> <span class="n">PidManager</span><span class="o">.</span><span class="n">get_child_pids</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">child_pid</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">child_pids</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cmd_prefix</span><span class="p">,</span> <span class="n">child_pid</span><span class="p">])</span>
-            <span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">print_output</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">err_msg</span><span class="p">:</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;kill failed: </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span><span class="p">))</span>
+            <span class="c"># kill the children from largest to smallest pids.</span>
+            <span class="n">child_pids</span> <span class="o">=</span> <span class="n">PidManager</span><span class="o">.</span><span class="n">get_child_pids</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">child_pid</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">child_pids</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cmd_prefix</span><span class="p">,</span> <span class="n">child_pid</span><span class="p">])</span>
+                <span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">print_output</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">err_msg</span><span class="p">:</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;kill failed: </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">err_msg</span><span class="p">,</span> <span class="n">output</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;kill succeeded: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">child_pid</span><span class="p">)</span>
 
-        <span class="c"># record the name of user who killed the job</span>
-        <span class="n">cur_uid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_kill_uname</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwuid</span><span class="p">(</span><span class="n">cur_uid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c"># record the name of user who killed the job</span>
+            <span class="n">cur_uid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_kill_uname</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwuid</span><span class="p">(</span><span class="n">cur_uid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup</span><span class="p">()</span>
 </div>
+    <span class="k">def</span> <span class="nf">_get_msg_from_cmdout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;get message from command output</span>
+
+<span class="sd">        Not very pretty, but the only way to get the error detail out of</span>
+<span class="sd">        ansible when the callback gives you &#39;One or more items failed&#39;.</span>
+
+<span class="sd">        This is where the error message is in cmd out-</span>
+<span class="sd">        \nfailed: [ol7-c5] (item=[u&#39;/etc/kolla/config/aodh.conf&#39;,</span>
+<span class="sd">        u&#39;/usr/share/kolla/templates/aodh/aodh.conf_augment&#39;]) =&gt;</span>
+<span class="sd">        {&quot;failed&quot;: true, &quot;invocation&quot;: {&quot;module_args&quot;: {&quot;dest&quot;:</span>
+<span class="sd">        &quot;/usr/share/kolla/templates/aodh/aodh.conf_augment&quot;,</span>
+<span class="sd">        &quot;src&quot;: &quot;/etc/kolla/config/aodh.conf&quot;}, &quot;module_name&quot;: &quot;template&quot;},</span>
+<span class="sd">        &quot;item&quot;: [&quot;/etc/kolla/config/aodh.conf&quot;,</span>
+<span class="sd">        &quot;/usr/share/kolla/templates/aodh/aodh.conf_augment&quot;],</span>
+<span class="sd">        &quot;msg&quot;: &quot;IOError: [Errno 2] No such file or directory:</span>
+<span class="sd">        u&#39;/etc/kolla/config/aodh.conf&#39;&quot;}\n</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fail_key</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">failed: &#39;</span>
+        <span class="n">hostnames</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">fail_key</span> <span class="o">+</span> <span class="s">&#39;\[(.+?)]&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_output</span><span class="p">)</span>
+        <span class="n">msgs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">fail_key</span> <span class="o">+</span> <span class="s">&#39;.+ =&gt; (.+?)</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_output</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hostnames</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">msgs</span><span class="p">))):</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="n">hostname</span> <span class="o">=</span> <span class="n">hostnames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ans_dict_str</span> <span class="o">=</span> <span class="n">msgs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ans_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">ans_dict_str</span><span class="p">)</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="n">ans_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;msg&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&#39;Exception reading cmd_out ansible dictionary: </span><span class="si">%s</span><span class="s">&#39;</span>
+                         <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">msg</span><span class="p">,</span> <span class="s">&#39;Host: &#39;</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">msg</span>
+
     <span class="k">def</span> <span class="nf">_read_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
         <span class="n">out</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="k">if</span> <span class="n">stream</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">stream</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
@@ -259,9 +306,6 @@
         <span class="c"># try to clear the ansible lock</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ansible_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
 
-        <span class="c"># delete temp inventory file</span>
-        <span class="n">remove_temp_inventory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_temp_inv_path</span><span class="p">)</span>
-
         <span class="c"># close the process&#39;s stdout and stderr streams</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span> <span class="ow">and</span> <span class="ow">not</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">closed</span><span class="p">):</span>
@@ -280,6 +324,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">)</span>
 
+        <span class="c"># delete temp inventory file</span>
+        <span class="n">remove_temp_inventory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_temp_inv_path</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_read_from_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;read lines from callback in real-time&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
@@ -290,6 +337,7 @@
             <span class="c"># error can happen if fifo is empty</span>
             <span class="k">pass</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;callback packets: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">data</span><span class="p">)</span>
             <span class="n">packets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deserialize_packets</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">packet</span> <span class="ow">in</span> <span class="n">packets</span><span class="p">:</span>
                 <span class="n">formatted_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_packet</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
@@ -432,29 +480,38 @@
         <span class="n">has_fragment</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
             <span class="n">has_fragment</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;fragment found: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">data</span><span class="p">)</span>
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
         <span class="n">num_lines</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
-                <span class="c"># ignore empty string lines</span>
-                <span class="k">continue</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="c"># first line</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fragment</span> <span class="o">+</span> <span class="n">line</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fragment</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-            <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_lines</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="c"># last line</span>
-                <span class="k">if</span> <span class="n">has_fragment</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_fragment</span> <span class="o">=</span> <span class="n">line</span>
-                    <span class="k">continue</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">packets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;invalid line for json encoding: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_lines</span> <span class="ow">and</span> <span class="n">has_fragment</span><span class="p">:</span>
+                <span class="c"># last line is incomplete, save as fragment</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fragment</span> <span class="o">=</span> <span class="n">line</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                <span class="c"># ignore empty string lines</span>
+                <span class="k">continue</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_load</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">:</span>
+                <span class="n">packets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">packets</span>
+
+<div class="viewcode-block" id="AnsibleJob.json_load"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.job.AnsibleJob.json_load">[docs]</a>    <span class="k">def</span> <span class="nf">json_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string_var</span><span class="p">,</span> <span class="n">raise_on_err</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">string_var</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;invalid string for json encoding: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">string_var</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_on_err</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">e</span>
-        <span class="k">return</span> <span class="n">packets</span></div>
+        <span class="k">return</span> <span class="n">retval</span></div></div>
 </pre></div>
 
           </div>
@@ -488,7 +545,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.host &mdash; kollacli 1.0.0.dev404 documentation</title>
+    <title>kollacli.api.host &mdash; kollacli 3.0.1.dev429 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.0.dev404',
+        VERSION:     '3.0.1.dev429',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev404 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 3.0.1.dev429 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -89,6 +89,10 @@
 
 <span class="sd">            :return: group names</span>
 <span class="sd">            :rtype: list of strings</span>
+
+<span class="sd">            Note: If the groups associated with this host change after this</span>
+<span class="sd">            host is fetched, the host must be re-fetched to reflect those</span>
+<span class="sd">            changes.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groupnames</span><span class="p">)</span>
 </div></div>
@@ -161,11 +165,11 @@
         <span class="sd">&quot;&quot;&quot;Check hosts for ssh connectivity</span>
 
 <span class="sd">        Check status is a dictionary of form:</span>
-<span class="sd">        - {hostname: {</span>
+<span class="sd">            - {hostname: {</span>
 <span class="sd">              &#39;success&#39;:&lt;True|False&gt;,</span>
 <span class="sd">              &#39;msg&#39;:message_string},</span>
-<span class="sd">           ...</span>
-<span class="sd">          }</span>
+<span class="sd">              ...</span>
+<span class="sd">              }</span>
 
 <span class="sd">        :param hostnames: list of strings</span>
 <span class="sd">        :return: check status</span>
@@ -182,11 +186,12 @@
         <span class="sd">&quot;&quot;&quot;Setup multiple hosts for ssh access</span>
 
 <span class="sd">        hosts_info is a dictionary of form:</span>
-<span class="sd">        {hostname&#39;: {</span>
-<span class="sd">            &#39;password&#39;: password</span>
-<span class="sd">            &#39;uname&#39;: user_name},</span>
-<span class="sd">         ...</span>
-<span class="sd">        }</span>
+<span class="sd">            - {hostname&#39;: {</span>
+<span class="sd">              &#39;password&#39;: password</span>
+<span class="sd">              &#39;uname&#39;: user_name},</span>
+<span class="sd">              ...</span>
+<span class="sd">              }</span>
+
 <span class="sd">        The uname entry is optional.</span>
 
 <span class="sd">        :param hosts_info: dictionary</span>
@@ -228,7 +233,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

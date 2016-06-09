@@ -11,6 +11,30 @@ Subpackages
 Submodules
 ----------
 
+kollacli.common.allinone module
+-------------------------------
+
+.. automodule:: kollacli.common.allinone
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+kollacli.common.host module
+---------------------------
+
+.. automodule:: kollacli.common.host
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+kollacli.common.host_group module
+---------------------------------
+
+.. automodule:: kollacli.common.host_group
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 kollacli.common.inventory module
 --------------------------------
 
@@ -35,10 +59,26 @@ kollacli.common.properties module
     :undoc-members:
     :show-inheritance:
 
+kollacli.common.service module
+------------------------------
+
+.. automodule:: kollacli.common.service
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 kollacli.common.sshutils module
 -------------------------------
 
 .. automodule:: kollacli.common.sshutils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+kollacli.common.subservice module
+---------------------------------
+
+.. automodule:: kollacli.common.subservice
     :members:
     :undoc-members:
     :show-inheritance:

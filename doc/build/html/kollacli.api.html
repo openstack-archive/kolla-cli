@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api package &mdash; kollacli 1.0.0.dev404 documentation</title>
+    <title>kollacli.api package &mdash; kollacli 3.0.1.dev429 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.0.dev404',
+        VERSION:     '3.0.1.dev429',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev404 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 3.0.1.dev429 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -167,6 +167,11 @@ level: logging.INFO, logging.DEBUG, logging.WARNING,
 logging.CRITICAL...</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="kollacli.api.client.ClientApi.get_version">
+<tt class="descname">get_version</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.get_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.get_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -183,6 +188,8 @@ logging.CRITICAL...</p>
 <p>Set deploy mode to either local or remote. Local indicates
 that the openstack deployment will be to the local host.
 Remote means that the deployment is executed via ssh.</p>
+<p>NOTE: local mode is not supported and should never be used
+in production environments.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -460,6 +467,9 @@ Remote means that the deployment is executed via ssh.</p>
 </tr>
 </tbody>
 </table>
+<p>Note: If the groups associated with this host change after this
+host is fetched, the host must be re-fetched to reflect those
+changes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -546,16 +556,18 @@ Remote means that the deployment is executed via ssh.</p>
 <dt id="kollacli.api.host.HostApi.host_setup">
 <tt class="descclassname">HostApi.</tt><tt class="descname">host_setup</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup multiple hosts for ssh access</p>
-<p>hosts_info is a dictionary of form:
-{hostname&#8217;: {</p>
-<blockquote>
-<div><blockquote>
-<div>&#8216;password&#8217;: password
-&#8216;uname&#8217;: user_name},</div></blockquote>
-<p>...</p>
-</div></blockquote>
-<p>}
-The uname entry is optional.</p>
+<dl class="docutils">
+<dt>hosts_info is a dictionary of form:</dt>
+<dd><ul class="first last simple">
+<li>{hostname&#8217;: {
+&#8216;password&#8217;: password
+&#8216;uname&#8217;: user_name},
+...
+}</li>
+</ul>
+</dd>
+</dl>
+<p>The uname entry is optional.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -570,17 +582,17 @@ The uname entry is optional.</p>
 <dt id="kollacli.api.host.HostApi.host_ssh_check">
 <tt class="descclassname">HostApi.</tt><tt class="descname">host_ssh_check</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_ssh_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_ssh_check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check hosts for ssh connectivity</p>
-<p>Check status is a dictionary of form:
-- {hostname: {</p>
-<blockquote>
-<div><blockquote>
-<div><blockquote>
-<div>&#8216;success&#8217;:&lt;True|False&gt;,
-&#8216;msg&#8217;:message_string},</div></blockquote>
-<p>...</p>
-</div></blockquote>
-<p>}</p>
-</div></blockquote>
+<dl class="docutils">
+<dt>Check status is a dictionary of form:</dt>
+<dd><ul class="first last simple">
+<li>{hostname: {
+&#8216;success&#8217;:&lt;True|False&gt;,
+&#8216;msg&#8217;:message_string},
+...
+}</li>
+</ul>
+</dd>
+</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -908,6 +920,9 @@ represented:</p>
 </tr>
 </tbody>
 </table>
+<p>Note: If the groups associated with this service change after this
+service is fetched, the service must be re-fetched to reflect those
+changes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1096,7 +1111,7 @@ names for each log will be servicename_id.log.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

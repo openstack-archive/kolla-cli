@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common package &mdash; kollacli 1.0.0.dev404 documentation</title>
+    <title>kollacli.common package &mdash; kollacli 3.0.1.dev429 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.0.dev404',
+        VERSION:     '3.0.1.dev429',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 1.0.0.dev404 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 3.0.1.dev429 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -64,85 +64,118 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-kollacli.common.allinone">
+<span id="kollacli-common-allinone-module"></span><h2>kollacli.common.allinone module<a class="headerlink" href="#module-kollacli.common.allinone" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.common.allinone.AllInOne">
+<em class="property">class </em><tt class="descclassname">kollacli.common.allinone.</tt><tt class="descname">AllInOne</tt><a class="reference internal" href="_modules/kollacli/common/allinone.html#AllInOne"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.allinone.AllInOne" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>AllInOne helper class</p>
+<p>This class parses the kolla all-in-one file and provides an
+easier to use way to represent that file.</p>
+<dl class="method">
+<dt id="kollacli.common.allinone.AllInOne.add_group">
+<tt class="descname">add_group</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/allinone.html#AllInOne.add_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.allinone.AllInOne.add_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.allinone.AllInOne.add_service">
+<tt class="descname">add_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/allinone.html#AllInOne.add_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.allinone.AllInOne.add_service" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.allinone.AllInOne.add_sub_service">
+<tt class="descname">add_sub_service</tt><big>(</big><em>sub_servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/allinone.html#AllInOne.add_sub_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.allinone.AllInOne.add_sub_service" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.common.host">
+<span id="kollacli-common-host-module"></span><h2>kollacli.common.host module<a class="headerlink" href="#module-kollacli.common.host" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.common.host.Host">
+<em class="property">class </em><tt class="descclassname">kollacli.common.host.</tt><tt class="descname">Host</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/host.html#Host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host.Host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="attribute">
+<dt id="kollacli.common.host.Host.class_version">
+<tt class="descname">class_version</tt><em class="property"> = 1</em><a class="headerlink" href="#kollacli.common.host.Host.class_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host.Host.get_vars">
+<tt class="descname">get_vars</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/host.html#Host.get_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host.Host.get_vars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host.Host.set_var">
+<tt class="descname">set_var</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/host.html#Host.set_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host.Host.set_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host.Host.upgrade">
+<tt class="descname">upgrade</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/host.html#Host.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host.Host.upgrade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.common.host_group">
+<span id="kollacli-common-host-group-module"></span><h2>kollacli.common.host_group module<a class="headerlink" href="#module-kollacli.common.host_group" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.common.host_group.HostGroup">
+<em class="property">class </em><tt class="descclassname">kollacli.common.host_group.</tt><tt class="descname">HostGroup</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/host_group.html#HostGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host_group.HostGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.common.host_group.HostGroup.add_host">
+<tt class="descname">add_host</tt><big>(</big><em>host</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/host_group.html#HostGroup.add_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host_group.HostGroup.add_host" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="kollacli.common.host_group.HostGroup.class_version">
+<tt class="descname">class_version</tt><em class="property"> = 1</em><a class="headerlink" href="#kollacli.common.host_group.HostGroup.class_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host_group.HostGroup.clear_var">
+<tt class="descname">clear_var</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/host_group.html#HostGroup.clear_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host_group.HostGroup.clear_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host_group.HostGroup.get_hostnames">
+<tt class="descname">get_hostnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/host_group.html#HostGroup.get_hostnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host_group.HostGroup.get_hostnames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host_group.HostGroup.get_vars">
+<tt class="descname">get_vars</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/host_group.html#HostGroup.get_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host_group.HostGroup.get_vars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host_group.HostGroup.remove_host">
+<tt class="descname">remove_host</tt><big>(</big><em>host</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/host_group.html#HostGroup.remove_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host_group.HostGroup.remove_host" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host_group.HostGroup.set_remote">
+<tt class="descname">set_remote</tt><big>(</big><em>remote_flag</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/host_group.html#HostGroup.set_remote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host_group.HostGroup.set_remote" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host_group.HostGroup.set_var">
+<tt class="descname">set_var</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/host_group.html#HostGroup.set_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host_group.HostGroup.set_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.host_group.HostGroup.upgrade">
+<tt class="descname">upgrade</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/host_group.html#HostGroup.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.host_group.HostGroup.upgrade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-kollacli.common.inventory">
 <span id="kollacli-common-inventory-module"></span><h2>kollacli.common.inventory module<a class="headerlink" href="#module-kollacli.common.inventory" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="kollacli.common.inventory.Host">
-<em class="property">class </em><tt class="descclassname">kollacli.common.inventory.</tt><tt class="descname">Host</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Host" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="attribute">
-<dt id="kollacli.common.inventory.Host.class_version">
-<tt class="descname">class_version</tt><em class="property"> = 1</em><a class="headerlink" href="#kollacli.common.inventory.Host.class_version" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Host.get_vars">
-<tt class="descname">get_vars</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Host.get_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Host.get_vars" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Host.set_var">
-<tt class="descname">set_var</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Host.set_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Host.set_var" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Host.upgrade">
-<tt class="descname">upgrade</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Host.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Host.upgrade" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="kollacli.common.inventory.HostGroup">
-<em class="property">class </em><tt class="descclassname">kollacli.common.inventory.</tt><tt class="descname">HostGroup</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#HostGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.HostGroup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="method">
-<dt id="kollacli.common.inventory.HostGroup.add_host">
-<tt class="descname">add_host</tt><big>(</big><em>host</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#HostGroup.add_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.HostGroup.add_host" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.inventory.HostGroup.class_version">
-<tt class="descname">class_version</tt><em class="property"> = 1</em><a class="headerlink" href="#kollacli.common.inventory.HostGroup.class_version" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.HostGroup.clear_var">
-<tt class="descname">clear_var</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#HostGroup.clear_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.HostGroup.clear_var" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.HostGroup.get_hostnames">
-<tt class="descname">get_hostnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#HostGroup.get_hostnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.HostGroup.get_hostnames" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.HostGroup.get_vars">
-<tt class="descname">get_vars</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#HostGroup.get_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.HostGroup.get_vars" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.HostGroup.remove_host">
-<tt class="descname">remove_host</tt><big>(</big><em>host</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#HostGroup.remove_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.HostGroup.remove_host" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.HostGroup.set_remote">
-<tt class="descname">set_remote</tt><big>(</big><em>remote_flag</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#HostGroup.set_remote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.HostGroup.set_remote" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.HostGroup.set_var">
-<tt class="descname">set_var</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#HostGroup.set_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.HostGroup.set_var" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.HostGroup.upgrade">
-<tt class="descname">upgrade</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#HostGroup.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.HostGroup.upgrade" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="class">
 <dt id="kollacli.common.inventory.Inventory">
 <em class="property">class </em><tt class="descclassname">kollacli.common.inventory.</tt><tt class="descname">Inventory</tt><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory" title="Permalink to this definition">¶</a></dt>
@@ -169,7 +202,16 @@ if group name is not none, add host to group</p>
 <dt id="kollacli.common.inventory.Inventory.class_version">
 <tt class="descname">class_version</tt><em class="property"> = 3</em><a class="headerlink" href="#kollacli.common.inventory.Inventory.class_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>class version history</p>
-<p>1: initial release</p>
+<dl class="docutils">
+<dt>3: (v3.0.1):</dt>
+<dd><ul class="first last simple">
+<li>added aodh, ceph</li>
+<li>fix to ensure all sub-services have service as parent</li>
+</ul>
+</dd>
+</dl>
+<p>2: (v2.1.1) added ceilometer
+1: (v2.0.1) initial release</p>
 </dd></dl>
 
 <dl class="method">
@@ -437,98 +479,6 @@ The uname entry is optional.</p>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="kollacli.common.inventory.Service">
-<em class="property">class </em><tt class="descclassname">kollacli.common.inventory.</tt><tt class="descname">Service</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Service" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="method">
-<dt id="kollacli.common.inventory.Service.add_groupname">
-<tt class="descname">add_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Service.add_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Service.add_groupname" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Service.add_sub_servicename">
-<tt class="descname">add_sub_servicename</tt><big>(</big><em>sub_servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Service.add_sub_servicename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Service.add_sub_servicename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.inventory.Service.class_version">
-<tt class="descname">class_version</tt><em class="property"> = 1</em><a class="headerlink" href="#kollacli.common.inventory.Service.class_version" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Service.get_groupnames">
-<tt class="descname">get_groupnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Service.get_groupnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Service.get_groupnames" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Service.get_sub_servicenames">
-<tt class="descname">get_sub_servicenames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Service.get_sub_servicenames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Service.get_sub_servicenames" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Service.get_vars">
-<tt class="descname">get_vars</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Service.get_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Service.get_vars" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Service.remove_groupname">
-<tt class="descname">remove_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Service.remove_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Service.remove_groupname" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Service.upgrade">
-<tt class="descname">upgrade</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Service.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Service.upgrade" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="kollacli.common.inventory.SubService">
-<em class="property">class </em><tt class="descclassname">kollacli.common.inventory.</tt><tt class="descname">SubService</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#SubService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.SubService" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="method">
-<dt id="kollacli.common.inventory.SubService.add_groupname">
-<tt class="descname">add_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#SubService.add_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.SubService.add_groupname" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="kollacli.common.inventory.SubService.class_version">
-<tt class="descname">class_version</tt><em class="property"> = 1</em><a class="headerlink" href="#kollacli.common.inventory.SubService.class_version" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.SubService.get_groupnames">
-<tt class="descname">get_groupnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#SubService.get_groupnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.SubService.get_groupnames" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.SubService.get_parent_servicename">
-<tt class="descname">get_parent_servicename</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#SubService.get_parent_servicename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.SubService.get_parent_servicename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.SubService.get_vars">
-<tt class="descname">get_vars</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#SubService.get_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.SubService.get_vars" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.SubService.remove_groupname">
-<tt class="descname">remove_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#SubService.remove_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.SubService.remove_groupname" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.SubService.set_parent_servicename">
-<tt class="descname">set_parent_servicename</tt><big>(</big><em>parent_svc_name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#SubService.set_parent_servicename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.SubService.set_parent_servicename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.SubService.upgrade">
-<tt class="descname">upgrade</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#SubService.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.SubService.upgrade" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="function">
 <dt id="kollacli.common.inventory.remove_temp_inventory">
 <tt class="descclassname">kollacli.common.inventory.</tt><tt class="descname">remove_temp_inventory</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#remove_temp_inventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.remove_temp_inventory" title="Permalink to this definition">¶</a></dt>
@@ -641,6 +591,55 @@ If it doesn&#8217;t exist, a new password will be added.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-kollacli.common.service">
+<span id="kollacli-common-service-module"></span><h2>kollacli.common.service module<a class="headerlink" href="#module-kollacli.common.service" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.common.service.Service">
+<em class="property">class </em><tt class="descclassname">kollacli.common.service.</tt><tt class="descname">Service</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.common.service.Service.add_groupname">
+<tt class="descname">add_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.add_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.add_groupname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.service.Service.add_sub_servicename">
+<tt class="descname">add_sub_servicename</tt><big>(</big><em>sub_servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.add_sub_servicename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.add_sub_servicename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="kollacli.common.service.Service.class_version">
+<tt class="descname">class_version</tt><em class="property"> = 1</em><a class="headerlink" href="#kollacli.common.service.Service.class_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.service.Service.get_groupnames">
+<tt class="descname">get_groupnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.get_groupnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.get_groupnames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.service.Service.get_sub_servicenames">
+<tt class="descname">get_sub_servicenames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.get_sub_servicenames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.get_sub_servicenames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.service.Service.get_vars">
+<tt class="descname">get_vars</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.get_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.get_vars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.service.Service.remove_groupname">
+<tt class="descname">remove_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.remove_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.remove_groupname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.service.Service.upgrade">
+<tt class="descname">upgrade</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.upgrade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-kollacli.common.sshutils">
 <span id="kollacli-common-sshutils-module"></span><h2>kollacli.common.sshutils module<a class="headerlink" href="#module-kollacli.common.sshutils" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -657,6 +656,55 @@ If it doesn&#8217;t exist, a new password will be added.</p>
 <dt id="kollacli.common.sshutils.ssh_setup_host">
 <tt class="descclassname">kollacli.common.sshutils.</tt><tt class="descname">ssh_setup_host</tt><big>(</big><em>net_addr</em>, <em>password</em>, <em>setup_user=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/sshutils.html#ssh_setup_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.sshutils.ssh_setup_host" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.common.subservice">
+<span id="kollacli-common-subservice-module"></span><h2>kollacli.common.subservice module<a class="headerlink" href="#module-kollacli.common.subservice" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.common.subservice.SubService">
+<em class="property">class </em><tt class="descclassname">kollacli.common.subservice.</tt><tt class="descname">SubService</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/subservice.html#SubService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.subservice.SubService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="kollacli.common.subservice.SubService.add_groupname">
+<tt class="descname">add_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/subservice.html#SubService.add_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.subservice.SubService.add_groupname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="kollacli.common.subservice.SubService.class_version">
+<tt class="descname">class_version</tt><em class="property"> = 1</em><a class="headerlink" href="#kollacli.common.subservice.SubService.class_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.subservice.SubService.get_groupnames">
+<tt class="descname">get_groupnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/subservice.html#SubService.get_groupnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.subservice.SubService.get_groupnames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.subservice.SubService.get_parent_servicename">
+<tt class="descname">get_parent_servicename</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/subservice.html#SubService.get_parent_servicename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.subservice.SubService.get_parent_servicename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.subservice.SubService.get_vars">
+<tt class="descname">get_vars</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/subservice.html#SubService.get_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.subservice.SubService.get_vars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.subservice.SubService.remove_groupname">
+<tt class="descname">remove_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/subservice.html#SubService.remove_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.subservice.SubService.remove_groupname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.subservice.SubService.set_parent_servicename">
+<tt class="descname">set_parent_servicename</tt><big>(</big><em>parent_svc_name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/subservice.html#SubService.set_parent_servicename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.subservice.SubService.set_parent_servicename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.subservice.SubService.upgrade">
+<tt class="descname">upgrade</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/subservice.html#SubService.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.subservice.SubService.upgrade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
 
 </div>
 <div class="section" id="module-kollacli.common.support">
@@ -805,8 +853,18 @@ interpreter.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="kollacli.common.utils.get_ansible_etc">
+<tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">get_ansible_etc</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#get_ansible_etc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.get_ansible_etc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="kollacli.common.utils.get_ansible_lock_path">
 <tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">get_ansible_lock_path</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#get_ansible_lock_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.get_ansible_lock_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="kollacli.common.utils.get_ansible_plugin_dir">
+<tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">get_ansible_plugin_dir</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#get_ansible_plugin_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.get_ansible_plugin_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -852,6 +910,11 @@ interpreter.</p>
 <dl class="function">
 <dt id="kollacli.common.utils.get_kollacli_home">
 <tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">get_kollacli_home</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#get_kollacli_home"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.get_kollacli_home" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="kollacli.common.utils.get_log_level">
+<tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">get_log_level</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#get_log_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.get_log_level" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -921,10 +984,15 @@ unicode.</p>
 <li><a class="reference internal" href="#">kollacli.common package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-kollacli.common.allinone">kollacli.common.allinone module</a></li>
+<li><a class="reference internal" href="#module-kollacli.common.host">kollacli.common.host module</a></li>
+<li><a class="reference internal" href="#module-kollacli.common.host_group">kollacli.common.host_group module</a></li>
 <li><a class="reference internal" href="#module-kollacli.common.inventory">kollacli.common.inventory module</a></li>
 <li><a class="reference internal" href="#module-kollacli.common.passwords">kollacli.common.passwords module</a></li>
 <li><a class="reference internal" href="#module-kollacli.common.properties">kollacli.common.properties module</a></li>
+<li><a class="reference internal" href="#module-kollacli.common.service">kollacli.common.service module</a></li>
 <li><a class="reference internal" href="#module-kollacli.common.sshutils">kollacli.common.sshutils module</a></li>
+<li><a class="reference internal" href="#module-kollacli.common.subservice">kollacli.common.subservice module</a></li>
 <li><a class="reference internal" href="#module-kollacli.common.support">kollacli.common.support module</a></li>
 <li><a class="reference internal" href="#module-kollacli.common.utils">kollacli.common.utils module</a></li>
 <li><a class="reference internal" href="#module-kollacli.common">Module contents</a></li>
@@ -963,7 +1031,7 @@ unicode.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 1.0.0.dev404 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
