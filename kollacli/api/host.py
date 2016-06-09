@@ -40,6 +40,10 @@ class HostApi(object):
 
             :return: group names
             :rtype: list of strings
+
+            Note: If the groups associated with this host change after this
+            host is fetched, the host must be re-fetched to reflect those
+            changes.
             """
             return copy(self._groupnames)
 

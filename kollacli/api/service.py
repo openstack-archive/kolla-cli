@@ -75,6 +75,10 @@ class ServiceApi(object):
 
             :return: group names
             :rtype: list of strings
+
+            Note: If the groups associated with this service change after this
+            service is fetched, the service must be re-fetched to reflect those
+            changes.
             """
             return copy(self._groupnames)
 

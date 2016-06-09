@@ -112,18 +112,18 @@ class TestFunctional(KollaCliTest):
 
     def test_group_api(self):
         # check some of the api not exercised by the CLI
-        group1 = 'group_test1'
-        group2 = 'group_test2'
-        exp_groups = sorted([group1, group1, group2])
+        groupname1 = 'group_test1'
+        groupname2 = 'group_test2'
+        exp_groups = sorted([groupname1, groupname1, groupname2])
         CLIENT.group_add(exp_groups)
-        groups = CLIENT.group_get([group1])
+        groups = CLIENT.group_get([groupname1])
         groupnames = []
         for group in groups:
             groupnames.append(group.name)
-        self.assertIn(group1, groupnames, 'group %s is missing in %s'
-                      % (group1, groupnames))
-        self.assertNotIn(group2, groupnames, 'group %s is unexpectedly in %s'
-                         % (group2, groupnames))
+        self.assertIn(groupname1, groupnames, 'group %s is missing in %s'
+                      % (groupname1, groupnames))
+        self.assertNotIn(groupname2, groupnames, 'group %s is unexpectedly in '
+                         '%s' % (groupname2, groupnames))
         groups = CLIENT.group_get(exp_groups)
         groupnames = []
         for group in groups:
@@ -138,6 +138,17 @@ class TestFunctional(KollaCliTest):
             pass
         except Exception as e:
             raise e
+
+        hostname1 = 'testhost1'
+        CLIENT.group_add([groupname1])
+        group1 = CLIENT.group_get([groupname1])[0]
+        CLIENT.host_add([hostname1])
+        group1.add_host(hostname1)
+        hostnames = group1.get_hosts()
+        self.assertIn(hostname1, hostnames, 'missing hostname')
+        group1.add_service('nova')
+        servicenames = group1.get_services()
+        self.assertIn('nova', servicenames, 'missing servicename')
 
         # check the type checking logic
         self.check_types(CLIENT.group_add, [list])

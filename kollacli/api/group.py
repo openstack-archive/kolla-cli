@@ -48,7 +48,6 @@ class GroupApi(object):
 
             :param servicename: name of the service to add to the group
             :type servicename: string
-
             """
             check_arg(servicename, u._('Service name'), str)
             servicename = safe_decode(servicename)
@@ -60,6 +59,7 @@ class GroupApi(object):
             if servicename not in self._servicenames:
                 # service not associated with group, add it
                 inventory.add_group_to_service(self.name, servicename)
+                self._servicenames.append(servicename)
                 Inventory.save(inventory)
 
         def remove_service(self, servicename):
@@ -79,6 +79,7 @@ class GroupApi(object):
             if servicename in self._servicenames:
                 # service is associated with group, remove it
                 inventory.remove_group_from_service(self.name, servicename)
+                self._servicenames.remove(servicename)
                 Inventory.save(inventory)
 
         def get_hosts(self):
@@ -106,6 +107,7 @@ class GroupApi(object):
             if hostname not in self._hostnames:
                 # host not associated with group, add it
                 inventory.add_host(hostname, self.name)
+                self._hostnames.append(hostname)
                 Inventory.save(inventory)
 
         def remove_host(self, hostname):
@@ -125,6 +127,7 @@ class GroupApi(object):
             if hostname in self._hostnames:
                 # host is associated with group, remove it
                 inventory.remove_host(hostname, self.name)
+                self._hostnames.remove(hostname)
                 Inventory.save(inventory)
 
     def group_add(self, groupnames):
@@ -147,7 +150,6 @@ class GroupApi(object):
 
         :param groupnames: names of the groups to remove from the inventory
         :type groupnames: list of strings
-
         """
         check_arg(groupnames, u._('Group names'), list)
         groupnames = safe_decode(groupnames)
