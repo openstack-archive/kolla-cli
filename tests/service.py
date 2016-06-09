@@ -17,11 +17,25 @@ from common import KollaCliTest
 import json
 import unittest
 
+from kollacli.api.client import ClientApi
 from kollacli.common.allinone import AllInOne
 from kollacli.common.inventory import Inventory
 
+CLIENT = ClientApi()
+
 
 class TestFunctional(KollaCliTest):
+
+    def test_service_api(self):
+        service1 = 'nova'
+        service2 = 'nova-api'
+        exp_services = sorted([service1, service1, service2])
+        servicenames = []
+        services = CLIENT.service_get(exp_services)
+        for service in services:
+            servicenames.append(service.name)
+        servicenames = sorted(servicenames)
+        self.assertEqual(exp_services, servicenames, 'services mis-match')
 
     def test_service_list(self):
         """$ kollacli service list -f json

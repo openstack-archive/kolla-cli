@@ -101,24 +101,28 @@ class ServiceApi(object):
     def _get_services(self, servicenames, get_all=False):
         services = []
         inventory = Inventory.load()
-        if servicenames:
+
+        if get_all:
+            servicenames = []
+            serv_dict = inventory.get_service_sub_services()
+            for servicename, subservicenames in serv_dict.items():
+                servicenames.append(servicename)
+                servicenames.extend(subservicenames)
+        else:
             inventory.validate_servicenames(servicenames)
 
-        inv_services = inventory.get_services()
-        inv_subservices = inventory.get_sub_services()
-
-        for inv_service in inv_services:
-            if get_all or inv_service.name in servicenames:
+        for servicename in servicenames:
+            inv_service = inventory.get_service(servicename)
+            if inv_service:
                 service = self.Service(inv_service.name,
                                        None,
                                        inv_service.get_sub_servicenames(),
                                        inv_service.get_groupnames())
-                services.append(service)
-        for inv_subservice in inv_subservices:
-            if get_all or inv_subservice.name in servicenames:
+            else:
+                inv_subservice = inventory.get_sub_service(servicename)
                 service = self.Service(inv_subservice.name,
                                        inv_subservice.get_parent_servicename(),
                                        [],
                                        inv_subservice.get_groupnames())
-                services.append(service)
+            services.append(service)
         return services

@@ -114,7 +114,7 @@ class TestFunctional(KollaCliTest):
         # check some of the api not exercised by the CLI
         group1 = 'group_test1'
         group2 = 'group_test2'
-        exp_groups = sorted([group1, group2])
+        exp_groups = sorted([group1, group1, group2])
         CLIENT.group_add(exp_groups)
         groups = CLIENT.group_get([group1])
         groupnames = []

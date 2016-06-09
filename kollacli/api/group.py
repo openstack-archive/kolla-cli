@@ -180,15 +180,16 @@ class GroupApi(object):
     def _get_groups(self, groupnames, get_all=False):
         groups = []
         inventory = Inventory.load()
-        if groupnames:
+        if get_all:
+            groupnames = inventory.get_groupnames()
+        else:
             inventory.validate_groupnames(groupnames)
 
         group_services = inventory.get_group_services()
-        inv_groups = inventory.get_groups()
-        for inv_group in inv_groups:
-            if get_all or inv_group.name in groupnames:
-                group = self.Group(inv_group.name,
-                                   group_services[inv_group.name],
-                                   inv_group.get_hostnames())
-                groups.append(group)
+        for groupname in groupnames:
+            inv_group = inventory.get_group(groupname)
+            group = self.Group(groupname,
+                               group_services[groupname],
+                               inv_group.get_hostnames())
+            groups.append(group)
         return groups
