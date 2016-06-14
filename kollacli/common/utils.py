@@ -208,54 +208,50 @@ def change_property(file_path, property_dict, clear=False):
     If not clear, and key is not found, the new property will be appended.
     If not clear, and key is found, edit property in place.
     """
-    try:
-        cloned_dict = copy.copy(property_dict)
-        group_info = grp.getgrnam('kolla')
-        if not os.path.exists(file_path):
-            with open(file_path, 'a'):
-                os.utime(file_path, None)
-                os.chown(file_path, -1, group_info.gr_gid)
+    cloned_dict = copy.copy(property_dict)
+    group_info = grp.getgrnam('kolla')
+    if not os.path.exists(file_path):
+        with open(file_path, 'a'):
+            os.utime(file_path, None)
+            os.chown(file_path, -1, group_info.gr_gid)
 
-        new_contents = []
-        read_data = sync_read_file(file_path)
-        lines = read_data.split('\n')
-        last_line_empty = False
-        for line in lines:
-            line = line.rstrip()
+    new_contents = []
+    read_data = sync_read_file(file_path)
+    lines = read_data.split('\n')
+    last_line_empty = False
+    for line in lines:
+        line = line.rstrip()
 
-            # yank spurious empty lines
-            if line:
-                last_line_empty = False
-            else:
-                if last_line_empty:
+        # yank spurious empty lines
+        if line:
+            last_line_empty = False
+        else:
+            if last_line_empty:
+                continue
+            last_line_empty = True
+
+        split_line = line.split(':', 1)
+        if len(split_line) > 1:
+            split_key = split_line[0]
+            split_key.rstrip()
+            if split_key in cloned_dict:
+                if clear:
+                    # clear existing property
                     continue
-                last_line_empty = True
-
-            split_line = line.split(':', 1)
-            if len(split_line) > 1:
-                split_key = split_line[0]
-                split_key.rstrip()
-                if split_key in cloned_dict:
-                    if clear:
-                        # clear existing property
-                        continue
-                    # edit existing property
-                    line = '%s: "%s"' % (split_key, cloned_dict[split_key])
-                    # clear out the key after we are done, all existing keys
-                    # will be appended at the end (or for clear, ignored)
-                    del cloned_dict[split_key]
+                # edit existing property
+                line = '%s: "%s"' % (split_key, cloned_dict[split_key])
+                # clear out the key after we are done, all existing keys
+                # will be appended at the end (or for clear, ignored)
+                del cloned_dict[split_key]
+        new_contents.append(line)
+    if not clear:
+        # add new properties to file
+        for key, value in cloned_dict.items():
+            line = '%s: "%s"' % (key, value)
             new_contents.append(line)
-        if not clear:
-            # add new properties to file
-            for key, value in cloned_dict.items():
-                line = '%s: "%s"' % (key, value)
-                new_contents.append(line)
 
-        write_data = '\n'.join(new_contents)
-        sync_write_file(file_path, write_data)
-
-    except Exception as e:
-        raise e
+    write_data = '\n'.join(new_contents)
+    sync_write_file(file_path, write_data)
 
 
 def sync_read_file(path, mode='r'):
@@ -274,8 +270,6 @@ def sync_read_file(path, mode='r'):
                 .format(path=path))
         with open(path, mode) as data_file:
             data = data_file.read()
-    except Exception as e:
-        raise e
     finally:
         if lock:
             lock.release()
@@ -304,8 +298,6 @@ def sync_write_file(path, data, mode='w'):
                 .format(path=path))
         with open(path, mode) as data_file:
             data_file.write(data)
-    except Exception as e:
-        raise e
     finally:
         if ansible_lock:
             ansible_lock.release()

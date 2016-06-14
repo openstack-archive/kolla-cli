@@ -17,6 +17,7 @@
 # <http://www.gnu.org/licenses/>.#
 import json
 import os
+import select
 import shutil
 import tempfile
 import time
@@ -24,11 +25,15 @@ import traceback
 
 from ansible.plugins.callback import CallbackBase
 
+PIPE_BUF = select.PIPE_BUF  # depth of fifo buffer
+
 DEBUG_LOG_DIR = '/tmp/ansible_debug'
 DEBUG_FLAG_FNAME = '/tmp/ENABLE_ANSIBLE_PLUGIN_DEBUG'
 DEBUG_LOG_FNAME = 'plugin.log'
 
 PIPE_NAME = '.kolla_pipe'
+
+TIMEOUT = 5  # 5 second timeout
 
 # action defs
 ACTION_PLAY_START = 'play_start'
@@ -48,9 +53,6 @@ is_playbook = False
 
 # playbook path
 playbook_path = ''
-
-# pipe open failed
-fifo_failed = False
 
 
 class CallbackModule(CallbackBase):
@@ -342,21 +344,42 @@ def _send_msg(msg):
     pipe reader will see each line as it is written.
     """
     global fifo_path
-    global fifo_failed
 
     fifo_fd = None
-    if fifo_failed:
-        return
     try:
         fifo_fd = os.open(fifo_path, os.O_WRONLY | os.O_NONBLOCK)
-        os.write(fifo_fd, msg + '\n')
+        _send_packets(fifo_fd, msg + '\n')
     except Exception:
-        log('ERROR: send_msg: %s' % traceback.format_exc())
-        fifo_failed = True
-        return
+        log('ERROR: os.open: %s' % traceback.format_exc())
     finally:
         if fifo_fd:
             os.close(fifo_fd)
+
+
+def _send_packets(fifo_fd, data):
+    """make fifo writes atomic
+
+    fifo writes are only atomic up to PIPE_BUF bytes. Keep
+    the write to less than that to avoid partial writes.
+    """
+    start_idx = 0
+    while start_idx < len(data):
+        end_idx = start_idx + PIPE_BUF - 1
+        _fifo_write(fifo_fd, data[start_idx:end_idx])
+        start_idx = end_idx + 1
+
+
+def _fifo_write(fifo_fd, data):
+    timeout_target = time.time() + TIMEOUT
+    while time.time() < timeout_target:
+        try:
+            os.write(fifo_fd, data)
+            break
+        except Exception:
+            log('ERROR: send_msg: %s, will retry' % traceback.format_exc())
+            time.sleep(1)
+    if time.time() > timeout_target:
+        log('ERROR: timed out trying to write packet, packet dropped.')
 
 
 def log(msg):

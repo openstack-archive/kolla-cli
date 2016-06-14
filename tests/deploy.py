@@ -157,7 +157,7 @@ class TestFunctional(KollaCliTest):
             self.assertNotEqual(retval, 0,
                                 'host only deploy ran ok but shouldn\'t have')
             self.assertIn(err_msg, msg,
-                          'host only deploy test failed %s' % msg)
+                          'Incorrect error message')
         except Exception:
             self.assertEqual(0, 1,
                              'host only deploy threw exception %s' % msg)

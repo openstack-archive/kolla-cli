@@ -112,7 +112,7 @@ class AnsibleJob(object):
             status = self.get_status()
             if status is not None:
                 break
-            time.sleep(1)
+            time.sleep(0.2)
         return status
 
     def get_status(self):
@@ -282,7 +282,7 @@ class AnsibleJob(object):
         """read lines from callback in real-time"""
         data = None
         try:
-            data = os.read(self._fifo_fd, 1000000)
+            data = os.read(self._fifo_fd, 10000000)
             data = safe_decode(data)
         except OSError:  # nosec
             # error can happen if fifo is empty
