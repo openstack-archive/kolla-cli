@@ -23,6 +23,7 @@ import kollacli.i18n as u
 from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import ClientException
 from kollacli.commands.exceptions import CommandError
+from kollacli.common.utils import get_setup_user
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -267,8 +268,8 @@ class HostSetup(Command):
                     password = parsed_args.insecure.strip()
                 else:
                     password = getpass.getpass(
-                        u._('kolla password for {host}: ')
-                        .format(host=hostname))
+                        u._('{name} password for {host}: ')
+                        .format(name=get_setup_user(), host=hostname))
                 CLIENT.host_setup({hostname: {'password': password}})
 
         except ClientException as e:
