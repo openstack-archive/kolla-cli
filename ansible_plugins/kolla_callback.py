@@ -25,8 +25,7 @@ import traceback
 
 from ansible.plugins.callback import CallbackBase
 
-PIPE_BUF = 100
-#PIPE_BUF = select.PIPE_BUF  # depth of fifo buffer
+PIPE_BUF = select.PIPE_BUF  # depth of fifo buffer
 
 DEBUG_LOG_DIR = '/tmp/ansible_debug'
 DEBUG_FLAG_FNAME = '/tmp/ENABLE_ANSIBLE_PLUGIN_DEBUG'
