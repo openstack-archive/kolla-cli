@@ -25,7 +25,8 @@ import traceback
 
 from ansible.plugins.callback import CallbackBase
 
-PIPE_BUF = select.PIPE_BUF  # depth of fifo buffer
+PIPE_BUF = 100
+#PIPE_BUF = select.PIPE_BUF  # depth of fifo buffer
 
 DEBUG_LOG_DIR = '/tmp/ansible_debug'
 DEBUG_FLAG_FNAME = '/tmp/ENABLE_ANSIBLE_PLUGIN_DEBUG'
@@ -366,7 +367,7 @@ def _send_packets(fifo_fd, data):
     while start_idx < len(data):
         end_idx = start_idx + PIPE_BUF - 1
         _fifo_write(fifo_fd, data[start_idx:end_idx])
-        start_idx = end_idx + 1
+        start_idx = end_idx
 
 
 def _fifo_write(fifo_fd, data):
