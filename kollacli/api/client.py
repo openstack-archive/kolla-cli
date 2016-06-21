@@ -47,6 +47,16 @@ class ClientApi(
         ServiceApi,
         SupportApi,
         ):
+    """
+    Client API Notes
+
+    Objects returned by the API contain a local copy of the information
+    in the datastore. While changes made to the local copy will be
+    reflected in the local object, changes made to the datastore
+    from other objects will not be reflected in this local copy. The
+    object will need to be re-fetched from the datastore to reflect
+    the updates.
+    """
 
     def __init__(self):
         self._configure_logging()

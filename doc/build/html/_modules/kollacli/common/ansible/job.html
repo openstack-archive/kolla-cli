@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible.job &mdash; kollacli 3.0.1.dev429 documentation</title>
+    <title>kollacli.common.ansible.job &mdash; kollacli 3.0.1.dev435 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '3.0.1.dev429',
+        VERSION:     '3.0.1.dev435',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev429 documentation" href="../../../../index.html" />
+    <link rel="top" title="kollacli 3.0.1.dev435 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -161,7 +161,7 @@
             <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">break</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">status</span>
 </div>
 <div class="viewcode-block" id="AnsibleJob.get_status"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.job.AnsibleJob.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -331,7 +331,7 @@
         <span class="sd">&quot;&quot;&quot;read lines from callback in real-time&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_fd</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_fd</span><span class="p">,</span> <span class="mi">10000000</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>  <span class="c"># nosec</span>
             <span class="c"># error can happen if fifo is empty</span>
@@ -545,7 +545,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 3.0.1.dev429 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
