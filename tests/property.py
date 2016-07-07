@@ -198,6 +198,20 @@ class TestFunctional(KollaCliTest):
                           '(%s %s)'
                           % (switch, targets_csv))
 
+        # test setting empty string
+        value = '""'
+        self.run_cli_cmd('property set %s %s %s %s'
+                         % (switch, targets_csv, key, value))
+        msg = self.run_cli_cmd('property list --all -f json %s %s'
+                               % (switch, targets_csv))
+        err_msg = self._check_property_values(key, value, msg, targets)
+        self.assertTrue('missing' in err_msg,
+                        'clear failed, property still in output: ' +
+                        '%s, %s (%s %s)'
+                        % (key, value, switch, targets_csv))
+        self.run_cli_cmd('property clear %s %s %s'
+                         % (switch, targets_csv, key))
+
     def _check_property_values(self, key, value, json_str,
                                targets=[]):
         """Verify cli data against model data"""

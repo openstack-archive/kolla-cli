@@ -47,8 +47,7 @@ class ClientApi(
         ServiceApi,
         SupportApi,
         ):
-    """
-    Client API Notes
+    """Client API Notes
 
     Objects returned by the API contain a local copy of the information
     in the datastore. While changes made to the local copy will be

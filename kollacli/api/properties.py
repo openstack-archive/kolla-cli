@@ -78,7 +78,10 @@ class PropertyApi(object):
         """
         for key, value in property_dict.items():
             check_arg(key, u._('Property Key'), str)
-            check_arg(value, u._('Property Value'), str)
+            check_arg(value, u._('Property Value'), str, empty_ok=True)
+            if '"' in value:
+                raise InvalidArgument(u._('Cannot use double quotes in '
+                                          'a property value.'))
         property_dict = safe_decode(property_dict)
 
         self._check_type(property_type)
