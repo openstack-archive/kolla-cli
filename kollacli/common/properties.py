@@ -255,11 +255,8 @@ class AnsibleProperties(object):
         return new_contents
 
     def set_property(self, property_dict):
-        try:
-            change_property(self.globals_path, property_dict,
-                            clear=False)
-        except Exception as e:
-            raise e
+        change_property(self.globals_path, property_dict,
+                        clear=False)
 
     def set_host_property(self, property_dict, hosts):
         # if hosts is None set the property on all hosts

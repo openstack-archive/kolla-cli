@@ -18,6 +18,8 @@ import kollacli.i18n as u
 from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import ClientException
 from kollacli.commands.exceptions import CommandError
+from kollacli.common.utils import convert_lists_to_string
+
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -125,6 +127,7 @@ class GroupListhosts(Lister):
                 for group in groups:
                     data.append((group.get_name(),
                                  sorted(group.get_hosts())))
+            data = convert_lists_to_string(data, parsed_args)
             return ((u._('Group'), u._('Hosts')), sorted(data))
         except ClientException as e:
             raise CommandError(str(e))
@@ -193,6 +196,7 @@ class GroupListservices(Lister):
                 for group in groups:
                     data.append((group.get_name(),
                                  sorted(group.get_services())))
+            data = convert_lists_to_string(data, parsed_args)
             return ((u._('Group'), u._('Services')), sorted(data))
         except ClientException as e:
             raise CommandError(str(e))

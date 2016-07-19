@@ -227,6 +227,26 @@ class TestFunctional(KollaCliTest):
         self.check_types(CLIENT.async_host_destroy, [list, str, int, bool])
         self.check_types(CLIENT.async_host_precheck, [list, int])
 
+    def test_host_list_nonascii(self):
+        hostname = 'host_test1'
+        CLIENT.host_add([hostname])
+
+        # this is a groupname in cyrillic chars
+        groupname1 = u'\u0414\u0435\u043a\u0430\u0442'
+        groupname2 = 'test_group2'  # ascii groupname
+        groupnames = [groupname1, groupname2]
+        CLIENT.group_add(groupnames)
+        groups = CLIENT.group_get(groupnames)
+        for group in groups:
+            group.add_host(hostname)
+
+        msg = self.run_cli_cmd('host list')
+        self.assertIn(groupname1, msg)
+        self.assertNotIn("u'\u0414\u0435\u043a\u0430\u0442'", msg, 'groupname '
+                         'incorrectly appearing as unicode bytes in output')
+        self.assertNotIn("u'test_group2'", msg, 'unicode escape text is '
+                         'incorrectly displayed in host list output')
+
     def _check_cli_output(self, exp_hosts, cli_output):
         """Verify cli data against model data
 

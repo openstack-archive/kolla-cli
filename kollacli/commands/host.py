@@ -23,6 +23,7 @@ import kollacli.i18n as u
 from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import ClientException
 from kollacli.commands.exceptions import CommandError
+from kollacli.common.utils import convert_lists_to_string
 from kollacli.common.utils import get_setup_user
 
 from cliff.command import Command
@@ -162,6 +163,7 @@ class HostList(Lister):
             else:
                 data.append(('', ''))
 
+            data = convert_lists_to_string(data, parsed_args)
             return ((u._('Host'), u._('Groups')), sorted(data))
 
         except ClientException as e:

@@ -99,9 +99,14 @@ class KollaCliTest(testtools.TestCase):
         """
         # self.log.debug('run cmd: %s' % cmd)
         msg = ''
+
+        # pipe encoding defaults to None which will cause output encode errors
+        # if non-ascii chars are attempted to be written to stdout.
+        env = {'PYTHONIOENCODING': 'utf-8'}
         process = subprocess.Popen(cmd,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
+                                   env=env,
                                    shell=True)
         (out, err) = process.communicate()
         retval = process.returncode
@@ -109,8 +114,8 @@ class KollaCliTest(testtools.TestCase):
         # the py dev debugger adds a string at the line start, remove it
         if err:
             msg = utils.safe_decode(err)
-        else:
-            msg = utils.safe_decode(out)
+        if out:
+            msg = msg + '\n' + utils.safe_decode(out)
         if msg.startswith('pydev debugger'):
             msg = msg.split('\n', 1)[1]
         return (retval, msg)

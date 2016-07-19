@@ -18,6 +18,7 @@ import kollacli.i18n as u
 from kollacli.api.client import ClientApi
 from kollacli.api.exceptions import ClientException
 from kollacli.commands.exceptions import CommandError
+from kollacli.common.utils import convert_lists_to_string
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -100,6 +101,7 @@ class ServiceListGroups(Lister):
                             inh_str = 'yes'
                             groupnames = ''
                     data.append((service.name, groupnames, inh_str))
+            data = convert_lists_to_string(data, parsed_args)
             return ((u._('Service'), u._('Groups'), u._('Inherited')),
                     sorted(data))
         except ClientException as e:
@@ -121,6 +123,7 @@ class ServiceList(Lister):
                     if not service.get_parent():
                         # this is a service, not a subservice
                         data.append((service.name, service.get_children()))
+            data = convert_lists_to_string(data, parsed_args)
             return ((u._('Service'), u._('Sub-Services')), sorted(data))
 
         except ClientException as e:

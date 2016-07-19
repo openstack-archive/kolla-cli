@@ -326,13 +326,11 @@ def safe_decode(obj_to_decode):
             key = safe_decode(key)
             value = safe_decode(value)
             new_obj[key] = value
-
     else:
-        try:
+        new_obj = obj_to_decode
+        if not isinstance(obj_to_decode, six.text_type):
+            # object is not unicode
             new_obj = obj_to_decode.decode('utf-8')
-        except AttributeError:   # nosec
-            # py3 will raise if text is already a string
-            new_obj = obj_to_decode
     return new_obj
 
 
@@ -343,6 +341,38 @@ def is_string_true(string):
         return True
     else:
         return False
+
+
+def convert_lists_to_string(tuples, parsed_args):
+    """convert lists to strings
+
+    Because of the way cliff processes strings for tables, if a list
+    has non-ascii chars in it, they would display as unicode bytes
+    (\u0414\u0435\u043a\u0430\u0442). By converting
+    the list to string here, the proper non-ascii chars are displayed.
+
+    This will only change the lists when the output is to a table. It cannot
+    be changed if the display output is json, yaml, etc.
+    """
+    if parsed_args.formatter and parsed_args.formatter != 'table':
+        # not table output, leave it as-is
+        return tuples
+
+    new_tuples = []
+    for data_tuple in tuples:
+        new_items = []
+        items = list(data_tuple)
+        for item in items:
+            if isinstance(item, list):
+                item = convert_list_to_string(item)
+            new_items.append(item)
+        data_tuple = tuple(new_items)
+        new_tuples.append(data_tuple)
+    return new_tuples
+
+
+def convert_list_to_string(alist):
+    return '[' + ','.join(alist) + ']'
 
 
 def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False):
