@@ -21,33 +21,8 @@ from kollacli.common.utils import safe_decode
 
 class HostApi(object):
 
-    class Host(object):
-        """Host"""
-        def __init__(self, hostname, groupnames):
-            self.name = hostname
-            self._groupnames = groupnames
-
-        def get_name(self):
-            """Get name
-
-            :return: host name
-            :rtype: string
-            """
-            return self.name
-
-        def get_groups(self):
-            """Get names of the groups associated with this host
-
-            :return: group names
-            :rtype: list of strings
-
-            Note: If the groups associated with this host change after this
-            host is fetched, the host must be re-fetched to reflect those
-            changes.
-            """
-            return copy(self._groupnames)
-
     def host_add(self, hostnames):
+        # type: (List[str]) -> None
         """Add hosts to the inventory
 
         :param hostnames: list of strings
@@ -65,6 +40,7 @@ class HostApi(object):
             Inventory.save(inventory)
 
     def host_remove(self, hostnames):
+        # type: (List[str]) -> None
         """Remove hosts from the inventory
 
         :param hostnames: list of strings
@@ -82,24 +58,26 @@ class HostApi(object):
             Inventory.save(inventory)
 
     def host_get_all(self):
+        # type: () -> List[Host]
         """Get all hosts in the inventory
 
         :return: Hosts
-        :rtype: Host
+        :rtype: list of Host objects
         """
         inventory = Inventory.load()
         hosts = []
         host_groups = inventory.get_host_groups()
         for hostname, groupnames in host_groups.items():
-            hosts.append(self.Host(hostname, groupnames))
+            hosts.append(Host(hostname, groupnames))
         return hosts
 
     def host_get(self, hostnames):
+        # type: (List[str]) -> List[Host]
         """Get selected hosts in the inventory
 
         :param hostnames: list of strings
         :return: hosts
-        :rtype: Host
+        :rtype: list of Host objects
         """
         check_arg(hostnames, u._('Host names'), list)
         hostnames = safe_decode(hostnames)
@@ -109,10 +87,11 @@ class HostApi(object):
         hosts = []
         host_groups = inventory.get_host_groups()
         for hostname in hostnames:
-            hosts.append(self.Host(hostname, host_groups[hostname]))
+            hosts.append(Host(hostname, host_groups[hostname]))
         return hosts
 
     def host_ssh_check(self, hostnames):
+        # type: (List[str]) -> Dict[str,Dict[str,object]]
         """Check hosts for ssh connectivity
 
         Check status is a dictionary of form:
@@ -134,6 +113,7 @@ class HostApi(object):
         return summary
 
     def host_setup(self, hosts_info):
+        # type: (Dict[str,Dict[str,object]]) -> None
         """Setup multiple hosts for ssh access
 
         hosts_info is a dictionary of form:
@@ -151,3 +131,34 @@ class HostApi(object):
         inventory = Inventory.load()
         inventory.validate_hostnames(hosts_info.keys())
         inventory.setup_hosts(hosts_info)
+
+
+class Host(object):
+    """Host"""
+
+    def __init__(self, hostname, groupnames):
+        # type: (str, List[str]) -> None
+        self.name = hostname
+        self._groupnames = groupnames
+
+    def get_name(self):
+        # type: () -> str
+        """Get name
+
+        :return: host name
+        :rtype: string
+        """
+        return self.name
+
+    def get_groups(self):
+        # type: () -> List[str]
+        """Get names of the groups associated with this host
+
+        :return: group names
+        :rtype: list of strings
+
+        Note: If the groups associated with this host change after this
+        host is fetched, the host must be re-fetched to reflect those
+        changes.
+        """
+        return copy(self._groupnames)

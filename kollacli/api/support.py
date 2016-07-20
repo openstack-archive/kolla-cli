@@ -25,6 +25,7 @@ from kollacli.common.utils import safe_decode
 class SupportApi(object):
 
     def support_dump(self, dirpath):
+        # type: (str) -> str
         """Dumps configuration data for debugging.
 
         Dumps most files in /etc/kolla and /usr/share/kolla into a
@@ -45,6 +46,7 @@ class SupportApi(object):
         return dumpfile_path
 
     def support_get_logs(self, servicenames, hostname, dirpath):
+        # type: (List[str], str, str) -> None
         """get container logs
 
         Fetch the container log files of services from the specified hosts.

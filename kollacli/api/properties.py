@@ -30,41 +30,9 @@ PROP_TYPES = [GLOBAL_TYPE, GROUP_TYPE, HOST_TYPE]
 
 class PropertyApi(object):
 
-    class Property(object):
-        """Property
-
-        Members:
-            - name (str): key
-            - value (str): value
-            - file_name (str): name of file property is from
-            - overrides (bool): does the property override some other value
-            - orig_value (str): the value which is overridden or None
-            - target (str): group or host name for group or host properties
-            - prop_type (str): one of 'global', 'group' or 'host'
-            - ovr_global (bool): true if property is overridden at global level
-            - ovr_group (bool): true if property is overridden at group level
-            - ovr_host (bool): true if property is overridden at host level
-        """
-        def __init__(self, ansible_property, override_flags):
-            self.name = ansible_property.name
-            self.value = ansible_property.value
-            self.file_name = ansible_property.file_name
-            self.overrides = ansible_property.overrides
-            self.orig_value = ansible_property.orig_value
-            self.target = ansible_property.target
-            self.prop_type = ansible_property.prop_type
-
-            if override_flags is not None:
-                self.ovr_global = override_flags.ovr_global
-                self.ovr_group = override_flags.ovr_group
-                self.ovr_host = override_flags.ovr_host
-            else:
-                self.ovr_global = False
-                self.ovr_group = False
-                self.ovr_host = False
-
     def property_set(self, property_dict,
                      property_type=GLOBAL_TYPE, change_set=None):
+        # type: (Dict[str,str], str, List[str]) -> None
         """Set a property
 
         :param property_dict: property dictionary containing key / values
@@ -100,6 +68,7 @@ class PropertyApi(object):
 
     def property_clear(self, property_list, property_type=GLOBAL_TYPE,
                        change_set=None):
+        # type: (List[str], str, List[str]) -> None
         """Clear a property
 
         :param property_list: property list
@@ -129,6 +98,7 @@ class PropertyApi(object):
             ansible_properties.clear_host_property(property_list, change_set)
 
     def property_get(self, property_type=GLOBAL_TYPE, get_set=None):
+        # type: (str, List[str]) -> List[Property]
         """Returns a list of Property objects
 
         :param property_type: one of 'global', 'group', or 'host'
@@ -144,7 +114,6 @@ class PropertyApi(object):
 
         ansible_properties = AnsibleProperties()
 
-        property_list = []
         result_list = []
         if property_type == GLOBAL_TYPE:
             property_list = ansible_properties.get_all_unique()
@@ -156,7 +125,7 @@ class PropertyApi(object):
         override_flags = ansible_properties.get_all_override_flags()
 
         for prop in property_list:
-            result = self.Property(prop, override_flags.get(prop.name, None))
+            result = Property(prop, override_flags.get(prop.name, None))
             result_list.append(result)
 
         return result_list
@@ -166,3 +135,38 @@ class PropertyApi(object):
             raise InvalidArgument(u._('Property Type ({value} is not one of '
                                       'global, group or host')
                                   .format(value=property_type))
+
+
+class Property(object):
+    """Property
+
+    Members:
+        - name (str): key
+        - value (str): value
+        - file_name (str): name of file property is from
+        - overrides (bool): does the property override some other value
+        - orig_value (str): the value which is overridden or None
+        - target (str): group or host name for group or host properties
+        - prop_type (str): one of 'global', 'group' or 'host'
+        - ovr_global (bool): true if property is overridden at global level
+        - ovr_group (bool): true if property is overridden at group level
+        - ovr_host (bool): true if property is overridden at host level
+    """
+
+    def __init__(self, ansible_property, override_flags):
+        self.name = ansible_property.name
+        self.value = ansible_property.value
+        self.file_name = ansible_property.file_name
+        self.overrides = ansible_property.overrides
+        self.orig_value = ansible_property.orig_value
+        self.target = ansible_property.target
+        self.prop_type = ansible_property.prop_type
+
+        if override_flags is not None:
+            self.ovr_global = override_flags.ovr_global
+            self.ovr_group = override_flags.ovr_group
+            self.ovr_host = override_flags.ovr_host
+        else:
+            self.ovr_global = False
+            self.ovr_group = False
+            self.ovr_host = False

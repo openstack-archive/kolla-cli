@@ -19,6 +19,7 @@ class Job(object):
         self._ansible_job = ansible_job
 
     def wait(self):
+        # type: () -> int
         """Wait for job to complete
 
         :return: 0 if job succeeded, 1 if job failed
@@ -27,6 +28,7 @@ class Job(object):
         return self._ansible_job.wait()
 
     def get_status(self):
+        # type: () -> int
         """Get status of job
 
         :return: None: job is still running
@@ -38,6 +40,7 @@ class Job(object):
         return self._ansible_job.get_status()
 
     def get_error_message(self):
+        # type: () -> str
         """Get error message
 
         :return: if job failed, this will return the error message.
@@ -46,6 +49,7 @@ class Job(object):
         return self._ansible_job.get_error_message()
 
     def get_console_output(self):
+        # type: () -> str
         """Get the console output from the job
 
         :return: console output useful for debugging failed jobs.

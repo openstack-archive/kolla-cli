@@ -61,12 +61,14 @@ class ClientApi(
         self._configure_logging()
 
     def get_version(self):
+        # type: () -> str
         return VERSION
 
     def base_call(self):
         LOG.info('base call')
 
     def enable_console_logging(self, level, enable=True):
+        # type: (int, bool) -> None
         """enable/disable console logging for the api
 
         enable: True/False
@@ -117,6 +119,7 @@ class ClientApi(
             LOG = logging.getLogger(__name__)
 
     def _get_kolla_log_file_size(self):
+        # type: () -> int
         envvar = 'KOLLA_LOG_FILE_SIZE'
         size_str = os.environ.get(envvar, '500000')
         try:

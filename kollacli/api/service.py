@@ -21,68 +21,8 @@ from kollacli.common.utils import safe_decode
 
 class ServiceApi(object):
 
-    class Service(object):
-        """Service
-
-        A service is one of the services available in openstack-kolla.
-
-        For example, this would be how the murano services would be
-        represented:
-
-        - murano
-            - parentname: None
-            - childnames: [murano-api, murano-engine]
-        - murano-api
-            - parentname: murano
-            - childnames: []
-        - murano-engine
-            - parentname: murano
-            - childnames: []
-        """
-        def __init__(self, servicename, parentname=None,
-                     childnames=[], groupnames=[]):
-            self.name = servicename
-            self.parentname = parentname
-            self._childnames = childnames
-            self._groupnames = groupnames
-
-        def get_name(self):
-            """Get name
-
-            :return: service name
-            :rtype: string
-            """
-            return self.name
-
-        def get_parent(self):
-            """Get name of parent service
-
-            :return: parent service name
-            :rtype: string
-            """
-            return self.parentname
-
-        def get_children(self):
-            """Get names of the child services associated with this service
-
-            :return: child names
-            :rtype: list of strings
-            """
-            return copy(self._childnames)
-
-        def get_groups(self):
-            """Get names of the groups associated with this service
-
-            :return: group names
-            :rtype: list of strings
-
-            Note: If the groups associated with this service change after this
-            service is fetched, the service must be re-fetched to reflect those
-            changes.
-            """
-            return copy(self._groupnames)
-
     def service_get_all(self):
+        # type: () -> List[Service]
         """Get all services in the inventory
 
         :return: services
@@ -91,6 +31,7 @@ class ServiceApi(object):
         return self._get_services(None, get_all=True)
 
     def service_get(self, servicenames):
+        # type: (List[str]) -> List[Service]
         """Get selected services in the inventory
 
         :param servicenames: names of services to be read
@@ -103,6 +44,7 @@ class ServiceApi(object):
         return self._get_services(servicenames)
 
     def _get_services(self, servicenames, get_all=False):
+        # type: (List[str], bool) -> List[Service]
         services = []
         inventory = Inventory.load()
 
@@ -118,15 +60,83 @@ class ServiceApi(object):
         for servicename in servicenames:
             inv_service = inventory.get_service(servicename)
             if inv_service:
-                service = self.Service(inv_service.name,
-                                       None,
-                                       inv_service.get_sub_servicenames(),
-                                       inv_service.get_groupnames())
+                service = Service(inv_service.name,
+                                  None,
+                                  inv_service.get_sub_servicenames(),
+                                  inv_service.get_groupnames())
             else:
                 inv_subservice = inventory.get_sub_service(servicename)
-                service = self.Service(inv_subservice.name,
-                                       inv_subservice.get_parent_servicename(),
-                                       [],
-                                       inv_subservice.get_groupnames())
+                service = Service(inv_subservice.name,
+                                  inv_subservice.get_parent_servicename(),
+                                  [],
+                                  inv_subservice.get_groupnames())
             services.append(service)
         return services
+
+
+class Service(object):
+    """Service
+
+    A service is one of the services available in openstack-kolla.
+
+    For example, this would be how the murano services would be
+    represented:
+
+    - murano
+        - parentname: None
+        - childnames: [murano-api, murano-engine]
+    - murano-api
+        - parentname: murano
+        - childnames: []
+    - murano-engine
+        - parentname: murano
+        - childnames: []
+    """
+
+    def __init__(self, servicename, parentname=None,
+                 childnames=[], groupnames=[]):
+        # type: (str, str, List[str], List[str]) -> None
+        self.name = servicename
+        self.parentname = parentname
+        self._childnames = childnames
+        self._groupnames = groupnames
+
+    def get_name(self):
+        # type: () -> str
+        """Get name
+
+        :return: service name
+        :rtype: string
+        """
+        return self.name
+
+    def get_parent(self):
+        # type: () -> str
+        """Get name of parent service
+
+        :return: parent service name
+        :rtype: string
+        """
+        return self.parentname
+
+    def get_children(self):
+        # type: () -> List[str]
+        """Get names of the child services associated with this service
+
+        :return: child names
+        :rtype: list of strings
+        """
+        return copy(self._childnames)
+
+    def get_groups(self):
+        # type: () -> List[str]
+        """Get names of the groups associated with this service
+
+        :return: group names
+        :rtype: list of strings
+
+        Note: If the groups associated with this service change after this
+        service is fetched, the service must be re-fetched to reflect those
+        changes.
+        """
+        return copy(self._groupnames)

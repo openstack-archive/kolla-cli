@@ -24,6 +24,7 @@ LOG = logging.getLogger(__name__)
 class DeployApi(object):
 
     def deploy_set_mode(self, remote_mode):
+        # type: (bool) -> None
         """Set deploy mode.
 
         Set deploy mode to either local or remote. Local indicates

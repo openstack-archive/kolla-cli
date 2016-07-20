@@ -25,6 +25,7 @@ class AsyncApi(object):
 
     def async_deploy(self, hostnames=[],
                      serial_flag=False, verbose_level=1):
+        # type: (List[str], bool, int) -> Job
         """Deploy.
 
         Deploy containers to hosts.
@@ -49,6 +50,7 @@ class AsyncApi(object):
         return Job(ansible_job)
 
     def async_upgrade(self, verbose_level=1):
+        # type: (int) -> Job
         """Upgrade.
 
         :param verbose_level: the higher the number, the more verbose
@@ -65,6 +67,7 @@ class AsyncApi(object):
 
     def async_host_destroy(self, hostnames, destroy_type, verbose_level=1,
                            include_data=False):
+        # type: (List[str], str, int, bool) -> Job
         """Destroy Hosts.
 
         Stops and removes all kolla related docker containers on the
@@ -100,6 +103,7 @@ class AsyncApi(object):
         return Job(ansible_job)
 
     def async_host_precheck(self, hostnames, verbose_level=1):
+        # type: (List[str], int) -> Job
         """Check pre-deployment configuration of hosts.
 
         Check if host is ready for a new deployment. This will fail if

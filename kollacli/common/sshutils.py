@@ -93,4 +93,3 @@ def ssh_get_public_key():
     with open(keyfile_path, "r") as public_key_file:
         public_key = public_key_file.read()
         return public_key
-    return None

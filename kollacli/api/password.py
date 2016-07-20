@@ -22,6 +22,7 @@ from kollacli.common.utils import check_arg
 class PasswordApi(object):
 
     def password_set(self, name, value):
+        # type: (str, str) -> None
         """Set password
 
         :param name: name of the password
@@ -33,6 +34,7 @@ class PasswordApi(object):
         set_password(name, value)
 
     def password_clear(self, name):
+        # type: (str) -> None
         """Clear password
 
         :param name: name of the password
@@ -42,6 +44,7 @@ class PasswordApi(object):
         clear_password(name)
 
     def password_get_names(self):
+        # type: () -> List[str]
         """Get password names
 
         :return: password names

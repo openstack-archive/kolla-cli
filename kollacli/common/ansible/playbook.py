@@ -37,12 +37,12 @@ class AnsiblePlaybook(object):
     flush_cache = True
     print_output = True
     verbose_level = 0
-    hosts = None
-    groups = None
-    services = None
+    hosts = None  # type: List[str]
+    groups = None  # type: List[str]
+    services = None  # type: List[str]
     serial = False
-    deploy_id = None
-    inventory = None
+    deploy_id = None  # type: str
+    inventory = None  # type: Inventory
 
     def run(self):
         try:
