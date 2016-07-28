@@ -58,6 +58,7 @@ LOG = logging.getLogger(__name__)
 
 
 def remove_temp_inventory(path):
+    # type: (str) -> None
     """remove temp inventory file and its parent directory"""
     if path:
         if os.path.exists(path):
