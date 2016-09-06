@@ -19,10 +19,10 @@ predeploy_cmds:
     - setdeploy remote
     - property set kolla_external_address 192.168.9.89
     - property set kolla_internal_address 192.168.9.89
-    - property set docker_registry ca-qa-docker-reg.us.oracle.com:5000
+    - property set docker_registry docker.registry.name:5000
     - property set docker_insecure_registry True
     - property set network_interface enp0s3
-    - property set openstack_release 2.0.1.89
+    - property set openstack_release 3.0.1
 hosts: 
     ol7-c4:
         uname: root

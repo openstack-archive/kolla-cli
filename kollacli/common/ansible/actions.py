@@ -73,6 +73,7 @@ def deploy(hostnames=[],
     kolla_home = get_kolla_home()
     playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/site.yml')
+    playbook.extra_vars = 'action=deploy'
     playbook.hosts = hostnames
     playbook.serial = serial_flag
 
