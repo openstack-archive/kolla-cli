@@ -34,6 +34,7 @@ from kollacli.common.host_group import HostGroup
 from kollacli.common.service import Service
 from kollacli.common.sshutils import ssh_setup_host
 from kollacli.common.subservice import SubService
+from kollacli.common.utils import get_admin_uids
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
 from kollacli.common.utils import get_group_vars_dir
@@ -685,7 +686,9 @@ class Inventory(object):
         deploy_id = str(uuid.uuid4())
         dirname = 'kolla_%s' % deploy_id
         dirpath = os.path.join(tempfile.gettempdir(), dirname)
-        os.mkdir(dirpath)
+        os.mkdir(dirpath, 0o775)
+        _, gid = get_admin_uids()
+        os.chown(dirpath, -1, gid)  # nosec
         json_gen_path = os.path.join(dirpath, 'temp_inventory.py')
 
         with open(json_gen_path, 'w') as json_gen_file:
