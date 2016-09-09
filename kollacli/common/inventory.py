@@ -326,13 +326,19 @@ class Inventory(object):
             LOG.info(
                 u._LI('Starting setup of host ({host}).')
                 .format(host=hostname))
-            ssh_setup_host(hostname, password, uname)
-            check_ok, msg = self.ssh_check_host(hostname)
-            if not check_ok:
-                raise Exception(u._('Post-setup ssh check failed. {err}')
-                                .format(err=msg))
-            LOG.info(u._LI('Host ({host}) setup succeeded.')
-                     .format(host=hostname))
+            check_ok, _ = self.ssh_check_host(hostname)
+            if check_ok:
+                LOG.info(u._LI('Host ({host}) is already setup.')
+                         .format(host=hostname))
+            else:
+                # host needs setup
+                ssh_setup_host(hostname, password, uname)
+                check_ok, msg = self.ssh_check_host(hostname)
+                if not check_ok:
+                    raise Exception(u._('Post-setup ssh check failed. {err}')
+                                    .format(err=msg))
+                LOG.info(u._LI('Host ({host}) setup succeeded.')
+                         .format(host=hostname))
         except Exception as e:
             raise HostError(
                 u._('Host ({host}) setup failed : {error}')

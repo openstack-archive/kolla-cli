@@ -109,21 +109,27 @@ class TestFunctional(KollaCliTest):
         self.run_cli_cmd('host add %s' % hostname)
 
         # check if host is not set-up
-        timeout = time.time() + 75
+        timeout = time.time() + 65
         while time.time() <= timeout:
-            msg = self.run_cli_cmd('host check %s' % hostname, True)
-            if 'ERROR:' not in msg:
-                self.log.info('waiting for ansible ssh session to timeout')
-                time.sleep(10)
-            break
-
-        self.assertLessEqual(time.time(), timeout,
-                             'check unexpectedly succeeded after key removal' +
-                             '(%s)' % hostname)
+            self.log.info('waiting 65s for ansible ssh session to timeout')
+            time.sleep(10)
 
         # setup the host
         self.run_cli_cmd('host setup %s --insecure %s'
                          % (hostname, pwd))
+        # check that the authorized key file size is not 0
+        out1 = test_config.run_remote_cmd('ls -l %s' % key_path, hostname)
+        size1 = out1.split('kolla kolla')[1].split()[0]
+        self.assertNotEqual(size1, '0',
+                            '%s is empty on %s' % (key_path, hostname))
+
+        # run setup again in api, should be a no-op, no new keys should exist
+        CLIENT.host_setup({hostname: {'password': pwd}})
+        out2 = test_config.run_remote_cmd('ls -l %s' % key_path, hostname)
+        size2 = out2.split('kolla kolla')[1].split()[0]
+        self.assertEqual(size1, size2, 'host setup added an additional key')
+
+        # run checks, should succeed
         self.run_cli_cmd('host check %s' % hostname)
         self.run_cli_cmd('host check --predeploy %s' % hostname)
 
