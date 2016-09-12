@@ -88,6 +88,7 @@ mkdir -m 0770 -p %{buildroot}/%{_var}/log/kolla
 # Install the required OpenStack Kolla files
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
 cp -r ansible/* %{buildroot}/%{_datadir}/kolla/kollacli/ansible
+cp -r openstack-kolla-data/ansible.cfg %{buildroot}/%{_datadir}/kolla/.ansible.cfg
 
 # Create an empty inventory file
 touch %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
@@ -213,8 +214,12 @@ openstack-kollacli client.
 %defattr(-, %{kolla_user}, %{kolla_group})
 %attr(-, root, root) %doc ansible_plugins/LICENSE
 %attr(755, %{kolla_user}, %{kolla_group}) %{plugin_dir}/*
+%attr(644, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/.ansible.cfg
 
 %changelog
+* Mon Sep 12 2016 - Steve Noyes <steve.noyes@oracle.com>
+- move ansible.cfg from kolla to kollacli rpm
+
 * Fri May 27 2016 - Steve Noyes <steve.noyes@oracle.com>
 - always copy rsa_id.pub key to /etc/kolla/kollacli
 
