@@ -50,9 +50,9 @@ class AllInOne(object):
             self.groups.append(groupname)
 
     def _load(self):
-        allineone_path = os.path.join(get_kolla_home(), 'ansible',
-                                      'inventory', 'all-in-one')
-        with open(allineone_path, 'r') as ain1:
+        allinone_path = os.path.join(get_kolla_home(), 'ansible',
+                                     'inventory_samples', 'all-in-one')
+        with open(allinone_path, 'r') as ain1:
             ain1_inv = ain1.read()
 
         lines = ain1_inv.split('\n')
