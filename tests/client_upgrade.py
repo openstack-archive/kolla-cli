@@ -125,8 +125,14 @@ class TestFunctional(KollaCliTest):
                     groups = sorted(service.get_groups())
                     if servicename == 'ceilometer':
                         self.assertEqual(expected_groups, groups,
-                                         'groups mismatch between heat and %s'
-                                         % servicename)
+                                         'groups mismatch between '
+                                         'ceilometer '
+                                         'and %s' % servicename)
+                    elif servicename == 'ceilometer-compute':
+                        self.assertEqual(['compute'], groups,
+                                         'groups mismatch between '
+                                         'ceilometer-compute '
+                                         'and %s' % servicename)
                     else:
                         # sub-services should have no groups (they inherit)
                         self.assertEqual([], groups,

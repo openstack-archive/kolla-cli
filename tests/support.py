@@ -26,7 +26,7 @@ from kollacli.common.utils import safe_decode
 LOGS_PREFIX = '/tmp/kolla_support_logs_'
 CLIENT = ClientApi()
 
-LOGDIR = '/tmp/utest_blaze_logs'
+LOGDIR = '/tmp/utest_kolla_logs'
 
 
 class TestFunctional(KollaCliTest):
@@ -109,10 +109,8 @@ class TestFunctional(KollaCliTest):
     def test_dump(self):
         check_files = [
             'var/log/kolla/kolla.log',
-            'kolla/etc/config/nova/nova-api.conf',
             'kolla/etc/kollacli/ansible/inventory.json',
             'kolla/share/ansible/site.yml',
-            'kolla/share/docs/ansible-deployment.rst',
         ]
         # dump success output is:
         # dump successful to /tmp/kollacli_dump_Umxu6d.tgz

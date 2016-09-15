@@ -19,7 +19,6 @@ import tempfile
 from kollacli.api.exceptions import FailedOperation
 from kollacli.common.inventory import Inventory
 from kollacli.common.properties import AnsibleProperties
-from kollacli.common.utils import get_kolla_etc
 from kollacli.common.utils import get_kolla_home
 from kollacli.common.utils import get_kolla_log_dir
 from kollacli.common.utils import get_kollacli_etc
@@ -164,9 +163,6 @@ def dump(dirpath):
     kolla_home = get_kolla_home()
     kolla_logs = get_kolla_log_dir()
     kolla_ansible = os.path.join(kolla_home, 'ansible')
-    kolla_docs = os.path.join(kolla_home, 'docs')
-    kolla_etc = get_kolla_etc()
-    kolla_config = os.path.join(kolla_etc, 'config')
     kollacli_etc = get_kollacli_etc().rstrip('/')
     ketc = 'kolla/etc/'
     kshare = 'kolla/share/'
@@ -178,13 +174,9 @@ def dump(dirpath):
         # accessible by the kolla user only (not kolla group)
         tar.add(kolla_ansible,
                 arcname=kshare + os.path.basename(kolla_ansible))
-        tar.add(kolla_docs,
-                arcname=kshare + os.path.basename(kolla_docs))
 
         # Can't blanket add kolla_etc because the passwords.yml
         # file is accessible by the kolla user only (not kolla group)
-        tar.add(kolla_config,
-                arcname=ketc + os.path.basename(kolla_config))
         tar.add(kollacli_etc,
                 arcname=ketc + os.path.basename(kollacli_etc))
 
