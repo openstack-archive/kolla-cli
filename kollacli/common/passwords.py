@@ -59,6 +59,21 @@ def get_password_names():
     return pwd_names
 
 
+def get_empty_password_values():
+    cmd = '%s -e' % (_get_cmd_prefix())
+    err_msg, output = utils.run_cmd(cmd, print_output=False)
+    # output of this command is a comma separated string of password keys
+    # that have empty values.
+    if err_msg:
+        raise FailedOperation('%s %s' % (err_msg, output))
+
+    empty_keys = []
+    if output:
+        # password keys exist that have no values
+        empty_keys = output.strip().split(',')
+    return empty_keys
+
+
 def _get_cmd_prefix():
     actions_path = utils.get_kolla_actions_path()
     pwd_file_path = os.path.join(utils.get_kolla_etc(),

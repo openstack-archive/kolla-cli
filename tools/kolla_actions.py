@@ -16,25 +16,48 @@ import getopt
 import os
 import signal
 import sys
+import yaml
 
 from kollacli.common.utils import change_property
-from kollacli.common.utils import sync_read_file
+
+
+def _get_empty_keys(path):
+    """get empty keys
+
+    print string with keys that have empty pwd values
+    """
+    ok_empty = ['docker_registry_password']
+    empty_keys = ''
+    with open(path, 'r') as f:
+        pwd_data = f.read()
+    pwds = yaml.safe_load(pwd_data)
+    comma = ''
+    for pwd_key, pwd_val in pwds.items():
+        is_empty = False
+        if not pwd_val and pwd_key not in ok_empty:
+            is_empty = True
+        elif isinstance(pwd_val, dict):
+            if not pwd_val.get('private_key', None):
+                is_empty = True
+            elif not pwd_val.get('public_key', None):
+                is_empty = True
+        if is_empty:
+            empty_keys = ''.join([empty_keys, comma, pwd_key])
+            comma = ','
+    if empty_keys:
+        print(empty_keys)
 
 
 def _print_pwd_keys(path):
-    pwd_keys = ''
+    keys_str = ''
     prefix = ''
-    pwd_data = sync_read_file(path)
-    for line in pwd_data.split('\n'):
-        if line.startswith('#'):
-            # skip commented lines
-            continue
-        if ':' in line:
-            pwd_key = line.split(':')[0]
-            pwd_keys = ''.join([pwd_keys, prefix, pwd_key])
-            prefix = ','
-
-    print(pwd_keys)
+    with open(path, 'r') as f:
+        pwd_data = f.read()
+    pwds = yaml.safe_load(pwd_data)
+    for pwd_key in pwds.keys():
+        keys_str = ''.join([keys_str, prefix, pwd_key])
+        prefix = ','
+    print(keys_str)
 
 
 def _password_cmd(argv):
@@ -46,13 +69,15 @@ def _password_cmd(argv):
       -v value # value of password
       -c       # flag to clear the password
       -l       # print to stdout a csv string of the existing keys
+      -e       # get keys of passwords with empty values
     """
-    opts, _ = getopt.getopt(argv[2:], 'p:k:v:cl')
+    opts, _ = getopt.getopt(argv[2:], 'p:k:v:cle')
     path = ''
     pwd_key = ''
     pwd_value = ''
     clear_flag = False
     list_flag = False
+    empty_flag = False
     for opt, arg in opts:
         if opt == '-p':
             path = arg
@@ -64,10 +89,14 @@ def _password_cmd(argv):
             clear_flag = True
         elif opt == '-l':
             list_flag = True
-
+        elif opt == '-e':
+            empty_flag = True
     if list_flag:
         # print the password keys
         _print_pwd_keys(path)
+    elif empty_flag:
+        # get empty passwords
+        _get_empty_keys(path)
     else:
         # edit a password
         property_dict = {}

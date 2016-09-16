@@ -21,6 +21,7 @@ from kollacli.api.exceptions import InvalidConfiguration
 from kollacli.api.exceptions import NotInInventory
 from kollacli.common.ansible.playbook import AnsiblePlaybook
 from kollacli.common.inventory import Inventory
+from kollacli.common.passwords import get_empty_password_values
 from kollacli.common import properties
 from kollacli.common.properties import AnsibleProperties
 from kollacli.common.utils import get_kolla_etc
@@ -118,6 +119,16 @@ def upgrade(verbose_level=1):
 def _run_deploy_rules(playbook):
     properties = AnsibleProperties()
     inventory = Inventory.load()
+
+    # check that password file has no empty password values
+    empty_keys = get_empty_password_values()
+    if empty_keys:
+        raise InvalidConfiguration(
+            u._('Deploy failed. There are empty password values '
+                'in {etc}passwords.yml. '
+                'Please run kolla-genpwd or '
+                'use the cli to correct them. \nEmpty passwords: '
+                '{keys}').format(etc=get_kolla_etc(), keys=empty_keys))
 
     # if we are doing a targeted host deploy make sure we are doing it
     # to only compute nodes
