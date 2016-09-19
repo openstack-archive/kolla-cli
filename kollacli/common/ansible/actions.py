@@ -88,7 +88,7 @@ def deploy(hostnames=[],
 
 def precheck(hostnames, verbose_level=1):
     '''run check playbooks on a set of hosts'''
-    playbook_name = 'prechecks.yml'
+    playbook_name = 'prechecks_preinstall.yml'
     kolla_home = get_kolla_home()
     playbook = AnsiblePlaybook()
     playbook.playbook_path = os.path.join(kolla_home,

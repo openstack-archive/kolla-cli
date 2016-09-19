@@ -81,6 +81,7 @@ mkdir -m 0755 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli
 mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/ansible
+mkdir -m 0755 -p %{buildroot}/%{_datadir}/kolla/ansible
 
 # Create a kolla log directory
 mkdir -m 0770 -p %{buildroot}/%{_var}/log/kolla
@@ -89,6 +90,7 @@ mkdir -m 0770 -p %{buildroot}/%{_var}/log/kolla
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
 cp -r ansible/* %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 cp -r openstack-kolla-data/ansible.cfg %{buildroot}/%{_datadir}/kolla/.ansible.cfg
+cp -r openstack-kolla-data/ansible/prechecks_preinstall.yml %{buildroot}/%{_datadir}/kolla/ansible/prechecks_preinstall.yml
 
 # Create an empty inventory file
 touch %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible/inventory.json
@@ -113,6 +115,7 @@ rm -rf %{buildroot}
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
 %attr(2770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
+%attr(644, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/ansible/prechecks_preinstall.yml
 
 %pre
 case "$*" in

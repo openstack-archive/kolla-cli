@@ -1,0 +1,9 @@
+---
+- include: prechecks.yml
+- hosts: all
+  tasks:
+  - name: Checking openstack-kolla-preinstall version
+    command: rpm -q --qf %{VERSION} openstack-kolla-preinstall
+    changed_when: False
+    register: result
+    failed_when: result.stdout != kolla_preinstall_version
