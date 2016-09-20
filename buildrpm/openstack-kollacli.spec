@@ -189,7 +189,8 @@ fi
 %postun
 case "$*" in
     0)
-        rm -f /etc/bash_completion.d/kollacli
+        rm -f %{_sysconfdir}/bash_completion.d/kollacli
+        rm -rf %{_datadir}/kolla/kollacli
     ;;
     *)
         ## Nothing for update
