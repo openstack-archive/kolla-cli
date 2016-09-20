@@ -21,6 +21,7 @@ import six
 import subprocess  # nosec
 import sys
 import time
+import yaml
 
 import kollacli.i18n as u
 
@@ -194,6 +195,42 @@ def run_cmd(cmd, print_output=True):
     if print_output:
         LOG.info(output)
     return err, output
+
+
+def change_password(file_path, pname, pvalue=None, public_key=None,
+                    private_key=None, clear=False):
+    """change password in passwords.yml file
+
+    file_path:         path to passwords file
+    pname:             name of password
+    pvalue:            value of password when not ssh key
+    public_key:        public ssh key
+    private_key:       private ssh key
+    clear:             flag to remove password
+
+    If clear, and password exists, remove it from the password file.
+    If clear, and password doesn't exists, nothing is done.
+    If not clear, and key is not found, the new password will be added.
+    If not clear, and key is found, edit password in place.
+
+    The passwords file contains both key-value pairs and key-dictionary
+    pairs.
+    """
+    read_data = sync_read_file(file_path)
+    file_pwds = yaml.safe_load(read_data)
+    if clear:
+        # clear
+        if pname in file_pwds:
+            del file_pwds[pname]
+    else:
+        # edit
+        if pvalue:
+            file_pwds[pname] = pvalue
+        elif private_key:
+            file_pwds[pname] = {'private_key': private_key,
+                                'public_key': public_key}
+    write_data = yaml.safe_dump(file_pwds, default_flow_style=False)
+    sync_write_file(file_path, write_data)
 
 
 def change_property(file_path, property_dict, clear=False):
@@ -375,7 +412,8 @@ def convert_list_to_string(alist):
     return '[' + ','.join(alist) + ']'
 
 
-def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False):
+def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False,
+              display_param=True):
     if param is None:
         if none_ok:
             return
@@ -395,9 +433,14 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False):
 
     if not isinstance(param, expected_type):
         # wrong type
-        raise InvalidArgument(u._('{name} ({param}) is not a {type}')
-                              .format(name=param_name, param=param,
-                                      type=expected_type))
+        if display_param:
+            raise InvalidArgument(u._('{name} ({param}) is not a {type}')
+                                  .format(name=param_name, param=param,
+                                          type=expected_type))
+        else:
+            raise InvalidArgument(u._('{name} is not a {type}')
+                                  .format(name=param_name,
+                                          type=expected_type))
 
 
 class Lock(object):

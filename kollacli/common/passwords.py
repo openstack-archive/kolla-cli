@@ -35,6 +35,16 @@ def set_password(pwd_key, pwd_value):
             .format(error=err_msg, message=output))
 
 
+def set_password_sshkey(pwd_key, private_key, public_key):
+    cmd = '%s -k %s -r "%s" -u "%s"' % (_get_cmd_prefix(), pwd_key,
+                                        private_key, public_key)
+    err_msg, output = utils.run_cmd(cmd, print_output=False)
+    if err_msg:
+        raise FailedOperation(
+            u._('Password ssh key set failed. {error} {message}')
+            .format(error=err_msg, message=output))
+
+
 def clear_password(pwd_key):
     """clear a password
 

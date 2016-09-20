@@ -18,7 +18,7 @@ import signal
 import sys
 import yaml
 
-from kollacli.common.utils import change_property
+from kollacli.common.utils import change_password
 
 
 def _get_empty_keys(path):
@@ -64,17 +64,21 @@ def _password_cmd(argv):
     """password command
 
     args for password command:
-      -p path  # path to passwords.yaml
-      -k key   # key of password
-      -v value # value of password
-      -c       # flag to clear the password
-      -l       # print to stdout a csv string of the existing keys
-      -e       # get keys of passwords with empty values
+      -p path              # path to passwords.yaml
+      -k key               # key of password
+      -v value             # value of password (if not ssh keys)
+      -r private key value # ssh private key
+      -u public key value  # ssh public key
+      -c                   # flag to clear the password
+      -l                   # print to stdout a csv string of the existing keys
+      -e                   # get keys of passwords with empty values
     """
-    opts, _ = getopt.getopt(argv[2:], 'p:k:v:cle')
+    opts, _ = getopt.getopt(argv[2:], 'p:k:v:r:u:cle')
     path = ''
     pwd_key = ''
     pwd_value = ''
+    pwd_ssh_private = ''
+    pwd_ssh_public = ''
     clear_flag = False
     list_flag = False
     empty_flag = False
@@ -85,6 +89,10 @@ def _password_cmd(argv):
             pwd_key = arg
         elif opt == '-v':
             pwd_value = arg
+        elif opt == '-r':
+            pwd_ssh_private = arg.replace('"', '')
+        elif opt == '-u':
+            pwd_ssh_public = arg.replace('"', '')
         elif opt == '-c':
             clear_flag = True
         elif opt == '-l':
@@ -98,10 +106,10 @@ def _password_cmd(argv):
         # get empty passwords
         _get_empty_keys(path)
     else:
-        # edit a password
-        property_dict = {}
-        property_dict[pwd_key] = pwd_value
-        change_property(path, property_dict, clear_flag)
+        # edit/clear a password
+        change_password(path, pwd_key, pvalue=pwd_value,
+                        private_key=pwd_ssh_private,
+                        public_key=pwd_ssh_public, clear=clear_flag)
 
 
 def _job_cmd(argv):

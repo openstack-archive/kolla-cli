@@ -16,6 +16,7 @@ import kollacli.i18n as u
 from kollacli.common.passwords import clear_password
 from kollacli.common.passwords import get_password_names
 from kollacli.common.passwords import set_password
+from kollacli.common.passwords import set_password_sshkey
 from kollacli.common.utils import check_arg
 
 
@@ -31,7 +32,24 @@ class PasswordApi(object):
         :type value: string
         """
         check_arg(name, u._('Password name'), str)
+        check_arg(value, u._('Password value'), str, display_param=False)
         set_password(name, value)
+
+    def password_set_sshkey(self, name, private_key, public_key):
+        # type: (str, str, str) -> None
+        """Set password to an ssh key
+
+        :param name: name of the password
+        :type name: string
+        :param private_key: ssh private key
+        :type value: string
+        :param public_key: ssh public key
+        :type value: string
+        """
+        check_arg(name, u._('Password name'), str)
+        check_arg(private_key, u._('Private key'), str, display_param=False)
+        check_arg(public_key, u._('Public key'), str, display_param=False)
+        set_password_sshkey(name, private_key, public_key)
 
     def password_clear(self, name):
         # type: (str) -> None

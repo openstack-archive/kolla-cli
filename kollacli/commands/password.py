@@ -13,6 +13,7 @@
 #    under the License.
 import argparse
 import getpass
+import os
 import traceback
 
 import kollacli.i18n as u
@@ -49,6 +50,45 @@ class PasswordSet(Command):
                     raise CommandError(u._('Passwords do not match'))
 
             CLIENT.password_set(password_name, password)
+
+        except Exception:
+            raise Exception(traceback.format_exc())
+
+
+class PasswordSetKey(Command):
+    "Password Set SSH Key"
+
+    def get_parser(self, prog_name):
+        parser = super(PasswordSetKey, self).get_parser(prog_name)
+        parser.add_argument('passwordname', metavar='<passwordname>',
+                            help=u._('Password name'))
+        parser.add_argument('privatekeypath', metavar='<privatekeypath>',
+                            help=u._('Path to private key file'))
+        parser.add_argument('publickeypath', metavar='<publickeypath>',
+                            help=u._('Path to public key file'))
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            password_name = parsed_args.passwordname.strip()
+            private_keypath = parsed_args.privatekeypath.strip()
+            private_keypath = os.path.abspath(private_keypath)
+            public_keypath = parsed_args.publickeypath.strip()
+            public_keypath = os.path.abspath(public_keypath)
+
+            if not os.path.isfile(private_keypath):
+                raise(CommandError(u._('Private key file not found: {path}')
+                                   .format(path=private_keypath)))
+            if not os.path.isfile(public_keypath):
+                raise(CommandError(u._('Public key file not found: {path}')
+                                   .format(path=public_keypath)))
+
+            with open(private_keypath, 'r') as f:
+                private_key = f.read()
+            with open(public_keypath, 'r') as f:
+                public_key = f.read()
+            CLIENT.password_set_sshkey(password_name, private_key.strip(),
+                                       public_key.strip())
 
         except Exception:
             raise Exception(traceback.format_exc())
