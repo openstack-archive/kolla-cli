@@ -185,6 +185,8 @@ then
     rm -f %{_datadir}/kolla/kollacli/tools/passwd_editor.py.py
 fi
 
+# add version property for prechecks_preinstall.yml playbook
+kollacli property set kolla_preinstall_version %{package_version}
 
 %postun
 case "$*" in
@@ -223,6 +225,7 @@ openstack-kollacli client.
 %changelog
 * Mon Sep 12 2016 - Steve Noyes <steve.noyes@oracle.com>
 - move ansible.cfg from kolla to kollacli rpm
+- add kolla_preinstall_version to properties file
 
 * Fri May 27 2016 - Steve Noyes <steve.noyes@oracle.com>
 - always copy rsa_id.pub key to /etc/kolla/kollacli
