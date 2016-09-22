@@ -15,10 +15,20 @@
 import getopt
 import os
 import signal
+import subprocess
 import sys
 import yaml
 
 from kollacli.common.utils import change_password
+
+
+def _init_keys():
+    cmd = 'kolla-genpwd'
+    (_, err) = subprocess.Popen(cmd, shell=True,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE).communicate()
+    if err:
+        raise Exception('Error running %s: %s' % (cmd, err))
 
 
 def _get_empty_keys(path):
@@ -72,8 +82,9 @@ def _password_cmd(argv):
       -c                   # flag to clear the password
       -l                   # print to stdout a csv string of the existing keys
       -e                   # get keys of passwords with empty values
+      -i                   # init empty keys and ssh keys
     """
-    opts, _ = getopt.getopt(argv[2:], 'p:k:v:r:u:cle')
+    opts, _ = getopt.getopt(argv[2:], 'p:k:v:r:u:clei')
     path = ''
     pwd_key = ''
     pwd_value = ''
@@ -82,6 +93,7 @@ def _password_cmd(argv):
     clear_flag = False
     list_flag = False
     empty_flag = False
+    init_flag = False
     for opt, arg in opts:
         if opt == '-p':
             path = arg
@@ -99,7 +111,12 @@ def _password_cmd(argv):
             list_flag = True
         elif opt == '-e':
             empty_flag = True
-    if list_flag:
+        elif opt == '-i':
+            init_flag = True
+    if init_flag:
+        # init empty keys
+        _init_keys()
+    elif list_flag:
         # print the password keys
         _print_pwd_keys(path)
     elif empty_flag:

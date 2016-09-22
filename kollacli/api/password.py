@@ -15,6 +15,7 @@ import kollacli.i18n as u
 
 from kollacli.common.passwords import clear_password
 from kollacli.common.passwords import get_password_names
+from kollacli.common.passwords import init_passwords
 from kollacli.common.passwords import set_password
 from kollacli.common.passwords import set_password_sshkey
 from kollacli.common.utils import check_arg
@@ -69,3 +70,12 @@ class PasswordApi(object):
         :rtype: list of strings
         """
         return get_password_names()
+
+    def password_init(self):
+        # type: () -> None
+        """Init empty passwords
+
+        Init empty passwords and ssh keys in /etc/kolla/passwords.yml
+        to auto-generated values
+        """
+        return init_passwords()

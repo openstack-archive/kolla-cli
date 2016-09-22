@@ -126,3 +126,13 @@ class PasswordList(Lister):
             return ((u._('Password Name'),  u._('Password')), data)
         except Exception:
             raise Exception(traceback.format_exc())
+
+
+class PasswordInit(Command):
+    """Init all empty passwords and ssh keys."""
+
+    def take_action(self, parsed_args):
+        try:
+            CLIENT.password_init()
+        except Exception:
+            raise Exception(traceback.format_exc())

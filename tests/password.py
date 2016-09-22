@@ -112,6 +112,9 @@ class TestFunctional(KollaCliTest):
         self.assertEqual(size_start, size_end, 'passwords.yml size changed ' +
                          'from %s to %s' % (size_start, size_end))
 
+        # check that password init does not throw an exception
+        self.run_cli_cmd('password init')
+
     def _password_value_exists(self, key, value, cli_output):
         """Verify cli data against model data"""
         # check for any host in cli output that shouldn't be there

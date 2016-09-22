@@ -126,8 +126,9 @@ def _run_deploy_rules(playbook):
         raise InvalidConfiguration(
             u._('Deploy failed. There are empty password values '
                 'in {etc}passwords.yml. '
-                'Please run kolla-genpwd or '
-                'use the cli to correct them. \nEmpty passwords: '
+                'Please run kollacli password init or '
+                'kollacli password set(key) to correct them. '
+                '\nEmpty passwords: '
                 '{keys}').format(etc=get_kolla_etc(), keys=empty_keys))
 
     # if we are doing a targeted host deploy make sure we are doing it

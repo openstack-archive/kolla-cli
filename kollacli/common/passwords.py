@@ -84,6 +84,14 @@ def get_empty_password_values():
     return empty_keys
 
 
+def init_passwords():
+    # init empty passwords & ssh keys to auto-gen'd values
+    cmd = '%s -i' % (_get_cmd_prefix())
+    err_msg, output = utils.run_cmd(cmd, print_output=False)
+    if err_msg:
+        raise FailedOperation('%s %s' % (err_msg, output))
+
+
 def _get_cmd_prefix():
     actions_path = utils.get_kolla_actions_path()
     pwd_file_path = os.path.join(utils.get_kolla_etc(),
