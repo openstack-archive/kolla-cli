@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common package &mdash; kollacli 3.0.1.dev435 documentation</title>
+    <title>kollacli.common package &mdash; kollacli 3.0.1.dev463 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.1.dev435',
+        VERSION:     '3.0.1.dev463',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev435 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -432,12 +432,13 @@ if group name is not none, remove host from group</p>
 <dt id="kollacli.common.inventory.Inventory.setup_hosts">
 <tt class="descname">setup_hosts</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.setup_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.setup_hosts" title="Permalink to this definition">¶</a></dt>
 <dd><p>setup multiple hosts</p>
-<p>hosts_info is a dict of format:
-{&#8216;hostname1&#8217;: {</p>
-<blockquote>
-<div>&#8216;password&#8217;: password
+<p>hosts_info is a dict of format:</p>
+<dl class="docutils">
+<dt>{&#8216;hostname1&#8217;: {</dt>
+<dd>&#8216;password&#8217;: password
 &#8216;uname&#8217;: user_name
-}</div></blockquote>
+}</dd>
+</dl>
 <p>}
 The uname entry is optional.</p>
 </dd></dl>
@@ -496,10 +497,20 @@ The uname entry is optional.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="kollacli.common.passwords.get_empty_password_values">
+<tt class="descclassname">kollacli.common.passwords.</tt><tt class="descname">get_empty_password_values</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/passwords.html#get_empty_password_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.passwords.get_empty_password_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="kollacli.common.passwords.get_password_names">
 <tt class="descclassname">kollacli.common.passwords.</tt><tt class="descname">get_password_names</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/passwords.html#get_password_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.passwords.get_password_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>return a list of password names</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="kollacli.common.passwords.init_passwords">
+<tt class="descclassname">kollacli.common.passwords.</tt><tt class="descname">init_passwords</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/passwords.html#init_passwords"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.passwords.init_passwords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="kollacli.common.passwords.set_password">
@@ -508,6 +519,11 @@ The uname entry is optional.</p>
 <p>If the password name exists, it will be changed.
 If it doesn&#8217;t exist, a new password will be added.</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="kollacli.common.passwords.set_password_sshkey">
+<tt class="descclassname">kollacli.common.passwords.</tt><tt class="descname">set_password_sshkey</tt><big>(</big><em>pwd_key</em>, <em>private_key</em>, <em>public_key</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/passwords.html#set_password_sshkey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.passwords.set_password_sshkey" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-kollacli.common.properties">
@@ -807,6 +823,24 @@ works then it seems better / less complicated for our needs.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="kollacli.common.utils.change_password">
+<tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">change_password</tt><big>(</big><em>file_path</em>, <em>pname</em>, <em>pvalue=None</em>, <em>public_key=None</em>, <em>private_key=None</em>, <em>clear=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#change_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.change_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>change password in passwords.yml file</p>
+<p>file_path:         path to passwords file
+pname:             name of password
+pvalue:            value of password when not ssh key
+public_key:        public ssh key
+private_key:       private ssh key
+clear:             flag to remove password</p>
+<p>If clear, and password exists, remove it from the password file.
+If clear, and password doesn&#8217;t exists, nothing is done.
+If not clear, and key is not found, the new password will be added.
+If not clear, and key is found, edit password in place.</p>
+<p>The passwords file contains both key-value pairs and key-dictionary
+pairs.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="kollacli.common.utils.change_property">
 <tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">change_property</tt><big>(</big><em>file_path</em>, <em>property_dict</em>, <em>clear=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#change_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.change_property" title="Permalink to this definition">¶</a></dt>
 <dd><p>change property with a file</p>
@@ -821,8 +855,25 @@ If not clear, and key is found, edit property in place.</p>
 
 <dl class="function">
 <dt id="kollacli.common.utils.check_arg">
-<tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">check_arg</tt><big>(</big><em>param</em>, <em>param_name</em>, <em>expected_type</em>, <em>none_ok=False</em>, <em>empty_ok=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#check_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.check_arg" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">check_arg</tt><big>(</big><em>param</em>, <em>param_name</em>, <em>expected_type</em>, <em>none_ok=False</em>, <em>empty_ok=False</em>, <em>display_param=True</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#check_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.check_arg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="kollacli.common.utils.convert_list_to_string">
+<tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">convert_list_to_string</tt><big>(</big><em>alist</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#convert_list_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.convert_list_to_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="kollacli.common.utils.convert_lists_to_string">
+<tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">convert_lists_to_string</tt><big>(</big><em>tuples</em>, <em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#convert_lists_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.convert_lists_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert lists to strings</p>
+<p>Because of the way cliff processes strings for tables, if a list
+has non-ascii chars in it, they would display as unicode bytes
+(u0414u0435u043au0430u0442). By converting
+the list to string here, the proper non-ascii chars are displayed.</p>
+<p>This will only change the lists when the output is to a table. It cannot
+be changed if the display output is json, yaml, etc.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="kollacli.common.utils.convert_to_unicode">
@@ -937,13 +988,20 @@ interpreter.</p>
 <dt id="kollacli.common.utils.run_cmd">
 <tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">run_cmd</tt><big>(</big><em>cmd</em>, <em>print_output=True</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#run_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.run_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>run a system command</p>
-<p>return:
-- err_msg:  empty string=command succeeded</p>
-<blockquote>
-<div>not None=command failed</div></blockquote>
-<ul class="simple">
-<li>output:   string: all the output of the run command</li>
+<dl class="docutils">
+<dt>return:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>err_msg:   empty string=command succeeded</dt>
+<dd><p class="first last">not None=command failed</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">output:    string: all the output of the run command</p>
+</li>
 </ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -1031,7 +1089,7 @@ unicode.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

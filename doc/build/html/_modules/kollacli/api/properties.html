@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.properties &mdash; kollacli 3.0.1.dev435 documentation</title>
+    <title>kollacli.api.properties &mdash; kollacli 3.0.1.dev463 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '3.0.1.dev435',
+        VERSION:     '3.0.1.dev463',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev435 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,19 +47,19 @@
           <div class="body">
             
   <h1>Source code for kollacli.api.properties</h1><div class="highlight"><pre>
-<span class="c"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
-<span class="c">#</span>
-<span class="c">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
-<span class="c">#    not use this file except in compliance with the License. You may obtain</span>
-<span class="c">#    a copy of the License at</span>
-<span class="c">#</span>
-<span class="c">#         http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c">#</span>
-<span class="c">#    Unless required by applicable law or agreed to in writing, software</span>
-<span class="c">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
-<span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
-<span class="c">#    License for the specific language governing permissions and limitations</span>
-<span class="c">#    under the License.</span>
+<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
+<span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
+<span class="c1">#    a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#         http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
+<span class="c1">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
+<span class="c1">#    License for the specific language governing permissions and limitations</span>
+<span class="c1">#    under the License.</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
@@ -71,49 +71,17 @@
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
-<span class="n">GLOBAL_TYPE</span> <span class="o">=</span> <span class="s">&#39;global&#39;</span>
-<span class="n">GROUP_TYPE</span> <span class="o">=</span> <span class="s">&#39;group&#39;</span>
-<span class="n">HOST_TYPE</span> <span class="o">=</span> <span class="s">&#39;host&#39;</span>
+<span class="n">GLOBAL_TYPE</span> <span class="o">=</span> <span class="s1">&#39;global&#39;</span>
+<span class="n">GROUP_TYPE</span> <span class="o">=</span> <span class="s1">&#39;group&#39;</span>
+<span class="n">HOST_TYPE</span> <span class="o">=</span> <span class="s1">&#39;host&#39;</span>
 <span class="n">PROP_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="n">GLOBAL_TYPE</span><span class="p">,</span> <span class="n">GROUP_TYPE</span><span class="p">,</span> <span class="n">HOST_TYPE</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="PropertyApi"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi">[docs]</a><span class="k">class</span> <span class="nc">PropertyApi</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-<div class="viewcode-block" id="PropertyApi.Property"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi.Property">[docs]</a>    <span class="k">class</span> <span class="nc">Property</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Property</span>
-
-<span class="sd">        Members:</span>
-<span class="sd">            - name (str): key</span>
-<span class="sd">            - value (str): value</span>
-<span class="sd">            - file_name (str): name of file property is from</span>
-<span class="sd">            - overrides (bool): does the property override some other value</span>
-<span class="sd">            - orig_value (str): the value which is overridden or None</span>
-<span class="sd">            - target (str): group or host name for group or host properties</span>
-<span class="sd">            - prop_type (str): one of &#39;global&#39;, &#39;group&#39; or &#39;host&#39;</span>
-<span class="sd">            - ovr_global (bool): true if property is overridden at global level</span>
-<span class="sd">            - ovr_group (bool): true if property is overridden at group level</span>
-<span class="sd">            - ovr_host (bool): true if property is overridden at host level</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansible_property</span><span class="p">,</span> <span class="n">override_flags</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">name</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">value</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">file_name</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">overrides</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">overrides</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">orig_value</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">orig_value</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">target</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prop_type</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">prop_type</span>
-
-            <span class="k">if</span> <span class="n">override_flags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ovr_global</span> <span class="o">=</span> <span class="n">override_flags</span><span class="o">.</span><span class="n">ovr_global</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ovr_group</span> <span class="o">=</span> <span class="n">override_flags</span><span class="o">.</span><span class="n">ovr_group</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ovr_host</span> <span class="o">=</span> <span class="n">override_flags</span><span class="o">.</span><span class="n">ovr_host</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ovr_global</span> <span class="o">=</span> <span class="bp">False</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ovr_group</span> <span class="o">=</span> <span class="bp">False</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ovr_host</span> <span class="o">=</span> <span class="bp">False</span>
-</div>
 <div class="viewcode-block" id="PropertyApi.property_set"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi.property_set">[docs]</a>    <span class="k">def</span> <span class="nf">property_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_dict</span><span class="p">,</span>
                      <span class="n">property_type</span><span class="o">=</span><span class="n">GLOBAL_TYPE</span><span class="p">,</span> <span class="n">change_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c1"># type: (Dict[str,str], str, List[str]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Set a property</span>
 
 <span class="sd">        :param property_dict: property dictionary containing key / values</span>
@@ -126,13 +94,16 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">property_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">check_arg</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property Key&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
-            <span class="n">check_arg</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property Value&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="n">check_arg</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Property Key&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="n">check_arg</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Property Value&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">,</span> <span class="n">empty_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;&quot;&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cannot use double quotes in &#39;</span>
+                                          <span class="s1">&#39;a property value.&#39;</span><span class="p">))</span>
         <span class="n">property_dict</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">property_dict</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">property_type</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">property_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">GLOBAL_TYPE</span><span class="p">:</span>
-            <span class="n">check_arg</span><span class="p">(</span><span class="n">change_set</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Change Set&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">,</span> <span class="n">none_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">check_arg</span><span class="p">(</span><span class="n">change_set</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Change Set&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">,</span> <span class="n">none_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
             <span class="n">change_set</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">change_set</span><span class="p">)</span>
 
         <span class="n">ansible_properties</span> <span class="o">=</span> <span class="n">AnsibleProperties</span><span class="p">()</span>
@@ -146,6 +117,7 @@
 </div>
 <div class="viewcode-block" id="PropertyApi.property_clear"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi.property_clear">[docs]</a>    <span class="k">def</span> <span class="nf">property_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_list</span><span class="p">,</span> <span class="n">property_type</span><span class="o">=</span><span class="n">GLOBAL_TYPE</span><span class="p">,</span>
                        <span class="n">change_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c1"># type: (List[str], str, List[str]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Clear a property</span>
 
 <span class="sd">        :param property_list: property list</span>
@@ -157,12 +129,12 @@
 <span class="sd">        :type change_set: list of strings</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">check_arg</span><span class="p">(</span><span class="n">property_list</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property List&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">property_list</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Property List&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
         <span class="n">property_list</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">property_list</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">property_type</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">property_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">GLOBAL_TYPE</span><span class="p">:</span>
-            <span class="n">check_arg</span><span class="p">(</span><span class="n">change_set</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Change Set&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">,</span> <span class="n">none_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">check_arg</span><span class="p">(</span><span class="n">change_set</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Change Set&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">,</span> <span class="n">none_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
             <span class="n">change_set</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">change_set</span><span class="p">)</span>
 
         <span class="n">ansible_properties</span> <span class="o">=</span> <span class="n">AnsibleProperties</span><span class="p">()</span>
@@ -175,6 +147,7 @@
             <span class="n">ansible_properties</span><span class="o">.</span><span class="n">clear_host_property</span><span class="p">(</span><span class="n">property_list</span><span class="p">,</span> <span class="n">change_set</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="PropertyApi.property_get"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.PropertyApi.property_get">[docs]</a>    <span class="k">def</span> <span class="nf">property_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_type</span><span class="o">=</span><span class="n">GLOBAL_TYPE</span><span class="p">,</span> <span class="n">get_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c1"># type: (str, List[str]) -&gt; List[Property]</span>
         <span class="sd">&quot;&quot;&quot;Returns a list of Property objects</span>
 
 <span class="sd">        :param property_type: one of &#39;global&#39;, &#39;group&#39;, or &#39;host&#39;</span>
@@ -190,7 +163,6 @@
 
         <span class="n">ansible_properties</span> <span class="o">=</span> <span class="n">AnsibleProperties</span><span class="p">()</span>
 
-        <span class="n">property_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">result_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">property_type</span> <span class="o">==</span> <span class="n">GLOBAL_TYPE</span><span class="p">:</span>
             <span class="n">property_list</span> <span class="o">=</span> <span class="n">ansible_properties</span><span class="o">.</span><span class="n">get_all_unique</span><span class="p">()</span>
@@ -202,16 +174,51 @@
         <span class="n">override_flags</span> <span class="o">=</span> <span class="n">ansible_properties</span><span class="o">.</span><span class="n">get_all_override_flags</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">property_list</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">override_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">override_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
             <span class="n">result_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result_list</span>
 </div>
     <span class="k">def</span> <span class="nf">_check_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_type</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">property_type</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">property_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PROP_TYPES</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Property Type ({value} is not one of &#39;</span>
-                                      <span class="s">&#39;global, group or host&#39;</span><span class="p">)</span>
-                                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">property_type</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Property Type ({value} is not one of &#39;</span>
+                                      <span class="s1">&#39;global, group or host&#39;</span><span class="p">)</span>
+                                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">property_type</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="Property"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.properties.Property">[docs]</a><span class="k">class</span> <span class="nc">Property</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Property</span>
+
+<span class="sd">    Members:</span>
+<span class="sd">        - name (str): key</span>
+<span class="sd">        - value (str): value</span>
+<span class="sd">        - file_name (str): name of file property is from</span>
+<span class="sd">        - overrides (bool): does the property override some other value</span>
+<span class="sd">        - orig_value (str): the value which is overridden or None</span>
+<span class="sd">        - target (str): group or host name for group or host properties</span>
+<span class="sd">        - prop_type (str): one of &#39;global&#39;, &#39;group&#39; or &#39;host&#39;</span>
+<span class="sd">        - ovr_global (bool): true if property is overridden at global level</span>
+<span class="sd">        - ovr_group (bool): true if property is overridden at group level</span>
+<span class="sd">        - ovr_host (bool): true if property is overridden at host level</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansible_property</span><span class="p">,</span> <span class="n">override_flags</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">file_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overrides</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">overrides</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_value</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">orig_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prop_type</span> <span class="o">=</span> <span class="n">ansible_property</span><span class="o">.</span><span class="n">prop_type</span>
+
+        <span class="k">if</span> <span class="n">override_flags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ovr_global</span> <span class="o">=</span> <span class="n">override_flags</span><span class="o">.</span><span class="n">ovr_global</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ovr_group</span> <span class="o">=</span> <span class="n">override_flags</span><span class="o">.</span><span class="n">ovr_group</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ovr_host</span> <span class="o">=</span> <span class="n">override_flags</span><span class="o">.</span><span class="n">ovr_host</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ovr_global</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ovr_group</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ovr_host</span> <span class="o">=</span> <span class="bp">False</span></div>
 </pre></div>
 
           </div>
@@ -245,7 +252,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

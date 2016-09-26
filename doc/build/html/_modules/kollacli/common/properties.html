@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.properties &mdash; kollacli 3.0.1.dev435 documentation</title>
+    <title>kollacli.common.properties &mdash; kollacli 3.0.1.dev463 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '3.0.1.dev435',
+        VERSION:     '3.0.1.dev463',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev435 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,19 +47,19 @@
           <div class="body">
             
   <h1>Source code for kollacli.common.properties</h1><div class="highlight"><pre>
-<span class="c"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
-<span class="c">#</span>
-<span class="c">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
-<span class="c">#    not use this file except in compliance with the License. You may obtain</span>
-<span class="c">#    a copy of the License at</span>
-<span class="c">#</span>
-<span class="c">#         http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="c">#</span>
-<span class="c">#    Unless required by applicable law or agreed to in writing, software</span>
-<span class="c">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
-<span class="c">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
-<span class="c">#    License for the specific language governing permissions and limitations</span>
-<span class="c">#    under the License.</span>
+<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
+<span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
+<span class="c1">#    a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#         http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT</span>
+<span class="c1">#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the</span>
+<span class="c1">#    License for the specific language governing permissions and limitations</span>
+<span class="c1">#    under the License.</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -78,10 +78,10 @@
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
-<span class="n">ALLVARS_PATH</span> <span class="o">=</span> <span class="s">&#39;ansible/group_vars/all.yml&#39;</span>
-<span class="n">GLOBALS_PATH</span> <span class="o">=</span> <span class="s">&#39;ansible/group_vars/__GLOBAL__&#39;</span>
-<span class="n">ANSIBLE_ROLES_PATH</span> <span class="o">=</span> <span class="s">&#39;ansible/roles&#39;</span>
-<span class="n">ANSIBLE_DEFAULTS_PATH</span> <span class="o">=</span> <span class="s">&#39;defaults/main.yml&#39;</span>
+<span class="n">ALLVARS_PATH</span> <span class="o">=</span> <span class="s1">&#39;ansible/group_vars/all.yml&#39;</span>
+<span class="n">GLOBALS_PATH</span> <span class="o">=</span> <span class="s1">&#39;ansible/group_vars/__GLOBAL__&#39;</span>
+<span class="n">ANSIBLE_ROLES_PATH</span> <span class="o">=</span> <span class="s1">&#39;ansible/roles&#39;</span>
+<span class="n">ANSIBLE_DEFAULTS_PATH</span> <span class="o">=</span> <span class="s1">&#39;defaults/main.yml&#39;</span>
 
 
 <div class="viewcode-block" id="AnsibleProperties"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperties">[docs]</a><span class="k">class</span> <span class="nc">AnsibleProperties</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -126,7 +126,7 @@
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">service_file</span><span class="p">:</span>
                     <span class="n">service_contents</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">service_file</span><span class="p">)</span>
-                    <span class="n">prop_file_name</span> <span class="o">=</span> <span class="n">service_name</span> <span class="o">+</span> <span class="s">&#39;:main.yml&#39;</span>
+                    <span class="n">prop_file_name</span> <span class="o">=</span> <span class="n">service_name</span> <span class="o">+</span> <span class="s1">&#39;:main.yml&#39;</span>
                     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">service_contents</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                         <span class="n">ansible_prop</span> <span class="o">=</span> <span class="n">AnsibleProperty</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>
                                                        <span class="n">prop_file_name</span><span class="p">)</span>
@@ -144,7 +144,7 @@
                     <span class="n">overrides</span> <span class="o">=</span> <span class="bp">True</span>
                     <span class="n">orig_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_global_props</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
                 <span class="n">ansible_prop</span> <span class="o">=</span> <span class="n">AnsibleProperty</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>
-                                               <span class="s">&#39;group_vars/all.yml&#39;</span><span class="p">,</span>
+                                               <span class="s1">&#39;group_vars/all.yml&#39;</span><span class="p">,</span>
                                                <span class="n">overrides</span><span class="p">,</span> <span class="n">orig_value</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">global_props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ansible_prop</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">unique_global_props</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ansible_prop</span>
@@ -163,7 +163,7 @@
                 <span class="n">override_flags</span><span class="o">.</span><span class="n">ovr_global</span> <span class="o">=</span> <span class="bp">True</span>
                 <span class="n">orig_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_global_props</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
             <span class="n">ansible_prop</span> <span class="o">=</span> <span class="n">AnsibleProperty</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>
-                                           <span class="s">&#39;group_vars/__GLOBAL&#39;</span><span class="p">,</span>
+                                           <span class="s1">&#39;group_vars/__GLOBAL&#39;</span><span class="p">,</span>
                                            <span class="n">overrides</span><span class="p">,</span> <span class="n">orig_value</span><span class="p">)</span>
             <span class="n">ansible_prop</span><span class="o">.</span><span class="n">override_flags</span> <span class="o">=</span> <span class="n">override_flags</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">global_props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ansible_prop</span><span class="p">)</span>
@@ -175,7 +175,7 @@
         <span class="n">hostnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">get_hostnames</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">hostfile</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">host_dir</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">hostfile</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hostnames</span><span class="p">:</span>
-                <span class="c"># skip any host files that don&#39;t match existing hosts</span>
+                <span class="c1"># skip any host files that don&#39;t match existing hosts</span>
                 <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">host_props</span><span class="p">[</span><span class="n">hostfile</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">host_dir</span><span class="p">,</span> <span class="n">hostfile</span><span class="p">))</span> <span class="k">as</span> <span class="n">host_data</span><span class="p">:</span>
@@ -197,7 +197,7 @@
                     <span class="n">ansible_prop</span> <span class="o">=</span> <span class="n">AnsibleProperty</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>
                                                    <span class="n">hostfile</span><span class="p">,</span>
                                                    <span class="n">overrides</span><span class="p">,</span> <span class="n">orig_value</span><span class="p">,</span>
-                                                   <span class="s">&#39;host&#39;</span><span class="p">,</span> <span class="n">hostfile</span><span class="p">)</span>
+                                                   <span class="s1">&#39;host&#39;</span><span class="p">,</span> <span class="n">hostfile</span><span class="p">)</span>
                     <span class="n">props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ansible_prop</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">host_props</span><span class="p">[</span><span class="n">hostfile</span><span class="p">]</span> <span class="o">=</span> <span class="n">props</span>
 
@@ -206,7 +206,7 @@
         <span class="n">groupnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">groupfile</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">group_dir</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">groupfile</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">groupnames</span><span class="p">:</span>
-                <span class="c"># skip any files that don&#39;t match existing groups</span>
+                <span class="c1"># skip any files that don&#39;t match existing groups</span>
                 <span class="k">continue</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">group_dir</span><span class="p">,</span> <span class="n">groupfile</span><span class="p">))</span> <span class="k">as</span> <span class="n">group_data</span><span class="p">:</span>
                 <span class="n">group_contents</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">group_data</span><span class="p">)</span>
@@ -227,13 +227,13 @@
                     <span class="n">ansible_prop</span> <span class="o">=</span> <span class="n">AnsibleProperty</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>
                                                    <span class="n">groupfile</span><span class="p">,</span>
                                                    <span class="n">overrides</span><span class="p">,</span> <span class="n">orig_value</span><span class="p">,</span>
-                                                   <span class="s">&#39;group&#39;</span><span class="p">,</span> <span class="n">groupfile</span><span class="p">)</span>
+                                                   <span class="s1">&#39;group&#39;</span><span class="p">,</span> <span class="n">groupfile</span><span class="p">)</span>
                     <span class="n">props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ansible_prop</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">group_props</span><span class="p">[</span><span class="n">groupfile</span><span class="p">]</span> <span class="o">=</span> <span class="n">props</span>
 
     <span class="k">def</span> <span class="nf">_load_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>  <span class="c"># nosec</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>  <span class="c1"># nosec</span>
 
 <div class="viewcode-block" id="AnsibleProperties.get_host_list"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperties.get_host_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_host_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_list</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_properties</span><span class="p">()</span>
@@ -242,7 +242,7 @@
             <span class="k">for</span> <span class="n">host_name</span> <span class="ow">in</span> <span class="n">host_list</span><span class="p">:</span>
                 <span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">get_host</span><span class="p">(</span><span class="n">host_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">host</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host&#39;</span><span class="p">),</span> <span class="n">host_name</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host&#39;</span><span class="p">),</span> <span class="n">host_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">host_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">host_props</span><span class="p">:</span>
                     <span class="n">prop_list</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host_props</span><span class="p">[</span><span class="n">host_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -259,7 +259,7 @@
             <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">group_list</span><span class="p">:</span>
                 <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group&#39;</span><span class="p">),</span> <span class="n">group_name</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group&#39;</span><span class="p">),</span> <span class="n">group_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_props</span><span class="p">:</span>
                     <span class="n">prop_list</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_props</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -288,30 +288,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_properties</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_override_flags</span>
 
-    <span class="c"># TODO(bmace) -- if this isn&#39;t used for 2.1.x it should be removed</span>
-    <span class="c"># property listing is still being tweaked so leaving for</span>
-    <span class="c"># the time being in case we want to use it</span></div>
+    <span class="c1"># TODO(bmace) -- if this isn&#39;t used for 2.1.x it should be removed</span>
+    <span class="c1"># property listing is still being tweaked so leaving for</span>
+    <span class="c1"># the time being in case we want to use it</span></div>
 <div class="viewcode-block" id="AnsibleProperties.filter_jinja2"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperties.filter_jinja2">[docs]</a>    <span class="k">def</span> <span class="nf">filter_jinja2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
         <span class="n">new_contents</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">contents</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;removing non-string: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;removing non-string: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="s">&#39;{{&#39;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="s">&#39;}}&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;removing jinja2 value: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="s1">&#39;{{&#39;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="s1">&#39;}}&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;removing jinja2 value: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="n">new_contents</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">new_contents</span>
 </div>
 <div class="viewcode-block" id="AnsibleProperties.set_property"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperties.set_property">[docs]</a>    <span class="k">def</span> <span class="nf">set_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_dict</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">change_property</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">globals_path</span><span class="p">,</span> <span class="n">property_dict</span><span class="p">,</span>
-                            <span class="n">clear</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">e</span>
+        <span class="n">change_property</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">globals_path</span><span class="p">,</span> <span class="n">property_dict</span><span class="p">,</span>
+                        <span class="n">clear</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="AnsibleProperties.set_host_property"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperties.set_host_property">[docs]</a>    <span class="k">def</span> <span class="nf">set_host_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_dict</span><span class="p">,</span> <span class="n">hosts</span><span class="p">):</span>
-        <span class="c"># if hosts is None set the property on all hosts</span>
+        <span class="c1"># if hosts is None set the property on all hosts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_inventory</span><span class="p">()</span>
         <span class="n">host_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">hosts</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -320,7 +317,7 @@
             <span class="k">for</span> <span class="n">host_name</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
                 <span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">get_host</span><span class="p">(</span><span class="n">host_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">host</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host&#39;</span><span class="p">),</span> <span class="n">host_name</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host&#39;</span><span class="p">),</span> <span class="n">host_name</span><span class="p">)</span>
                 <span class="n">host_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">host_list</span><span class="p">:</span>
@@ -331,7 +328,7 @@
             <span class="k">raise</span> <span class="n">e</span>
 </div>
 <div class="viewcode-block" id="AnsibleProperties.set_group_property"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperties.set_group_property">[docs]</a>    <span class="k">def</span> <span class="nf">set_group_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_dict</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
-        <span class="c"># if groups is None set the property on all hosts</span>
+        <span class="c1"># if groups is None set the property on all hosts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_inventory</span><span class="p">()</span>
         <span class="n">group_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">groups</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -340,7 +337,7 @@
             <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
                 <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group&#39;</span><span class="p">),</span> <span class="n">group_name</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group&#39;</span><span class="p">),</span> <span class="n">group_name</span><span class="p">)</span>
                 <span class="n">group_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">group_list</span><span class="p">:</span>
@@ -360,7 +357,7 @@
             <span class="k">raise</span> <span class="n">e</span>
 </div>
 <div class="viewcode-block" id="AnsibleProperties.clear_host_property"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperties.clear_host_property">[docs]</a>    <span class="k">def</span> <span class="nf">clear_host_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_list</span><span class="p">,</span> <span class="n">hosts</span><span class="p">):</span>
-        <span class="c"># if hosts is None set the property on all hosts</span>
+        <span class="c1"># if hosts is None set the property on all hosts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_inventory</span><span class="p">()</span>
         <span class="n">host_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">hosts</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -369,7 +366,7 @@
             <span class="k">for</span> <span class="n">host_name</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
                 <span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">get_host</span><span class="p">(</span><span class="n">host_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">host</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Host&#39;</span><span class="p">),</span> <span class="n">host_name</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host&#39;</span><span class="p">),</span> <span class="n">host_name</span><span class="p">)</span>
                 <span class="n">host_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">host_list</span><span class="p">:</span>
@@ -380,7 +377,7 @@
             <span class="k">raise</span> <span class="n">e</span>
 </div>
 <div class="viewcode-block" id="AnsibleProperties.clear_group_property"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperties.clear_group_property">[docs]</a>    <span class="k">def</span> <span class="nf">clear_group_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_list</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
-        <span class="c"># if hosts is None set the property on all hosts</span>
+        <span class="c1"># if hosts is None set the property on all hosts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_inventory</span><span class="p">()</span>
         <span class="n">group_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">groups</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -389,7 +386,7 @@
             <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
                 <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Group&#39;</span><span class="p">),</span> <span class="n">group_name</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group&#39;</span><span class="p">),</span> <span class="n">group_name</span><span class="p">)</span>
                 <span class="n">group_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">group_list</span><span class="p">:</span>
@@ -402,14 +399,14 @@
     <span class="k">def</span> <span class="nf">_list_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_list</span><span class="p">):</span>
         <span class="n">property_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">property_list</span><span class="p">:</span>
-            <span class="n">property_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="n">property_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">return</span> <span class="n">property_dict</span>
 
 </div>
 <div class="viewcode-block" id="AnsibleProperty"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperty">[docs]</a><span class="k">class</span> <span class="nc">AnsibleProperty</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                 <span class="n">orig_value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">prop_type</span><span class="o">=</span><span class="s">&#39;global&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+                 <span class="n">orig_value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">prop_type</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prop_type</span> <span class="o">=</span> <span class="n">prop_type</span>
@@ -458,7 +455,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

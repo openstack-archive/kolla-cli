@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api package &mdash; kollacli 3.0.1.dev435 documentation</title>
+    <title>kollacli.api package &mdash; kollacli 3.0.1.dev463 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.1.dev435',
+        VERSION:     '3.0.1.dev463',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev435 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -271,16 +271,12 @@ in production environments.</p>
 <div class="section" id="module-kollacli.api.group">
 <span id="kollacli-api-group-module"></span><h2>kollacli.api.group module<a class="headerlink" href="#module-kollacli.api.group" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="kollacli.api.group.GroupApi">
-<em class="property">class </em><tt class="descclassname">kollacli.api.group.</tt><tt class="descname">GroupApi</tt><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="class">
-<dt id="kollacli.api.group.GroupApi.Group">
-<em class="property">class </em><tt class="descname">Group</tt><big>(</big><em>groupname</em>, <em>servicenames</em>, <em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.group.Group">
+<em class="property">class </em><tt class="descclassname">kollacli.api.group.</tt><tt class="descname">Group</tt><big>(</big><em>groupname</em>, <em>servicenames</em>, <em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#Group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.Group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <dl class="method">
-<dt id="kollacli.api.group.GroupApi.Group.add_host">
-<tt class="descname">add_host</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.add_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.add_host" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.group.Group.add_host">
+<tt class="descname">add_host</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#Group.add_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.Group.add_host" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add host to group</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -293,8 +289,8 @@ in production environments.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.group.GroupApi.Group.add_service">
-<tt class="descname">add_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.add_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.add_service" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.group.Group.add_service">
+<tt class="descname">add_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#Group.add_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.Group.add_service" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add service to group</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -307,8 +303,8 @@ in production environments.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.group.GroupApi.Group.get_hosts">
-<tt class="descname">get_hosts</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.get_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.get_hosts" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.group.Group.get_hosts">
+<tt class="descname">get_hosts</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#Group.get_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.Group.get_hosts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get names of hosts associated with this group.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -323,8 +319,8 @@ in production environments.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.group.GroupApi.Group.get_name">
-<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.get_name" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.group.Group.get_name">
+<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#Group.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.Group.get_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get name</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -339,8 +335,8 @@ in production environments.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.group.GroupApi.Group.get_services">
-<tt class="descname">get_services</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.get_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.get_services" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.group.Group.get_services">
+<tt class="descname">get_services</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#Group.get_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.Group.get_services" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get names of services associated with this group.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -355,8 +351,8 @@ in production environments.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.group.GroupApi.Group.remove_host">
-<tt class="descname">remove_host</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.remove_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.remove_host" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.group.Group.remove_host">
+<tt class="descname">remove_host</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#Group.remove_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.Group.remove_host" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove host from group</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -369,8 +365,8 @@ in production environments.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.group.GroupApi.Group.remove_service">
-<tt class="descname">remove_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.Group.remove_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.Group.remove_service" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.group.Group.remove_service">
+<tt class="descname">remove_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#Group.remove_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.Group.remove_service" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove service from group</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -384,9 +380,13 @@ in production environments.</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="kollacli.api.group.GroupApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.group.</tt><tt class="descname">GroupApi</tt><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <dl class="method">
 <dt id="kollacli.api.group.GroupApi.group_add">
-<tt class="descclassname">GroupApi.</tt><tt class="descname">group_add</tt><big>(</big><em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_add" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">group_add</tt><big>(</big><em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add groups to the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -400,7 +400,7 @@ in production environments.</p>
 
 <dl class="method">
 <dt id="kollacli.api.group.GroupApi.group_get">
-<tt class="descclassname">GroupApi.</tt><tt class="descname">group_get</tt><big>(</big><em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">group_get</tt><big>(</big><em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get selected groups in the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -418,7 +418,7 @@ in production environments.</p>
 
 <dl class="method">
 <dt id="kollacli.api.group.GroupApi.group_get_all">
-<tt class="descclassname">GroupApi.</tt><tt class="descname">group_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_get_all" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">group_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_get_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all groups in the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -434,7 +434,7 @@ in production environments.</p>
 
 <dl class="method">
 <dt id="kollacli.api.group.GroupApi.group_remove">
-<tt class="descclassname">GroupApi.</tt><tt class="descname">group_remove</tt><big>(</big><em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_remove" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">group_remove</tt><big>(</big><em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/group.html#GroupApi.group_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.group.GroupApi.group_remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove groups from the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -452,17 +452,13 @@ in production environments.</p>
 <div class="section" id="module-kollacli.api.host">
 <span id="kollacli-api-host-module"></span><h2>kollacli.api.host module<a class="headerlink" href="#module-kollacli.api.host" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="kollacli.api.host.HostApi">
-<em class="property">class </em><tt class="descclassname">kollacli.api.host.</tt><tt class="descname">HostApi</tt><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="class">
-<dt id="kollacli.api.host.HostApi.Host">
-<em class="property">class </em><tt class="descname">Host</tt><big>(</big><em>hostname</em>, <em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.Host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.Host" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.host.Host">
+<em class="property">class </em><tt class="descclassname">kollacli.api.host.</tt><tt class="descname">Host</tt><big>(</big><em>hostname</em>, <em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#Host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.Host" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Host</p>
 <dl class="method">
-<dt id="kollacli.api.host.HostApi.Host.get_groups">
-<tt class="descname">get_groups</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.Host.get_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.Host.get_groups" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.host.Host.get_groups">
+<tt class="descname">get_groups</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#Host.get_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.Host.get_groups" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get names of the groups associated with this host</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -480,8 +476,8 @@ changes.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.host.HostApi.Host.get_name">
-<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.Host.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.Host.get_name" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.host.Host.get_name">
+<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#Host.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.Host.get_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get name</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -497,9 +493,13 @@ changes.</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="kollacli.api.host.HostApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.host.</tt><tt class="descname">HostApi</tt><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <dl class="method">
 <dt id="kollacli.api.host.HostApi.host_add">
-<tt class="descclassname">HostApi.</tt><tt class="descname">host_add</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_add" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">host_add</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add hosts to the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -513,7 +513,7 @@ changes.</p>
 
 <dl class="method">
 <dt id="kollacli.api.host.HostApi.host_get">
-<tt class="descclassname">HostApi.</tt><tt class="descname">host_get</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">host_get</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get selected hosts in the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -523,7 +523,7 @@ changes.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">hosts</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Host</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of Host objects</td>
 </tr>
 </tbody>
 </table>
@@ -531,7 +531,7 @@ changes.</p>
 
 <dl class="method">
 <dt id="kollacli.api.host.HostApi.host_get_all">
-<tt class="descclassname">HostApi.</tt><tt class="descname">host_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get_all" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">host_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all hosts in the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -539,7 +539,7 @@ changes.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Hosts</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Host</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of Host objects</td>
 </tr>
 </tbody>
 </table>
@@ -547,7 +547,7 @@ changes.</p>
 
 <dl class="method">
 <dt id="kollacli.api.host.HostApi.host_remove">
-<tt class="descclassname">HostApi.</tt><tt class="descname">host_remove</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_remove" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">host_remove</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove hosts from the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -561,7 +561,7 @@ changes.</p>
 
 <dl class="method">
 <dt id="kollacli.api.host.HostApi.host_setup">
-<tt class="descclassname">HostApi.</tt><tt class="descname">host_setup</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">host_setup</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup multiple hosts for ssh access</p>
 <dl class="docutils">
 <dt>hosts_info is a dictionary of form:</dt>
@@ -587,7 +587,7 @@ changes.</p>
 
 <dl class="method">
 <dt id="kollacli.api.host.HostApi.host_ssh_check">
-<tt class="descclassname">HostApi.</tt><tt class="descname">host_ssh_check</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_ssh_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_ssh_check" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">host_ssh_check</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_ssh_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_ssh_check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check hosts for ssh connectivity</p>
 <dl class="docutils">
 <dt>Check status is a dictionary of form:</dt>
@@ -737,6 +737,14 @@ changes.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="kollacli.api.password.PasswordApi.password_init">
+<tt class="descname">password_init</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/password.html#PasswordApi.password_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.password.PasswordApi.password_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init empty passwords</p>
+<p>Init empty passwords and ssh keys in /etc/kolla/passwords.yml
+to auto-generated values</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="kollacli.api.password.PasswordApi.password_set">
 <tt class="descname">password_set</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/password.html#PasswordApi.password_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.password.PasswordApi.password_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set password</p>
@@ -754,18 +762,33 @@ changes.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="kollacli.api.password.PasswordApi.password_set_sshkey">
+<tt class="descname">password_set_sshkey</tt><big>(</big><em>name</em>, <em>private_key</em>, <em>public_key</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/password.html#PasswordApi.password_set_sshkey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.password.PasswordApi.password_set_sshkey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set password to an ssh key</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>string</em>) &#8211; name of the password</li>
+<li><strong>private_key</strong> &#8211; ssh private key</li>
+<li><strong>public_key</strong> &#8211; ssh public key</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-kollacli.api.properties">
 <span id="kollacli-api-properties-module"></span><h2>kollacli.api.properties module<a class="headerlink" href="#module-kollacli.api.properties" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="kollacli.api.properties.PropertyApi">
-<em class="property">class </em><tt class="descclassname">kollacli.api.properties.</tt><tt class="descname">PropertyApi</tt><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="class">
-<dt id="kollacli.api.properties.PropertyApi.Property">
-<em class="property">class </em><tt class="descname">Property</tt><big>(</big><em>ansible_property</em>, <em>override_flags</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.Property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.Property" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.properties.Property">
+<em class="property">class </em><tt class="descclassname">kollacli.api.properties.</tt><tt class="descname">Property</tt><big>(</big><em>ansible_property</em>, <em>override_flags</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#Property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.Property" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Property</p>
 <dl class="docutils">
@@ -786,9 +809,13 @@ changes.</p>
 </dl>
 </dd></dl>
 
+<dl class="class">
+<dt id="kollacli.api.properties.PropertyApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.properties.</tt><tt class="descname">PropertyApi</tt><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <dl class="method">
 <dt id="kollacli.api.properties.PropertyApi.property_clear">
-<tt class="descclassname">PropertyApi.</tt><tt class="descname">property_clear</tt><big>(</big><em>property_list</em>, <em>property_type='global'</em>, <em>change_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_clear" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">property_clear</tt><big>(</big><em>property_list</em>, <em>property_type='global'</em>, <em>change_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear a property</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -808,7 +835,7 @@ groups or hosts to clear the property for</li>
 
 <dl class="method">
 <dt id="kollacli.api.properties.PropertyApi.property_get">
-<tt class="descclassname">PropertyApi.</tt><tt class="descname">property_get</tt><big>(</big><em>property_type='global'</em>, <em>get_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">property_get</tt><big>(</big><em>property_type='global'</em>, <em>get_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of Property objects</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -833,7 +860,7 @@ getting group or host related property lists</li>
 
 <dl class="method">
 <dt id="kollacli.api.properties.PropertyApi.property_set">
-<tt class="descclassname">PropertyApi.</tt><tt class="descname">property_set</tt><big>(</big><em>property_dict</em>, <em>property_type='global'</em>, <em>change_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_set" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">property_set</tt><big>(</big><em>property_dict</em>, <em>property_type='global'</em>, <em>change_set=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/properties.html#PropertyApi.property_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.properties.PropertyApi.property_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a property</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -857,12 +884,8 @@ or hosts to set the property for</li>
 <div class="section" id="module-kollacli.api.service">
 <span id="kollacli-api-service-module"></span><h2>kollacli.api.service module<a class="headerlink" href="#module-kollacli.api.service" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="kollacli.api.service.ServiceApi">
-<em class="property">class </em><tt class="descclassname">kollacli.api.service.</tt><tt class="descname">ServiceApi</tt><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="class">
-<dt id="kollacli.api.service.ServiceApi.Service">
-<em class="property">class </em><tt class="descname">Service</tt><big>(</big><em>servicename</em>, <em>parentname=None</em>, <em>childnames=[]</em>, <em>groupnames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.service.Service">
+<em class="property">class </em><tt class="descclassname">kollacli.api.service.</tt><tt class="descname">Service</tt><big>(</big><em>servicename</em>, <em>parentname=None</em>, <em>childnames=[]</em>, <em>groupnames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Service</p>
 <p>A service is one of the services available in openstack-kolla.</p>
@@ -898,8 +921,8 @@ represented:</p>
 </li>
 </ul>
 <dl class="method">
-<dt id="kollacli.api.service.ServiceApi.Service.get_children">
-<tt class="descname">get_children</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service.get_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service.get_children" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.service.Service.get_children">
+<tt class="descname">get_children</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service.get_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service.get_children" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get names of the child services associated with this service</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -914,8 +937,8 @@ represented:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.service.ServiceApi.Service.get_groups">
-<tt class="descname">get_groups</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service.get_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service.get_groups" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.service.Service.get_groups">
+<tt class="descname">get_groups</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service.get_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service.get_groups" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get names of the groups associated with this service</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -933,8 +956,8 @@ changes.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.service.ServiceApi.Service.get_name">
-<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service.get_name" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.service.Service.get_name">
+<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service.get_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get name</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -949,8 +972,8 @@ changes.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.service.ServiceApi.Service.get_parent">
-<tt class="descname">get_parent</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.Service.get_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.Service.get_parent" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.service.Service.get_parent">
+<tt class="descname">get_parent</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service.get_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service.get_parent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get name of parent service</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -966,9 +989,13 @@ changes.</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="kollacli.api.service.ServiceApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.service.</tt><tt class="descname">ServiceApi</tt><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <dl class="method">
 <dt id="kollacli.api.service.ServiceApi.service_get">
-<tt class="descclassname">ServiceApi.</tt><tt class="descname">service_get</tt><big>(</big><em>servicenames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.service_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.service_get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">service_get</tt><big>(</big><em>servicenames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.service_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.service_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get selected services in the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -986,7 +1013,7 @@ changes.</p>
 
 <dl class="method">
 <dt id="kollacli.api.service.ServiceApi.service_get_all">
-<tt class="descclassname">ServiceApi.</tt><tt class="descname">service_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.service_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.service_get_all" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">service_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#ServiceApi.service_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.ServiceApi.service_get_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all services in the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1118,7 +1145,7 @@ names for each log will be servicename_id.log.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

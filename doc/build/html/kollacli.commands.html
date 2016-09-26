@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.commands package &mdash; kollacli 3.0.1.dev435 documentation</title>
+    <title>kollacli.commands package &mdash; kollacli 3.0.1.dev463 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.1.dev435',
+        VERSION:     '3.0.1.dev463',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev435 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -357,6 +357,18 @@ specified host or if no host is specified, on all hosts.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="kollacli.commands.password.PasswordInit">
+<em class="property">class </em><tt class="descclassname">kollacli.commands.password.</tt><tt class="descname">PasswordInit</tt><big>(</big><em>app</em>, <em>app_args</em>, <em>cmd_name=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/password.html#PasswordInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.password.PasswordInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
+<p>Init all empty passwords and ssh keys.</p>
+<dl class="method">
+<dt id="kollacli.commands.password.PasswordInit.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/password.html#PasswordInit.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.password.PasswordInit.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="kollacli.commands.password.PasswordList">
 <em class="property">class </em><tt class="descclassname">kollacli.commands.password.</tt><tt class="descname">PasswordList</tt><big>(</big><em>app</em>, <em>app_args</em>, <em>cmd_name=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/password.html#PasswordList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.password.PasswordList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.lister.Lister</span></tt></p>
@@ -381,6 +393,23 @@ specified host or if no host is specified, on all hosts.</p>
 <dl class="method">
 <dt id="kollacli.commands.password.PasswordSet.take_action">
 <tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/password.html#PasswordSet.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.password.PasswordSet.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kollacli.commands.password.PasswordSetKey">
+<em class="property">class </em><tt class="descclassname">kollacli.commands.password.</tt><tt class="descname">PasswordSetKey</tt><big>(</big><em>app</em>, <em>app_args</em>, <em>cmd_name=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/password.html#PasswordSetKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.password.PasswordSetKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
+<p>Password Set SSH Key</p>
+<dl class="method">
+<dt id="kollacli.commands.password.PasswordSetKey.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/password.html#PasswordSetKey.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.password.PasswordSetKey.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.commands.password.PasswordSetKey.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/password.html#PasswordSetKey.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.password.PasswordSetKey.take_action" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -601,7 +630,7 @@ debugging problems.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev435 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
