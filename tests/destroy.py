@@ -33,13 +33,14 @@ ENABLED_SERVICES = [
 
 # after deploy
 EXPECTED_CONTAINERS_1 = [
-    'rabbitmq', 'rabbitmq_data'
+    'rabbitmq'
     ]
 
+# TODO(bmace) needs to be refactored after destroy change
 # after destroy --includedata
-EXPECTED_CONTAINERS_2 = [
-    'rabbitmq_data'
-    ]
+# EXPECTED_CONTAINERS_2 = [
+#    'rabbitmq_data'
+#    ]
 
 
 class TestFunctional(KollaCliTest):
@@ -140,27 +141,30 @@ class TestFunctional(KollaCliTest):
                               'is not running on host: %s ' % hostname +
                               'after deploy.')
 
-        # destroy non-data services (via --stop flag)
-        # this should leave only data containers running
-        self.log.info('Start destroy #2, do not include data')
-        job = CLIENT.async_host_destroy(hostnames, destroy_type='stop',
-                                        include_data=False)
-        self._process_job(job, 'destroy #2', is_physical_host)
-
-        if is_physical_host:
-            docker_ps = test_config.run_remote_cmd('docker ps', hostname)
-            for service in CLIENT.service_get_all():
-                if service.name not in ENABLED_SERVICES:
-                    self.assertNotIn(service.name, docker_ps,
-                                     'disabled service: %s ' % service.name +
-                                     'is running on host: %s ' % hostname +
-                                     'after destroy (no data).')
-            for servicename in EXPECTED_CONTAINERS_2:
-                self.assertIn(servicename, docker_ps,
-                              'enabled service: %s ' % servicename +
-                              'is not running on host: %s ' % hostname +
-                              'after destroy (no data).')
-
+# TODO(bmace) Invalid until new destroy changes are committed.
+# Data containers no longer exist.
+# The tests will need to check for data volumes.
+#        # destroy non-data services (via --stop flag)
+#        # this should leave only data containers running
+#        self.log.info('Start destroy #2, do not include data')
+#        job = CLIENT.async_host_destroy(hostnames, destroy_type='stop',
+#                                        include_data=False)
+#        self._process_job(job, 'destroy #2', is_physical_host)
+#
+#        if is_physical_host:
+#            docker_ps = test_config.run_remote_cmd('docker ps', hostname)
+#            for service in CLIENT.service_get_all():
+#                if service.name not in ENABLED_SERVICES:
+#                    self.assertNotIn(service.name, docker_ps,
+#                                     'disabled service: %s ' % service.name +
+#                                     'is running on host: %s ' % hostname +
+#                                     'after destroy (no data).')
+#            for servicename in EXPECTED_CONTAINERS_2:
+#                self.assertIn(servicename, docker_ps,
+#                              'enabled service: %s ' % servicename +
+#                              'is not running on host: %s ' % hostname +
+#                              'after destroy (no data).')
+#
         self.log.info('Start destroy #3, include data')
         job = CLIENT.async_host_destroy(hostnames, destroy_type='stop',
                                         include_data=True)

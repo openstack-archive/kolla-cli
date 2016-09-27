@@ -31,12 +31,19 @@ class Upgrade(Command):
     """Upgrade."""
     def get_parser(self, prog_name):
         parser = super(Upgrade, self).get_parser(prog_name)
+        parser.add_argument('--services', nargs='?',
+                            metavar='<service_list>',
+                            help=u._('Upgrade service list'))
         return parser
 
     def take_action(self, parsed_args):
+        services = None
         try:
+            if parsed_args.services:
+                service_list = parsed_args.services.strip()
+                services = service_list.split(',')
             verbose_level = self.app.options.verbose_level
-            job = CLIENT.async_upgrade(verbose_level)
+            job = CLIENT.async_upgrade(verbose_level, services)
             status = job.wait()
             if verbose_level > 2:
                 LOG.info('\n\n' + 80 * '=')

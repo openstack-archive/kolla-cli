@@ -58,6 +58,22 @@ class Deploy(Command):
                     raise CommandError(u._('Timeout value is not a number.'))
                 timeout_target = time.time() + (60 * timeout)
 
+            # if we are doing a targeted host deploy make sure we are doing it
+            # to only compute nodes
+            if hosts:
+                invalid_host_list = []
+                compute_group = CLIENT.group_get(['compute'])[0]
+                compute_hosts = compute_group.get_hosts()
+                for host in hosts:
+                    if host not in compute_hosts:
+                        invalid_host_list.append(host)
+                if len(invalid_host_list) > 0:
+                    raise CommandError(
+                        u._('Invalid hosts for host targeted deploy. '
+                            'Hosts must be in the compute group only.'
+                            'Invalid hosts: {hosts}')
+                        .format(hosts=invalid_host_list))
+
             job = CLIENT.async_deploy(hosts, serial_flag,
                                       verbose_level)
 

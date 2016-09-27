@@ -13,13 +13,17 @@
 #   under the License.
 #
 from common import KollaCliTest
+from common import TestConfig
 
+from kollacli.api.client import ClientApi
 from kollacli.common.allinone import AllInOne
 from kollacli.common.ansible import job
 from kollacli.common.inventory import Inventory
 
 import json
 import unittest
+
+CLIENT = ClientApi()
 
 
 class TestFunctional(KollaCliTest):
@@ -146,6 +150,26 @@ class TestFunctional(KollaCliTest):
         msg = self.run_cli_cmd('deploy --timeout .001', expect_error=True)
         self.assertIn('timed out', msg)
 
+        # full host deploy to non-compute host.  this can only be done
+        # through the api (cli test below makes sure it fails in cli)
+        msg = ''
+        try:
+            test_config = TestConfig()
+            test_config.load()
+            hostnames = test_config.get_hostnames()
+            CLIENT.host_add(hostnames)
+            job = CLIENT.async_deploy(hostnames=[hostnames[0]])
+            job.wait()
+            msg = job.get_console_output()
+            self.assertEqual(job.get_status(), 0,
+                             'error performing whole host deploy %s' % msg)
+        except Exception as e:
+            self.assertEqual(0, 1,
+                             'unexpected exception in host deploy %s, %s'
+                             % (e.message, msg))
+        finally:
+            CLIENT.host_remove(hostnames)
+
         # run compute host deploy to invalid host
         err_msg = 'Status: unreachable'
         msg = ''
@@ -168,6 +192,27 @@ class TestFunctional(KollaCliTest):
         # test will upgrade an environment with no hosts, mostly a NOP,
         # but it will go through the client code paths.
         self.run_cli_cmd('upgrade -v')
+
+        msg = ''
+        hostnames = []
+        # run rabbitmq service deploy
+        try:
+            test_config = TestConfig()
+            test_config.load()
+            hostnames = test_config.get_hostnames()
+            CLIENT.host_add(hostnames)
+            job = CLIENT.async_upgrade(servicenames=['rabbitmq'])
+            job.wait()
+            msg = job.get_console_output()
+            self.assertEqual(job.get_status(), 0,
+                             'error performing service specific deploy %s'
+                             % msg)
+        except Exception as e:
+            self.assertEqual(0, 1,
+                             'unexpected exception in service deploy: %s, %s'
+                             % (e.message, msg))
+        finally:
+            CLIENT.host_remove(hostnames)
 
     def test_deserialize(self):
         # create a dummy ansible job

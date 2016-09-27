@@ -69,7 +69,7 @@ def destroy_hosts(hostnames, destroy_type,
 
 
 def deploy(hostnames=[],
-           serial_flag=False, verbose_level=1):
+           serial_flag=False, verbose_level=1, servicenames=[]):
     playbook = AnsiblePlaybook()
     kolla_home = get_kolla_home()
     playbook.playbook_path = os.path.join(kolla_home,
@@ -77,8 +77,8 @@ def deploy(hostnames=[],
     playbook.extra_vars = 'action=deploy'
     playbook.hosts = hostnames
     playbook.serial = serial_flag
-
     playbook.verbose_level = verbose_level
+    playbook.services = servicenames
 
     _run_deploy_rules(playbook)
 
@@ -100,11 +100,12 @@ def precheck(hostnames, verbose_level=1):
     playbook.hosts = hostnames
     playbook.print_output = True
     playbook.verbose_level = verbose_level
+
     job = playbook.run()
     return job
 
 
-def upgrade(verbose_level=1):
+def upgrade(verbose_level=1, servicenames=[]):
     playbook = AnsiblePlaybook()
     kolla_home = get_kolla_home()
     playbook.playbook_path = os.path.join(kolla_home,
@@ -112,6 +113,8 @@ def upgrade(verbose_level=1):
     playbook.extra_vars = 'action=upgrade'
     playbook.print_output = True
     playbook.verbose_level = verbose_level
+    playbook.services = servicenames
+
     job = playbook.run()
     return job
 
@@ -130,23 +133,6 @@ def _run_deploy_rules(playbook):
                 'kollacli password set(key) to correct them. '
                 '\nEmpty passwords: '
                 '{keys}').format(etc=get_kolla_etc(), keys=empty_keys))
-
-    # if we are doing a targeted host deploy make sure we are doing it
-    # to only compute nodes
-    if playbook.hosts:
-        inventory.validate_hostnames(playbook.hosts)
-        host_groups = inventory.get_host_groups()
-        invalid_host_list = []
-        for host in playbook.hosts:
-            groups = host_groups.get(host, None)
-            if not groups or len(groups) != 1 or 'compute' not in groups:
-                invalid_host_list.append(host)
-        if len(invalid_host_list) > 0:
-            raise InvalidArgument(
-                u._('Invalid hosts for host targeted deploy. '
-                    'Hosts must be in the compute group only.'
-                    'Invalid hosts: {hosts}')
-                .format(hosts=invalid_host_list))
 
     # cannot have both groups and hosts
     if playbook.hosts and playbook.groups:

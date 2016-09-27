@@ -81,6 +81,7 @@ class AnsibleJob(object):
                         'ansible job: {cmd} ')
                     .format(lock=get_ansible_lock_path(), cmd=self._command))
 
+            LOG.debug('playbook command: %s' % self._command)
             # create and open named pipe, must be owned by kolla group
             os.mkfifo(self._fifo_path)
             _, grp_id = get_admin_uids()

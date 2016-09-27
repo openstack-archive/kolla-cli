@@ -24,8 +24,8 @@ from kollacli.common.utils import safe_decode
 class AsyncApi(object):
 
     def async_deploy(self, hostnames=[],
-                     serial_flag=False, verbose_level=1):
-        # type: (List[str], bool, int) -> Job
+                     serial_flag=False, verbose_level=1, servicenames=[]):
+        # type: (List[str], bool, int, List[str]) -> Job
         """Deploy.
 
         Deploy containers to hosts.
@@ -36,6 +36,8 @@ class AsyncApi(object):
         :type serial_flag: boolean
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
+        :param servicenames: services to deploy. If empty, then deploy all.
+        :type servicenames: list of strings
         :return: Job object
         :rtype: Job
         """
@@ -43,18 +45,23 @@ class AsyncApi(object):
                   empty_ok=True, none_ok=True)
         check_arg(serial_flag, u._('Serial flag'), bool)
         check_arg(verbose_level, u._('Verbose level'), int)
+        check_arg(servicenames, u._('Service names'), list,
+                  empty_ok=True, none_ok=True)
         hostnames = safe_decode(hostnames)
+        servicenames = safe_decode(servicenames)
 
         ansible_job = actions.deploy(hostnames,
-                                     serial_flag, verbose_level)
+                                     serial_flag, verbose_level, servicenames)
         return Job(ansible_job)
 
-    def async_upgrade(self, verbose_level=1):
-        # type: (int) -> Job
+    def async_upgrade(self, verbose_level=1, servicenames=[]):
+        # type: (int, List[str]) -> Job
         """Upgrade.
 
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
+        :param servicenames: services to upgrade. If empty, then upgrade all.
+        :type servicenames: list of strings
         :return: Job object
         :rtype: Job
 
@@ -62,7 +69,11 @@ class AsyncApi(object):
         "openstack_release."
         """
         check_arg(verbose_level, u._('Verbose level'), int)
-        ansible_job = actions.upgrade(verbose_level)
+        check_arg(servicenames, u._('Service names'), list,
+                  empty_ok=True, none_ok=True)
+        servicenames = safe_decode(servicenames)
+
+        ansible_job = actions.upgrade(verbose_level, servicenames)
         return Job(ansible_job)
 
     def async_host_destroy(self, hostnames, destroy_type, verbose_level=1,
