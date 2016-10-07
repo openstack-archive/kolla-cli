@@ -173,20 +173,20 @@ sed -i \
     '/^Cmnd_Alias.*KOLLA_CMDS/ s:, %{_datadir}/kolla/kollacli/tools/passwd_editor.py::'\
      %{_sysconfdir}/sudoers.d/%{kolla_user}
 
-# remove obsolete json_generator script
-if test -f %{_datadir}/kolla/kollacli/tools/json_generator.py
-then
-    rm -f %{_datadir}/kolla/kollacli/tools/json_generator.py
-fi
-
-# remove obsolete password editor script
-if test -f %{_datadir}/kolla/kollacli/tools/passwd_editor.py.py
-then
-    rm -f %{_datadir}/kolla/kollacli/tools/passwd_editor.py.py
-fi
-
 # add version property for prechecks_preinstall.yml playbook
-kollacli property set kolla_preinstall_version %{package_version}
+if ! grep -q 'kolla_preinstall_version' %{_datadir}/kolla/ansible/group_vars/__GLOBAL__
+# property doesn't yet exist
+then
+    cat >> %{_datadir}/kolla/ansible/group_vars/__GLOBAL__ << EOF
+kolla_preinstall_version: "%{package_version}"
+EOF
+elif ! grep -q 'kolla_preinstall_version: "%{package_version}"' %{_datadir}/kolla/ansible/group_vars/__GLOBAL__
+# property exists but at wrong version, need to update it
+then
+    sed -i \
+    's/^kolla_preinstall_version.*$/kolla_preinstall_version: "%{package_version}"/' \
+     %{_datadir}/kolla/ansible/group_vars/__GLOBAL__
+fi
 
 %postun
 case "$*" in
@@ -223,6 +223,9 @@ openstack-kollacli client.
 %attr(644, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/.ansible.cfg
 
 %changelog
+* Fri Oct 07 2016 - Steve Noyes <steve.noyes@oracle.com>
+- use cat command to add kolla_preinstall_version to properties file
+
 * Mon Sep 12 2016 - Steve Noyes <steve.noyes@oracle.com>
 - move ansible.cfg from kolla to kollacli rpm
 - add kolla_preinstall_version to properties file
