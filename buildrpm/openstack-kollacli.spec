@@ -178,6 +178,7 @@ if ! grep -q 'kolla_preinstall_version' %{_datadir}/kolla/ansible/group_vars/__G
 # property doesn't yet exist
 then
     cat >> %{_datadir}/kolla/ansible/group_vars/__GLOBAL__ << EOF
+
 kolla_preinstall_version: "%{package_version}"
 EOF
 elif ! grep -q 'kolla_preinstall_version: "%{package_version}"' %{_datadir}/kolla/ansible/group_vars/__GLOBAL__
@@ -223,6 +224,9 @@ openstack-kollacli client.
 %attr(644, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/.ansible.cfg
 
 %changelog
+* Tue Oct 11 2016 - James McCarthy <james.m.mccarthy@oracle.com>
+- Update cat command for kolla_preinstall_version bug 24824553
+
 * Fri Oct 07 2016 - Steve Noyes <steve.noyes@oracle.com>
 - use cat command to add kolla_preinstall_version to properties file
 
