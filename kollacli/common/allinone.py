@@ -55,7 +55,7 @@ class AllInOne(object):
         with open(allinone_path, 'r') as ain1:
             ain1_inv = ain1.read()
 
-        lines = ain1_inv.split('\n')
+        lines = [x for x in ain1_inv.split('\n') if not x.startswith('#')]
         for i in range(0, len(lines)):
             line = lines[i]
             if not line.startswith('['):
@@ -90,4 +90,5 @@ class AllInOne(object):
                     sub_service.add_groupname(parent)
 
             else:
-                service.add_groupname(parent)
+                if parent:
+                    service.add_groupname(parent)
