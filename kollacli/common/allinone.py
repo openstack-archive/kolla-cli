@@ -50,6 +50,18 @@ class AllInOne(object):
             self.groups.append(groupname)
 
     def _load(self):
+        """load all-in-one inventory file
+
+        Note: This assumes that there will be a blank line between each
+        section:
+
+        # Mistral
+        [mistral-api:children]
+        mistral
+
+        [mistral-executor:children]
+        mistral
+        """
         allinone_path = os.path.join(get_kolla_home(), 'ansible',
                                      'inventory_samples', 'all-in-one')
         with open(allinone_path, 'r') as ain1:
@@ -81,14 +93,16 @@ class AllInOne(object):
                 sub_service.set_parent_servicename(servicename)
                 service.add_sub_servicename(sub_servicename)
 
-            # next line should be parent of service found above
-            i += 1
-            line = lines[i]
-            parent = line.strip()
-            if sub_service:
+            # next lines will be parents of service/sub-service found above
+            while True:
+                i += 1
+                line = lines[i]
+                parent = line.strip()
+                if not parent:
+                    # blank line, done processing parents
+                    break
                 if parent in self.groups:
-                    sub_service.add_groupname(parent)
-
-            else:
-                if parent:
-                    service.add_groupname(parent)
+                    if sub_service:
+                        sub_service.add_groupname(parent)
+                    else:
+                        service.add_groupname(parent)
