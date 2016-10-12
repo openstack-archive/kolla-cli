@@ -94,7 +94,6 @@ class AsyncApi(object):
         :type include_data: boolean
         :return: Job object
         :rtype: Job
-
         """
         check_arg(hostnames, u._('Host names'), list)
         check_arg(destroy_type, u._('Destroy type'), str)

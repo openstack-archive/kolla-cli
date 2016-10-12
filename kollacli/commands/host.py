@@ -85,6 +85,15 @@ class HostDestroy(Command):
             if parsed_args.includedata:
                 include_data = True
 
+            if not include_data:
+                question = ('This will delete all containers and data'
+                            ', are you sure? (y/n)')
+                answer = raw_input(question)
+                while answer != 'y' and answer != 'n':
+                    answer = raw_input(question)
+                if answer is 'n':
+                    LOG.info('Aborting destroy')
+                    return
             verbose_level = self.app.options.verbose_level
 
             job = CLIENT.async_host_destroy(hostnames, destroy_type,

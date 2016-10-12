@@ -22,11 +22,9 @@ from kollacli.api.exceptions import NotInInventory
 from kollacli.common.ansible.playbook import AnsiblePlaybook
 from kollacli.common.inventory import Inventory
 from kollacli.common.passwords import get_empty_password_values
-from kollacli.common import properties
 from kollacli.common.properties import AnsibleProperties
 from kollacli.common.utils import get_kolla_etc
 from kollacli.common.utils import get_kolla_home
-from kollacli.common.utils import get_kollacli_home
 from kollacli.common.utils import is_string_true
 
 LOG = logging.getLogger(__name__)
@@ -40,26 +38,16 @@ def destroy_hosts(hostnames, destroy_type,
     or killed. That will be determined by the destroy_type,
     which can either be 'stop' or 'kill'.
     '''
-    playbook_name = 'host_destroy_no_data.yml'
-    if include_data:
-        playbook_name = 'host_destroy.yml'
+    playbook = AnsiblePlaybook()
+    playbook_name = 'destroy.yml'
 
     LOG.info(u._LI('Please be patient as this may take a while.'))
-    ansible_properties = properties.AnsibleProperties()
-    base_distro = \
-        ansible_properties.get_property('kolla_base_distro')
-    install_type = \
-        ansible_properties.get_property('kolla_install_type')
-    container_prefix = base_distro + '-' + install_type
-    kollacli_home = get_kollacli_home()
-    playbook = AnsiblePlaybook()
-    playbook.playbook_path = os.path.join(kollacli_home,
+    kolla_home = get_kolla_home()
+    playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/' + playbook_name)
 
     # 'hosts' is defined as 'all' in the playbook yml code, but inventory
     # filtering will subset that down to the hosts in playbook.hosts.
-    playbook.extra_vars = 'prefix=' + container_prefix + \
-                          ' destroy_type=' + destroy_type
     playbook.hosts = hostnames
     if verbose_level <= 1:
         playbook.print_output = False
