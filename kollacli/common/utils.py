@@ -224,11 +224,13 @@ def change_password(file_path, pname, pvalue=None, public_key=None,
             del file_pwds[pname]
     else:
         # edit
-        if pvalue:
-            file_pwds[pname] = pvalue
-        elif private_key:
+        if private_key:
             file_pwds[pname] = {'private_key': private_key,
                                 'public_key': public_key}
+        else:
+            if not pvalue:
+                pvalue = None
+            file_pwds[pname] = pvalue
     write_data = yaml.safe_dump(file_pwds, default_flow_style=False)
     sync_write_file(file_path, write_data)
 

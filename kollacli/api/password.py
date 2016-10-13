@@ -33,7 +33,8 @@ class PasswordApi(object):
         :type value: string
         """
         check_arg(name, u._('Password name'), str)
-        check_arg(value, u._('Password value'), str, display_param=False)
+        check_arg(value, u._('Password value'), str, display_param=False,
+                  empty_ok=True, none_ok=True)
         set_password(name, value)
 
     def password_set_sshkey(self, name, private_key, public_key):

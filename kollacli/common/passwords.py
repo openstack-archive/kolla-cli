@@ -27,7 +27,12 @@ def set_password(pwd_key, pwd_value):
     If the password name exists, it will be changed.
     If it doesn't exist, a new password will be added.
     """
-    cmd = '%s -k %s -v %s' % (_get_cmd_prefix(), pwd_key, pwd_value)
+    value_switch = '-v'
+    if not pwd_value:
+        pwd_value = ''
+        value_switch = ''
+    cmd = '%s -k %s %s %s' % (_get_cmd_prefix(), pwd_key, value_switch,
+                              pwd_value)
     err_msg, output = utils.run_cmd(cmd, print_output=False)
     if err_msg:
         raise FailedOperation(

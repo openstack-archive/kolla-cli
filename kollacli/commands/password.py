@@ -34,14 +34,18 @@ class PasswordSet(Command):
         parser = super(PasswordSet, self).get_parser(prog_name)
         parser.add_argument('passwordname', metavar='<passwordname>',
                             help=u._('Password name'))
-        parser.add_argument('--insecure', nargs='?', help=argparse.SUPPRESS)
+        parser.add_argument('--insecure', nargs='?', default=False,
+                            help=argparse.SUPPRESS)
         return parser
 
     def take_action(self, parsed_args):
         try:
             password_name = parsed_args.passwordname.strip()
-            if parsed_args.insecure:
-                password = parsed_args.insecure.strip()
+            if parsed_args.insecure is not False:
+                # --insecure flag is present
+                password = ''
+                if parsed_args.insecure:
+                    password = parsed_args.insecure.strip()
             else:
                 password = getpass.getpass(u._('Password: ')).strip()
                 passtwo = getpass.getpass(u._('Retype Password: ')).strip()

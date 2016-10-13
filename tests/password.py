@@ -88,6 +88,22 @@ class TestFunctional(KollaCliTest):
                         '(%s/%s) not in output: %s' %
                         (key, value, msg))
 
+        # test setting empty password
+        self.run_cli_cmd('password set %s --insecure' % key)
+        msg = self.run_cli_cmd('password list')
+        ok = self._password_value_exists(key, '-', msg)
+        self.assertTrue(ok, 'set empty password failed. Password ' +
+                        '(%s/-) not in output: %s' %
+                        (key, msg))
+
+        # test setting None password
+        CLIENT.password_set(key, None)
+        msg = self.run_cli_cmd('password list')
+        ok = self._password_value_exists(key, '-', msg)
+        self.assertTrue(ok, 'set None password failed. Password ' +
+                        '(%s/-) not in output: %s' %
+                        (key, msg))
+
         # test clear
         key = 'TeStKeY'
         value = '-'
