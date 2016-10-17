@@ -57,7 +57,7 @@ class HostDestroy(Command):
     """Destroy.
 
     Stops and removes all kolla related docker containers on either the
-    specified host or if no host is specified, on all hosts.
+    specified host or all hosts if the hostname all is used.
     """
 
     def get_parser(self, prog_name):
@@ -307,6 +307,50 @@ class HostSetup(Command):
         if not hosts_info:
             raise CommandError(u._('{path} is empty.').format(path=yml_path))
         return hosts_info
+
+
+class HostStop(Command):
+    """Stop.
+
+    Stops all kolla related docker containers on either the
+    specified host or all hosts if the hostname all is used.
+    """
+
+    def get_parser(self, prog_name):
+        parser = super(HostStop, self).get_parser(prog_name)
+        parser.add_argument('hostname', metavar='<hostname | all>',
+                            help=u._('Host name or ip address or "all"'))
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            hostname = parsed_args.hostname.strip()
+
+            hostnames = [hostname]
+            if hostname == 'all':
+                hostnames = _get_all_hostnames()
+
+            verbose_level = self.app.options.verbose_level
+
+            job = CLIENT.async_host_stop(hostnames, verbose_level)
+            status = job.wait()
+            if verbose_level > 2:
+                LOG.info('\n\n' + 80 * '=')
+                LOG.info(u._('DEBUG command output:\n{out}')
+                         .format(out=job.get_console_output()))
+            if status != 0:
+                raise CommandError(u._('Job failed:\n{msg}')
+                                   .format(msg=job.get_error_message()))
+            elif verbose_level > 1:
+                # log any ansible warnings
+                msg = job.get_error_message()
+                if msg:
+                    LOG.warn(msg)
+
+        except ClientException as e:
+            raise CommandError(str(e))
+        except Exception as e:
+            raise Exception(traceback.format_exc())
 
 
 def _get_all_hostnames():

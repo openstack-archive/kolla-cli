@@ -95,6 +95,29 @@ def precheck(hostnames, verbose_level=1):
     return job
 
 
+def stop_hosts(hostnames=[], verbose_level=1):
+    '''stop containers on a set of hosts.
+
+    The containers on the specified hosts will be stopped
+    or killed if the stop takes over 20 seconds.
+    '''
+    playbook = AnsiblePlaybook()
+    playbook_name = 'stop.yml'
+    LOG.info(u._LI('Please be patient as this may take a while.'))
+    kolla_home = get_kolla_home()
+    playbook.playbook_path = os.path.join(kolla_home,
+                                          'ansible/' + playbook_name)
+
+    # 'hosts' is defined as 'all' in the playbook yml code, but inventory
+    # filtering will subset that down to the hosts in playbook.hosts.
+    playbook.hosts = hostnames
+    if verbose_level <= 1:
+        playbook.print_output = False
+    playbook.verbose_level = verbose_level
+    job = playbook.run()
+    return job
+
+
 def upgrade(verbose_level=1, servicenames=[]):
     playbook = AnsiblePlaybook()
     kolla_home = get_kolla_home()

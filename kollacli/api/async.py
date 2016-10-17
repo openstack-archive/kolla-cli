@@ -138,3 +138,27 @@ class AsyncApi(object):
 
         ansible_job = actions.precheck(hostnames, verbose_level)
         return Job(ansible_job)
+
+
+    def async_host_stop(self, hostnames, verbose_level=1):
+        # type: (List[str], int) -> Job
+        """Stop Hosts.
+
+        Stops all kolla related docker containers on the specified hosts.
+
+        :param hostnames: host names
+        :type hostnames: list
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
+        :return: Job object
+        :rtype: Job
+        """
+        check_arg(hostnames, u._('Host names'), list)
+        check_arg(verbose_level, u._('Verbose level'), int)
+
+        hostnames = safe_decode(hostnames)
+        inventory = Inventory.load()
+        inventory.validate_hostnames(hostnames)
+
+        ansible_job = actions.stop_hosts(hostnames, verbose_level)
+        return Job(ansible_job)
