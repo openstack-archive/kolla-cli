@@ -40,6 +40,7 @@ class AnsiblePlaybook(object):
     hosts = None  # type: List[str]
     groups = None  # type: List[str]
     services = None  # type: List[str]
+    ignore_error_strings = None  # type: List[str]
     serial = False
     deploy_id = None  # type: str
     inventory = None  # type: Inventory
@@ -55,6 +56,7 @@ class AnsiblePlaybook(object):
             # create and run the job
             job = AnsibleJob(cmd, self.deploy_id,
                              self.print_output, inventory_path)
+            job._ignore_error_strings = self.ignore_error_strings
             job.run()
             return job
 

@@ -68,9 +68,13 @@ class AnsibleJob(object):
         self._process = None
         self._process_std_err = None
         self._errors = []
+        self._error_total = 0
+        self._ignore_total = 0
         self._cmd_output = ''
         self._kill_uname = None
         self._ansible_lock = Lock(get_ansible_lock_path(), 'ansible_job')
+        self._ignore_error_strings = None
+        self._host_ignored_error_count = {}
 
     def run(self):
         try:
@@ -139,7 +143,15 @@ class AnsibleJob(object):
             else:
                 status = self._process.returncode
                 if status != 0:
-                    status = 1
+                    # if the process ran and returned a non zero return
+                    # code we want to see if we got some ansible errors
+                    # and if so if we ignored all the errors.  if all
+                    # errors are ignored we consider the job a success
+                    if (self._error_total > 0 and
+                            self._error_total == self._ignore_total):
+                        status = 0
+                    else:
+                        status = 1
             if not self._process_std_err:
                 # read stderr from process
                 std_err = self._read_stream(self._process.stderr)
@@ -151,7 +163,8 @@ class AnsibleJob(object):
         """"get error message"""
         msg = ''
         for error in self._errors:
-            msg = ''.join([msg, error, '\n'])
+            if error:
+                msg = ''.join([msg, error, '\n'])
 
         # if no error from the callback, check the process error
         if ANSIBLE_1_OR_MORE in msg:
@@ -338,7 +351,17 @@ class AnsibleJob(object):
                          % self._add_filler('%s' % changed[host], 5, ' '))
             hostline += ('unreachable=%s'
                          % self._add_filler('%s' % unreachable[host], 5, ' '))
-            hostline += 'failed=%s' % failures[host]
+            failures = failures[host]
+            ignores = self._host_ignored_error_count.get(host, 0)
+
+            # track the total numbers of failures and ignored failures to help
+            # determine job success
+            self._error_total += failures
+            self._ignore_total += ignores
+            failures -= ignores
+            hostline += ('failed=%s' %
+                         self._add_filler('%s' % failures, 5, ' '))
+            hostline += 'ignored=%s' % ignores
             msg += hostline
         return msg
 
@@ -350,12 +373,21 @@ class AnsibleJob(object):
             results_dict = packet['results']
             taskname = packet['task']['name']
 
-            # update saved error messages
-            self._errors.append(self._format_error(taskname, host,
-                                                   status, results_dict))
-            # format log message
-            results = json.dumps(results_dict)
-            msg = 'fatal: [%s]: %s! => %s' % (host, status.upper(), results)
+            # update saved error messages.  if the error message should be
+            # hidden then do not add it to _errors and add to the ignored
+            # error count for the host
+            formatted_error = self._format_error(taskname, host,
+                                                 status, results_dict)
+            if self._hide_ignored_errors(formatted_error):
+                LOG.debug('Ignored Error: ' + formatted_error)
+                self._host_ignored_error_count[host] = \
+                    self._host_ignored_error_count.get(host, 0) + 1
+            else:
+                self._errors.append(formatted_error)
+                # format log message
+                results = json.dumps(results_dict)
+                msg = 'fatal: [%s]: %s! => %s' % \
+                      (host, status.upper(), results)
         return msg
 
     def _format_task_start(self, packet):
@@ -464,3 +496,13 @@ class AnsibleJob(object):
             if raise_on_err:
                 raise e
         return retval
+
+    def _hide_ignored_errors(self, error_string):
+        if self._ignore_error_strings is not None:
+            for ignore_string in self._ignore_error_strings:
+                pattern = re.compile(ignore_string)
+                match = pattern.findall(error_string)
+                if match:
+                    return True
+
+        return False
