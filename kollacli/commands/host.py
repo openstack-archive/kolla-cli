@@ -68,6 +68,8 @@ class HostDestroy(Command):
                             help=u._('Stop rather than kill'))
         parser.add_argument('--includedata', action='store_true',
                             help=u._('Destroy data containers'))
+        parser.add_argument('--removeimages', action='store_true',
+                            help=u._('Remove docker images'))
         return parser
 
     def take_action(self, parsed_args):
@@ -84,6 +86,9 @@ class HostDestroy(Command):
             include_data = False
             if parsed_args.includedata:
                 include_data = True
+            remove_images = False
+            if parsed_args.removeimages:
+                remove_images = True
 
             if not include_data:
                 question = ('This will delete all containers and data'
@@ -97,7 +102,8 @@ class HostDestroy(Command):
             verbose_level = self.app.options.verbose_level
 
             job = CLIENT.async_host_destroy(hostnames, destroy_type,
-                                            verbose_level, include_data)
+                                            verbose_level, include_data,
+                                            remove_images)
             status = job.wait()
             if verbose_level > 2:
                 LOG.info('\n\n' + 80 * '=')

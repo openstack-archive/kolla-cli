@@ -31,12 +31,12 @@ LOG = logging.getLogger(__name__)
 
 
 def destroy_hosts(hostnames, destroy_type,
-                  verbose_level=1, include_data=False):
+                  verbose_level=1, include_data=False,
+                  remove_images=False):
     '''destroy containers on a set of hosts.
 
     The containers on the specified hosts will be stopped
-    or killed. That will be determined by the destroy_type,
-    which can either be 'stop' or 'kill'.
+    or killed.
     '''
     playbook = AnsiblePlaybook()
     playbook_name = 'destroy.yml'
@@ -49,6 +49,8 @@ def destroy_hosts(hostnames, destroy_type,
     # 'hosts' is defined as 'all' in the playbook yml code, but inventory
     # filtering will subset that down to the hosts in playbook.hosts.
     playbook.hosts = hostnames
+    if remove_images:
+        playbook.extra_vars = 'destroy_include_images=yes'
     if verbose_level <= 1:
         playbook.print_output = False
     playbook.verbose_level = verbose_level

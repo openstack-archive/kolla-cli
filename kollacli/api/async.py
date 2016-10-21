@@ -77,8 +77,8 @@ class AsyncApi(object):
         return Job(ansible_job)
 
     def async_host_destroy(self, hostnames, destroy_type, verbose_level=1,
-                           include_data=False):
-        # type: (List[str], str, int, bool) -> Job
+                           include_data=False, remove_images=False):
+        # type: (List[str], str, int, bool, bool) -> Job
         """Destroy Hosts.
 
         Stops and removes all kolla related docker containers on the
@@ -92,6 +92,8 @@ class AsyncApi(object):
         :type verbose_level: integer
         :param include_data: if true, destroy data containers too.
         :type include_data: boolean
+        :param remove_images: if true, destroy will remove the docker images
+        :type remove_images: boolean
         :return: Job object
         :rtype: Job
         """
@@ -99,6 +101,7 @@ class AsyncApi(object):
         check_arg(destroy_type, u._('Destroy type'), str)
         check_arg(verbose_level, u._('Verbose level'), int)
         check_arg(include_data, u._('Include data'), bool)
+        check_arg(remove_images, u._('Remove images'), bool)
         if destroy_type not in ['stop', 'kill']:
             raise InvalidArgument(
                 u._('Invalid destroy type ({type}). Must be either '
@@ -109,7 +112,7 @@ class AsyncApi(object):
         inventory.validate_hostnames(hostnames)
 
         ansible_job = actions.destroy_hosts(hostnames, destroy_type,
-                                            verbose_level, include_data)
+                                            verbose_level, include_data, remove_images)
         return Job(ansible_job)
 
     def async_host_precheck(self, hostnames, verbose_level=1):
