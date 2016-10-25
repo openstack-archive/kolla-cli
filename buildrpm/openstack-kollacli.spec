@@ -80,7 +80,6 @@ __EOF__
 mkdir -m 0755 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli
 mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
-mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 mkdir -m 0755 -p %{buildroot}/%{_datadir}/kolla/ansible
 
 # Create a kolla log directory
@@ -88,7 +87,6 @@ mkdir -m 0770 -p %{buildroot}/%{_var}/log/kolla
 
 # Install the required OpenStack Kolla files
 cp -r tools/* %{buildroot}/%{_datadir}/kolla/kollacli/tools
-cp -r ansible/* %{buildroot}/%{_datadir}/kolla/kollacli/ansible
 cp -r openstack-kolla-data/ansible.cfg %{buildroot}/%{_datadir}/kolla/.ansible.cfg
 cp -r openstack-kolla-data/ansible/prechecks_preinstall.yml %{buildroot}/%{_datadir}/kolla/ansible/prechecks_preinstall.yml
 
@@ -112,7 +110,6 @@ rm -rf %{buildroot}
 %attr(550, %{kolla_user}, %{kolla_group}) %dir %{_datadir}/kolla/kollacli/tools
 %attr(500, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/kolla_actions*
 %attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/tools/log_*
-%attr(550, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/kollacli/ansible/*.yml
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
 %attr(2770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
 %attr(644, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/ansible/prechecks_preinstall.yml
@@ -224,6 +221,9 @@ openstack-kollacli client.
 %attr(644, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/.ansible.cfg
 
 %changelog
+* Tue Oct 25 2016 - Borne Mace <borne.mace@oracle.com>
+- Removed no longer relevant kollacli ansible directory
+
 * Tue Oct 11 2016 - James McCarthy <james.m.mccarthy@oracle.com>
 - Update cat command for kolla_preinstall_version bug 24824553
 
