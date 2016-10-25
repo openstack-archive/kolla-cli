@@ -112,7 +112,8 @@ class AsyncApi(object):
         inventory.validate_hostnames(hostnames)
 
         ansible_job = actions.destroy_hosts(hostnames, destroy_type,
-                                            verbose_level, include_data, remove_images)
+                                            verbose_level, include_data,
+                                            remove_images)
         return Job(ansible_job)
 
     def async_host_precheck(self, hostnames, verbose_level=1):

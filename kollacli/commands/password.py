@@ -43,7 +43,7 @@ class PasswordSet(Command):
             password_name = parsed_args.passwordname.strip()
             if parsed_args.insecure is not False:
                 # --insecure flag is present
-                password = ''
+                password = ''  # nosec
                 if parsed_args.insecure:
                     password = parsed_args.insecure.strip()
             else:
