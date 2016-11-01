@@ -89,7 +89,9 @@ class AnsiblePlaybook(object):
         flag = ''
         # verbose levels: 1=not verbose, 2=more verbose
         if self.verbose_level > 1:
-            flag = '-vvv'
+            flag = '-'
+            for x in range(1, self.verbose_level):
+                flag += 'v'
 
         ansible_cmd = get_ansible_command(playbook=True)
         admin_user = get_admin_user()
