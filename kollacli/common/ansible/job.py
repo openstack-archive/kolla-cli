@@ -351,16 +351,16 @@ class AnsibleJob(object):
                          % self._add_filler('%s' % changed[host], 5, ' '))
             hostline += ('unreachable=%s'
                          % self._add_filler('%s' % unreachable[host], 5, ' '))
-            failures = failures[host]
+            failure_count = failures[host]
             ignores = self._host_ignored_error_count.get(host, 0)
 
             # track the total numbers of failures and ignored failures to help
             # determine job success
-            self._error_total += failures
+            self._error_total += failure_count
             self._ignore_total += ignores
-            failures -= ignores
+            failure_count -= ignores
             hostline += ('failed=%s' %
-                         self._add_filler('%s' % failures, 5, ' '))
+                         self._add_filler('%s' % failure_count, 5, ' '))
             hostline += 'ignored=%s' % ignores
             msg += hostline
         return msg
