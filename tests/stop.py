@@ -17,8 +17,6 @@ from common import TestConfig
 
 from kollacli.api.client import ClientApi
 
-import random
-import time
 import unittest
 
 TEST_GROUP_NAME = 'test_group'
@@ -39,7 +37,7 @@ EXPECTED_CONTAINERS_1 = [
 
 class TestFunctional(KollaCliTest):
 
-    def test_destroy(self):
+    def test_stop(self):
         test_config = TestConfig()
         test_config.load()
 
@@ -83,11 +81,10 @@ class TestFunctional(KollaCliTest):
                 control.remove_service(servicename)
                 group.add_service(servicename)
 
-        # destroy services, initialize server
-        self.log.info('Start destroy #1')
-        job = CLIENT.async_host_destroy(hostnames, destroy_type='kill',
-                                        include_data=True)
-        self._process_job(job, 'destroy #1', is_physical_host)
+        # stop services, initialize server
+        self.log.info('Start stop #1')
+        job = CLIENT.async_host_stop(hostnames)
+        self._process_job(job, 'stop #1', is_physical_host)
 
         self.log.info('updating various properties for the test')
 
@@ -106,14 +103,6 @@ class TestFunctional(KollaCliTest):
         predeploy_cmds = test_config.get_predeploy_cmds()
         for predeploy_cmd in predeploy_cmds:
             self.run_cli_cmd('%s' % predeploy_cmd)
-
-        # test killing a deploy
-        self.log.info('Kill a deployment')
-        job = CLIENT.async_deploy()
-        time.sleep(random.randint(5, 8))
-        job.kill()
-        self._process_job(job, 'deploy-kill',
-                          is_physical_host, expect_kill=True)
 
         # do a deploy of a limited set of services
         self.log.info('Start a deployment')
@@ -135,10 +124,9 @@ class TestFunctional(KollaCliTest):
                               'is not running on host: %s ' % hostname +
                               'after deploy.')
 
-        self.log.info('Start destroy #3, include data')
-        job = CLIENT.async_host_destroy(hostnames, destroy_type='stop',
-                                        include_data=True)
-        self._process_job(job, 'destroy #3', is_physical_host)
+        self.log.info('Start stop #2')
+        job = CLIENT.async_host_stop(hostnames)
+        self._process_job(job, 'stop #2', is_physical_host)
 
         if is_physical_host:
             docker_ps = test_config.run_remote_cmd('docker ps', hostname)
@@ -147,7 +135,7 @@ class TestFunctional(KollaCliTest):
                     self.assertNotIn(service.name, docker_ps,
                                      'disabled service: %s ' % service.name +
                                      'is running on host: %s ' % hostname +
-                                     'after destroy (data).')
+                                     'after stop.')
 
     def _process_job(self, job, descr, is_physical_host, expect_kill=False):
         status = job.wait()

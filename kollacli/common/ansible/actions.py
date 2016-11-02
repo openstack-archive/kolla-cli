@@ -118,6 +118,20 @@ def stop_hosts(hostnames=[], verbose_level=1):
     return job
 
 
+def reconfigure(verbose_level=1):
+    playbook = AnsiblePlaybook()
+    kolla_home = get_kolla_home()
+    playbook.playbook_path = os.path.join(kolla_home,
+                                          'ansible/site.yml')
+    playbook.extra_vars = 'action=reconfigure'
+    playbook.verbose_level = verbose_level
+
+    _run_deploy_rules(playbook)
+
+    job = playbook.run()
+    return job
+
+
 def upgrade(verbose_level=1, servicenames=[]):
     playbook = AnsiblePlaybook()
     kolla_home = get_kolla_home()

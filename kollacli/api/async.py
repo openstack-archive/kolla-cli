@@ -161,3 +161,19 @@ class AsyncApi(object):
 
         ansible_job = actions.stop_hosts(hostnames, verbose_level)
         return Job(ansible_job)
+
+    def async_reconfigure(self, verbose_level=1):
+        # type: (int) -> Job
+        """Reconfigure.
+
+        Reconfigure containers on hosts.
+
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
+        :return: Job object
+        :rtype: Job
+        """
+        check_arg(verbose_level, u._('Verbose level'), int)
+
+        ansible_job = actions.reconfigure(verbose_level)
+        return Job(ansible_job)
