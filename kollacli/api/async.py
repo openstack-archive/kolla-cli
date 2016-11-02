@@ -139,7 +139,6 @@ class AsyncApi(object):
         ansible_job = actions.precheck(hostnames, verbose_level)
         return Job(ansible_job)
 
-
     def async_host_stop(self, hostnames, verbose_level=1):
         # type: (List[str], int) -> Job
         """Stop Hosts.

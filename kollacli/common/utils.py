@@ -128,6 +128,14 @@ def get_setup_user():
     return os.environ.get("KOLLA_CLI_SETUP_USER", "root")
 
 
+def get_lock_enabled():
+    evar = os.environ.get('KOLLA_CLI_LOCK', 'true')
+    if evar.lower() == 'false':
+        return False
+    else:
+        return True
+
+
 def get_ansible_command(playbook=False):
     """get a python2 ansible command
 
@@ -300,13 +308,14 @@ def sync_read_file(path, mode='r'):
     """
     lock = None
     try:
-        lock = Lock(path, 'sync_read')
-        locked = lock.wait_acquire()
-        if not locked:
-            raise Exception(
-                u._('unable to read file {path} '
-                    'as it was locked.')
-                .format(path=path))
+        if get_lock_enabled():
+            lock = Lock(path, 'sync_read')
+            locked = lock.wait_acquire()
+            if not locked:
+                raise Exception(
+                    u._('unable to read file {path} '
+                        'as it was locked.')
+                    .format(path=path))
         with open(path, mode) as data_file:
             data = data_file.read()
     finally:
@@ -320,21 +329,22 @@ def sync_write_file(path, data, mode='w'):
     ansible_lock = None
     lock = None
     try:
-        ansible_lock = Lock(get_ansible_lock_path(), 'sync_write')
-        locked = ansible_lock.wait_acquire()
-        if not locked:
-            raise Exception(
-                u._('unable to get ansible lock while writing to {path} '
-                    'as it was locked.')
-                .format(path=path))
+        if get_lock_enabled():
+            ansible_lock = Lock(get_ansible_lock_path(), 'sync_write')
+            locked = ansible_lock.wait_acquire()
+            if not locked:
+                raise Exception(
+                    u._('unable to get ansible lock while writing to {path} '
+                        'as it was locked.')
+                    .format(path=path))
 
-        lock = Lock(path, 'sync_write')
-        locked = lock.wait_acquire()
-        if not locked:
-            raise Exception(
-                u._('unable to write file {path} '
-                    'as it was locked.')
-                .format(path=path))
+            lock = Lock(path, 'sync_write')
+            locked = lock.wait_acquire()
+            if not locked:
+                raise Exception(
+                    u._('unable to write file {path} '
+                        'as it was locked.')
+                    .format(path=path))
         with open(path, mode) as data_file:
             data_file.write(data)
     finally:
