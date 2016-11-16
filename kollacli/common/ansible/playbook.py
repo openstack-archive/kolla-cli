@@ -17,7 +17,6 @@ import traceback
 
 import kollacli.i18n as u
 
-from kollacli.api.exceptions import NotInInventory
 from kollacli.common.ansible.job import AnsibleJob
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
@@ -120,11 +119,22 @@ class AnsiblePlaybook(object):
             first = True
             for service in self.services:
                 if not first:
-                    service_string = service_string + ','
+                    service_string += ','
                 else:
                     first = False
                 service_string = service_string + service
             cmd += ' --tags %s' % service_string
+
+        if self.hosts:
+            host_string = ''
+            first = True
+            for host in self.hosts:
+                if not first:
+                    host_string += ','
+                else:
+                    first = False
+                host_string = host_string + host
+            cmd += ' --limit %s' % host_string
 
         if self.flush_cache:
             cmd += ' --flush-cache'
@@ -139,18 +149,6 @@ class AnsiblePlaybook(object):
         and status from deployments back to the kolla code.
         """
         inventory_filter = {}
-        if self.hosts:
-            for hostname in self.hosts:
-                host = self.inventory.get_host(hostname)
-                if not host:
-                    raise NotInInventory(u._('Host'), hostname)
-            inventory_filter['deploy_hosts'] = self.hosts
-        elif self.groups:
-            for groupname in self.groups:
-                group = self.inventory.get_group(groupname)
-                if not group:
-                    raise NotInInventory(u._('Group'), groupname)
-            inventory_filter['deploy_groups'] = self.groups
         inventory_path = \
             self.inventory.create_json_gen_file(inventory_filter)
 
