@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible.actions &mdash; kollacli 3.0.1.dev463 documentation</title>
+    <title>kollacli.common.ansible.actions &mdash; kollacli 4.0.0.dev483 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '3.0.1.dev463',
+        VERSION:     '4.0.0.dev483',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="../../../../index.html" />
+    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -71,45 +71,35 @@
 <span class="kn">from</span> <span class="nn">kollacli.common.ansible.playbook</span> <span class="kn">import</span> <span class="n">AnsiblePlaybook</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">Inventory</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.passwords</span> <span class="kn">import</span> <span class="n">get_empty_password_values</span>
-<span class="kn">from</span> <span class="nn">kollacli.common</span> <span class="kn">import</span> <span class="n">properties</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.properties</span> <span class="kn">import</span> <span class="n">AnsibleProperties</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_etc</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_home</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kollacli_home</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">is_string_true</span>
 
-<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="destroy_hosts"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.destroy_hosts">[docs]</a><span class="k">def</span> <span class="nf">destroy_hosts</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">destroy_type</span><span class="p">,</span>
-                  <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">include_data</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+                  <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">include_data</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                  <span class="n">remove_images</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;destroy containers on a set of hosts.</span>
 
 <span class="sd">    The containers on the specified hosts will be stopped</span>
-<span class="sd">    or killed. That will be determined by the destroy_type,</span>
-<span class="sd">    which can either be &#39;stop&#39; or &#39;kill&#39;.</span>
+<span class="sd">    or killed.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">playbook_name</span> <span class="o">=</span> <span class="s1">&#39;host_destroy_no_data.yml&#39;</span>
-    <span class="k">if</span> <span class="n">include_data</span><span class="p">:</span>
-        <span class="n">playbook_name</span> <span class="o">=</span> <span class="s1">&#39;host_destroy.yml&#39;</span>
+    <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
+    <span class="n">playbook_name</span> <span class="o">=</span> <span class="s1">&#39;destroy.yml&#39;</span>
 
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s1">&#39;Please be patient as this may take a while.&#39;</span><span class="p">))</span>
-    <span class="n">ansible_properties</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">AnsibleProperties</span><span class="p">()</span>
-    <span class="n">base_distro</span> <span class="o">=</span> \
-        <span class="n">ansible_properties</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s1">&#39;kolla_base_distro&#39;</span><span class="p">)</span>
-    <span class="n">install_type</span> <span class="o">=</span> \
-        <span class="n">ansible_properties</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s1">&#39;kolla_install_type&#39;</span><span class="p">)</span>
-    <span class="n">container_prefix</span> <span class="o">=</span> <span class="n">base_distro</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">install_type</span>
-    <span class="n">kollacli_home</span> <span class="o">=</span> <span class="n">get_kollacli_home</span><span class="p">()</span>
-    <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
-    <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kollacli_home</span><span class="p">,</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
                                           <span class="s1">&#39;ansible/&#39;</span> <span class="o">+</span> <span class="n">playbook_name</span><span class="p">)</span>
 
     <span class="c1"># &#39;hosts&#39; is defined as &#39;all&#39; in the playbook yml code, but inventory</span>
     <span class="c1"># filtering will subset that down to the hosts in playbook.hosts.</span>
-    <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;prefix=&#39;</span> <span class="o">+</span> <span class="n">container_prefix</span> <span class="o">+</span> \
-                          <span class="s1">&#39; destroy_type=&#39;</span> <span class="o">+</span> <span class="n">destroy_type</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">hosts</span> <span class="o">=</span> <span class="n">hostnames</span>
+    <span class="k">if</span> <span class="n">remove_images</span><span class="p">:</span>
+        <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;destroy_include_images=yes&#39;</span>
     <span class="k">if</span> <span class="n">verbose_level</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">playbook</span><span class="o">.</span><span class="n">print_output</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">verbose_level</span> <span class="o">=</span> <span class="n">verbose_level</span>
@@ -118,7 +108,7 @@
 
 </div>
 <div class="viewcode-block" id="deploy"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.deploy">[docs]</a><span class="k">def</span> <span class="nf">deploy</span><span class="p">(</span><span class="n">hostnames</span><span class="o">=</span><span class="p">[],</span>
-           <span class="n">serial_flag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+           <span class="n">serial_flag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">servicenames</span><span class="o">=</span><span class="p">[]):</span>
     <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
     <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
@@ -126,8 +116,8 @@
     <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;action=deploy&#39;</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">hosts</span> <span class="o">=</span> <span class="n">hostnames</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">serial</span> <span class="o">=</span> <span class="n">serial_flag</span>
-
     <span class="n">playbook</span><span class="o">.</span><span class="n">verbose_level</span> <span class="o">=</span> <span class="n">verbose_level</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">servicenames</span>
 
     <span class="n">_run_deploy_rules</span><span class="p">(</span><span class="n">playbook</span><span class="p">)</span>
 
@@ -149,11 +139,49 @@
     <span class="n">playbook</span><span class="o">.</span><span class="n">hosts</span> <span class="o">=</span> <span class="n">hostnames</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">print_output</span> <span class="o">=</span> <span class="bp">True</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">verbose_level</span> <span class="o">=</span> <span class="n">verbose_level</span>
+
     <span class="n">job</span> <span class="o">=</span> <span class="n">playbook</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">job</span>
 
 </div>
-<div class="viewcode-block" id="upgrade"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.upgrade">[docs]</a><span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="stop_hosts"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.stop_hosts">[docs]</a><span class="k">def</span> <span class="nf">stop_hosts</span><span class="p">(</span><span class="n">hostnames</span><span class="o">=</span><span class="p">[],</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;stop containers on a set of hosts.</span>
+
+<span class="sd">    The containers on the specified hosts will be stopped</span>
+<span class="sd">    or killed if the stop takes over 20 seconds.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
+    <span class="n">playbook_name</span> <span class="o">=</span> <span class="s1">&#39;stop.yml&#39;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s1">&#39;Please be patient as this may take a while.&#39;</span><span class="p">))</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
+                                          <span class="s1">&#39;ansible/&#39;</span> <span class="o">+</span> <span class="n">playbook_name</span><span class="p">)</span>
+
+    <span class="c1"># &#39;hosts&#39; is defined as &#39;all&#39; in the playbook yml code, but inventory</span>
+    <span class="c1"># filtering will subset that down to the hosts in playbook.hosts.</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">hosts</span> <span class="o">=</span> <span class="n">hostnames</span>
+    <span class="k">if</span> <span class="n">verbose_level</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">playbook</span><span class="o">.</span><span class="n">print_output</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">verbose_level</span> <span class="o">=</span> <span class="n">verbose_level</span>
+    <span class="n">job</span> <span class="o">=</span> <span class="n">playbook</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">job</span>
+
+</div>
+<div class="viewcode-block" id="reconfigure"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.reconfigure">[docs]</a><span class="k">def</span> <span class="nf">reconfigure</span><span class="p">(</span><span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
+                                          <span class="s1">&#39;ansible/site.yml&#39;</span><span class="p">)</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;action=reconfigure&#39;</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">verbose_level</span> <span class="o">=</span> <span class="n">verbose_level</span>
+
+    <span class="n">_run_deploy_rules</span><span class="p">(</span><span class="n">playbook</span><span class="p">)</span>
+
+    <span class="n">job</span> <span class="o">=</span> <span class="n">playbook</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">job</span>
+
+</div>
+<div class="viewcode-block" id="upgrade"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.upgrade">[docs]</a><span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">servicenames</span><span class="o">=</span><span class="p">[]):</span>
     <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
     <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
@@ -161,6 +189,8 @@
     <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;action=upgrade&#39;</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">print_output</span> <span class="o">=</span> <span class="bp">True</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">verbose_level</span> <span class="o">=</span> <span class="n">verbose_level</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">servicenames</span>
+
     <span class="n">job</span> <span class="o">=</span> <span class="n">playbook</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">job</span>
 
@@ -179,23 +209,6 @@
                 <span class="s1">&#39;kollacli password set(key) to correct them. &#39;</span>
                 <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Empty passwords: &#39;</span>
                 <span class="s1">&#39;{keys}&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">etc</span><span class="o">=</span><span class="n">get_kolla_etc</span><span class="p">(),</span> <span class="n">keys</span><span class="o">=</span><span class="n">empty_keys</span><span class="p">))</span>
-
-    <span class="c1"># if we are doing a targeted host deploy make sure we are doing it</span>
-    <span class="c1"># to only compute nodes</span>
-    <span class="k">if</span> <span class="n">playbook</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
-        <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">playbook</span><span class="o">.</span><span class="n">hosts</span><span class="p">)</span>
-        <span class="n">host_groups</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_host_groups</span><span class="p">()</span>
-        <span class="n">invalid_host_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">playbook</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
-            <span class="n">groups</span> <span class="o">=</span> <span class="n">host_groups</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">groups</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="s1">&#39;compute&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
-                <span class="n">invalid_host_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">invalid_host_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span>
-                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid hosts for host targeted deploy. &#39;</span>
-                    <span class="s1">&#39;Hosts must be in the compute group only.&#39;</span>
-                    <span class="s1">&#39;Invalid hosts: {hosts}&#39;</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hosts</span><span class="o">=</span><span class="n">invalid_host_list</span><span class="p">))</span>
 
     <span class="c1"># cannot have both groups and hosts</span>
     <span class="k">if</span> <span class="n">playbook</span><span class="o">.</span><span class="n">hosts</span> <span class="ow">and</span> <span class="n">playbook</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
@@ -328,7 +341,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

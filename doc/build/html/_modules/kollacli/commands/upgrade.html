@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.commands.upgrade &mdash; kollacli 3.0.1.dev463 documentation</title>
+    <title>kollacli.commands.upgrade &mdash; kollacli 4.0.0.dev483 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '3.0.1.dev463',
+        VERSION:     '4.0.0.dev483',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -73,19 +73,26 @@
 
 <span class="n">CLIENT</span> <span class="o">=</span> <span class="n">ClientApi</span><span class="p">()</span>
 
-<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Upgrade"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.upgrade.Upgrade">[docs]</a><span class="k">class</span> <span class="nc">Upgrade</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Upgrade.&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Upgrade.get_parser"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.upgrade.Upgrade.get_parser">[docs]</a>    <span class="k">def</span> <span class="nf">get_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog_name</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Upgrade</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_parser</span><span class="p">(</span><span class="n">prog_name</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--services&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
+                            <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;service_list&gt;&#39;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Upgrade service list&#39;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">parser</span>
 </div>
 <div class="viewcode-block" id="Upgrade.take_action"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.upgrade.Upgrade.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
+        <span class="n">services</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
+                <span class="n">service_list</span> <span class="o">=</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">services</span> <span class="o">=</span> <span class="n">service_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
             <span class="n">verbose_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose_level</span>
-            <span class="n">job</span> <span class="o">=</span> <span class="n">CLIENT</span><span class="o">.</span><span class="n">async_upgrade</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">)</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">CLIENT</span><span class="o">.</span><span class="n">async_upgrade</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">services</span><span class="p">)</span>
             <span class="n">status</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">verbose_level</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="mi">80</span> <span class="o">*</span> <span class="s1">&#39;=&#39;</span><span class="p">)</span>
@@ -132,7 +139,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

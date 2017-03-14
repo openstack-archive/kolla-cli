@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible.job &mdash; kollacli 3.0.1.dev463 documentation</title>
+    <title>kollacli.common.ansible.job &mdash; kollacli 4.0.0.dev483 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '3.0.1.dev463',
+        VERSION:     '4.0.0.dev483',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="../../../../index.html" />
+    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -82,7 +82,7 @@
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">run_cmd</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">safe_decode</span>
 
-<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">LINE_LENGTH</span> <span class="o">=</span> <span class="mi">80</span>
 
@@ -101,7 +101,7 @@
 <div class="viewcode-block" id="AnsibleJob"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.job.AnsibleJob">[docs]</a><span class="k">class</span> <span class="nc">AnsibleJob</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;class for running ansible commands&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">deploy_id</span><span class="p">,</span> <span class="n">print_output</span><span class="p">,</span> <span class="n">inventory_path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">deploy_id</span><span class="p">,</span> <span class="n">print_output</span><span class="p">,</span> <span class="n">inventory_path</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_command</span> <span class="o">=</span> <span class="n">cmd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_id</span> <span class="o">=</span> <span class="n">deploy_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_print_output</span> <span class="o">=</span> <span class="n">print_output</span>
@@ -117,9 +117,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_process_std_err</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_error_total</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_total</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_output</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_kill_uname</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ansible_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">(</span><span class="n">get_ansible_lock_path</span><span class="p">(),</span> <span class="s1">&#39;ansible_job&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_error_strings</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_host_ignored_error_count</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="AnsibleJob.run"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.job.AnsibleJob.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -130,6 +134,7 @@
                         <span class="s1">&#39;ansible job: {cmd} &#39;</span><span class="p">)</span>
                     <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lock</span><span class="o">=</span><span class="n">get_ansible_lock_path</span><span class="p">(),</span> <span class="n">cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">))</span>
 
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;playbook command: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">)</span>
             <span class="c1"># create and open named pipe, must be owned by kolla group</span>
             <span class="n">os</span><span class="o">.</span><span class="n">mkfifo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">)</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">grp_id</span> <span class="o">=</span> <span class="n">get_admin_uids</span><span class="p">()</span>
@@ -187,7 +192,15 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">returncode</span>
                 <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">status</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="c1"># if the process ran and returned a non zero return</span>
+                    <span class="c1"># code we want to see if we got some ansible errors</span>
+                    <span class="c1"># and if so if we ignored all the errors.  if all</span>
+                    <span class="c1"># errors are ignored we consider the job a success</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_total</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_error_total</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_total</span><span class="p">):</span>
+                        <span class="n">status</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">status</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_std_err</span><span class="p">:</span>
                 <span class="c1"># read stderr from process</span>
                 <span class="n">std_err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_stream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
@@ -199,7 +212,8 @@
         <span class="sd">&quot;&quot;&quot;&quot;get error message&quot;&quot;&quot;</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">msg</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">msg</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">])</span>
 
         <span class="c1"># if no error from the callback, check the process error</span>
         <span class="k">if</span> <span class="n">ANSIBLE_1_OR_MORE</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
@@ -386,7 +400,17 @@
                          <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_filler</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">changed</span><span class="p">[</span><span class="n">host</span><span class="p">],</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">))</span>
             <span class="n">hostline</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;unreachable=</span><span class="si">%s</span><span class="s1">&#39;</span>
                          <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_filler</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">unreachable</span><span class="p">[</span><span class="n">host</span><span class="p">],</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">))</span>
-            <span class="n">hostline</span> <span class="o">+=</span> <span class="s1">&#39;failed=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">failures</span><span class="p">[</span><span class="n">host</span><span class="p">]</span>
+            <span class="n">failure_count</span> <span class="o">=</span> <span class="n">failures</span><span class="p">[</span><span class="n">host</span><span class="p">]</span>
+            <span class="n">ignores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host_ignored_error_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># track the total numbers of failures and ignored failures to help</span>
+            <span class="c1"># determine job success</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_error_total</span> <span class="o">+=</span> <span class="n">failure_count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_total</span> <span class="o">+=</span> <span class="n">ignores</span>
+            <span class="n">failure_count</span> <span class="o">-=</span> <span class="n">ignores</span>
+            <span class="n">hostline</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;failed=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">_add_filler</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">failure_count</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">))</span>
+            <span class="n">hostline</span> <span class="o">+=</span> <span class="s1">&#39;ignored=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ignores</span>
             <span class="n">msg</span> <span class="o">+=</span> <span class="n">hostline</span>
         <span class="k">return</span> <span class="n">msg</span>
 
@@ -398,12 +422,21 @@
             <span class="n">results_dict</span> <span class="o">=</span> <span class="n">packet</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span>
             <span class="n">taskname</span> <span class="o">=</span> <span class="n">packet</span><span class="p">[</span><span class="s1">&#39;task&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
 
-            <span class="c1"># update saved error messages</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_error</span><span class="p">(</span><span class="n">taskname</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span>
-                                                   <span class="n">status</span><span class="p">,</span> <span class="n">results_dict</span><span class="p">))</span>
-            <span class="c1"># format log message</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results_dict</span><span class="p">)</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;fatal: [</span><span class="si">%s</span><span class="s1">]: </span><span class="si">%s</span><span class="s1">! =&gt; </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">results</span><span class="p">)</span>
+            <span class="c1"># update saved error messages.  if the error message should be</span>
+            <span class="c1"># hidden then do not add it to _errors and add to the ignored</span>
+            <span class="c1"># error count for the host</span>
+            <span class="n">formatted_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_error</span><span class="p">(</span><span class="n">taskname</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span>
+                                                 <span class="n">status</span><span class="p">,</span> <span class="n">results_dict</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hide_ignored_errors</span><span class="p">(</span><span class="n">formatted_error</span><span class="p">):</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Ignored Error: &#39;</span> <span class="o">+</span> <span class="n">formatted_error</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_host_ignored_error_count</span><span class="p">[</span><span class="n">host</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_host_ignored_error_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">formatted_error</span><span class="p">)</span>
+                <span class="c1"># format log message</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results_dict</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;fatal: [</span><span class="si">%s</span><span class="s1">]: </span><span class="si">%s</span><span class="s1">! =&gt; </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> \
+                      <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">results</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">msg</span>
 
     <span class="k">def</span> <span class="nf">_format_task_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
@@ -511,7 +544,17 @@
             <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;invalid string for json encoding: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">string_var</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">raise_on_err</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">e</span>
-        <span class="k">return</span> <span class="n">retval</span></div></div>
+        <span class="k">return</span> <span class="n">retval</span>
+</div>
+    <span class="k">def</span> <span class="nf">_hide_ignored_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_string</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_error_strings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ignore_string</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_error_strings</span><span class="p">:</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">ignore_string</span><span class="p">)</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">error_string</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">return</span> <span class="bp">False</span></div>
 </pre></div>
 
           </div>
@@ -545,7 +588,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

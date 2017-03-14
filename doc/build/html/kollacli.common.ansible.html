@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible package &mdash; kollacli 3.0.1.dev463 documentation</title>
+    <title>kollacli.common.ansible package &mdash; kollacli 4.0.0.dev483 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.1.dev463',
+        VERSION:     '4.0.0.dev483',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,16 +53,15 @@
 <span id="kollacli-common-ansible-actions-module"></span><h2>kollacli.common.ansible.actions module<a class="headerlink" href="#module-kollacli.common.ansible.actions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="kollacli.common.ansible.actions.deploy">
-<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">deploy</tt><big>(</big><em>hostnames=[]</em>, <em>serial_flag=False</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.deploy" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">deploy</tt><big>(</big><em>hostnames=[]</em>, <em>serial_flag=False</em>, <em>verbose_level=1</em>, <em>servicenames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.deploy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="kollacli.common.ansible.actions.destroy_hosts">
-<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">destroy_hosts</tt><big>(</big><em>hostnames</em>, <em>destroy_type</em>, <em>verbose_level=1</em>, <em>include_data=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#destroy_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.destroy_hosts" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">destroy_hosts</tt><big>(</big><em>hostnames</em>, <em>destroy_type</em>, <em>verbose_level=1</em>, <em>include_data=False</em>, <em>remove_images=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#destroy_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.destroy_hosts" title="Permalink to this definition">¶</a></dt>
 <dd><p>destroy containers on a set of hosts.</p>
 <p>The containers on the specified hosts will be stopped
-or killed. That will be determined by the destroy_type,
-which can either be &#8216;stop&#8217; or &#8216;kill&#8217;.</p>
+or killed.</p>
 </dd></dl>
 
 <dl class="function">
@@ -72,8 +71,21 @@ which can either be &#8216;stop&#8217; or &#8216;kill&#8217;.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="kollacli.common.ansible.actions.reconfigure">
+<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">reconfigure</tt><big>(</big><em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#reconfigure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.reconfigure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="kollacli.common.ansible.actions.stop_hosts">
+<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">stop_hosts</tt><big>(</big><em>hostnames=[]</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#stop_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.stop_hosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>stop containers on a set of hosts.</p>
+<p>The containers on the specified hosts will be stopped
+or killed if the stop takes over 20 seconds.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="kollacli.common.ansible.actions.upgrade">
-<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">upgrade</tt><big>(</big><em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.upgrade" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">kollacli.common.ansible.actions.</tt><tt class="descname">upgrade</tt><big>(</big><em>verbose_level=1</em>, <em>servicenames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/ansible/actions.html#upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.ansible.actions.upgrade" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -165,6 +177,11 @@ that is not killable. Need to kill all its children.</p>
 <dl class="attribute">
 <dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.hosts">
 <tt class="descname">hosts</tt><em class="property"> = None</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.hosts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="kollacli.common.ansible.playbook.AnsiblePlaybook.ignore_error_strings">
+<tt class="descname">ignore_error_strings</tt><em class="property"> = None</em><a class="headerlink" href="#kollacli.common.ansible.playbook.AnsiblePlaybook.ignore_error_strings" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -264,7 +281,7 @@ that is not killable. Need to kill all its children.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

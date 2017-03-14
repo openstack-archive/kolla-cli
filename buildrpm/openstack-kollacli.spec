@@ -16,7 +16,7 @@
 %{expand: %%define pyver %(python -c 'import sys;print(sys.version[0:3])')}
 
 # Package version
-%global package_version 3.0.1
+%global package_version 4.0.0
 
 # Kolla user name and group name (DO NOT CHANGE THESE!)
 %global kolla_user      kolla

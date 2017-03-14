@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.properties &mdash; kollacli 3.0.1.dev463 documentation</title>
+    <title>kollacli.common.properties &mdash; kollacli 4.0.0.dev483 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '3.0.1.dev463',
+        VERSION:     '4.0.0.dev483',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -76,7 +76,7 @@
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_home</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">sync_read_file</span>
 
-<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">ALLVARS_PATH</span> <span class="o">=</span> <span class="s1">&#39;ansible/group_vars/all.yml&#39;</span>
 <span class="n">GLOBALS_PATH</span> <span class="o">=</span> <span class="s1">&#39;ansible/group_vars/__GLOBAL__&#39;</span>
@@ -86,7 +86,7 @@
 
 <div class="viewcode-block" id="AnsibleProperties"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperties">[docs]</a><span class="k">class</span> <span class="nc">AnsibleProperties</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;initialize ansible property information</span>
 
 <span class="sd">        property information is pulled from the following files</span>
@@ -405,7 +405,7 @@
 </div>
 <div class="viewcode-block" id="AnsibleProperty"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.AnsibleProperty">[docs]</a><span class="k">class</span> <span class="nc">AnsibleProperty</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                  <span class="n">orig_value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">prop_type</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -418,7 +418,7 @@
 </div>
 <div class="viewcode-block" id="OverrideFlags"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.properties.OverrideFlags">[docs]</a><span class="k">class</span> <span class="nc">OverrideFlags</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ovr_global</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ovr_group</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ovr_host</span> <span class="o">=</span> <span class="bp">False</span></div>
@@ -455,7 +455,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

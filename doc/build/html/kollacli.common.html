@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common package &mdash; kollacli 3.0.1.dev463 documentation</title>
+    <title>kollacli.common package &mdash; kollacli 4.0.0.dev483 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.1.dev463',
+        VERSION:     '4.0.0.dev483',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -432,13 +432,12 @@ if group name is not none, remove host from group</p>
 <dt id="kollacli.common.inventory.Inventory.setup_hosts">
 <tt class="descname">setup_hosts</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.setup_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.setup_hosts" title="Permalink to this definition">¶</a></dt>
 <dd><p>setup multiple hosts</p>
-<p>hosts_info is a dict of format:</p>
-<dl class="docutils">
-<dt>{&#8216;hostname1&#8217;: {</dt>
-<dd>&#8216;password&#8217;: password
+<p>hosts_info is a dict of format:
+{&#8216;hostname1&#8217;: {</p>
+<blockquote>
+<div>&#8216;password&#8217;: password
 &#8216;uname&#8217;: user_name
-}</dd>
-</dl>
+}</div></blockquote>
 <p>}
 The uname entry is optional.</p>
 </dd></dl>
@@ -964,6 +963,11 @@ interpreter.</p>
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="kollacli.common.utils.get_lock_enabled">
+<tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">get_lock_enabled</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#get_lock_enabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.get_lock_enabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="kollacli.common.utils.get_log_level">
 <tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">get_log_level</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#get_log_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.get_log_level" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -988,20 +992,13 @@ interpreter.</p>
 <dt id="kollacli.common.utils.run_cmd">
 <tt class="descclassname">kollacli.common.utils.</tt><tt class="descname">run_cmd</tt><big>(</big><em>cmd</em>, <em>print_output=True</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/utils.html#run_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.utils.run_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>run a system command</p>
-<dl class="docutils">
-<dt>return:</dt>
-<dd><ul class="first last">
-<li><dl class="first docutils">
-<dt>err_msg:   empty string=command succeeded</dt>
-<dd><p class="first last">not None=command failed</p>
-</dd>
-</dl>
-</li>
-<li><p class="first">output:    string: all the output of the run command</p>
-</li>
+<p>return:
+- err_msg:  empty string=command succeeded</p>
+<blockquote>
+<div>not None=command failed</div></blockquote>
+<ul class="simple">
+<li>output:   string: all the output of the run command</li>
 </ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="function">
@@ -1089,7 +1086,7 @@ unicode.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

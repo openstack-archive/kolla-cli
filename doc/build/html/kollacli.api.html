@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api package &mdash; kollacli 3.0.1.dev463 documentation</title>
+    <title>kollacli.api package &mdash; kollacli 4.0.0.dev483 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.1.dev463',
+        VERSION:     '4.0.0.dev483',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -57,7 +57,7 @@
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <dl class="method">
 <dt id="kollacli.api.async.AsyncApi.async_deploy">
-<tt class="descname">async_deploy</tt><big>(</big><em>hostnames=[]</em>, <em>serial_flag=False</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_deploy" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">async_deploy</tt><big>(</big><em>hostnames=[]</em>, <em>serial_flag=False</em>, <em>verbose_level=1</em>, <em>servicenames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_deploy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deploy.</p>
 <p>Deploy containers to hosts.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -68,6 +68,7 @@
 <li><strong>hostnames</strong> (<em>list of strings</em>) &#8211; hosts to deploy to. If empty, then deploy to all.</li>
 <li><strong>serial_flag</strong> (<em>boolean</em>) &#8211; if true, deploy will be done one host at a time</li>
 <li><strong>verbose_level</strong> (<em>integer</em>) &#8211; the higher the number, the more verbose</li>
+<li><strong>servicenames</strong> (<em>list of strings</em>) &#8211; services to deploy. If empty, then deploy all.</li>
 </ul>
 </td>
 </tr>
@@ -83,7 +84,7 @@
 
 <dl class="method">
 <dt id="kollacli.api.async.AsyncApi.async_host_destroy">
-<tt class="descname">async_host_destroy</tt><big>(</big><em>hostnames</em>, <em>destroy_type</em>, <em>verbose_level=1</em>, <em>include_data=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_host_destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_host_destroy" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">async_host_destroy</tt><big>(</big><em>hostnames</em>, <em>destroy_type</em>, <em>verbose_level=1</em>, <em>include_data=False</em>, <em>remove_images=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_host_destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_host_destroy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Destroy Hosts.</p>
 <p>Stops and removes all kolla related docker containers on the
 specified hosts.</p>
@@ -96,6 +97,7 @@ specified hosts.</p>
 <li><strong>destroy_type</strong> (<em>string</em>) &#8211; either &#8216;kill&#8217; or &#8216;stop&#8217;</li>
 <li><strong>verbose_level</strong> (<em>integer</em>) &#8211; the higher the number, the more verbose</li>
 <li><strong>include_data</strong> (<em>boolean</em>) &#8211; if true, destroy data containers too.</li>
+<li><strong>remove_images</strong> (<em>boolean</em>) &#8211; if true, destroy will remove the docker images</li>
 </ul>
 </td>
 </tr>
@@ -125,9 +127,35 @@ already been deployed to.
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.async.AsyncApi.async_upgrade">
-<tt class="descname">async_upgrade</tt><big>(</big><em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_upgrade" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upgrade.</p>
+<dt id="kollacli.api.async.AsyncApi.async_host_stop">
+<tt class="descname">async_host_stop</tt><big>(</big><em>hostnames</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_host_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_host_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop Hosts.</p>
+<p>Stops all kolla related docker containers on the specified hosts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hostnames</strong> (<em>list</em>) &#8211; host names</li>
+<li><strong>verbose_level</strong> (<em>integer</em>) &#8211; the higher the number, the more verbose</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Job object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Job</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.async.AsyncApi.async_reconfigure">
+<tt class="descname">async_reconfigure</tt><big>(</big><em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_reconfigure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_reconfigure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconfigure.</p>
+<p>Reconfigure containers on hosts.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -137,6 +165,30 @@ already been deployed to.
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Job object</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Job</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kollacli.api.async.AsyncApi.async_upgrade">
+<tt class="descname">async_upgrade</tt><big>(</big><em>verbose_level=1</em>, <em>servicenames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_upgrade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upgrade.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>verbose_level</strong> (<em>integer</em>) &#8211; the higher the number, the more verbose</li>
+<li><strong>servicenames</strong> (<em>list of strings</em>) &#8211; services to upgrade. If empty, then upgrade all.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Job object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Job</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -891,10 +943,10 @@ or hosts to set the property for</li>
 <p>A service is one of the services available in openstack-kolla.</p>
 <p>For example, this would be how the murano services would be
 represented:</p>
-<ul>
+<ul class="simple">
 <li><dl class="first docutils">
 <dt>murano</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>parentname: None</li>
 <li>childnames: [murano-api, murano-engine]</li>
 </ul>
@@ -903,7 +955,7 @@ represented:</p>
 </li>
 <li><dl class="first docutils">
 <dt>murano-api</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>parentname: murano</li>
 <li>childnames: []</li>
 </ul>
@@ -912,7 +964,7 @@ represented:</p>
 </li>
 <li><dl class="first docutils">
 <dt>murano-engine</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>parentname: murano</li>
 <li>childnames: []</li>
 </ul>
@@ -1145,7 +1197,7 @@ names for each log will be servicename_id.log.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

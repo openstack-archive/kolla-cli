@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.async &mdash; kollacli 3.0.1.dev463 documentation</title>
+    <title>kollacli.api.async &mdash; kollacli 4.0.0.dev483 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '3.0.1.dev463',
+        VERSION:     '4.0.0.dev483',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 3.0.1.dev463 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -73,8 +73,8 @@
 <div class="viewcode-block" id="AsyncApi"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.async.AsyncApi">[docs]</a><span class="k">class</span> <span class="nc">AsyncApi</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
 <div class="viewcode-block" id="AsyncApi.async_deploy"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.async.AsyncApi.async_deploy">[docs]</a>    <span class="k">def</span> <span class="nf">async_deploy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="o">=</span><span class="p">[],</span>
-                     <span class="n">serial_flag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="c1"># type: (List[str], bool, int) -&gt; Job</span>
+                     <span class="n">serial_flag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">servicenames</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="c1"># type: (List[str], bool, int, List[str]) -&gt; Job</span>
         <span class="sd">&quot;&quot;&quot;Deploy.</span>
 
 <span class="sd">        Deploy containers to hosts.</span>
@@ -85,6 +85,8 @@
 <span class="sd">        :type serial_flag: boolean</span>
 <span class="sd">        :param verbose_level: the higher the number, the more verbose</span>
 <span class="sd">        :type verbose_level: integer</span>
+<span class="sd">        :param servicenames: services to deploy. If empty, then deploy all.</span>
+<span class="sd">        :type servicenames: list of strings</span>
 <span class="sd">        :return: Job object</span>
 <span class="sd">        :rtype: Job</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -92,18 +94,23 @@
                   <span class="n">empty_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">none_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">check_arg</span><span class="p">(</span><span class="n">serial_flag</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Serial flag&#39;</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
         <span class="n">check_arg</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Verbose level&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">servicenames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">,</span>
+                  <span class="n">empty_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">none_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">hostnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+        <span class="n">servicenames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">servicenames</span><span class="p">)</span>
 
         <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span>
-                                     <span class="n">serial_flag</span><span class="p">,</span> <span class="n">verbose_level</span><span class="p">)</span>
+                                     <span class="n">serial_flag</span><span class="p">,</span> <span class="n">verbose_level</span><span class="p">,</span> <span class="n">servicenames</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Job</span><span class="p">(</span><span class="n">ansible_job</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="AsyncApi.async_upgrade"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.async.AsyncApi.async_upgrade">[docs]</a>    <span class="k">def</span> <span class="nf">async_upgrade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="c1"># type: (int) -&gt; Job</span>
+<div class="viewcode-block" id="AsyncApi.async_upgrade"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.async.AsyncApi.async_upgrade">[docs]</a>    <span class="k">def</span> <span class="nf">async_upgrade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">servicenames</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="c1"># type: (int, List[str]) -&gt; Job</span>
         <span class="sd">&quot;&quot;&quot;Upgrade.</span>
 
 <span class="sd">        :param verbose_level: the higher the number, the more verbose</span>
 <span class="sd">        :type verbose_level: integer</span>
+<span class="sd">        :param servicenames: services to upgrade. If empty, then upgrade all.</span>
+<span class="sd">        :type servicenames: list of strings</span>
 <span class="sd">        :return: Job object</span>
 <span class="sd">        :rtype: Job</span>
 
@@ -111,12 +118,16 @@
 <span class="sd">        &quot;openstack_release.&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">check_arg</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Verbose level&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
-        <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">servicenames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">,</span>
+                  <span class="n">empty_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">none_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">servicenames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">servicenames</span><span class="p">)</span>
+
+        <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">servicenames</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Job</span><span class="p">(</span><span class="n">ansible_job</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="AsyncApi.async_host_destroy"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.async.AsyncApi.async_host_destroy">[docs]</a>    <span class="k">def</span> <span class="nf">async_host_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">,</span> <span class="n">destroy_type</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                           <span class="n">include_data</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-        <span class="c1"># type: (List[str], str, int, bool) -&gt; Job</span>
+                           <span class="n">include_data</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">remove_images</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="c1"># type: (List[str], str, int, bool, bool) -&gt; Job</span>
         <span class="sd">&quot;&quot;&quot;Destroy Hosts.</span>
 
 <span class="sd">        Stops and removes all kolla related docker containers on the</span>
@@ -130,14 +141,16 @@
 <span class="sd">        :type verbose_level: integer</span>
 <span class="sd">        :param include_data: if true, destroy data containers too.</span>
 <span class="sd">        :type include_data: boolean</span>
+<span class="sd">        :param remove_images: if true, destroy will remove the docker images</span>
+<span class="sd">        :type remove_images: boolean</span>
 <span class="sd">        :return: Job object</span>
 <span class="sd">        :rtype: Job</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">check_arg</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
         <span class="n">check_arg</span><span class="p">(</span><span class="n">destroy_type</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Destroy type&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
         <span class="n">check_arg</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Verbose level&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
         <span class="n">check_arg</span><span class="p">(</span><span class="n">include_data</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Include data&#39;</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">remove_images</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Remove images&#39;</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">destroy_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span> <span class="s1">&#39;kill&#39;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span>
                 <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid destroy type ({type}). Must be either &#39;</span>
@@ -148,7 +161,8 @@
         <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
 
         <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">destroy_hosts</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">destroy_type</span><span class="p">,</span>
-                                            <span class="n">verbose_level</span><span class="p">,</span> <span class="n">include_data</span><span class="p">)</span>
+                                            <span class="n">verbose_level</span><span class="p">,</span> <span class="n">include_data</span><span class="p">,</span>
+                                            <span class="n">remove_images</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Job</span><span class="p">(</span><span class="n">ansible_job</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="AsyncApi.async_host_precheck"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.async.AsyncApi.async_host_precheck">[docs]</a>    <span class="k">def</span> <span class="nf">async_host_precheck</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -172,6 +186,45 @@
         <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
 
         <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">precheck</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">verbose_level</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Job</span><span class="p">(</span><span class="n">ansible_job</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="AsyncApi.async_host_stop"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.async.AsyncApi.async_host_stop">[docs]</a>    <span class="k">def</span> <span class="nf">async_host_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># type: (List[str], int) -&gt; Job</span>
+        <span class="sd">&quot;&quot;&quot;Stop Hosts.</span>
+
+<span class="sd">        Stops all kolla related docker containers on the specified hosts.</span>
+
+<span class="sd">        :param hostnames: host names</span>
+<span class="sd">        :type hostnames: list</span>
+<span class="sd">        :param verbose_level: the higher the number, the more verbose</span>
+<span class="sd">        :type verbose_level: integer</span>
+<span class="sd">        :return: Job object</span>
+<span class="sd">        :rtype: Job</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Verbose level&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">hostnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+
+        <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">stop_hosts</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">verbose_level</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Job</span><span class="p">(</span><span class="n">ansible_job</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="AsyncApi.async_reconfigure"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.async.AsyncApi.async_reconfigure">[docs]</a>    <span class="k">def</span> <span class="nf">async_reconfigure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># type: (int) -&gt; Job</span>
+        <span class="sd">&quot;&quot;&quot;Reconfigure.</span>
+
+<span class="sd">        Reconfigure containers on hosts.</span>
+
+<span class="sd">        :param verbose_level: the higher the number, the more verbose</span>
+<span class="sd">        :type verbose_level: integer</span>
+<span class="sd">        :return: Job object</span>
+<span class="sd">        :rtype: Job</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Verbose level&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">reconfigure</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Job</span><span class="p">(</span><span class="n">ansible_job</span><span class="p">)</span></div></div>
 </pre></div>
 
@@ -206,7 +259,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 3.0.1.dev463 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
