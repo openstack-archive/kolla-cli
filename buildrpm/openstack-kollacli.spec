@@ -82,6 +82,17 @@ mkdir -m 0775 -p %{buildroot}/%{_sysconfdir}/kolla/kollacli/ansible
 mkdir -m 0750 -p %{buildroot}/%{_datadir}/kolla/kollacli/tools
 mkdir -m 0755 -p %{buildroot}/%{_datadir}/kolla/ansible
 
+cat >%{buildroot}/%{_datadir}/kolla/kollacli/LICENSE.TXT <<EOF
+Oracle OpenStack for Oracle Linux is a management software package
+comprised of various OpenStack components combined with independent software
+programs that operate as OpenStack services. These independent programs
+include parts of MySQL Community Edition, Oracle Linux and MySQL Cluster
+Community Edition. The license for each OpenStack component, as well as the
+licenses for each independent program, can be found in the root folder for
+each component and/or program or in the specific Docker Container or RPM
+package.
+EOF
+
 # Create a kolla log directory
 mkdir -m 0770 -p %{buildroot}/%{_var}/log/kolla
 
@@ -113,6 +124,7 @@ rm -rf %{buildroot}
 %attr(-, %{kolla_user}, %{kolla_group}) %config(noreplace) %{_sysconfdir}/kolla/kollacli
 %attr(2770, %{kolla_user}, %{kolla_group}) %dir %{_var}/log/kolla
 %attr(644, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/ansible/prechecks_preinstall.yml
+%{_datadir}/kolla/kollacli/LICENSE.TXT
 
 %pre
 case "$*" in
@@ -221,6 +233,9 @@ openstack-kollacli client.
 %attr(644, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/.ansible.cfg
 
 %changelog
+* Fri Mar 17 2017 - Borne Mace <borne.mace@oracle.com>
+- Added LICENSE.TXT to /usr/share/kolla/kollacli
+
 * Tue Oct 25 2016 - Borne Mace <borne.mace@oracle.com>
 - Removed no longer relevant kollacli ansible directory
 
