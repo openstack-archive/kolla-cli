@@ -83,7 +83,7 @@ class TestFunctional(KollaCliTest):
 
         # stop services, initialize server
         self.log.info('Start stop #1')
-        job = CLIENT.async_host_stop(hostnames)
+        job = CLIENT.host_stop(hostnames)
         self._process_job(job, 'stop #1', is_physical_host)
 
         self.log.info('updating various properties for the test')
@@ -106,7 +106,7 @@ class TestFunctional(KollaCliTest):
 
         # do a deploy of a limited set of services
         self.log.info('Start a deployment')
-        job = CLIENT.async_deploy()
+        job = CLIENT.deploy()
         self._process_job(job, 'deploy', is_physical_host)
 
         if is_physical_host:
@@ -125,7 +125,7 @@ class TestFunctional(KollaCliTest):
                               'after deploy.')
 
         self.log.info('Start stop #2')
-        job = CLIENT.async_host_stop(hostnames)
+        job = CLIENT.host_stop(hostnames)
         self._process_job(job, 'stop #2', is_physical_host)
 
         if is_physical_host:

@@ -85,8 +85,8 @@ class TestFunctional(KollaCliTest):
 
         # destroy services, initialize server
         self.log.info('Start destroy #1')
-        job = CLIENT.async_host_destroy(hostnames, destroy_type='kill',
-                                        include_data=True)
+        job = CLIENT.host_destroy(hostnames, destroy_type='kill',
+                                  include_data=True)
         self._process_job(job, 'destroy #1', is_physical_host)
 
         self.log.info('updating various properties for the test')
@@ -109,7 +109,7 @@ class TestFunctional(KollaCliTest):
 
         # test killing a deploy
         self.log.info('Kill a deployment')
-        job = CLIENT.async_deploy()
+        job = CLIENT.deploy()
         time.sleep(random.randint(5, 8))
         job.kill()
         self._process_job(job, 'deploy-kill',
@@ -117,7 +117,7 @@ class TestFunctional(KollaCliTest):
 
         # do a deploy of a limited set of services
         self.log.info('Start a deployment')
-        job = CLIENT.async_deploy()
+        job = CLIENT.deploy()
         self._process_job(job, 'deploy', is_physical_host)
 
         if is_physical_host:
@@ -136,8 +136,8 @@ class TestFunctional(KollaCliTest):
                               'after deploy.')
 
         self.log.info('Start destroy #3, include data')
-        job = CLIENT.async_host_destroy(hostnames, destroy_type='stop',
-                                        include_data=True)
+        job = CLIENT.host_destroy(hostnames, destroy_type='stop',
+                                  include_data=True)
         self._process_job(job, 'destroy #3', is_physical_host)
 
         if is_physical_host:

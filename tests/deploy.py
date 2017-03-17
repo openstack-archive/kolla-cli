@@ -158,7 +158,7 @@ class TestFunctional(KollaCliTest):
             test_config.load()
             hostnames = test_config.get_hostnames()
             CLIENT.host_add(hostnames)
-            job = CLIENT.async_deploy(hostnames=[hostnames[0]])
+            job = CLIENT.deploy(hostnames=[hostnames[0]])
             job.wait()
             msg = job.get_console_output()
             self.assertEqual(job.get_status(), 0,
@@ -201,7 +201,7 @@ class TestFunctional(KollaCliTest):
             test_config.load()
             hostnames = test_config.get_hostnames()
             CLIENT.host_add(hostnames)
-            job = CLIENT.async_upgrade(servicenames=['rabbitmq'])
+            job = CLIENT.upgrade(servicenames=['rabbitmq'])
             job.wait()
             msg = job.get_console_output()
             self.assertEqual(job.get_status(), 0,

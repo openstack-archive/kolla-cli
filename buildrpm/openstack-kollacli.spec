@@ -1,4 +1,4 @@
-# Copyright(c) 2015, Oracle and/or its affiliates.  All Rights Reserved.
+# Copyright(c) 2017, Oracle and/or its affiliates.  All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -207,8 +207,8 @@ License:        GNU General Public License, Version 3
 Group:          Applications/System
 # The plugin needs ansible 2.1 which is in the
 # requirement for openstack-kolla-ansible
-Requires:       openstack-kolla-ansible     >= 3.0.0
-Requires:       openstack-kolla-ansible     < 4.0.0
+Requires:       openstack-kolla-ansible     >= 4.0.0
+Requires:       openstack-kolla-ansible     < 5.0.0
 
 %description -n openstack-kolla-ansible-plugin
 This ansible plugin supplies playbook activity to the

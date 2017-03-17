@@ -101,9 +101,9 @@ class HostDestroy(Command):
                     return
             verbose_level = self.app.options.verbose_level
 
-            job = CLIENT.async_host_destroy(hostnames, destroy_type,
-                                            verbose_level, include_data,
-                                            remove_images)
+            job = CLIENT.host_destroy(hostnames, destroy_type,
+                                      verbose_level, include_data,
+                                      remove_images)
             status = job.wait()
             if verbose_level > 2:
                 LOG.info('\n\n' + 80 * '=')
@@ -208,7 +208,7 @@ class HostCheck(Command):
             if parsed_args.predeploy:
                 # run pre-deploy checks
                 verbose_level = self.app.options.verbose_level
-                job = CLIENT.async_host_precheck(hostnames, verbose_level)
+                job = CLIENT.host_precheck(hostnames, verbose_level)
                 status = job.wait()
                 if verbose_level > 2:
                     LOG.info('\n\n' + 80 * '=')
@@ -332,7 +332,7 @@ class HostStop(Command):
 
             verbose_level = self.app.options.verbose_level
 
-            job = CLIENT.async_host_stop(hostnames, verbose_level)
+            job = CLIENT.host_stop(hostnames, verbose_level)
             status = job.wait()
             if verbose_level > 2:
                 LOG.info('\n\n' + 80 * '=')

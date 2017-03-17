@@ -43,7 +43,7 @@ class Upgrade(Command):
                 service_list = parsed_args.services.strip()
                 services = service_list.split(',')
             verbose_level = self.app.options.verbose_level
-            job = CLIENT.async_upgrade(verbose_level, services)
+            job = CLIENT.upgrade(verbose_level, services)
             status = job.wait()
             if verbose_level > 2:
                 LOG.info('\n\n' + 80 * '=')

@@ -34,7 +34,7 @@ class TestFunctional(KollaCliTest):
 
         msg = ''
         try:
-            job = CLIENT.async_reconfigure()
+            job = CLIENT.reconfigure()
             job.wait()
             msg = job.get_console_output()
             self.assertEqual(job.get_status(), 0,

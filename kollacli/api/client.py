@@ -1,4 +1,4 @@
-# Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.
+# Copyright(c) 2017, Oracle and/or its affiliates.  All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -19,8 +19,7 @@ import sys
 
 from logging.handlers import RotatingFileHandler
 
-from kollacli.api.async import AsyncApi
-from kollacli.api.deploy import DeployApi
+from kollacli.api.control_plane import ControlPlaneApi
 from kollacli.api.group import GroupApi
 from kollacli.api.host import HostApi
 from kollacli.api.password import PasswordApi
@@ -34,12 +33,11 @@ LOG_FILE_MESSAGE_FORMAT = \
     '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
 LOG = None
 
-VERSION = '1.0'
+VERSION = '2.0'
 
 
 class ClientApi(
-        AsyncApi,
-        DeployApi,
+        ControlPlaneApi,
         GroupApi,
         HostApi,
         PasswordApi,
@@ -60,14 +58,17 @@ class ClientApi(
     def __init__(self):
         self._configure_logging()
 
-    def get_version(self):
+    @staticmethod
+    def get_version():
         # type: () -> str
         return VERSION
 
-    def base_call(self):
+    @staticmethod
+    def base_call():
         LOG.info('base call')
 
-    def enable_console_logging(self, level, enable=True):
+    @staticmethod
+    def enable_console_logging(level, enable=True):
         # type: (int, bool) -> None
         """enable/disable console logging for the api
 

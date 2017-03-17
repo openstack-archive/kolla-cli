@@ -74,8 +74,8 @@ class Deploy(Command):
                             'Invalid hosts: {hosts}')
                         .format(hosts=invalid_host_list))
 
-            job = CLIENT.async_deploy(hosts, serial_flag,
-                                      verbose_level)
+            job = CLIENT.deploy(hosts, serial_flag,
+                                verbose_level)
 
             # wait for job to complete
             status = None
@@ -132,7 +132,7 @@ class Setdeploy(Command):
                 raise CommandError(
                     u._('Invalid deploy mode. Mode must be '
                         'either "local" or "remote".'))
-            CLIENT.deploy_set_mode(remote_flag)
+            CLIENT.set_deploy_mode(remote_flag)
         except CommandError as e:
             raise e
         except Exception:

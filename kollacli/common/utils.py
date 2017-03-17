@@ -363,7 +363,6 @@ def safe_decode(obj_to_decode):
     if obj_to_decode is None:
         return None
 
-    new_obj = None
     if isinstance(obj_to_decode, list):
         new_obj = []
         for text in obj_to_decode:

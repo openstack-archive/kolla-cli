@@ -68,7 +68,7 @@ class TestFunctional(KollaCliTest):
                 group.add_host(hostname)
 
         self.log.info('Start a deployment')
-        job = CLIENT.async_deploy()
+        job = CLIENT.deploy()
 
         time.sleep(120)
         self.log.info('\nwaking up from sleep............................\n')
