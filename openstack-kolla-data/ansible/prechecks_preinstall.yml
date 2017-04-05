@@ -1,5 +1,5 @@
 ---
-- include: prechecks.yml
+- include: site.yml action="precheck"
 - hosts: all
   tasks:
   - name: Checking openstack-kolla-preinstall version
