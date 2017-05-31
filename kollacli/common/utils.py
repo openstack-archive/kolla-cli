@@ -1,4 +1,4 @@
-# Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.
+# Copyright(c) 2017, Oracle and/or its affiliates.  All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -399,10 +399,11 @@ def convert_lists_to_string(tuples, parsed_args):
     (\u0414\u0435\u043a\u0430\u0442). By converting
     the list to string here, the proper non-ascii chars are displayed.
 
-    This will only change the lists when the output is to a table. It cannot
-    be changed if the display output is json, yaml, etc.
+    This will only change the lists when the output is to a user visible medium.
+    It cannot be changed if the display output is json, yaml, etc.
     """
-    if parsed_args.formatter and parsed_args.formatter != 'table':
+    convert_types = ['table', 'csv', 'html', 'value']
+    if parsed_args.formatter and parsed_args.formatter not in convert_types:
         # not table output, leave it as-is
         return tuples
 

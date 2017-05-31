@@ -348,7 +348,7 @@ class TestConfig(object):
         if hosts_info:
             for hostname, host_info in hosts_info.items():
                 uname = host_info['uname']
-                pwd = host_info['pwd']
+                pwd = host_info.get('pwd', '')
                 self.add_host(hostname)
                 self.set_password(hostname, pwd)
                 self.set_username(hostname, uname)
