@@ -86,6 +86,14 @@ class AnsibleJob(object):
                     .format(lock=get_ansible_lock_path(), cmd=self._command))
 
             LOG.debug('playbook command: %s' % self._command)
+            # ansible 2.2 and later introduced an issue where if
+            # the playbook is executed from within a directory without
+            # read / write permission (which can happen when you,
+            # for example, execute via sudo) it will fail.  the
+            # workaround will be to run the ansible command from /tmp
+            # and then change back to the original directory at the end
+            current_dir = os.getcwd()
+            os.chdir('/tmp')
             # create and open named pipe, must be owned by kolla group
             os.mkfifo(self._fifo_path)
             _, grp_id = get_admin_uids()
@@ -104,6 +112,9 @@ class AnsibleJob(object):
             flags = fcntl.fcntl(self._process.stdout, fcntl.F_GETFL)
             fcntl.fcntl(self._process.stdout, fcntl.F_SETFL,
                         (flags | os.O_NONBLOCK))
+
+            # this is also part of the fix for ansible 2.2 and later
+            os.chdir(current_dir)
         except Exception as e:
             self._cleanup()
             raise e
