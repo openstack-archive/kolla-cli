@@ -70,9 +70,11 @@ def remove_temp_inventory(path):
 
 
 class Inventory(object):
-    class_version = 3
+    class_version = 4
     """class version history
 
+    4: (v4.0.1):
+        - more sub-services added
     3: (v3.0.1):
         - added aodh, ceph
         - fix to ensure all sub-services have service as parent
@@ -105,11 +107,11 @@ class Inventory(object):
             for group in groups:
                 ceilometer.add_groupname(group)
 
-        if self.version <= 2:
-            # upgrade from inventory v2
+        if self.version <= 3:
+            # upgrade from inventory v2 / v3
 
             # some sub-services may be missing their parent associations.
-            # they are now needed in v3.
+            # they are now needed in v3 / v4
             for svc in self.get_services():
                 for sub_svcname in svc.get_sub_servicenames():
                     sub_svc = self.get_sub_service(sub_svcname)

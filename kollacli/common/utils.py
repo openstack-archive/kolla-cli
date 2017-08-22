@@ -399,8 +399,8 @@ def convert_lists_to_string(tuples, parsed_args):
     (\u0414\u0435\u043a\u0430\u0442). By converting
     the list to string here, the proper non-ascii chars are displayed.
 
-    This will only change the lists when the output is to a user visible medium.
-    It cannot be changed if the display output is json, yaml, etc.
+    This will only change the lists when the output is to a user visible
+    medium. It cannot be changed if the display output is json, yaml, etc.
     """
     convert_types = ['table', 'csv', 'html', 'value']
     if parsed_args.formatter and parsed_args.formatter not in convert_types:
