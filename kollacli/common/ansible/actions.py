@@ -95,6 +95,19 @@ def precheck(hostnames, verbose_level=1):
     return job
 
 
+def pull(verbose_level=1):
+    '''run pull action against all hosts'''
+    playbook = AnsiblePlaybook()
+    kolla_home = get_kolla_home()
+    playbook.playbook_path = os.path.join(kolla_home,
+                                          'ansible/site.yml')
+    playbook.extra_vars = 'action=pull'
+    playbook.verbose_level = verbose_level
+
+    job = playbook.run()
+    return job
+
+
 def stop_hosts(hostnames=[], verbose_level=1):
     '''stop containers on a set of hosts.
 

@@ -55,6 +55,21 @@ class ControlPlaneApi(object):
         return Job(ansible_job)
 
     @staticmethod
+    def pull(verbose_level=1):
+        """Pull.
+
+        Pull container images onto appropriate hosts.
+
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
+        :return: Job object
+        :rtype: Job
+        """
+        check_arg(verbose_level, u._('Verbose level'), int)
+        ansible_job = actions.pull(verbose_level)
+        return Job(ansible_job)
+
+    @staticmethod
     def upgrade(verbose_level=1, servicenames=[]):
         # type: (int, List[str]) -> Job
         """Upgrade.
