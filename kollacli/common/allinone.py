@@ -15,7 +15,6 @@
 import os
 
 from kollacli.common.service import Service
-from kollacli.common.subservice import SubService
 
 from kollacli.common.utils import get_kolla_home
 
@@ -29,7 +28,6 @@ class AllInOne(object):
     def __init__(self):
         self.groups = []
         self.services = {}
-        self.sub_services = {}
 
         self._load()
 
@@ -38,12 +36,6 @@ class AllInOne(object):
             service = Service(servicename)
             self.services[servicename] = service
         return self.services[servicename]
-
-    def add_sub_service(self, sub_servicename):
-        if sub_servicename not in self.sub_services:
-            sub_service = SubService(sub_servicename)
-            self.sub_services[sub_servicename] = sub_service
-        return self.sub_services[sub_servicename]
 
     def add_group(self, groupname):
         if groupname not in self.groups:
@@ -78,31 +70,28 @@ class AllInOne(object):
                 self.add_group(groupname)
                 continue
 
-            sub_service = None
-            sub_servicename = None
             servicename = line.split(':children')[0]
             servicename = servicename[1:]
-            if '-' in servicename:
-                sub_servicename = servicename
-                servicename = sub_servicename.split('-', 1)[0]
-
             service = self.add_service(servicename)
 
-            if sub_servicename:
-                sub_service = self.add_sub_service(sub_servicename)
-                sub_service.set_parent_servicename(servicename)
-                service.add_sub_servicename(sub_servicename)
-
-            # next lines will be parents of service/sub-service found above
+            # next lines will be parents or groups for service found above
             while True:
                 i += 1
                 line = lines[i]
-                parent = line.strip()
-                if not parent:
+                parent_or_group = line.strip()
+                if parent_or_group.startswith('#'):
+                    # comment line, skip
+                    continue
+                if not parent_or_group:
                     # blank line, done processing parents
                     break
-                if parent in self.groups:
-                    if sub_service:
-                        sub_service.add_groupname(parent)
-                    else:
-                        service.add_groupname(parent)
+                if parent_or_group in self.groups:
+                    service.add_groupname(parent_or_group)
+                else:
+                    service.add_parentname(parent_or_group)
+
+        for _, service in self.services.items():
+            for parentname in service.get_parentnames():
+                parent = self.services[parentname]
+                if parent:
+                    parent.add_childname(service.name)

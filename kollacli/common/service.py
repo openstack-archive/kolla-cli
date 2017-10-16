@@ -20,13 +20,25 @@ class Service(object):
 
     def __init__(self, name):
         self.name = name
-        self._sub_servicenames = []
+        self._parentnames = []
+        self._childnames = []
         self._groupnames = []
         self._vars = {}
         self.version = self.__class__.class_version
 
     def upgrade(self):
         pass
+
+    def add_parentname(self, parentname):
+        if parentname is not None and parentname not in self._parentnames:
+            self._parentnames.append(parentname)
+
+    def remove_parentname(self, parentname):
+        if parentname in self._parentnames:
+            self._parentnames.remove(parentname)
+
+    def get_parentnames(self):
+        return copy(self._parentnames)
 
     def add_groupname(self, groupname):
         if groupname is not None and groupname not in self._groupnames:
@@ -39,12 +51,16 @@ class Service(object):
     def get_groupnames(self):
         return copy(self._groupnames)
 
-    def get_sub_servicenames(self):
-        return copy(self._sub_servicenames)
+    def get_childnames(self):
+        return copy(self._childnames)
 
-    def add_sub_servicename(self, sub_servicename):
-        if sub_servicename not in self._sub_servicenames:
-            self._sub_servicenames.append(sub_servicename)
+    def add_childname(self, childname):
+        if childname not in self._childnames:
+            self._childnames.append(childname)
+
+    def remove_childname(self, childname):
+        if childname in self._childnames:
+            self._childnames.remove(childname)
 
     def get_vars(self):
         return self._vars.copy()

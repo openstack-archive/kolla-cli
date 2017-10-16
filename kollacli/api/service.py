@@ -49,55 +49,51 @@ class ServiceApi(object):
         inventory = Inventory.load()
 
         if get_all:
-            servicenames = []
-            serv_dict = inventory.get_service_sub_services()
-            for servicename, subservicenames in serv_dict.items():
-                servicenames.append(servicename)
-                servicenames.extend(subservicenames)
+            inv_services = inventory.get_services()
+            for inv_service in inv_services:
+                service = Service(inv_service.name,
+                                  inv_service.get_parentnames(),
+                                  inv_service.get_childnames(),
+                                  inv_service.get_groupnames())
+                services.append(service)
         else:
             inventory.validate_servicenames(servicenames)
 
-        for servicename in servicenames:
-            inv_service = inventory.get_service(servicename)
-            if inv_service:
-                service = Service(inv_service.name,
-                                  None,
-                                  inv_service.get_sub_servicenames(),
-                                  inv_service.get_groupnames())
-            else:
-                inv_subservice = inventory.get_sub_service(servicename)
-                service = Service(inv_subservice.name,
-                                  inv_subservice.get_parent_servicename(),
-                                  [],
-                                  inv_subservice.get_groupnames())
-            services.append(service)
+            for servicename in servicenames:
+                inv_service = inventory.get_service(servicename)
+                if inv_service:
+                    service = Service(inv_service.name,
+                                      inv_service.get_parentnames(),
+                                      inv_service.get_childnames(),
+                                      inv_service.get_groupnames())
+                services.append(service)
         return services
 
 
 class Service(object):
     """Service
 
-    A service is one of the services available in openstack-kolla.
+    A service is one of the services available in openstack-kolla-ansible.
 
     For example, this would be how the murano services would be
     represented:
 
     - murano
-        - parentname: None
+        - parentnames: []
         - childnames: [murano-api, murano-engine]
     - murano-api
-        - parentname: murano
+        - parentnames: [murano]
         - childnames: []
     - murano-engine
-        - parentname: murano
+        - parentnames: [murano]
         - childnames: []
     """
 
-    def __init__(self, servicename, parentname=None,
+    def __init__(self, servicename, parentnames=[],
                  childnames=[], groupnames=[]):
         # type: (str, str, List[str], List[str]) -> None
         self.name = servicename
-        self.parentname = parentname
+        self._parentnames = parentnames
         self._childnames = childnames
         self._groupnames = groupnames
 
@@ -110,18 +106,18 @@ class Service(object):
         """
         return self.name
 
-    def get_parent(self):
+    def get_parents(self):
         # type: () -> str
-        """Get name of parent service
+        """Get name of parent services
 
-        :return: parent service name
+        :return: parent service names
         :rtype: string
         """
-        return self.parentname
+        return copy(self._parentnames)
 
     def get_children(self):
         # type: () -> List[str]
-        """Get names of the child services associated with this service
+        """Get names of the child services
 
         :return: child names
         :rtype: list of strings
@@ -130,7 +126,7 @@ class Service(object):
 
     def get_groups(self):
         # type: () -> List[str]
-        """Get names of the groups associated with this service
+        """Get names of the groups
 
         :return: group names
         :rtype: list of strings

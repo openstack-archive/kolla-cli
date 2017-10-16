@@ -30,6 +30,7 @@ class TestFunctional(KollaCliTest):
         # disable all services first as without it empty groups cause errors
         allinone = AllInOne()
         for service in allinone.services.keys():
+            service = service.replace('-', '_')
             self.run_cli_cmd('property set enable_%s no' % service)
 
         msg = ''

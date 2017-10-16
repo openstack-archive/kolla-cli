@@ -33,7 +33,6 @@ from kollacli.common.host import Host
 from kollacli.common.host_group import HostGroup
 from kollacli.common.service import Service
 from kollacli.common.sshutils import ssh_setup_host
-from kollacli.common.subservice import SubService
 from kollacli.common.utils import get_admin_uids
 from kollacli.common.utils import get_admin_user
 from kollacli.common.utils import get_ansible_command
@@ -74,7 +73,7 @@ class Inventory(object):
     """class version history
 
     4: (v4.0.1):
-        - more sub-services added
+        - removed concept of sub-services (not backward compatible)
     3: (v3.0.1):
         - added aodh, ceph
         - fix to ensure all sub-services have service as parent
@@ -85,7 +84,6 @@ class Inventory(object):
         self._groups = {}           # kv = name:object
         self._hosts = {}            # kv = name:object
         self._services = {}         # kv = name:object
-        self._sub_services = {}     # kv = name:object
         self.vars = {}
         self.version = self.__class__.class_version
         self.remote_mode = True
@@ -95,28 +93,9 @@ class Inventory(object):
 
     def upgrade(self):
         # check for new services or subservices in the all-in-one file
+        # leaving in this hook but no upgrade from <4 to 4 is supported
+        # so yanking out all upgrade logic
         self._upgrade_services()
-
-        if self.version <= 1:
-            # upgrade from inventory v1
-
-            # set ceilometer groups to that of heat
-            heat = self.get_service('heat')
-            ceilometer = self.get_service('ceilometer')
-            groups = heat.get_groupnames()
-            for group in groups:
-                ceilometer.add_groupname(group)
-
-        if self.version <= 3:
-            # upgrade from inventory v2 / v3
-
-            # some sub-services may be missing their parent associations.
-            # they are now needed in v3 / v4
-            for svc in self.get_services():
-                for sub_svcname in svc.get_sub_servicenames():
-                    sub_svc = self.get_sub_service(sub_svcname)
-                    if not sub_svc.get_parent_servicename():
-                        sub_svc.set_parent_servicename(svc.name)
 
         # update the version and save upgraded inventory file
         self.version = self.__class__.class_version
@@ -124,19 +103,12 @@ class Inventory(object):
 
     def _upgrade_services(self):
         allinone = AllInOne()
+
         # add new services
         for servicename, service in allinone.services.items():
             if servicename not in self._services:
                 self._services[servicename] = service
-        # add new subservices
-        for subservicename, subservice in allinone.sub_services.items():
-            if subservicename not in self._sub_services:
-                self._sub_services[subservicename] = subservice
 
-        # remove obsolete subservices
-        for subservicename in copy(self._sub_services).keys():
-            if subservicename not in allinone.sub_services:
-                self.delete_sub_service(subservicename)
         # remove obsolete services
         for servicename in copy(self._services).keys():
             if servicename not in allinone.services:
@@ -151,30 +123,6 @@ class Inventory(object):
             if os.path.exists(inventory_path):
                 data = sync_read_file(inventory_path)
 
-                # The inventory path changed between v1 and v2. Need to change
-                # path throughout the inventory. This has to be done before
-                # the pickle decode.
-                if 'kollacli.common.inventory' not in data:
-                    data = data.replace(
-                        '"py/object": "kollacli.ansible.inventory.',
-                        '"py/object": "kollacli.common.inventory.')
-
-                # The Host, HostGroup, Service and SubService were moved out of
-                # inventory and into their own modules
-                if 'kollacli.common.service' not in data:
-                    data = data.replace(
-                        '"py/object": "kollacli.common.inventory.Service"',
-                        '"py/object": "kollacli.common.service.Service"')
-                    data = data.replace(
-                        '"py/object": "kollacli.common.inventory.SubService"',
-                        '"py/object": "kollacli.common.subservice.SubService"')
-                    data = data.replace(
-                        '"py/object": "kollacli.common.inventory.Host"',
-                        '"py/object": "kollacli.common.host.Host"')
-                    data = data.replace(
-                        '"py/object": "kollacli.common.inventory.HostGroup"',
-                        '"py/object": "kollacli.common.host_group.HostGroup"')
-
             if data.strip():
                 inventory = jsonpickle.decode(data)
 
@@ -183,6 +131,7 @@ class Inventory(object):
                     inventory.upgrade()
             else:
                 inventory = Inventory()
+                Inventory.save(inventory)
         except Exception:
             raise FailedOperation(
                 u._('Loading inventory failed. : {error}')
@@ -392,7 +341,7 @@ class Inventory(object):
     def add_group(self, groupname):
 
         # Group names cannot overlap with service names:
-        if groupname in self._services or groupname in self._sub_services:
+        if groupname in self._services:
             raise InvalidArgument(
                 u._('Invalid group name. A service name '
                     'cannot be used for a group name.'))
@@ -412,12 +361,9 @@ class Inventory(object):
                 u._('Cannot remove {group} group. It is required by kolla.')
                 .format(group=groupname))
 
-        # remove group from services & subservices
+        # remove group from services
         for service in self._services.values():
             service.remove_groupname(groupname)
-
-        for subservice in self._sub_services.values():
-            subservice.remove_groupname(groupname)
 
         group_vars = os.path.join(get_group_vars_dir(), groupname)
         if os.path.exists(group_vars) and groupname != '__GLOBAL__':
@@ -475,9 +421,6 @@ class Inventory(object):
         for svc in self.get_services():
             for groupname in svc.get_groupnames():
                 group_services[groupname].append(svc.name)
-        for sub_svc in self.get_sub_services():
-            for groupname in sub_svc.get_groupnames():
-                group_services[groupname].append(sub_svc.name)
         return group_services
 
     def get_group_hosts(self):
@@ -496,10 +439,17 @@ class Inventory(object):
         return self._services[servicename]
 
     def delete_service(self, servicename):
+        # remove references to this service from all parent / child services
         if servicename in self._services:
             service = self._services[servicename]
-            for sub_servicename in service.get_sub_servicenames():
-                self.delete_sub_service(sub_servicename)
+            for parentname in service.get_parentnames():
+                parent = self._services[parentname]
+                parent.remove_childname(servicename)
+            for childname in service.get_childnames():
+                child = self._services[childname]
+                child.remove_parentname(servicename)
+
+            # then remove the service itself
             del self._services[servicename]
 
     def get_services(self):
@@ -517,9 +467,6 @@ class Inventory(object):
         if servicename in self._services:
             service = self.get_service(servicename)
             service.add_groupname(groupname)
-        elif servicename in self._sub_services:
-                sub_service = self.get_sub_service(servicename)
-                sub_service.add_groupname(groupname)
         else:
             raise NotInInventory(u._('Service'), servicename)
 
@@ -529,46 +476,8 @@ class Inventory(object):
         if servicename in self._services:
             service = self.get_service(servicename)
             service.remove_groupname(groupname)
-        elif servicename in self._sub_services:
-                sub_service = self.get_sub_service(servicename)
-                sub_service.remove_groupname(groupname)
         else:
             raise NotInInventory(u._('Service'), servicename)
-
-    def create_sub_service(self, sub_servicename):
-        if sub_servicename not in self._sub_services:
-            sub_service = SubService(sub_servicename)
-            self._sub_services[sub_servicename] = sub_service
-        return self._sub_services[sub_servicename]
-
-    def delete_sub_service(self, sub_servicename):
-        if sub_servicename in self._sub_services:
-            sub_service = self._sub_services[sub_servicename]
-            parentname = sub_service.get_parent_servicename()
-            parent = self._services[parentname]
-            if sub_servicename in parent._sub_servicenames:
-                parent._sub_servicenames.remove(sub_servicename)
-            del self._sub_services[sub_servicename]
-
-    def get_sub_services(self):
-        return self._sub_services.values()
-
-    def get_sub_service(self, sub_servicename):
-        sub_service = None
-        if sub_servicename in self._sub_services:
-            sub_service = self._sub_services[sub_servicename]
-        return sub_service
-
-    def get_service_sub_services(self):
-        """get services and their sub_services
-
-        return { servicename: [sub_servicenames] }
-        """
-        svc_sub_svcs = {}
-        for service in self.get_services():
-            svc_sub_svcs[service.name] = []
-            svc_sub_svcs[service.name].extend(service.get_sub_servicenames())
-        return svc_sub_svcs
 
     def set_deploy_mode(self, remote_flag):
         if not remote_flag and len(self._hosts) > 1:
@@ -635,22 +544,13 @@ class Inventory(object):
             jdict[group.name]['children'] = []
             jdict[group.name]['vars'] = group.get_vars()
 
-        # add top-level services and what groups they are in
+        # add all services, what groups they are in and their parents
         for service in self.get_services():
             jdict[service.name] = {}
-            jdict[service.name]['children'] = service.get_groupnames()
-
-        # add sub-services and their groups
-        for sub_svc in self.get_sub_services():
-            jdict[sub_svc.name] = {}
-            groupnames = sub_svc.get_groupnames()
-            if groupnames:
-                # sub-service is associated with a group(s)
-                jdict[sub_svc.name]['children'] = groupnames
-            else:
-                # sub-service is associated with parent service
-                jdict[sub_svc.name]['children'] = \
-                    [sub_svc.get_parent_servicename()]
+            groups_and_parents = []
+            groups_and_parents.extend(service.get_groupnames())
+            groups_and_parents.extend(service.get_parentnames())
+            jdict[service.name]['children'] = groups_and_parents
 
         # temporarily create group containing all hosts. this is needed for
         # ansible commands that are performed on hosts not yet in groups.
@@ -737,8 +637,7 @@ class Inventory(object):
             raise MissingArgument(u._('Service name(s)'))
         invalid_services = []
         for servicename in servicenames:
-            if (servicename not in self._services and
-                    servicename not in self._sub_services):
+            if servicename not in self._services:
                 invalid_services.append(servicename)
         if invalid_services:
             raise NotInInventory(u._('Service'), invalid_services)
@@ -749,5 +648,3 @@ class Inventory(object):
             self.add_group(groupname)
         for servicename, service in allin1.services.items():
             self._services[servicename] = service
-        for sub_servicename, sub_service in allin1.sub_services.items():
-            self._sub_services[sub_servicename] = sub_service
