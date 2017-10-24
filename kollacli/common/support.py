@@ -145,7 +145,7 @@ class HostLogs(object):
 def get_logs(servicenames, hostname, dirname):
     inventory = Inventory.load()
     inventory.validate_hostnames([hostname])
-    inventory.validate_servicenames(servicenames)
+    inventory.validate_servicenames(servicenames, client_filter=True)
 
     logs = HostLogs(hostname, inventory, servicenames)
     logs.load_container_info()

@@ -23,6 +23,7 @@ class Service(object):
         self._parentnames = []
         self._childnames = []
         self._groupnames = []
+        self._supported = True
         self._vars = {}
         self.version = self.__class__.class_version
 
@@ -61,6 +62,12 @@ class Service(object):
     def remove_childname(self, childname):
         if childname in self._childnames:
             self._childnames.remove(childname)
+
+    def set_supported(self, supported):
+        self._supported = supported
+
+    def is_supported(self):
+        return self._supported
 
     def get_vars(self):
         return self._vars.copy()

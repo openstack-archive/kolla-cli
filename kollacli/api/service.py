@@ -49,7 +49,7 @@ class ServiceApi(object):
         inventory = Inventory.load()
 
         if get_all:
-            inv_services = inventory.get_services()
+            inv_services = inventory.get_services(client_filter=True)
             for inv_service in inv_services:
                 service = Service(inv_service.name,
                                   inv_service.get_parentnames(),
@@ -57,10 +57,11 @@ class ServiceApi(object):
                                   inv_service.get_groupnames())
                 services.append(service)
         else:
-            inventory.validate_servicenames(servicenames)
+            inventory.validate_servicenames(servicenames, client_filter=True)
 
             for servicename in servicenames:
-                inv_service = inventory.get_service(servicename)
+                inv_service = inventory.get_service(servicename,
+                                                    client_filter=True)
                 if inv_service:
                     service = Service(inv_service.name,
                                       inv_service.get_parentnames(),

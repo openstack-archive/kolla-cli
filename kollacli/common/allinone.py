@@ -55,7 +55,8 @@ class AllInOne(object):
         mistral
         """
         allinone_path = os.path.join(get_kolla_home(), 'ansible',
-                                     'inventory_samples', 'all-in-one')
+                                     'inventory_samples',
+                                     'oracle-default-inventory')
         with open(allinone_path, 'r') as ain1:
             ain1_inv = ain1.read()
 
@@ -75,6 +76,7 @@ class AllInOne(object):
             service = self.add_service(servicename)
 
             # next lines will be parents or groups for service found above
+            has_parents_or_groups = False
             while True:
                 i += 1
                 line = lines[i]
@@ -84,11 +86,17 @@ class AllInOne(object):
                     continue
                 if not parent_or_group:
                     # blank line, done processing parents
+                    # if a service has no parent or group associations
+                    # we infer that it is not supported and is filtered
+                    # from being shown to the client
+                    service.set_supported(has_parents_or_groups)
                     break
                 if parent_or_group in self.groups:
                     service.add_groupname(parent_or_group)
+                    has_parents_or_groups = True
                 else:
                     service.add_parentname(parent_or_group)
+                    has_parents_or_groups = True
 
         for _, service in self.services.items():
             for parentname in service.get_parentnames():

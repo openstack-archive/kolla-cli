@@ -324,7 +324,7 @@ class Inventory(object):
         return is_ok, msg
 
     def run_ansible_command(self, ansible_command, hostname):
-        err_msg = None
+        output = None
         command_string = '/usr/bin/sudo -u %s %s -vvv' % \
             (get_admin_user(), get_ansible_command())
         gen_file_path = self.create_json_gen_file()
@@ -452,13 +452,23 @@ class Inventory(object):
             # then remove the service itself
             del self._services[servicename]
 
-    def get_services(self):
-        return self._services.values()
+    def get_services(self, client_filter=False):
+        if client_filter:
+            services = self._client_filtered_service_dict()
+        else:
+            services = self._services
 
-    def get_service(self, servicename):
+        return services.values()
+
+    def get_service(self, servicename, client_filter=False):
         service = None
-        if servicename in self._services:
-            service = self._services[servicename]
+        if client_filter:
+            services = self._client_filtered_service_dict()
+        else:
+            services = self._services
+
+        if servicename in services:
+            service = services[servicename]
         return service
 
     def add_group_to_service(self, groupname, servicename):
@@ -632,15 +642,31 @@ class Inventory(object):
         if invalid_groups:
             raise NotInInventory(u._('Group'), invalid_groups)
 
-    def validate_servicenames(self, servicenames):
+    def validate_servicenames(self, servicenames, client_filter=False):
         if not servicenames:
             raise MissingArgument(u._('Service name(s)'))
         invalid_services = []
-        for servicename in servicenames:
-            if servicename not in self._services:
-                invalid_services.append(servicename)
+        if client_filter:
+            services = self._client_filtered_service_dict()
+        else:
+            services = self._services
+
+        for service_name in servicenames:
+            if service_name not in services:
+                invalid_services.append(service_name)
         if invalid_services:
             raise NotInInventory(u._('Service'), invalid_services)
+
+    def _client_filtered_service_dict(self):
+        """Filters out any unsupported services
+
+        :return: filtered dictionary
+        """
+        filtered_service_dict = {}
+        for service in self._services.values():
+            if service.is_supported():
+                filtered_service_dict[service.name] = service
+        return filtered_service_dict
 
     def _create_default_inventory(self):
         allin1 = AllInOne()

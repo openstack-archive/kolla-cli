@@ -128,7 +128,7 @@ class Group(object):
         check_arg(servicename, u._('Service name'), str)
         servicename = safe_decode(servicename)
         inventory = Inventory.load()
-        inventory.validate_servicenames([servicename])
+        inventory.validate_servicenames([servicename], client_filter=True)
 
         group_services = inventory.get_group_services()
         self._servicenames = group_services[self.name]
@@ -149,7 +149,7 @@ class Group(object):
         check_arg(servicename, u._('Service name'), str)
         servicename = safe_decode(servicename)
         inventory = Inventory.load()
-        inventory.validate_servicenames([servicename])
+        inventory.validate_servicenames([servicename], client_filter=True)
 
         group_services = inventory.get_group_services()
         self._servicenames = group_services[self.name]
