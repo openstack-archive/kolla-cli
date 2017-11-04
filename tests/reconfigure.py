@@ -15,7 +15,6 @@
 from common import KollaCliTest
 
 from kollacli.api.client import ClientApi
-from kollacli.common.allinone import AllInOne
 
 import unittest
 
@@ -28,10 +27,11 @@ class TestFunctional(KollaCliTest):
         # test will start with no hosts in the inventory
         # reconfigure will throw an exception if it fails
         # disable all services first as without it empty groups cause errors
-        allinone = AllInOne()
-        for service in allinone.services.keys():
-            service = service.replace('-', '_')
-            self.run_cli_cmd('property set enable_%s no' % service)
+        enable_service_props = {}
+        for service in CLIENT.service_get_all():
+            service_name = service.name.replace('-', '_')
+            enable_service_props['enable_%s' % service_name] = 'no'
+        CLIENT.property_set(enable_service_props)
 
         msg = ''
         try:

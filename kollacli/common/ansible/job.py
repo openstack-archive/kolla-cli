@@ -92,8 +92,8 @@ class AnsibleJob(object):
             # for example, execute via sudo) it will fail.  the
             # workaround will be to run the ansible command from /tmp
             # and then change back to the original directory at the end
-            current_dir = os.getcwd()
-            os.chdir('/tmp')
+            current_dir = os.getcwd()  # nosec
+            os.chdir('/tmp')  # nosec
             # create and open named pipe, must be owned by kolla group
             os.mkfifo(self._fifo_path)
             _, grp_id = get_admin_uids()

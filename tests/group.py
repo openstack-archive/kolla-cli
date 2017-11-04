@@ -239,9 +239,6 @@ class TestFunctional(KollaCliTest):
             for servicename, service in allinone.services.items():
                 if groupname in service.get_groupnames():
                     groups[groupname]['Services'].append(servicename)
-            for subservicename, subservice in allinone.sub_services.items():
-                if groupname in subservice.get_groupnames():
-                    groups[groupname]['Services'].append(subservicename)
 
         return groups
 

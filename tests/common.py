@@ -18,12 +18,10 @@ import shutil
 import subprocess
 import sys
 import testtools
-import yaml
 
 import kollacli.common.utils as utils
 
 from copy import copy
-from pexpect import pxssh
 from shutil import copyfile
 
 from kollacli.api.client import ClientApi
@@ -44,8 +42,6 @@ TEST_SUFFIX = 'test/'
 VENV_PY_PATH = '.venv/bin/python'
 KOLLA_CMD = 'kollacli'
 KOLLA_SHELL_DIR = 'kollacli'
-
-CFG_FNAME = 'test_config.yml'
 
 
 class KollaCliTest(testtools.TestCase):
@@ -283,106 +279,3 @@ class KollaCliTest(testtools.TestCase):
 
         self.assertEqual(0, 1,
                          'no kollacli shell command found. Aborting tests')
-
-
-class TestConfig(object):
-    """host systems for testing
-
-    This class can either be used for metadata to hold info about test hosts,
-    or can be loaded from a test file for info on actual test host machines.
-    """
-    log = logging.getLogger(__name__)
-
-    def __init__(self):
-        self.hosts_info = {}
-        self.predeploy_cmds = []
-
-    def remove_host(self, name):
-        del self.hosts_info[name]
-
-    def add_host(self, name):
-        if name not in self.hosts_info:
-            self.hosts_info[name] = {
-                'groups': [], 'pwd': '', }
-
-    def get_groups(self, name):
-        return self.hosts_info[name]['groups']
-
-    def add_group(self, name, group):
-        if group not in self.hosts_info[name]['groups']:
-            self.hosts_info[name]['groups'].append(group)
-
-    def remove_group(self, name, group):
-        if group in self.hosts_info[name]['groups']:
-            self.hosts_info[name]['groups'].remove(group)
-
-    def get_hostnames(self):
-        return list(self.hosts_info.keys())
-
-    def set_username(self, name, username):
-        self.hosts_info[name]['username'] = username
-
-    def get_username(self, name):
-        return self.hosts_info[name]['username']
-
-    def set_password(self, name, password):
-        self.hosts_info[name]['pwd'] = password
-
-    def get_password(self, name):
-        return self.hosts_info[name]['pwd']
-
-    def get_predeploy_cmds(self):
-        return self.predeploy_cmds
-
-    def load(self):
-        """load hosts from test_config.json file
-
-        """
-        path = self.get_test_config_path()
-        with open(path, 'r+') as cfg_file:
-            yml_data = cfg_file.read()
-
-        test_cfg = yaml.safe_load(yml_data)
-
-        hosts_info = test_cfg['hosts']
-        if hosts_info:
-            for hostname, host_info in hosts_info.items():
-                uname = host_info['uname']
-                pwd = host_info.get('pwd', '')
-                self.add_host(hostname)
-                self.set_password(hostname, pwd)
-                self.set_username(hostname, uname)
-
-        self.predeploy_cmds = test_cfg['predeploy_cmds']
-
-    def get_test_config_path(self):
-        """get test_config directory"""
-        path = ''
-        # first check the current directory
-        if os.path.exists(CFG_FNAME):
-            path = os.path.join(os.getcwd(), CFG_FNAME)
-        else:
-            # check the user's home directory
-            path = os.path.join(os.path.expanduser('~'), CFG_FNAME)
-            if not os.path.exists(path):
-                raise Exception('%s not found in current ' % CFG_FNAME +
-                                'or home directory')
-        return path
-
-    def run_remote_cmd(self, cmd, hostname):
-        """run remote command on host
-
-        return output from command
-        """
-        pwd = self.get_password(hostname)
-        username = self.get_username(hostname)
-        session = pxssh.pxssh()
-        session.login(hostname, username, pwd)
-        self.log.info('host: %s, run remote cmd: %s' % (hostname, cmd))
-        session.sendline(cmd)
-        session.prompt()
-        out = session.before
-        out = utils.safe_decode(out)
-        self.log.info(out)
-        session.logout()
-        return out

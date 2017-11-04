@@ -18,7 +18,6 @@ import tarfile
 import unittest
 
 from common import KollaCliTest
-from common import TestConfig
 from kollacli.api.client import ClientApi
 from kollacli.common.utils import get_kollacli_home
 from kollacli.common.utils import safe_decode
@@ -32,14 +31,7 @@ LOGDIR = '/tmp/utest_kolla_logs'
 class TestFunctional(KollaCliTest):
 
     def test_log_collector(self):
-        test_config = TestConfig()
-        test_config.load()
-
-        is_physical_hosts = True
-        hostnames = test_config.get_hostnames()
-        if not hostnames:
-            is_physical_hosts = False
-            hostnames = ['test_host1']
+        hostnames = ['test_host1']
         CLIENT.host_add(hostnames)
 
         zip_path = ''
@@ -51,17 +43,8 @@ class TestFunctional(KollaCliTest):
             retval, msg = self.run_command('/usr/bin/python %s %s'
                                            % (path, 'all'))
 
-            if is_physical_hosts:
-                self.assertEqual(0, retval,
-                                 'log_collector command failed: %s' % msg)
-                self.assertNotIn('ERROR', msg)
-                self.assertIn(LOGS_PREFIX, msg)
-                zip_path = '/tmp' + msg.split('/tmp')[1].strip()
-                self.assertTrue(os.path.exists(zip_path),
-                                'Zip file %s does not exist' % zip_path)
-            else:
-                # no host, this should fail
-                self.assertIn('error', msg.lower())
+            # no host, this should fail
+            self.assertIn('error', msg.lower())
         except Exception as e:
             raise e
         finally:
@@ -73,35 +56,22 @@ class TestFunctional(KollaCliTest):
             shutil.rmtree(LOGDIR)
         os.mkdir(LOGDIR)
 
-        test_config = TestConfig()
-        test_config.load()
-
-        is_physical_hosts = True
-        hostnames = test_config.get_hostnames()
-        if not hostnames:
-            is_physical_hosts = False
-            hostnames = ['test_host1']
+        hostnames = ['test_host1']
         CLIENT.host_add(hostnames)
 
-        maj_services = []
         services = CLIENT.service_get_all()
+        service_names = []
         for service in services:
-            if not service.get_parent():
-                # top level service
-                maj_services.append(service.name)
+            service_names.append(service.name)
         try:
             for hostname in hostnames:
-                CLIENT.support_get_logs(maj_services, safe_decode(hostname),
+                CLIENT.support_get_logs(service_names, safe_decode(hostname),
                                         LOGDIR)
-            if not is_physical_hosts:
                 raise Exception('get_logs command succeeded without physical '
                                 'hosts')
         except Exception as e:
-            if not is_physical_hosts:
                 self.assertIn('UNREACHABLE', str(e),
                               'unexpected failure in get_logs: %s' % str(e))
-            else:
-                raise e
         finally:
             if os.path.exists(LOGDIR):
                 shutil.rmtree(LOGDIR)

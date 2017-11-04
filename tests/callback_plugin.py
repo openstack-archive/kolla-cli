@@ -15,7 +15,6 @@
 import time
 
 from common import KollaCliTest
-from common import TestConfig
 
 from kollacli.api.client import ClientApi
 
@@ -29,53 +28,28 @@ UNREACHABLE = 'Status: unreachable'
 
 class TestFunctional(KollaCliTest):
 
-    def xtest_callback(self):
+    def test_callback(self):
         """callback test
 
         This test is disabled by default because it takes too long to run.
         To enable it, remove the 'x' from the method name.
         """
-        test_config = TestConfig()
-        test_config.load()
-
-        # add host to inventory
-        hostnames = test_config.get_hostnames()
-        if hostnames:
-            pwd = test_config.get_password(hostnames[0])
-        else:
-            # No physical hosts in config, use a non-existent host.
-            # This will generate expected exceptions in all host access
-            # commands.
-            self.log.info('No hosts, skipping test')
-            return
-
-        CLIENT.host_add(hostnames)
-
-        try:
-            setup_info = {}
-            for hostname in hostnames:
-                setup_info[hostname] = {'password': pwd}
-            CLIENT.host_setup(setup_info)
-        except Exception as e:
-            self.assertIn(NOT_KNOWN, '%s' % e,
-                          'Unexpected exception in host setup: %s' % e)
+        CLIENT.host_add(['localhost'])
 
         # add host to group
         CLIENT.group_add(['control'])
         groups = CLIENT.group_get_all()
         for group in groups:
-            for hostname in hostnames:
-                group.add_host(hostname)
+                group.add_host('localhost')
 
         self.log.info('Start a deployment')
         job = CLIENT.deploy()
 
-        time.sleep(120)
+        time.sleep(20)
         self.log.info('\nwaking up from sleep............................\n')
         job.wait()
 
         self.log.info('deploy complete')
-
 
 if __name__ == '__main__':
     unittest.main()

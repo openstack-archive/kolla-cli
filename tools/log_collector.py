@@ -31,15 +31,13 @@ LOGDIR = '/tmp/container_logs'
 
 def get_logs_from_host(host):
     try:
-        maj_services = []
+        service_names = []
         services = CLIENT.service_get_all()
         for service in services:
-            if not service.get_parent():
-                # top level service
-                maj_services.append(service.name)
+            service_names.append(service.name)
 
         print('Adding container logs from host: %s' % host)
-        CLIENT.support_get_logs(maj_services, host, LOGDIR)
+        CLIENT.support_get_logs(service_names, host, LOGDIR)
     except Exception as e:
         print('Error getting logs on host: %s: %s' % (host, str(e)))
 

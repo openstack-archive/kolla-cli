@@ -234,7 +234,7 @@ class HostApi(object):
 class Host(object):
     """Host"""
 
-    def __init__(self, hostname, groupnames):
+    def __init__(self, hostname, groupnames=[]):
         # type: (str, List[str]) -> None
         self.name = hostname
         self._groupnames = groupnames

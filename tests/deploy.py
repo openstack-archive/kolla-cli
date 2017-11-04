@@ -13,7 +13,6 @@
 #   under the License.
 #
 from common import KollaCliTest
-from common import TestConfig
 
 from kollacli.api.client import ClientApi
 from kollacli.common.allinone import AllInOne
@@ -52,10 +51,6 @@ class TestFunctional(KollaCliTest):
         for servicename, service in services.items():
             self.assertIn(servicename, msg, '%s not in json_gen output: %s'
                           % (servicename, msg))
-            subservices = service.get_sub_servicenames()
-            for subservice in subservices:
-                self.assertIn(subservice, msg, '%s not in json_gen output: %s'
-                              % (subservice, msg))
 
         # verify that json output is valid. This will throw if invalid json
         try:
@@ -139,9 +134,11 @@ class TestFunctional(KollaCliTest):
         # test will start with no hosts in the inventory
         # deploy will throw an exception if it fails
         # disable all services first as without it empty groups cause errors
-        allinone = AllInOne()
-        for service in allinone.services.keys():
-            self.run_cli_cmd('property set enable_%s no' % service)
+        enable_service_props = {}
+        for service in CLIENT.service_get_all():
+            service_name = service.name.replace('-', '_')
+            enable_service_props['enable_%s' % service_name] = 'no'
+        CLIENT.property_set(enable_service_props)
 
         self.run_cli_cmd('deploy')
         self.run_cli_cmd('deploy --serial -v')
@@ -154,11 +151,9 @@ class TestFunctional(KollaCliTest):
         # through the api (cli test below makes sure it fails in cli)
         msg = ''
         try:
-            test_config = TestConfig()
-            test_config.load()
-            hostnames = test_config.get_hostnames()
-            CLIENT.host_add(hostnames)
-            job = CLIENT.deploy(hostnames=[hostnames[0]])
+            CLIENT.host_add(['localhost'])
+            CLIENT.set_deploy_mode(remote_mode=False)
+            job = CLIENT.deploy(hostnames=['localhost'])
             job.wait()
             msg = job.get_console_output()
             self.assertEqual(job.get_status(), 0,
@@ -168,13 +163,14 @@ class TestFunctional(KollaCliTest):
                              'unexpected exception in host deploy %s, %s'
                              % (e.message, msg))
         finally:
-            CLIENT.host_remove(hostnames)
+            CLIENT.host_remove(['localhost'])
 
         # run compute host deploy to invalid host
         err_msg = 'Status: unreachable'
         msg = ''
         try:
             self.run_cli_cmd('host add dummy_host')
+            CLIENT.set_deploy_mode(remote_mode=True)
             self.run_cli_cmd('group addhost compute dummy_host')
             (retval, msg) = self.run_command(
                 'kollacli deploy --host dummy_host -v')
@@ -182,9 +178,10 @@ class TestFunctional(KollaCliTest):
                                 'host only deploy ran ok but shouldn\'t have')
             self.assertIn(err_msg, msg,
                           'Incorrect error message')
-        except Exception:
+        except Exception as e:
             self.assertEqual(0, 1,
-                             'host only deploy threw exception %s' % msg)
+                             'host only deploy threw exception %s, %s'
+                             % (e.message, msg))
         finally:
             self.run_cli_cmd('host remove dummy_host')
 
@@ -194,14 +191,11 @@ class TestFunctional(KollaCliTest):
         self.run_cli_cmd('upgrade -v')
 
         msg = ''
-        hostnames = []
         # run rabbitmq service deploy
         try:
-            test_config = TestConfig()
-            test_config.load()
-            hostnames = test_config.get_hostnames()
-            CLIENT.host_add(hostnames)
-            job = CLIENT.upgrade(servicenames=['rabbitmq'])
+            CLIENT.host_add(['localhost'])
+            CLIENT.set_deploy_mode(remote_mode=False)
+            job = CLIENT.upgrade()
             job.wait()
             msg = job.get_console_output()
             self.assertEqual(job.get_status(), 0,
@@ -212,7 +206,7 @@ class TestFunctional(KollaCliTest):
                              'unexpected exception in service deploy: %s, %s'
                              % (e.message, msg))
         finally:
-            CLIENT.host_remove(hostnames)
+            CLIENT.host_remove(['localhost'])
 
     def test_deserialize(self):
         # create a dummy ansible job
