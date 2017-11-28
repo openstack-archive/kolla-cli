@@ -30,6 +30,21 @@ from kolla_cli.common.utils import is_string_true
 LOG = logging.getLogger(__name__)
 
 
+def certificate_init(verbose_level=1):
+    '''Creates a self-signed certificate'''
+    playbook = AnsiblePlaybook()
+    playbook_name = 'certificates.yml'
+
+    kolla_home = get_kolla_ansible_home()
+    playbook.playbook_path = os.path.join(kolla_home,
+                                          'ansible/' + playbook_name)
+    playbook.verbose_level = verbose_level
+    playbook.local_only = True
+
+    job = playbook.run()
+    return job
+
+
 def destroy_hosts(hostnames, destroy_type,
                   verbose_level=1, include_data=False,
                   remove_images=False):
