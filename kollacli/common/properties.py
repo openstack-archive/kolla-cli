@@ -14,7 +14,6 @@
 import copy
 import logging
 import os
-import six
 import yaml
 
 import kollacli.i18n as u
@@ -220,13 +219,17 @@ class AnsibleProperties(object):
                     prop_list += self.group_props[group.name]
         return prop_list
 
-    def get_property(self, property_name):
+    def get_property_value(self, property_name):
         self._load_properties()
         prop_val = None
         if property_name in self.unique_global_props:
             prop = self.unique_global_props[property_name]
             prop_val = prop.value
         return prop_val
+
+    def get_property(self, property_name):
+        self._load_properties()
+        return self.unique_global_props.get(property_name)
 
     def get_all_unique(self):
         self._load_properties()
@@ -238,21 +241,6 @@ class AnsibleProperties(object):
     def get_all_override_flags(self):
         self._load_properties()
         return self.unique_override_flags
-
-    # TODO(bmace) -- if this isn't used for 2.1.x it should be removed
-    # property listing is still being tweaked so leaving for
-    # the time being in case we want to use it
-    def filter_jinja2(self, contents):
-        new_contents = {}
-        for key, value in contents.items():
-            if not isinstance(value, six.string_types):
-                LOG.debug('removing non-string: %s', value)
-                continue
-            if value and '{{' in value and '}}' in value:
-                LOG.debug('removing jinja2 value: %s', value)
-                continue
-            new_contents[key] = value
-        return new_contents
 
     def set_property(self, property_dict):
         change_property(self.globals_path, property_dict,
@@ -365,6 +353,7 @@ class AnsibleProperty(object):
         self.overrides = overrides
         self.orig_value = orig_value
         self.target = target
+        self.value_type = type(value)
 
 
 class OverrideFlags(object):

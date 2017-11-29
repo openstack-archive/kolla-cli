@@ -62,9 +62,9 @@ class HostLogs(object):
 
         ansible_properties = AnsibleProperties()
         base_distro = \
-            ansible_properties.get_property('kolla_base_distro')
+            ansible_properties.get_property_value('kolla_base_distro')
         install_type = \
-            ansible_properties.get_property('kolla_install_type')
+            ansible_properties.get_property_value('kolla_install_type')
         # typically this prefix will be "ol-openstack-"
         container_prefix = base_distro + '-' + install_type + '-'
 

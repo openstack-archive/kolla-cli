@@ -219,8 +219,9 @@ def _run_deploy_rules(playbook):
     expected_files = ['account.ring.gz',
                       'container.ring.gz',
                       'object.ring.gz']
-    is_enabled = properties.get_property('enable_swift')
-    if is_string_true(is_enabled):
+    is_swift_enabled = _is_service_enabled('swift', inventory, properties)
+
+    if is_swift_enabled:
         path_pre = os.path.join(get_kolla_etc(), 'config', 'swift')
         for expected_file in expected_files:
             path = os.path.join(path_pre, expected_file)
@@ -235,15 +236,10 @@ def _run_deploy_rules(playbook):
 
 
 def _is_service_enabled(servicename, inventory, properties):
-    service_enabled = False
-
     service = inventory.get_service(servicename)
     if service is not None:
         enabled_property = 'enable_' + servicename.replace('-', '_')
-        is_enabled = properties.get_property(enabled_property)
-        if is_string_true(is_enabled):
-            service_enabled = True
-        else:
-            service_enabled = False
-
-    return service_enabled
+        is_enabled = properties.get_property_value(enabled_property)
+        if type(is_enabled) is str:
+            is_enabled = is_string_true(is_enabled)
+    return is_enabled

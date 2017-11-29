@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import logging
+import yaml
 
 import kollacli.i18n as u
 
@@ -44,20 +45,28 @@ class PropertyApi(object):
         :type change_set: list of strings
 
         """
+        ansible_properties = AnsibleProperties()
         for key, value in property_dict.items():
             check_arg(key, u._('Property Key'), str)
-            check_arg(value, u._('Property Value'), str, empty_ok=True)
-            if '"' in value:
+            current_property = ansible_properties.get_property(key)
+            if current_property is not None:
+                current_property_type = current_property.value_type
+                if (current_property_type is not str and
+                        current_property is not None):
+                    value = yaml.safe_load(value)
+                    check_arg(value, u._('Property Value'),
+                              current_property_type, empty_ok=True)
+                    property_dict[key] = value
+            else:
+                check_arg(value, u._('Property Value'), str, empty_ok=True)
+            if type(value) is str and '"' in value:
                 raise InvalidArgument(u._('Cannot use double quotes in '
                                           'a property value.'))
-        property_dict = safe_decode(property_dict)
 
         self._check_type(property_type)
         if property_type is not GLOBAL_TYPE:
             check_arg(change_set, u._('Change Set'), list, none_ok=True)
             change_set = safe_decode(change_set)
-
-        ansible_properties = AnsibleProperties()
 
         if property_type == GLOBAL_TYPE:
             ansible_properties.set_property(property_dict)
@@ -142,7 +151,7 @@ class Property(object):
 
     Members:
         - name (str): key
-        - value (str): value
+        - value (Any): value
         - file_name (str): name of file property is from
         - overrides (bool): does the property override some other value
         - orig_value (str): the value which is overridden or None
@@ -151,6 +160,7 @@ class Property(object):
         - ovr_global (bool): true if property is overridden at global level
         - ovr_group (bool): true if property is overridden at group level
         - ovr_host (bool): true if property is overridden at host level
+        - value_type (type): the python type of the value
     """
 
     def __init__(self, ansible_property, override_flags):
@@ -161,6 +171,7 @@ class Property(object):
         self.orig_value = ansible_property.orig_value
         self.target = ansible_property.target
         self.prop_type = ansible_property.prop_type
+        self.value_type = ansible_property.value_type
 
         if override_flags is not None:
             self.ovr_global = override_flags.ovr_global

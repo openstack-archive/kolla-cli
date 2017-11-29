@@ -195,8 +195,8 @@ class TestFunctional(KollaCliTest):
         bad_path = self._is_size_ok(sizes, 0, '=', 3)
         self.assertIsNone(bad_path, 'Size of file %s is ' % bad_path +
                           'different from initial size '
-                          '(%s %s)'
-                          % (switch, targets_csv))
+                          '(%s %s %s)'
+                          % (switch, targets_csv, str(sizes)))
 
         # test setting empty string
         value = '""'

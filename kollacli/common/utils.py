@@ -286,7 +286,13 @@ def change_property(file_path, property_dict, clear=False):
                     # clear existing property
                     continue
                 # edit existing property
-                line = '%s: "%s"' % (split_key, cloned_dict[split_key])
+                value = cloned_dict[split_key]
+                if type(value) is not str:
+                    value = yaml.safe_dump(value).strip()
+                    line = '%s: %s' % (split_key, value)
+                else:
+                    line = '%s: "%s"' % (split_key, value)
+
                 # clear out the key after we are done, all existing keys
                 # will be appended at the end (or for clear, ignored)
                 del cloned_dict[split_key]
@@ -294,10 +300,22 @@ def change_property(file_path, property_dict, clear=False):
     if not clear:
         # add new properties to file
         for key, value in cloned_dict.items():
-            line = '%s: "%s"' % (key, value)
+            if type(value) is not str:
+                value = yaml.safe_dump(value).strip()
+                line = '%s: %s' % (key, value)
+            else:
+                line = '%s: "%s"' % (key, value)
+
+            # when we are doing an append we want to avoid
+            # blank lines before the new entry
+            if new_contents[-1:][0] == '':
+                del new_contents[-1]
             new_contents.append(line)
 
-    write_data = '\n'.join(new_contents)
+    # if the last line is blank, trim it off
+    if new_contents[-1:][0] == '':
+        del new_contents[-1]
+    write_data = '\n'.join(new_contents) + '\n'
     sync_write_file(file_path, write_data)
 
 
