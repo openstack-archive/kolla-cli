@@ -215,7 +215,7 @@ def _add_cmd_info(tar):
                 tmp_file.write('\n\n$ %s\n' % cmd)
                 if err_msg:
                     tmp_file.write('Error message: %s\n' % err_msg)
-                for line in output:
+                for line in output.split('\n'):
                     tmp_file.write(line + '\n')
 
         tar.add(path, arcname=os.path.join('kolla', 'cmds_output'))
