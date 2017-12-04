@@ -27,7 +27,7 @@ CLIENT = ClientApi()
 
 
 class Deploy(Command):
-    """Deploy."""
+    """Deploy containers to hosts."""
     def get_parser(self, prog_name):
         parser = super(Deploy, self).get_parser(prog_name)
         parser.add_argument('--hosts', nargs='?',

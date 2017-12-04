@@ -54,7 +54,7 @@ class HostAdd(Command):
 
 
 class HostDestroy(Command):
-    """Destroy.
+    """Destroy all kolla containers on host(s).
 
     Stops and removes all kolla related docker containers on either the
     specified host or all hosts if the hostname all is used.
@@ -310,7 +310,7 @@ class HostSetup(Command):
 
 
 class HostStop(Command):
-    """Stop.
+    """Stop all kolla containers on host(s).
 
     Stops all kolla related docker containers on either the
     specified host or all hosts if the hostname all is used.
