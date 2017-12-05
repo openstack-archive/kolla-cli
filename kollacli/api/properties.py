@@ -51,9 +51,10 @@ class PropertyApi(object):
             current_property = ansible_properties.get_property(key)
             if current_property is not None:
                 current_property_type = current_property.value_type
-                if (current_property_type is not str and
-                        current_property is not None):
+                if current_property_type is not str:
                     value = yaml.safe_load(value)
+                    if current_property.value is None:
+                        current_property_type = None
                     check_arg(value, u._('Property Value'),
                               current_property_type, empty_ok=True)
                     property_dict[key] = value

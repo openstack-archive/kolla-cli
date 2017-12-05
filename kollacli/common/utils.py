@@ -457,6 +457,9 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False,
         # empty string, dict or list
         raise MissingArgument(param_name)
 
+    # if expected type is None, skip the type checking
+    if expected_type is None:
+        return
     # normalize expected string types for py2 and py3
     if expected_type is str:
         expected_type = six.string_types
