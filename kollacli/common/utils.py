@@ -287,11 +287,7 @@ def change_property(file_path, property_dict, clear=False):
                     continue
                 # edit existing property
                 value = cloned_dict[split_key]
-                if type(value) is not str:
-                    value = yaml.safe_dump(value).strip()
-                    line = '%s: %s' % (split_key, value)
-                else:
-                    line = '%s: "%s"' % (split_key, value)
+                line = _get_property_line(split_key, value)
 
                 # clear out the key after we are done, all existing keys
                 # will be appended at the end (or for clear, ignored)
@@ -300,11 +296,7 @@ def change_property(file_path, property_dict, clear=False):
     if not clear:
         # add new properties to file
         for key, value in cloned_dict.items():
-            if type(value) is not str:
-                value = yaml.safe_dump(value).strip()
-                line = '%s: %s' % (key, value)
-            else:
-                line = '%s: "%s"' % (key, value)
+            line = _get_property_line(key, value)
 
             # when we are doing an append we want to avoid
             # blank lines before the new entry
@@ -317,6 +309,19 @@ def change_property(file_path, property_dict, clear=False):
         del new_contents[-1]
     write_data = '\n'.join(new_contents) + '\n'
     sync_write_file(file_path, write_data)
+
+
+def _get_property_line(key, value):
+    if type(value) is str:
+        line = '%s: "%s"' % (key, value)
+    else:
+        str_value = yaml.safe_dump(value).strip()
+        if type(value) is bool:
+            # yaml dump adds a newline and an ellipsis after
+            # a boolean value. This needs to be stripped.
+            str_value = str_value.replace('\n...', '')
+        line = '%s: %s' % (key, str_value)
+    return line
 
 
 def sync_read_file(path, mode='r'):
