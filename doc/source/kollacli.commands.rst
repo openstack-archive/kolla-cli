@@ -52,6 +52,22 @@ kollacli.commands.property module
     :undoc-members:
     :show-inheritance:
 
+kollacli.commands.pull module
+-----------------------------
+
+.. automodule:: kollacli.commands.pull
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+kollacli.commands.reconfigure module
+------------------------------------
+
+.. automodule:: kollacli.commands.reconfigure
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 kollacli.commands.service module
 --------------------------------
 

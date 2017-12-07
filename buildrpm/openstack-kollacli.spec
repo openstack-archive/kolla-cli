@@ -16,7 +16,7 @@
 %{expand: %%define pyver %(python -c 'import sys;print(sys.version[0:3])')}
 
 # Package version
-%global package_version 4.0.0
+%global package_version 4.0.1
 
 # Kolla user name and group name (DO NOT CHANGE THESE!)
 %global kolla_user      kolla
@@ -221,6 +221,9 @@ openstack-kollacli client.
 %attr(644, %{kolla_user}, %{kolla_group}) %{_datadir}/kolla/.ansible.cfg
 
 %changelog
+* Wed Dec 06 2017 - Borne Mace <borne.mace@oracle.com>
+- Changed version to 4.0.1
+
 * Tue Oct 25 2016 - Borne Mace <borne.mace@oracle.com>
 - Removed no longer relevant kollacli ansible directory
 

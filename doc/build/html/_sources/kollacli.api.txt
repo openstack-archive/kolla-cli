@@ -4,14 +4,6 @@ kollacli.api package
 Submodules
 ----------
 
-kollacli.api.async module
--------------------------
-
-.. automodule:: kollacli.api.async
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 kollacli.api.client module
 --------------------------
 
@@ -20,10 +12,10 @@ kollacli.api.client module
     :undoc-members:
     :show-inheritance:
 
-kollacli.api.deploy module
---------------------------
+kollacli.api.control_plane module
+---------------------------------
 
-.. automodule:: kollacli.api.deploy
+.. automodule:: kollacli.api.control_plane
     :members:
     :undoc-members:
     :show-inheritance:

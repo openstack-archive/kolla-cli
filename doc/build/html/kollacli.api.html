@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api package &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.api package &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -49,15 +49,50 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-kollacli.api.async">
-<span id="kollacli-api-async-module"></span><h2>kollacli.api.async module<a class="headerlink" href="#module-kollacli.api.async" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-kollacli.api.client">
+<span id="kollacli-api-client-module"></span><h2>kollacli.api.client module<a class="headerlink" href="#module-kollacli.api.client" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="kollacli.api.async.AsyncApi">
-<em class="property">class </em><tt class="descclassname">kollacli.api.async.</tt><tt class="descname">AsyncApi</tt><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.api.client.ClientApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.client.</tt><tt class="descname">ClientApi</tt><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kollacli.api.control_plane.ControlPlaneApi" title="kollacli.api.control_plane.ControlPlaneApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.control_plane.ControlPlaneApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.group.GroupApi" title="kollacli.api.group.GroupApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.group.GroupApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.host.HostApi" title="kollacli.api.host.HostApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.host.HostApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.password.PasswordApi" title="kollacli.api.password.PasswordApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.password.PasswordApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.properties.PropertyApi" title="kollacli.api.properties.PropertyApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.properties.PropertyApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.service.ServiceApi" title="kollacli.api.service.ServiceApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.service.ServiceApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.support.SupportApi" title="kollacli.api.support.SupportApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.support.SupportApi</span></tt></a></p>
+<p>Client API Notes</p>
+<p>Objects returned by the API contain a local copy of the information
+in the datastore. While changes made to the local copy will be
+reflected in the local object, changes made to the datastore
+from other objects will not be reflected in this local copy. The
+object will need to be re-fetched from the datastore to reflect
+the updates.</p>
+<dl class="staticmethod">
+<dt id="kollacli.api.client.ClientApi.base_call">
+<em class="property">static </em><tt class="descname">base_call</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.base_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.base_call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="kollacli.api.client.ClientApi.enable_console_logging">
+<em class="property">static </em><tt class="descname">enable_console_logging</tt><big>(</big><em>level</em>, <em>enable=True</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.enable_console_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.enable_console_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>enable/disable console logging for the api</p>
+<p>enable: True/False
+level: logging.INFO, logging.DEBUG, logging.WARNING,
+logging.CRITICAL...</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="kollacli.api.client.ClientApi.get_version">
+<em class="property">static </em><tt class="descname">get_version</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.get_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.get_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.api.control_plane">
+<span id="kollacli-api-control-plane-module"></span><h2>kollacli.api.control_plane module<a class="headerlink" href="#module-kollacli.api.control_plane" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.api.control_plane.ControlPlaneApi">
+<em class="property">class </em><tt class="descclassname">kollacli.api.control_plane.</tt><tt class="descname">ControlPlaneApi</tt><a class="reference internal" href="_modules/kollacli/api/control_plane.html#ControlPlaneApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.control_plane.ControlPlaneApi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="method">
-<dt id="kollacli.api.async.AsyncApi.async_deploy">
-<tt class="descname">async_deploy</tt><big>(</big><em>hostnames=[]</em>, <em>serial_flag=False</em>, <em>verbose_level=1</em>, <em>servicenames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_deploy" title="Permalink to this definition">¶</a></dt>
+<dl class="staticmethod">
+<dt id="kollacli.api.control_plane.ControlPlaneApi.deploy">
+<em class="property">static </em><tt class="descname">deploy</tt><big>(</big><em>hostnames=[]</em>, <em>serial_flag=False</em>, <em>verbose_level=1</em>, <em>servicenames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/control_plane.html#ControlPlaneApi.deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.control_plane.ControlPlaneApi.deploy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deploy.</p>
 <p>Deploy containers to hosts.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -82,78 +117,28 @@
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="kollacli.api.async.AsyncApi.async_host_destroy">
-<tt class="descname">async_host_destroy</tt><big>(</big><em>hostnames</em>, <em>destroy_type</em>, <em>verbose_level=1</em>, <em>include_data=False</em>, <em>remove_images=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_host_destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_host_destroy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Destroy Hosts.</p>
-<p>Stops and removes all kolla related docker containers on the
-specified hosts.</p>
+<dl class="staticmethod">
+<dt id="kollacli.api.control_plane.ControlPlaneApi.pull">
+<em class="property">static </em><tt class="descname">pull</tt><big>(</big><em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/control_plane.html#ControlPlaneApi.pull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.control_plane.ControlPlaneApi.pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pull.</p>
+<p>Pull container images onto appropriate hosts.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>hostnames</strong> (<em>list</em>) &#8211; host names</li>
-<li><strong>destroy_type</strong> (<em>string</em>) &#8211; either &#8216;kill&#8217; or &#8216;stop&#8217;</li>
-<li><strong>verbose_level</strong> (<em>integer</em>) &#8211; the higher the number, the more verbose</li>
-<li><strong>include_data</strong> (<em>boolean</em>) &#8211; if true, destroy data containers too.</li>
-<li><strong>remove_images</strong> (<em>boolean</em>) &#8211; if true, destroy will remove the docker images</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>verbose_level</strong> (<em>integer</em>) &#8211; the higher the number, the more verbose</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Job object</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Job object</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Job</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Job</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="kollacli.api.async.AsyncApi.async_host_precheck">
-<tt class="descname">async_host_precheck</tt><big>(</big><em>hostnames</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_host_precheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_host_precheck" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check pre-deployment configuration of hosts.</p>
-<p>Check if host is ready for a new deployment. This will fail if
-any of the hosts are not configured correctly or if they have
-already been deployed to.
-:param hostnames: host names
-:type hostnames: list
-:param verbose_level: the higher the number, the more verbose
-:type verbose_level: integer
-:return: Job object
-:rtype: Job</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kollacli.api.async.AsyncApi.async_host_stop">
-<tt class="descname">async_host_stop</tt><big>(</big><em>hostnames</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_host_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_host_stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stop Hosts.</p>
-<p>Stops all kolla related docker containers on the specified hosts.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>hostnames</strong> (<em>list</em>) &#8211; host names</li>
-<li><strong>verbose_level</strong> (<em>integer</em>) &#8211; the higher the number, the more verbose</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Job object</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Job</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="kollacli.api.async.AsyncApi.async_reconfigure">
-<tt class="descname">async_reconfigure</tt><big>(</big><em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_reconfigure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_reconfigure" title="Permalink to this definition">¶</a></dt>
+<dl class="staticmethod">
+<dt id="kollacli.api.control_plane.ControlPlaneApi.reconfigure">
+<em class="property">static </em><tt class="descname">reconfigure</tt><big>(</big><em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/control_plane.html#ControlPlaneApi.reconfigure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.control_plane.ControlPlaneApi.reconfigure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reconfigure.</p>
 <p>Reconfigure containers on hosts.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -170,9 +155,28 @@ already been deployed to.
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="kollacli.api.async.AsyncApi.async_upgrade">
-<tt class="descname">async_upgrade</tt><big>(</big><em>verbose_level=1</em>, <em>servicenames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/async.html#AsyncApi.async_upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.async.AsyncApi.async_upgrade" title="Permalink to this definition">¶</a></dt>
+<dl class="staticmethod">
+<dt id="kollacli.api.control_plane.ControlPlaneApi.set_deploy_mode">
+<em class="property">static </em><tt class="descname">set_deploy_mode</tt><big>(</big><em>remote_mode</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/control_plane.html#ControlPlaneApi.set_deploy_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.control_plane.ControlPlaneApi.set_deploy_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set deploy mode.</p>
+<p>Set deploy mode to either local or remote. Local indicates
+that the openstack deployment will be to the local host.
+Remote means that the deployment is executed via ssh.</p>
+<p>NOTE: local mode is not supported and should never be used
+in production environments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>remote_mode</strong> (<em>bool</em>) &#8211; if remote mode is True deployment is done via ssh</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="kollacli.api.control_plane.ControlPlaneApi.upgrade">
+<em class="property">static </em><tt class="descname">upgrade</tt><big>(</big><em>verbose_level=1</em>, <em>servicenames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/control_plane.html#ControlPlaneApi.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.control_plane.ControlPlaneApi.upgrade" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upgrade.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -194,69 +198,6 @@ already been deployed to.
 </table>
 <p>Upgrade containers to new version specified by the property
 &#8220;openstack_release.&#8221;</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-kollacli.api.client">
-<span id="kollacli-api-client-module"></span><h2>kollacli.api.client module<a class="headerlink" href="#module-kollacli.api.client" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="kollacli.api.client.ClientApi">
-<em class="property">class </em><tt class="descclassname">kollacli.api.client.</tt><tt class="descname">ClientApi</tt><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#kollacli.api.async.AsyncApi" title="kollacli.api.async.AsyncApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.async.AsyncApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.deploy.DeployApi" title="kollacli.api.deploy.DeployApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.deploy.DeployApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.group.GroupApi" title="kollacli.api.group.GroupApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.group.GroupApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.host.HostApi" title="kollacli.api.host.HostApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.host.HostApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.password.PasswordApi" title="kollacli.api.password.PasswordApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.password.PasswordApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.properties.PropertyApi" title="kollacli.api.properties.PropertyApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.properties.PropertyApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.service.ServiceApi" title="kollacli.api.service.ServiceApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.service.ServiceApi</span></tt></a>, <a class="reference internal" href="#kollacli.api.support.SupportApi" title="kollacli.api.support.SupportApi"><tt class="xref py py-class docutils literal"><span class="pre">kollacli.api.support.SupportApi</span></tt></a></p>
-<p>Client API Notes</p>
-<p>Objects returned by the API contain a local copy of the information
-in the datastore. While changes made to the local copy will be
-reflected in the local object, changes made to the datastore
-from other objects will not be reflected in this local copy. The
-object will need to be re-fetched from the datastore to reflect
-the updates.</p>
-<dl class="method">
-<dt id="kollacli.api.client.ClientApi.base_call">
-<tt class="descname">base_call</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.base_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.base_call" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.api.client.ClientApi.enable_console_logging">
-<tt class="descname">enable_console_logging</tt><big>(</big><em>level</em>, <em>enable=True</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.enable_console_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.enable_console_logging" title="Permalink to this definition">¶</a></dt>
-<dd><p>enable/disable console logging for the api</p>
-<p>enable: True/False
-level: logging.INFO, logging.DEBUG, logging.WARNING,
-logging.CRITICAL...</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kollacli.api.client.ClientApi.get_version">
-<tt class="descname">get_version</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/client.html#ClientApi.get_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.client.ClientApi.get_version" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-kollacli.api.deploy">
-<span id="kollacli-api-deploy-module"></span><h2>kollacli.api.deploy module<a class="headerlink" href="#module-kollacli.api.deploy" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="kollacli.api.deploy.DeployApi">
-<em class="property">class </em><tt class="descclassname">kollacli.api.deploy.</tt><tt class="descname">DeployApi</tt><a class="reference internal" href="_modules/kollacli/api/deploy.html#DeployApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.deploy.DeployApi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="method">
-<dt id="kollacli.api.deploy.DeployApi.deploy_set_mode">
-<tt class="descname">deploy_set_mode</tt><big>(</big><em>remote_mode</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/deploy.html#DeployApi.deploy_set_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.deploy.DeployApi.deploy_set_mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set deploy mode.</p>
-<p>Set deploy mode to either local or remote. Local indicates
-that the openstack deployment will be to the local host.
-Remote means that the deployment is executed via ssh.</p>
-<p>NOTE: local mode is not supported and should never be used
-in production environments.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>remote_mode</strong> (<em>bool</em>) &#8211; if remote mode is True deployment is done via ssh</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </dd></dl>
@@ -505,7 +446,7 @@ in production environments.</p>
 <span id="kollacli-api-host-module"></span><h2>kollacli.api.host module<a class="headerlink" href="#module-kollacli.api.host" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="kollacli.api.host.Host">
-<em class="property">class </em><tt class="descclassname">kollacli.api.host.</tt><tt class="descname">Host</tt><big>(</big><em>hostname</em>, <em>groupnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#Host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.Host" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">kollacli.api.host.</tt><tt class="descname">Host</tt><big>(</big><em>hostname</em>, <em>groupnames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#Host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.Host" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Host</p>
 <dl class="method">
@@ -549,9 +490,9 @@ changes.</p>
 <dt id="kollacli.api.host.HostApi">
 <em class="property">class </em><tt class="descclassname">kollacli.api.host.</tt><tt class="descname">HostApi</tt><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<dl class="method">
+<dl class="staticmethod">
 <dt id="kollacli.api.host.HostApi.host_add">
-<tt class="descname">host_add</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_add" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">host_add</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add hosts to the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -563,9 +504,38 @@ changes.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
+<dt id="kollacli.api.host.HostApi.host_destroy">
+<em class="property">static </em><tt class="descname">host_destroy</tt><big>(</big><em>hostnames</em>, <em>destroy_type</em>, <em>verbose_level=1</em>, <em>include_data=False</em>, <em>remove_images=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy Hosts.</p>
+<p>Stops and removes all kolla related docker containers on the
+specified hosts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hostnames</strong> (<em>list</em>) &#8211; host names</li>
+<li><strong>destroy_type</strong> (<em>string</em>) &#8211; either &#8216;kill&#8217; or &#8216;stop&#8217;</li>
+<li><strong>verbose_level</strong> (<em>integer</em>) &#8211; the higher the number, the more verbose</li>
+<li><strong>include_data</strong> (<em>boolean</em>) &#8211; if true, destroy data containers too.</li>
+<li><strong>remove_images</strong> (<em>boolean</em>) &#8211; if true, destroy will remove the docker images</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Job object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Job</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
 <dt id="kollacli.api.host.HostApi.host_get">
-<tt class="descname">host_get</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">host_get</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get selected hosts in the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -581,9 +551,9 @@ changes.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="kollacli.api.host.HostApi.host_get_all">
-<tt class="descname">host_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get_all" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">host_get_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_get_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all hosts in the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -597,9 +567,24 @@ changes.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
+<dt id="kollacli.api.host.HostApi.host_precheck">
+<em class="property">static </em><tt class="descname">host_precheck</tt><big>(</big><em>hostnames</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_precheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_precheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check pre-deployment configuration of hosts.</p>
+<p>Check if host is ready for a new deployment. This will fail if
+any of the hosts are not configured correctly or if they have
+already been deployed to.
+:param hostnames: host names
+:type hostnames: list
+:param verbose_level: the higher the number, the more verbose
+:type verbose_level: integer
+:return: Job object
+:rtype: Job</p>
+</dd></dl>
+
+<dl class="staticmethod">
 <dt id="kollacli.api.host.HostApi.host_remove">
-<tt class="descname">host_remove</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_remove" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">host_remove</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove hosts from the inventory</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -611,9 +596,9 @@ changes.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="kollacli.api.host.HostApi.host_setup">
-<tt class="descname">host_setup</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">host_setup</tt><big>(</big><em>hosts_info</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup multiple hosts for ssh access</p>
 <dl class="docutils">
 <dt>hosts_info is a dictionary of form:</dt>
@@ -637,9 +622,9 @@ changes.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="kollacli.api.host.HostApi.host_ssh_check">
-<tt class="descname">host_ssh_check</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_ssh_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_ssh_check" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">host_ssh_check</tt><big>(</big><em>hostnames</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_ssh_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_ssh_check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check hosts for ssh connectivity</p>
 <dl class="docutils">
 <dt>Check status is a dictionary of form:</dt>
@@ -661,6 +646,31 @@ changes.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">check status</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="kollacli.api.host.HostApi.host_stop">
+<em class="property">static </em><tt class="descname">host_stop</tt><big>(</big><em>hostnames</em>, <em>verbose_level=1</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/host.html#HostApi.host_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.host.HostApi.host_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop Hosts.</p>
+<p>Stops all kolla related docker containers on the specified hosts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hostnames</strong> (<em>list</em>) &#8211; host names</li>
+<li><strong>verbose_level</strong> (<em>integer</em>) &#8211; the higher the number, the more verbose</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Job object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Job</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -847,7 +857,7 @@ to auto-generated values</p>
 <dt>Members:</dt>
 <dd><ul class="first last simple">
 <li>name (str): key</li>
-<li>value (str): value</li>
+<li>value (Any): value</li>
 <li>file_name (str): name of file property is from</li>
 <li>overrides (bool): does the property override some other value</li>
 <li>orig_value (str): the value which is overridden or None</li>
@@ -856,6 +866,7 @@ to auto-generated values</p>
 <li>ovr_global (bool): true if property is overridden at global level</li>
 <li>ovr_group (bool): true if property is overridden at group level</li>
 <li>ovr_host (bool): true if property is overridden at host level</li>
+<li>value_type (type): the python type of the value</li>
 </ul>
 </dd>
 </dl>
@@ -937,17 +948,17 @@ or hosts to set the property for</li>
 <span id="kollacli-api-service-module"></span><h2>kollacli.api.service module<a class="headerlink" href="#module-kollacli.api.service" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="kollacli.api.service.Service">
-<em class="property">class </em><tt class="descclassname">kollacli.api.service.</tt><tt class="descname">Service</tt><big>(</big><em>servicename</em>, <em>parentname=None</em>, <em>childnames=[]</em>, <em>groupnames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">kollacli.api.service.</tt><tt class="descname">Service</tt><big>(</big><em>servicename</em>, <em>parentnames=[]</em>, <em>childnames=[]</em>, <em>groupnames=[]</em><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Service</p>
-<p>A service is one of the services available in openstack-kolla.</p>
+<p>A service is one of the services available in openstack-kolla-ansible.</p>
 <p>For example, this would be how the murano services would be
 represented:</p>
 <ul class="simple">
 <li><dl class="first docutils">
 <dt>murano</dt>
 <dd><ul class="first last">
-<li>parentname: None</li>
+<li>parentnames: []</li>
 <li>childnames: [murano-api, murano-engine]</li>
 </ul>
 </dd>
@@ -956,7 +967,7 @@ represented:</p>
 <li><dl class="first docutils">
 <dt>murano-api</dt>
 <dd><ul class="first last">
-<li>parentname: murano</li>
+<li>parentnames: [murano]</li>
 <li>childnames: []</li>
 </ul>
 </dd>
@@ -965,7 +976,7 @@ represented:</p>
 <li><dl class="first docutils">
 <dt>murano-engine</dt>
 <dd><ul class="first last">
-<li>parentname: murano</li>
+<li>parentnames: [murano]</li>
 <li>childnames: []</li>
 </ul>
 </dd>
@@ -975,7 +986,7 @@ represented:</p>
 <dl class="method">
 <dt id="kollacli.api.service.Service.get_children">
 <tt class="descname">get_children</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service.get_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service.get_children" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get names of the child services associated with this service</p>
+<dd><p>Get names of the child services</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -991,7 +1002,7 @@ represented:</p>
 <dl class="method">
 <dt id="kollacli.api.service.Service.get_groups">
 <tt class="descname">get_groups</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service.get_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service.get_groups" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get names of the groups associated with this service</p>
+<dd><p>Get names of the groups</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1024,14 +1035,14 @@ changes.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="kollacli.api.service.Service.get_parent">
-<tt class="descname">get_parent</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service.get_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service.get_parent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get name of parent service</p>
+<dt id="kollacli.api.service.Service.get_parents">
+<tt class="descname">get_parents</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/api/service.html#Service.get_parents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.api.service.Service.get_parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get name of parent services</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">parent service name</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">parent service names</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
 </tr>
@@ -1150,9 +1161,8 @@ names for each log will be servicename_id.log.</p>
   <ul>
 <li><a class="reference internal" href="#">kollacli.api package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-kollacli.api.async">kollacli.api.async module</a></li>
 <li><a class="reference internal" href="#module-kollacli.api.client">kollacli.api.client module</a></li>
-<li><a class="reference internal" href="#module-kollacli.api.deploy">kollacli.api.deploy module</a></li>
+<li><a class="reference internal" href="#module-kollacli.api.control_plane">kollacli.api.control_plane module</a></li>
 <li><a class="reference internal" href="#module-kollacli.api.exceptions">kollacli.api.exceptions module</a></li>
 <li><a class="reference internal" href="#module-kollacli.api.group">kollacli.api.group module</a></li>
 <li><a class="reference internal" href="#module-kollacli.api.host">kollacli.api.host module</a></li>
@@ -1197,7 +1207,7 @@ names for each log will be servicename_id.log.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

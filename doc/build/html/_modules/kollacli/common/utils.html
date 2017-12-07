@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.utils &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.common.utils &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,7 +47,7 @@
           <div class="body">
             
   <h1>Source code for kollacli.common.utils</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span></span><span class="c1"># Copyright(c) 2017, Oracle and/or its affiliates.  All Rights Reserved.</span>
 <span class="c1">#</span>
 <span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
 <span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
@@ -335,7 +335,13 @@
                     <span class="c1"># clear existing property</span>
                     <span class="k">continue</span>
                 <span class="c1"># edit existing property</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">split_key</span><span class="p">,</span> <span class="n">cloned_dict</span><span class="p">[</span><span class="n">split_key</span><span class="p">])</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">cloned_dict</span><span class="p">[</span><span class="n">split_key</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_dump</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">split_key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">split_key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
                 <span class="c1"># clear out the key after we are done, all existing keys</span>
                 <span class="c1"># will be appended at the end (or for clear, ignored)</span>
                 <span class="k">del</span> <span class="n">cloned_dict</span><span class="p">[</span><span class="n">split_key</span><span class="p">]</span>
@@ -343,10 +349,22 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">clear</span><span class="p">:</span>
         <span class="c1"># add new properties to file</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cloned_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_dump</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+            <span class="c1"># when we are doing an append we want to avoid</span>
+            <span class="c1"># blank lines before the new entry</span>
+            <span class="k">if</span> <span class="n">new_contents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">new_contents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">new_contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
-    <span class="n">write_data</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_contents</span><span class="p">)</span>
+    <span class="c1"># if the last line is blank, trim it off</span>
+    <span class="k">if</span> <span class="n">new_contents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">new_contents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">write_data</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_contents</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
     <span class="n">sync_write_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">write_data</span><span class="p">)</span>
 
 </div>
@@ -412,7 +430,6 @@
     <span class="k">if</span> <span class="n">obj_to_decode</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">None</span>
 
-    <span class="n">new_obj</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj_to_decode</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">new_obj</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">obj_to_decode</span><span class="p">:</span>
@@ -449,10 +466,11 @@
 <span class="sd">    (\u0414\u0435\u043a\u0430\u0442). By converting</span>
 <span class="sd">    the list to string here, the proper non-ascii chars are displayed.</span>
 
-<span class="sd">    This will only change the lists when the output is to a table. It cannot</span>
-<span class="sd">    be changed if the display output is json, yaml, etc.</span>
+<span class="sd">    This will only change the lists when the output is to a user visible</span>
+<span class="sd">    medium. It cannot be changed if the display output is json, yaml, etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">formatter</span> <span class="ow">and</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">formatter</span> <span class="o">!=</span> <span class="s1">&#39;table&#39;</span><span class="p">:</span>
+    <span class="n">convert_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">,</span> <span class="s1">&#39;csv&#39;</span><span class="p">,</span> <span class="s1">&#39;html&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">formatter</span> <span class="ow">and</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">formatter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">convert_types</span><span class="p">:</span>
         <span class="c1"># not table output, leave it as-is</span>
         <span class="k">return</span> <span class="n">tuples</span>
 
@@ -488,6 +506,9 @@
         <span class="c1"># empty string, dict or list</span>
         <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
 
+    <span class="c1"># if expected type is None, skip the type checking</span>
+    <span class="k">if</span> <span class="n">expected_type</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span>
     <span class="c1"># normalize expected string types for py2 and py3</span>
     <span class="k">if</span> <span class="n">expected_type</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">expected_type</span> <span class="o">=</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span>
@@ -676,7 +697,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

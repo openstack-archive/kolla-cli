@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.host &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.api.host &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,7 +47,7 @@
           <div class="body">
             
   <h1>Source code for kollacli.api.host</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span></span><span class="c1"># Copyright(c) 2017, Oracle and/or its affiliates.  All Rights Reserved.</span>
 <span class="c1">#</span>
 <span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
 <span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
@@ -63,6 +63,9 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">import</span> <span class="nn">kollacli.i18n</span> <span class="kn">as</span> <span class="nn">u</span>
 
+<span class="kn">from</span> <span class="nn">kollacli.api.exceptions</span> <span class="kn">import</span> <span class="n">InvalidArgument</span>
+<span class="kn">from</span> <span class="nn">kollacli.api.job</span> <span class="kn">import</span> <span class="n">Job</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.ansible</span> <span class="kn">import</span> <span class="n">actions</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">Inventory</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">check_arg</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">safe_decode</span>
@@ -70,7 +73,8 @@
 
 <div class="viewcode-block" id="HostApi"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi">[docs]</a><span class="k">class</span> <span class="nc">HostApi</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-<div class="viewcode-block" id="HostApi.host_add"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_add">[docs]</a>    <span class="k">def</span> <span class="nf">host_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="HostApi.host_add"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_add">[docs]</a>    <span class="k">def</span> <span class="nf">host_add</span><span class="p">(</span><span class="n">hostnames</span><span class="p">):</span>
         <span class="c1"># type: (List[str]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Add hosts to the inventory</span>
 
@@ -88,7 +92,8 @@
         <span class="k">if</span> <span class="n">any_changed</span><span class="p">:</span>
             <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="HostApi.host_remove"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_remove">[docs]</a>    <span class="k">def</span> <span class="nf">host_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="HostApi.host_remove"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_remove">[docs]</a>    <span class="k">def</span> <span class="nf">host_remove</span><span class="p">(</span><span class="n">hostnames</span><span class="p">):</span>
         <span class="c1"># type: (List[str]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Remove hosts from the inventory</span>
 
@@ -106,7 +111,8 @@
         <span class="k">if</span> <span class="n">any_changed</span><span class="p">:</span>
             <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="HostApi.host_get_all"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_get_all">[docs]</a>    <span class="k">def</span> <span class="nf">host_get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="HostApi.host_get_all"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_get_all">[docs]</a>    <span class="k">def</span> <span class="nf">host_get_all</span><span class="p">():</span>
         <span class="c1"># type: () -&gt; List[Host]</span>
         <span class="sd">&quot;&quot;&quot;Get all hosts in the inventory</span>
 
@@ -120,7 +126,8 @@
             <span class="n">hosts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Host</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">hosts</span>
 </div>
-<div class="viewcode-block" id="HostApi.host_get"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_get">[docs]</a>    <span class="k">def</span> <span class="nf">host_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="HostApi.host_get"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_get">[docs]</a>    <span class="k">def</span> <span class="nf">host_get</span><span class="p">(</span><span class="n">hostnames</span><span class="p">):</span>
         <span class="c1"># type: (List[str]) -&gt; List[Host]</span>
         <span class="sd">&quot;&quot;&quot;Get selected hosts in the inventory</span>
 
@@ -139,7 +146,8 @@
             <span class="n">hosts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Host</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">host_groups</span><span class="p">[</span><span class="n">hostname</span><span class="p">]))</span>
         <span class="k">return</span> <span class="n">hosts</span>
 </div>
-<div class="viewcode-block" id="HostApi.host_ssh_check"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_ssh_check">[docs]</a>    <span class="k">def</span> <span class="nf">host_ssh_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="HostApi.host_ssh_check"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_ssh_check">[docs]</a>    <span class="k">def</span> <span class="nf">host_ssh_check</span><span class="p">(</span><span class="n">hostnames</span><span class="p">):</span>
         <span class="c1"># type: (List[str]) -&gt; Dict[str,Dict[str,object]]</span>
         <span class="sd">&quot;&quot;&quot;Check hosts for ssh connectivity</span>
 
@@ -161,7 +169,8 @@
         <span class="n">summary</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">ssh_check_hosts</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">summary</span>
 </div>
-<div class="viewcode-block" id="HostApi.host_setup"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_setup">[docs]</a>    <span class="k">def</span> <span class="nf">host_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hosts_info</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="HostApi.host_setup"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_setup">[docs]</a>    <span class="k">def</span> <span class="nf">host_setup</span><span class="p">(</span><span class="n">hosts_info</span><span class="p">):</span>
         <span class="c1"># type: (Dict[str,Dict[str,object]]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Setup multiple hosts for ssh access</span>
 
@@ -180,12 +189,101 @@
         <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hosts_info</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">inventory</span><span class="o">.</span><span class="n">setup_hosts</span><span class="p">(</span><span class="n">hosts_info</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="HostApi.host_destroy"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_destroy">[docs]</a>    <span class="k">def</span> <span class="nf">host_destroy</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">destroy_type</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                     <span class="n">include_data</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">remove_images</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="c1"># type: (List[str], str, int, bool, bool) -&gt; Job</span>
+        <span class="sd">&quot;&quot;&quot;Destroy Hosts.</span>
+
+<span class="sd">        Stops and removes all kolla related docker containers on the</span>
+<span class="sd">        specified hosts.</span>
+
+<span class="sd">        :param hostnames: host names</span>
+<span class="sd">        :type hostnames: list</span>
+<span class="sd">        :param destroy_type: either &#39;kill&#39; or &#39;stop&#39;</span>
+<span class="sd">        :type destroy_type: string</span>
+<span class="sd">        :param verbose_level: the higher the number, the more verbose</span>
+<span class="sd">        :type verbose_level: integer</span>
+<span class="sd">        :param include_data: if true, destroy data containers too.</span>
+<span class="sd">        :type include_data: boolean</span>
+<span class="sd">        :param remove_images: if true, destroy will remove the docker images</span>
+<span class="sd">        :type remove_images: boolean</span>
+<span class="sd">        :return: Job object</span>
+<span class="sd">        :rtype: Job</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">destroy_type</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Destroy type&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Verbose level&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">include_data</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Include data&#39;</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">remove_images</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Remove images&#39;</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">destroy_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span> <span class="s1">&#39;kill&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid destroy type ({type}). Must be either &#39;</span>
+                    <span class="s1">&#39;&quot;stop&quot; or &quot;kill&quot;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">destroy_type</span><span class="p">))</span>
+
+        <span class="n">hostnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+
+        <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">destroy_hosts</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">destroy_type</span><span class="p">,</span>
+                                            <span class="n">verbose_level</span><span class="p">,</span> <span class="n">include_data</span><span class="p">,</span>
+                                            <span class="n">remove_images</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Job</span><span class="p">(</span><span class="n">ansible_job</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="HostApi.host_precheck"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_precheck">[docs]</a>    <span class="k">def</span> <span class="nf">host_precheck</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># type: (List[str], int) -&gt; Job</span>
+        <span class="sd">&quot;&quot;&quot;Check pre-deployment configuration of hosts.</span>
+
+<span class="sd">        Check if host is ready for a new deployment. This will fail if</span>
+<span class="sd">        any of the hosts are not configured correctly or if they have</span>
+<span class="sd">        already been deployed to.</span>
+<span class="sd">        :param hostnames: host names</span>
+<span class="sd">        :type hostnames: list</span>
+<span class="sd">        :param verbose_level: the higher the number, the more verbose</span>
+<span class="sd">        :type verbose_level: integer</span>
+<span class="sd">        :return: Job object</span>
+<span class="sd">        :rtype: Job</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Verbose level&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="n">hostnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+
+        <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">precheck</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">verbose_level</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Job</span><span class="p">(</span><span class="n">ansible_job</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="HostApi.host_stop"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.HostApi.host_stop">[docs]</a>    <span class="k">def</span> <span class="nf">host_stop</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># type: (List[str], int) -&gt; Job</span>
+        <span class="sd">&quot;&quot;&quot;Stop Hosts.</span>
+
+<span class="sd">        Stops all kolla related docker containers on the specified hosts.</span>
+
+<span class="sd">        :param hostnames: host names</span>
+<span class="sd">        :type hostnames: list</span>
+<span class="sd">        :param verbose_level: the higher the number, the more verbose</span>
+<span class="sd">        :type verbose_level: integer</span>
+<span class="sd">        :return: Job object</span>
+<span class="sd">        :rtype: Job</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Host names&#39;</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">check_arg</span><span class="p">(</span><span class="n">verbose_level</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Verbose level&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">hostnames</span> <span class="o">=</span> <span class="n">safe_decode</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="n">inventory</span><span class="o">.</span><span class="n">validate_hostnames</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+
+        <span class="n">ansible_job</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">stop_hosts</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">verbose_level</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Job</span><span class="p">(</span><span class="n">ansible_job</span><span class="p">)</span>
 
 </div></div>
 <div class="viewcode-block" id="Host"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.host.Host">[docs]</a><span class="k">class</span> <span class="nc">Host</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Host&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">groupnames</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">groupnames</span><span class="o">=</span><span class="p">[]):</span>
         <span class="c1"># type: (str, List[str]) -&gt; None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">hostname</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_groupnames</span> <span class="o">=</span> <span class="n">groupnames</span>
@@ -244,7 +342,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

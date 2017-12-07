@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.commands.deploy &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.commands.deploy &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -76,7 +76,7 @@
 
 
 <div class="viewcode-block" id="Deploy"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.deploy.Deploy">[docs]</a><span class="k">class</span> <span class="nc">Deploy</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Deploy.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Deploy containers to hosts.&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Deploy.get_parser"><a class="viewcode-back" href="../../../kollacli.commands.html#kollacli.commands.deploy.Deploy.get_parser">[docs]</a>    <span class="k">def</span> <span class="nf">get_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog_name</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Deploy</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_parser</span><span class="p">(</span><span class="n">prog_name</span><span class="p">)</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--hosts&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
@@ -123,8 +123,8 @@
                             <span class="s1">&#39;Invalid hosts: {hosts}&#39;</span><span class="p">)</span>
                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hosts</span><span class="o">=</span><span class="n">invalid_host_list</span><span class="p">))</span>
 
-            <span class="n">job</span> <span class="o">=</span> <span class="n">CLIENT</span><span class="o">.</span><span class="n">async_deploy</span><span class="p">(</span><span class="n">hosts</span><span class="p">,</span> <span class="n">serial_flag</span><span class="p">,</span>
-                                      <span class="n">verbose_level</span><span class="p">)</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">CLIENT</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">hosts</span><span class="p">,</span> <span class="n">serial_flag</span><span class="p">,</span>
+                                <span class="n">verbose_level</span><span class="p">)</span>
 
             <span class="c1"># wait for job to complete</span>
             <span class="n">status</span> <span class="o">=</span> <span class="bp">None</span>
@@ -181,7 +181,7 @@
                 <span class="k">raise</span> <span class="n">CommandError</span><span class="p">(</span>
                     <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid deploy mode. Mode must be &#39;</span>
                         <span class="s1">&#39;either &quot;local&quot; or &quot;remote&quot;.&#39;</span><span class="p">))</span>
-            <span class="n">CLIENT</span><span class="o">.</span><span class="n">deploy_set_mode</span><span class="p">(</span><span class="n">remote_flag</span><span class="p">)</span>
+            <span class="n">CLIENT</span><span class="o">.</span><span class="n">set_deploy_mode</span><span class="p">(</span><span class="n">remote_flag</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">CommandError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">e</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -219,7 +219,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible.actions &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.common.ansible.actions &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../../index.html" />
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -138,6 +138,19 @@
     <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;hosts=all&#39;</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">hosts</span> <span class="o">=</span> <span class="n">hostnames</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">print_output</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">verbose_level</span> <span class="o">=</span> <span class="n">verbose_level</span>
+
+    <span class="n">job</span> <span class="o">=</span> <span class="n">playbook</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">job</span>
+
+</div>
+<div class="viewcode-block" id="pull"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.pull">[docs]</a><span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;run pull action against all hosts&#39;&#39;&#39;</span>
+    <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
+                                          <span class="s1">&#39;ansible/site.yml&#39;</span><span class="p">)</span>
+    <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;action=pull&#39;</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">verbose_level</span> <span class="o">=</span> <span class="n">verbose_level</span>
 
     <span class="n">job</span> <span class="o">=</span> <span class="n">playbook</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
@@ -255,8 +268,9 @@
     <span class="n">expected_files</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;account.ring.gz&#39;</span><span class="p">,</span>
                       <span class="s1">&#39;container.ring.gz&#39;</span><span class="p">,</span>
                       <span class="s1">&#39;object.ring.gz&#39;</span><span class="p">]</span>
-    <span class="n">is_enabled</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s1">&#39;enable_swift&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">is_string_true</span><span class="p">(</span><span class="n">is_enabled</span><span class="p">):</span>
+    <span class="n">is_swift_enabled</span> <span class="o">=</span> <span class="n">_is_service_enabled</span><span class="p">(</span><span class="s1">&#39;swift&#39;</span><span class="p">,</span> <span class="n">inventory</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">is_swift_enabled</span><span class="p">:</span>
         <span class="n">path_pre</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_etc</span><span class="p">(),</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;swift&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">expected_file</span> <span class="ow">in</span> <span class="n">expected_files</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_pre</span><span class="p">,</span> <span class="n">expected_file</span><span class="p">)</span>
@@ -271,43 +285,13 @@
 
 
 <span class="k">def</span> <span class="nf">_is_service_enabled</span><span class="p">(</span><span class="n">servicename</span><span class="p">,</span> <span class="n">inventory</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
-    <span class="n">service_enabled</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="n">service</span> <span class="o">=</span> <span class="bp">None</span>
-
-    <span class="n">sub_service</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_sub_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">sub_service</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">service</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">enabled_property</span> <span class="o">=</span> <span class="s1">&#39;enable_&#39;</span> <span class="o">+</span> <span class="n">servicename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
-        <span class="n">is_enabled</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="n">enabled_property</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">is_string_true</span><span class="p">(</span><span class="n">is_enabled</span><span class="p">):</span>
-            <span class="n">service_enabled</span> <span class="o">=</span> <span class="bp">True</span>
-
-    <span class="c1"># Only bother looking at the parent service if the sub service</span>
-    <span class="c1"># is enabled.</span>
-    <span class="k">if</span> <span class="n">service_enabled</span><span class="p">:</span>
-        <span class="n">servicename</span> <span class="o">=</span> <span class="n">sub_service</span><span class="o">.</span><span class="n">get_parent_servicename</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">servicename</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">servicename</span> <span class="o">=</span> <span class="n">_find_parent_service</span><span class="p">(</span><span class="n">sub_service</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">inventory</span><span class="p">)</span>
-
-        <span class="n">service</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">service</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">enabled_property</span> <span class="o">=</span> <span class="s1">&#39;enable_&#39;</span> <span class="o">+</span> <span class="n">servicename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
-            <span class="n">is_enabled</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="n">enabled_property</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">is_string_true</span><span class="p">(</span><span class="n">is_enabled</span><span class="p">):</span>
-                <span class="n">service_enabled</span> <span class="o">=</span> <span class="bp">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">service_enabled</span> <span class="o">=</span> <span class="bp">False</span>
-
-    <span class="k">return</span> <span class="n">service_enabled</span>
-
-
-<span class="k">def</span> <span class="nf">_find_parent_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">,</span> <span class="n">inventory</span><span class="p">):</span>
-    <span class="n">services</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_services</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
-        <span class="n">sub_servicenames</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">get_sub_servicenames</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">sub_servicename</span> <span class="ow">in</span> <span class="n">sub_servicenames</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">sub_servicename</span> <span class="o">==</span> <span class="n">servicename</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">name</span>
-    <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">is_enabled</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get_property_value</span><span class="p">(</span><span class="n">enabled_property</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">is_enabled</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">is_enabled</span> <span class="o">=</span> <span class="n">is_string_true</span><span class="p">(</span><span class="n">is_enabled</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">is_enabled</span>
 </pre></div>
 
           </div>
@@ -341,7 +325,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

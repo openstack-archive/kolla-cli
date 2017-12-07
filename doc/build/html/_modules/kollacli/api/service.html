@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.service &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.api.service &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -98,55 +98,52 @@
         <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">get_all</span><span class="p">:</span>
-            <span class="n">servicenames</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">serv_dict</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_service_sub_services</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">servicename</span><span class="p">,</span> <span class="n">subservicenames</span> <span class="ow">in</span> <span class="n">serv_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">servicenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
-                <span class="n">servicenames</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">subservicenames</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">inventory</span><span class="o">.</span><span class="n">validate_servicenames</span><span class="p">(</span><span class="n">servicenames</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="n">servicenames</span><span class="p">:</span>
-            <span class="n">inv_service</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">inv_service</span><span class="p">:</span>
+            <span class="n">inv_services</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">client_filter</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">inv_service</span> <span class="ow">in</span> <span class="n">inv_services</span><span class="p">:</span>
                 <span class="n">service</span> <span class="o">=</span> <span class="n">Service</span><span class="p">(</span><span class="n">inv_service</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                  <span class="bp">None</span><span class="p">,</span>
-                                  <span class="n">inv_service</span><span class="o">.</span><span class="n">get_sub_servicenames</span><span class="p">(),</span>
+                                  <span class="n">inv_service</span><span class="o">.</span><span class="n">get_parentnames</span><span class="p">(),</span>
+                                  <span class="n">inv_service</span><span class="o">.</span><span class="n">get_childnames</span><span class="p">(),</span>
                                   <span class="n">inv_service</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">())</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">inv_subservice</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_sub_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
-                <span class="n">service</span> <span class="o">=</span> <span class="n">Service</span><span class="p">(</span><span class="n">inv_subservice</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                  <span class="n">inv_subservice</span><span class="o">.</span><span class="n">get_parent_servicename</span><span class="p">(),</span>
-                                  <span class="p">[],</span>
-                                  <span class="n">inv_subservice</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">())</span>
-            <span class="n">services</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+                <span class="n">services</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inventory</span><span class="o">.</span><span class="n">validate_servicenames</span><span class="p">(</span><span class="n">servicenames</span><span class="p">,</span> <span class="n">client_filter</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="n">servicenames</span><span class="p">:</span>
+                <span class="n">inv_service</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">,</span>
+                                                    <span class="n">client_filter</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">inv_service</span><span class="p">:</span>
+                    <span class="n">service</span> <span class="o">=</span> <span class="n">Service</span><span class="p">(</span><span class="n">inv_service</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                      <span class="n">inv_service</span><span class="o">.</span><span class="n">get_parentnames</span><span class="p">(),</span>
+                                      <span class="n">inv_service</span><span class="o">.</span><span class="n">get_childnames</span><span class="p">(),</span>
+                                      <span class="n">inv_service</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">())</span>
+                <span class="n">services</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">services</span>
 
 </div>
 <div class="viewcode-block" id="Service"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.service.Service">[docs]</a><span class="k">class</span> <span class="nc">Service</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Service</span>
 
-<span class="sd">    A service is one of the services available in openstack-kolla.</span>
+<span class="sd">    A service is one of the services available in openstack-kolla-ansible.</span>
 
 <span class="sd">    For example, this would be how the murano services would be</span>
 <span class="sd">    represented:</span>
 
 <span class="sd">    - murano</span>
-<span class="sd">        - parentname: None</span>
+<span class="sd">        - parentnames: []</span>
 <span class="sd">        - childnames: [murano-api, murano-engine]</span>
 <span class="sd">    - murano-api</span>
-<span class="sd">        - parentname: murano</span>
+<span class="sd">        - parentnames: [murano]</span>
 <span class="sd">        - childnames: []</span>
 <span class="sd">    - murano-engine</span>
-<span class="sd">        - parentname: murano</span>
+<span class="sd">        - parentnames: [murano]</span>
 <span class="sd">        - childnames: []</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicename</span><span class="p">,</span> <span class="n">parentname</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicename</span><span class="p">,</span> <span class="n">parentnames</span><span class="o">=</span><span class="p">[],</span>
                  <span class="n">childnames</span><span class="o">=</span><span class="p">[],</span> <span class="n">groupnames</span><span class="o">=</span><span class="p">[]):</span>
         <span class="c1"># type: (str, str, List[str], List[str]) -&gt; None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">servicename</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parentname</span> <span class="o">=</span> <span class="n">parentname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parentnames</span> <span class="o">=</span> <span class="n">parentnames</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_childnames</span> <span class="o">=</span> <span class="n">childnames</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_groupnames</span> <span class="o">=</span> <span class="n">groupnames</span>
 
@@ -159,18 +156,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </div>
-<div class="viewcode-block" id="Service.get_parent"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.service.Service.get_parent">[docs]</a>    <span class="k">def</span> <span class="nf">get_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Service.get_parents"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.service.Service.get_parents">[docs]</a>    <span class="k">def</span> <span class="nf">get_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; str</span>
-        <span class="sd">&quot;&quot;&quot;Get name of parent service</span>
+        <span class="sd">&quot;&quot;&quot;Get name of parent services</span>
 
-<span class="sd">        :return: parent service name</span>
+<span class="sd">        :return: parent service names</span>
 <span class="sd">        :rtype: string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentname</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parentnames</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="Service.get_children"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.service.Service.get_children">[docs]</a>    <span class="k">def</span> <span class="nf">get_children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; List[str]</span>
-        <span class="sd">&quot;&quot;&quot;Get names of the child services associated with this service</span>
+        <span class="sd">&quot;&quot;&quot;Get names of the child services</span>
 
 <span class="sd">        :return: child names</span>
 <span class="sd">        :rtype: list of strings</span>
@@ -179,7 +176,7 @@
 </div>
 <div class="viewcode-block" id="Service.get_groups"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.service.Service.get_groups">[docs]</a>    <span class="k">def</span> <span class="nf">get_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; List[str]</span>
-        <span class="sd">&quot;&quot;&quot;Get names of the groups associated with this service</span>
+        <span class="sd">&quot;&quot;&quot;Get names of the groups</span>
 
 <span class="sd">        :return: group names</span>
 <span class="sd">        :rtype: list of strings</span>
@@ -222,7 +219,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

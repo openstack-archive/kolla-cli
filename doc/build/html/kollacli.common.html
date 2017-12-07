@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common package &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.common package &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -81,11 +81,6 @@ easier to use way to represent that file.</p>
 <dl class="method">
 <dt id="kollacli.common.allinone.AllInOne.add_service">
 <tt class="descname">add_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/allinone.html#AllInOne.add_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.allinone.AllInOne.add_service" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.allinone.AllInOne.add_sub_service">
-<tt class="descname">add_sub_service</tt><big>(</big><em>sub_servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/allinone.html#AllInOne.add_sub_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.allinone.AllInOne.add_sub_service" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -200,9 +195,14 @@ if group name is not none, add host to group</p>
 
 <dl class="attribute">
 <dt id="kollacli.common.inventory.Inventory.class_version">
-<tt class="descname">class_version</tt><em class="property"> = 3</em><a class="headerlink" href="#kollacli.common.inventory.Inventory.class_version" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">class_version</tt><em class="property"> = 4</em><a class="headerlink" href="#kollacli.common.inventory.Inventory.class_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>class version history</p>
 <dl class="docutils">
+<dt>4: (v4.0.1):</dt>
+<dd><ul class="first last simple">
+<li>removed concept of sub-services (not backward compatible)</li>
+</ul>
+</dd>
 <dt>3: (v3.0.1):</dt>
 <dd><ul class="first last simple">
 <li>added aodh, ceph</li>
@@ -230,18 +230,8 @@ where uuid is a unique deployment id.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="kollacli.common.inventory.Inventory.create_sub_service">
-<tt class="descname">create_sub_service</tt><big>(</big><em>sub_servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.create_sub_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.create_sub_service" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="kollacli.common.inventory.Inventory.delete_service">
 <tt class="descname">delete_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.delete_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.delete_service" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Inventory.delete_sub_service">
-<tt class="descname">delete_sub_service</tt><big>(</big><em>sub_servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.delete_sub_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.delete_sub_service" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -347,29 +337,12 @@ groups.</p>
 
 <dl class="method">
 <dt id="kollacli.common.inventory.Inventory.get_service">
-<tt class="descname">get_service</tt><big>(</big><em>servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.get_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.get_service" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_service</tt><big>(</big><em>servicename</em>, <em>client_filter=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.get_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.get_service" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Inventory.get_service_sub_services">
-<tt class="descname">get_service_sub_services</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.get_service_sub_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.get_service_sub_services" title="Permalink to this definition">¶</a></dt>
-<dd><p>get services and their sub_services</p>
-<p>return { servicename: [sub_servicenames] }</p>
-</dd></dl>
 
 <dl class="method">
 <dt id="kollacli.common.inventory.Inventory.get_services">
-<tt class="descname">get_services</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.get_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.get_services" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Inventory.get_sub_service">
-<tt class="descname">get_sub_service</tt><big>(</big><em>sub_servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.get_sub_service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.get_sub_service" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="kollacli.common.inventory.Inventory.get_sub_services">
-<tt class="descname">get_sub_services</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.get_sub_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.get_sub_services" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_services</tt><big>(</big><em>client_filter=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.get_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.get_services" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="staticmethod">
@@ -474,7 +447,7 @@ The uname entry is optional.</p>
 
 <dl class="method">
 <dt id="kollacli.common.inventory.Inventory.validate_servicenames">
-<tt class="descname">validate_servicenames</tt><big>(</big><em>servicenames</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.validate_servicenames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.validate_servicenames" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">validate_servicenames</tt><big>(</big><em>servicenames</em>, <em>client_filter=False</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/inventory.html#Inventory.validate_servicenames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.inventory.Inventory.validate_servicenames" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -547,11 +520,6 @@ If it doesn&#8217;t exist, a new password will be added.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="kollacli.common.properties.AnsibleProperties.filter_jinja2">
-<tt class="descname">filter_jinja2</tt><big>(</big><em>contents</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/properties.html#AnsibleProperties.filter_jinja2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.properties.AnsibleProperties.filter_jinja2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="kollacli.common.properties.AnsibleProperties.get_all_override_flags">
 <tt class="descname">get_all_override_flags</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/properties.html#AnsibleProperties.get_all_override_flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.properties.AnsibleProperties.get_all_override_flags" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -574,6 +542,11 @@ If it doesn&#8217;t exist, a new password will be added.</p>
 <dl class="method">
 <dt id="kollacli.common.properties.AnsibleProperties.get_property">
 <tt class="descname">get_property</tt><big>(</big><em>property_name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/properties.html#AnsibleProperties.get_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.properties.AnsibleProperties.get_property" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.properties.AnsibleProperties.get_property_value">
+<tt class="descname">get_property_value</tt><big>(</big><em>property_name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/properties.html#AnsibleProperties.get_property_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.properties.AnsibleProperties.get_property_value" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -613,13 +586,18 @@ If it doesn&#8217;t exist, a new password will be added.</p>
 <em class="property">class </em><tt class="descclassname">kollacli.common.service.</tt><tt class="descname">Service</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <dl class="method">
+<dt id="kollacli.common.service.Service.add_childname">
+<tt class="descname">add_childname</tt><big>(</big><em>childname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.add_childname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.add_childname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="kollacli.common.service.Service.add_groupname">
 <tt class="descname">add_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.add_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.add_groupname" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="kollacli.common.service.Service.add_sub_servicename">
-<tt class="descname">add_sub_servicename</tt><big>(</big><em>sub_servicename</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.add_sub_servicename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.add_sub_servicename" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.common.service.Service.add_parentname">
+<tt class="descname">add_parentname</tt><big>(</big><em>parentname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.add_parentname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.add_parentname" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -628,13 +606,18 @@ If it doesn&#8217;t exist, a new password will be added.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="kollacli.common.service.Service.get_childnames">
+<tt class="descname">get_childnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.get_childnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.get_childnames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="kollacli.common.service.Service.get_groupnames">
 <tt class="descname">get_groupnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.get_groupnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.get_groupnames" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="kollacli.common.service.Service.get_sub_servicenames">
-<tt class="descname">get_sub_servicenames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.get_sub_servicenames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.get_sub_servicenames" title="Permalink to this definition">¶</a></dt>
+<dt id="kollacli.common.service.Service.get_parentnames">
+<tt class="descname">get_parentnames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.get_parentnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.get_parentnames" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -643,8 +626,28 @@ If it doesn&#8217;t exist, a new password will be added.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="kollacli.common.service.Service.is_supported">
+<tt class="descname">is_supported</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.is_supported"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.is_supported" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.service.Service.remove_childname">
+<tt class="descname">remove_childname</tt><big>(</big><em>childname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.remove_childname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.remove_childname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="kollacli.common.service.Service.remove_groupname">
 <tt class="descname">remove_groupname</tt><big>(</big><em>groupname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.remove_groupname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.remove_groupname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.service.Service.remove_parentname">
+<tt class="descname">remove_parentname</tt><big>(</big><em>parentname</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.remove_parentname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.remove_parentname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.common.service.Service.set_supported">
+<tt class="descname">set_supported</tt><big>(</big><em>supported</em><big>)</big><a class="reference internal" href="_modules/kollacli/common/service.html#Service.set_supported"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.common.service.Service.set_supported" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -870,8 +873,8 @@ If not clear, and key is found, edit property in place.</p>
 has non-ascii chars in it, they would display as unicode bytes
 (u0414u0435u043au0430u0442). By converting
 the list to string here, the proper non-ascii chars are displayed.</p>
-<p>This will only change the lists when the output is to a table. It cannot
-be changed if the display output is json, yaml, etc.</p>
+<p>This will only change the lists when the output is to a user visible
+medium. It cannot be changed if the display output is json, yaml, etc.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1086,7 +1089,7 @@ unicode.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

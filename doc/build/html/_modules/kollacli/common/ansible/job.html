@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.ansible.job &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.common.ansible.job &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../../index.html" />
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -135,6 +135,14 @@
                     <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lock</span><span class="o">=</span><span class="n">get_ansible_lock_path</span><span class="p">(),</span> <span class="n">cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">))</span>
 
             <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;playbook command: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">)</span>
+            <span class="c1"># ansible 2.2 and later introduced an issue where if</span>
+            <span class="c1"># the playbook is executed from within a directory without</span>
+            <span class="c1"># read / write permission (which can happen when you,</span>
+            <span class="c1"># for example, execute via sudo) it will fail.  the</span>
+            <span class="c1"># workaround will be to run the ansible command from /tmp</span>
+            <span class="c1"># and then change back to the original directory at the end</span>
+            <span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>  <span class="c1"># nosec</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;/tmp&#39;</span><span class="p">)</span>  <span class="c1"># nosec</span>
             <span class="c1"># create and open named pipe, must be owned by kolla group</span>
             <span class="n">os</span><span class="o">.</span><span class="n">mkfifo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fifo_path</span><span class="p">)</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">grp_id</span> <span class="o">=</span> <span class="n">get_admin_uids</span><span class="p">()</span>
@@ -153,6 +161,9 @@
             <span class="n">flags</span> <span class="o">=</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">fcntl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">F_GETFL</span><span class="p">)</span>
             <span class="n">fcntl</span><span class="o">.</span><span class="n">fcntl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">F_SETFL</span><span class="p">,</span>
                         <span class="p">(</span><span class="n">flags</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_NONBLOCK</span><span class="p">))</span>
+
+            <span class="c1"># this is also part of the fix for ansible 2.2 and later</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_dir</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup</span><span class="p">()</span>
             <span class="k">raise</span> <span class="n">e</span>
@@ -588,7 +599,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

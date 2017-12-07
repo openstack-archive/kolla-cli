@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.common.inventory &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.common.inventory &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -82,7 +82,6 @@
 <span class="kn">from</span> <span class="nn">kollacli.common.host_group</span> <span class="kn">import</span> <span class="n">HostGroup</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.service</span> <span class="kn">import</span> <span class="n">Service</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.sshutils</span> <span class="kn">import</span> <span class="n">ssh_setup_host</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.subservice</span> <span class="kn">import</span> <span class="n">SubService</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_admin_uids</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_admin_user</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_ansible_command</span>
@@ -119,9 +118,11 @@
 
 </div>
 <div class="viewcode-block" id="Inventory"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory">[docs]</a><span class="k">class</span> <span class="nc">Inventory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">class_version</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">class_version</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="sd">&quot;&quot;&quot;class version history</span>
 
+<span class="sd">    4: (v4.0.1):</span>
+<span class="sd">        - removed concept of sub-services (not backward compatible)</span>
 <span class="sd">    3: (v3.0.1):</span>
 <span class="sd">        - added aodh, ceph</span>
 <span class="sd">        - fix to ensure all sub-services have service as parent</span>
@@ -132,7 +133,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="p">{}</span>           <span class="c1"># kv = name:object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span> <span class="o">=</span> <span class="p">{}</span>            <span class="c1"># kv = name:object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_services</span> <span class="o">=</span> <span class="p">{}</span>         <span class="c1"># kv = name:object</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span> <span class="o">=</span> <span class="p">{}</span>     <span class="c1"># kv = name:object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">class_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remote_mode</span> <span class="o">=</span> <span class="bp">True</span>
@@ -142,28 +142,9 @@
 
 <div class="viewcode-block" id="Inventory.upgrade"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.upgrade">[docs]</a>    <span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># check for new services or subservices in the all-in-one file</span>
+        <span class="c1"># leaving in this hook but no upgrade from &lt;4 to 4 is supported</span>
+        <span class="c1"># so yanking out all upgrade logic</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_upgrade_services</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># upgrade from inventory v1</span>
-
-            <span class="c1"># set ceilometer groups to that of heat</span>
-            <span class="n">heat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="s1">&#39;heat&#39;</span><span class="p">)</span>
-            <span class="n">ceilometer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="s1">&#39;ceilometer&#39;</span><span class="p">)</span>
-            <span class="n">groups</span> <span class="o">=</span> <span class="n">heat</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
-                <span class="n">ceilometer</span><span class="o">.</span><span class="n">add_groupname</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="c1"># upgrade from inventory v2</span>
-
-            <span class="c1"># some sub-services may be missing their parent associations.</span>
-            <span class="c1"># they are now needed in v3.</span>
-            <span class="k">for</span> <span class="n">svc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">sub_svcname</span> <span class="ow">in</span> <span class="n">svc</span><span class="o">.</span><span class="n">get_sub_servicenames</span><span class="p">():</span>
-                    <span class="n">sub_svc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sub_service</span><span class="p">(</span><span class="n">sub_svcname</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">sub_svc</span><span class="o">.</span><span class="n">get_parent_servicename</span><span class="p">():</span>
-                        <span class="n">sub_svc</span><span class="o">.</span><span class="n">set_parent_servicename</span><span class="p">(</span><span class="n">svc</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
         <span class="c1"># update the version and save upgraded inventory file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">class_version</span>
@@ -171,19 +152,12 @@
 </div>
     <span class="k">def</span> <span class="nf">_upgrade_services</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">allinone</span> <span class="o">=</span> <span class="n">AllInOne</span><span class="p">()</span>
+
         <span class="c1"># add new services</span>
         <span class="k">for</span> <span class="n">servicename</span><span class="p">,</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">allinone</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span>
-        <span class="c1"># add new subservices</span>
-        <span class="k">for</span> <span class="n">subservicename</span><span class="p">,</span> <span class="n">subservice</span> <span class="ow">in</span> <span class="n">allinone</span><span class="o">.</span><span class="n">sub_services</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">subservicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">[</span><span class="n">subservicename</span><span class="p">]</span> <span class="o">=</span> <span class="n">subservice</span>
 
-        <span class="c1"># remove obsolete subservices</span>
-        <span class="k">for</span> <span class="n">subservicename</span> <span class="ow">in</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">subservicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allinone</span><span class="o">.</span><span class="n">sub_services</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">delete_sub_service</span><span class="p">(</span><span class="n">subservicename</span><span class="p">)</span>
         <span class="c1"># remove obsolete services</span>
         <span class="k">for</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allinone</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
@@ -198,30 +172,6 @@
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">):</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">sync_read_file</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">)</span>
 
-                <span class="c1"># The inventory path changed between v1 and v2. Need to change</span>
-                <span class="c1"># path throughout the inventory. This has to be done before</span>
-                <span class="c1"># the pickle decode.</span>
-                <span class="k">if</span> <span class="s1">&#39;kollacli.common.inventory&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.ansible.inventory.&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.inventory.&#39;</span><span class="p">)</span>
-
-                <span class="c1"># The Host, HostGroup, Service and SubService were moved out of</span>
-                <span class="c1"># inventory and into their own modules</span>
-                <span class="k">if</span> <span class="s1">&#39;kollacli.common.service&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.inventory.Service&quot;&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.service.Service&quot;&#39;</span><span class="p">)</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.inventory.SubService&quot;&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.subservice.SubService&quot;&#39;</span><span class="p">)</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.inventory.Host&quot;&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.host.Host&quot;&#39;</span><span class="p">)</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.inventory.HostGroup&quot;&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;&quot;py/object&quot;: &quot;kollacli.common.host_group.HostGroup&quot;&#39;</span><span class="p">)</span>
-
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
                 <span class="n">inventory</span> <span class="o">=</span> <span class="n">jsonpickle</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
@@ -230,6 +180,7 @@
                     <span class="n">inventory</span><span class="o">.</span><span class="n">upgrade</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="p">()</span>
+                <span class="n">Inventory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">FailedOperation</span><span class="p">(</span>
                 <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Loading inventory failed. : {error}&#39;</span><span class="p">)</span>
@@ -422,7 +373,7 @@
         <span class="k">return</span> <span class="n">is_ok</span><span class="p">,</span> <span class="n">msg</span>
 </div>
 <div class="viewcode-block" id="Inventory.run_ansible_command"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.run_ansible_command">[docs]</a>    <span class="k">def</span> <span class="nf">run_ansible_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansible_command</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
-        <span class="n">err_msg</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">command_string</span> <span class="o">=</span> <span class="s1">&#39;/usr/bin/sudo -u </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> -vvv&#39;</span> <span class="o">%</span> \
             <span class="p">(</span><span class="n">get_admin_user</span><span class="p">(),</span> <span class="n">get_ansible_command</span><span class="p">())</span>
         <span class="n">gen_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_json_gen_file</span><span class="p">()</span>
@@ -439,7 +390,7 @@
 <div class="viewcode-block" id="Inventory.add_group"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.add_group">[docs]</a>    <span class="k">def</span> <span class="nf">add_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupname</span><span class="p">):</span>
 
         <span class="c1"># Group names cannot overlap with service names:</span>
-        <span class="k">if</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span> <span class="ow">or</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidArgument</span><span class="p">(</span>
                 <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid group name. A service name &#39;</span>
                     <span class="s1">&#39;cannot be used for a group name.&#39;</span><span class="p">))</span>
@@ -459,12 +410,9 @@
                 <span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cannot remove {group} group. It is required by kolla.&#39;</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="n">groupname</span><span class="p">))</span>
 
-        <span class="c1"># remove group from services &amp; subservices</span>
+        <span class="c1"># remove group from services</span>
         <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">service</span><span class="o">.</span><span class="n">remove_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">subservice</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">subservice</span><span class="o">.</span><span class="n">remove_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
 
         <span class="n">group_vars</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_group_vars_dir</span><span class="p">(),</span> <span class="n">groupname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">group_vars</span><span class="p">)</span> <span class="ow">and</span> <span class="n">groupname</span> <span class="o">!=</span> <span class="s1">&#39;__GLOBAL__&#39;</span><span class="p">:</span>
@@ -522,9 +470,6 @@
         <span class="k">for</span> <span class="n">svc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="n">svc</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">():</span>
                 <span class="n">group_services</span><span class="p">[</span><span class="n">groupname</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">svc</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">sub_svc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sub_services</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="n">sub_svc</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">():</span>
-                <span class="n">group_services</span><span class="p">[</span><span class="n">groupname</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">group_services</span>
 </div>
 <div class="viewcode-block" id="Inventory.get_group_hosts"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.get_group_hosts">[docs]</a>    <span class="k">def</span> <span class="nf">get_group_hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -543,19 +488,36 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span>
 </div>
 <div class="viewcode-block" id="Inventory.delete_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.delete_service">[docs]</a>    <span class="k">def</span> <span class="nf">delete_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicename</span><span class="p">):</span>
+        <span class="c1"># remove references to this service from all parent / child services</span>
         <span class="k">if</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">:</span>
             <span class="n">service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">sub_servicename</span> <span class="ow">in</span> <span class="n">service</span><span class="o">.</span><span class="n">get_sub_servicenames</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">delete_sub_service</span><span class="p">(</span><span class="n">sub_servicename</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">parentname</span> <span class="ow">in</span> <span class="n">service</span><span class="o">.</span><span class="n">get_parentnames</span><span class="p">():</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">parentname</span><span class="p">]</span>
+                <span class="n">parent</span><span class="o">.</span><span class="n">remove_childname</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">childname</span> <span class="ow">in</span> <span class="n">service</span><span class="o">.</span><span class="n">get_childnames</span><span class="p">():</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">childname</span><span class="p">]</span>
+                <span class="n">child</span><span class="o">.</span><span class="n">remove_parentname</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
+
+            <span class="c1"># then remove the service itself</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span>
 </div>
-<div class="viewcode-block" id="Inventory.get_services"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.get_services">[docs]</a>    <span class="k">def</span> <span class="nf">get_services</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+<div class="viewcode-block" id="Inventory.get_services"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.get_services">[docs]</a>    <span class="k">def</span> <span class="nf">get_services</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_filter</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">client_filter</span><span class="p">:</span>
+            <span class="n">services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_filtered_service_dict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span>
+
+        <span class="k">return</span> <span class="n">services</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 </div>
-<div class="viewcode-block" id="Inventory.get_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.get_service">[docs]</a>    <span class="k">def</span> <span class="nf">get_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicename</span><span class="p">):</span>
+<div class="viewcode-block" id="Inventory.get_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.get_service">[docs]</a>    <span class="k">def</span> <span class="nf">get_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicename</span><span class="p">,</span> <span class="n">client_filter</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="n">service</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">if</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">:</span>
-            <span class="n">service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">client_filter</span><span class="p">:</span>
+            <span class="n">services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_filtered_service_dict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span>
+
+        <span class="k">if</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
+            <span class="n">service</span> <span class="o">=</span> <span class="n">services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">service</span>
 </div>
 <div class="viewcode-block" id="Inventory.add_group_to_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.add_group_to_service">[docs]</a>    <span class="k">def</span> <span class="nf">add_group_to_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupname</span><span class="p">,</span> <span class="n">servicename</span><span class="p">):</span>
@@ -564,9 +526,6 @@
         <span class="k">if</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">:</span>
             <span class="n">service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
             <span class="n">service</span><span class="o">.</span><span class="n">add_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">:</span>
-                <span class="n">sub_service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sub_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
-                <span class="n">sub_service</span><span class="o">.</span><span class="n">add_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service&#39;</span><span class="p">),</span> <span class="n">servicename</span><span class="p">)</span>
 </div>
@@ -576,46 +535,8 @@
         <span class="k">if</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">:</span>
             <span class="n">service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
             <span class="n">service</span><span class="o">.</span><span class="n">remove_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">:</span>
-                <span class="n">sub_service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sub_service</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
-                <span class="n">sub_service</span><span class="o">.</span><span class="n">remove_groupname</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service&#39;</span><span class="p">),</span> <span class="n">servicename</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="Inventory.create_sub_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.create_sub_service">[docs]</a>    <span class="k">def</span> <span class="nf">create_sub_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_servicename</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">sub_servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">:</span>
-            <span class="n">sub_service</span> <span class="o">=</span> <span class="n">SubService</span><span class="p">(</span><span class="n">sub_servicename</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">[</span><span class="n">sub_servicename</span><span class="p">]</span> <span class="o">=</span> <span class="n">sub_service</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">[</span><span class="n">sub_servicename</span><span class="p">]</span>
-</div>
-<div class="viewcode-block" id="Inventory.delete_sub_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.delete_sub_service">[docs]</a>    <span class="k">def</span> <span class="nf">delete_sub_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_servicename</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">sub_servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">:</span>
-            <span class="n">sub_service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">[</span><span class="n">sub_servicename</span><span class="p">]</span>
-            <span class="n">parentname</span> <span class="o">=</span> <span class="n">sub_service</span><span class="o">.</span><span class="n">get_parent_servicename</span><span class="p">()</span>
-            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">parentname</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">sub_servicename</span> <span class="ow">in</span> <span class="n">parent</span><span class="o">.</span><span class="n">_sub_servicenames</span><span class="p">:</span>
-                <span class="n">parent</span><span class="o">.</span><span class="n">_sub_servicenames</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">sub_servicename</span><span class="p">)</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">[</span><span class="n">sub_servicename</span><span class="p">]</span>
-</div>
-<div class="viewcode-block" id="Inventory.get_sub_services"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.get_sub_services">[docs]</a>    <span class="k">def</span> <span class="nf">get_sub_services</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-</div>
-<div class="viewcode-block" id="Inventory.get_sub_service"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.get_sub_service">[docs]</a>    <span class="k">def</span> <span class="nf">get_sub_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_servicename</span><span class="p">):</span>
-        <span class="n">sub_service</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">if</span> <span class="n">sub_servicename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">:</span>
-            <span class="n">sub_service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">[</span><span class="n">sub_servicename</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">sub_service</span>
-</div>
-<div class="viewcode-block" id="Inventory.get_service_sub_services"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.get_service_sub_services">[docs]</a>    <span class="k">def</span> <span class="nf">get_service_sub_services</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;get services and their sub_services</span>
-
-<span class="sd">        return { servicename: [sub_servicenames] }</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">svc_sub_svcs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">():</span>
-            <span class="n">svc_sub_svcs</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">svc_sub_svcs</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">get_sub_servicenames</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">svc_sub_svcs</span>
 </div>
 <div class="viewcode-block" id="Inventory.set_deploy_mode"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.set_deploy_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_deploy_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_flag</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">remote_flag</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hosts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -682,22 +603,13 @@
             <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">jdict</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;vars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span>
 
-        <span class="c1"># add top-level services and what groups they are in</span>
+        <span class="c1"># add all services, what groups they are in and their parents</span>
         <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">():</span>
             <span class="n">jdict</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">jdict</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">()</span>
-
-        <span class="c1"># add sub-services and their groups</span>
-        <span class="k">for</span> <span class="n">sub_svc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sub_services</span><span class="p">():</span>
-            <span class="n">jdict</span><span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">groupnames</span> <span class="o">=</span> <span class="n">sub_svc</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">groupnames</span><span class="p">:</span>
-                <span class="c1"># sub-service is associated with a group(s)</span>
-                <span class="n">jdict</span><span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groupnames</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># sub-service is associated with parent service</span>
-                <span class="n">jdict</span><span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                    <span class="p">[</span><span class="n">sub_svc</span><span class="o">.</span><span class="n">get_parent_servicename</span><span class="p">()]</span>
+            <span class="n">groups_and_parents</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">groups_and_parents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">get_groupnames</span><span class="p">())</span>
+            <span class="n">groups_and_parents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">get_parentnames</span><span class="p">())</span>
+            <span class="n">jdict</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups_and_parents</span>
 
         <span class="c1"># temporarily create group containing all hosts. this is needed for</span>
         <span class="c1"># ansible commands that are performed on hosts not yet in groups.</span>
@@ -779,25 +691,38 @@
         <span class="k">if</span> <span class="n">invalid_groups</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Group&#39;</span><span class="p">),</span> <span class="n">invalid_groups</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="Inventory.validate_servicenames"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.validate_servicenames">[docs]</a>    <span class="k">def</span> <span class="nf">validate_servicenames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicenames</span><span class="p">):</span>
+<div class="viewcode-block" id="Inventory.validate_servicenames"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.validate_servicenames">[docs]</a>    <span class="k">def</span> <span class="nf">validate_servicenames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servicenames</span><span class="p">,</span> <span class="n">client_filter</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">servicenames</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service name(s)&#39;</span><span class="p">))</span>
         <span class="n">invalid_services</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">servicename</span> <span class="ow">in</span> <span class="n">servicenames</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span> <span class="ow">and</span>
-                    <span class="n">servicename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">):</span>
-                <span class="n">invalid_services</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">servicename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">client_filter</span><span class="p">:</span>
+            <span class="n">services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_filtered_service_dict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span>
+
+        <span class="k">for</span> <span class="n">service_name</span> <span class="ow">in</span> <span class="n">servicenames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">service_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
+                <span class="n">invalid_services</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">invalid_services</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotInInventory</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Service&#39;</span><span class="p">),</span> <span class="n">invalid_services</span><span class="p">)</span>
 </div>
+    <span class="k">def</span> <span class="nf">_client_filtered_service_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Filters out any unsupported services</span>
+
+<span class="sd">        :return: filtered dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filtered_service_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">is_supported</span><span class="p">():</span>
+                <span class="n">filtered_service_dict</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span>
+        <span class="k">return</span> <span class="n">filtered_service_dict</span>
+
     <span class="k">def</span> <span class="nf">_create_default_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">allin1</span> <span class="o">=</span> <span class="n">AllInOne</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">groupname</span> <span class="ow">in</span> <span class="n">allin1</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_group</span><span class="p">(</span><span class="n">groupname</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">servicename</span><span class="p">,</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">allin1</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span>
-        <span class="k">for</span> <span class="n">sub_servicename</span><span class="p">,</span> <span class="n">sub_service</span> <span class="ow">in</span> <span class="n">allin1</span><span class="o">.</span><span class="n">sub_services</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sub_services</span><span class="p">[</span><span class="n">sub_servicename</span><span class="p">]</span> <span class="o">=</span> <span class="n">sub_service</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span></div>
 </pre></div>
 
           </div>
@@ -831,7 +756,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

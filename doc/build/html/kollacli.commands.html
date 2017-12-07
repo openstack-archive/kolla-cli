@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.commands package &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.commands package &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="index.html" /> 
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -55,7 +55,7 @@
 <dt id="kollacli.commands.deploy.Deploy">
 <em class="property">class </em><tt class="descclassname">kollacli.commands.deploy.</tt><tt class="descname">Deploy</tt><big>(</big><em>app</em>, <em>app_args</em>, <em>cmd_name=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/deploy.html#Deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.deploy.Deploy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
-<p>Deploy.</p>
+<p>Deploy containers to hosts.</p>
 <dl class="method">
 <dt id="kollacli.commands.deploy.Deploy.get_parser">
 <tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/deploy.html#Deploy.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.deploy.Deploy.get_parser" title="Permalink to this definition">¶</a></dt>
@@ -269,7 +269,7 @@ Remote means that the deployment is on remote hosts.</p>
 <dt id="kollacli.commands.host.HostDestroy">
 <em class="property">class </em><tt class="descclassname">kollacli.commands.host.</tt><tt class="descname">HostDestroy</tt><big>(</big><em>app</em>, <em>app_args</em>, <em>cmd_name=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/host.html#HostDestroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.host.HostDestroy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
-<p>Destroy.</p>
+<p>Destroy all kolla containers on host(s).</p>
 <p>Stops and removes all kolla related docker containers on either the
 specified host or all hosts if the hostname all is used.</p>
 <dl class="method">
@@ -340,7 +340,7 @@ specified host or all hosts if the hostname all is used.</p>
 <dt id="kollacli.commands.host.HostStop">
 <em class="property">class </em><tt class="descclassname">kollacli.commands.host.</tt><tt class="descname">HostStop</tt><big>(</big><em>app</em>, <em>app_args</em>, <em>cmd_name=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/host.html#HostStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.host.HostStop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
-<p>Stop.</p>
+<p>Stop all kolla containers on host(s).</p>
 <p>Stops all kolla related docker containers on either the
 specified host or all hosts if the hostname all is used.</p>
 <dl class="method">
@@ -488,6 +488,41 @@ specified host or all hosts if the hostname all is used.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-kollacli.commands.pull">
+<span id="kollacli-commands-pull-module"></span><h2>kollacli.commands.pull module<a class="headerlink" href="#module-kollacli.commands.pull" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.commands.pull.Pull">
+<em class="property">class </em><tt class="descclassname">kollacli.commands.pull.</tt><tt class="descname">Pull</tt><big>(</big><em>app</em>, <em>app_args</em>, <em>cmd_name=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/pull.html#Pull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.pull.Pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
+<p>Pull enabled service images onto appropriate hosts.</p>
+<dl class="method">
+<dt id="kollacli.commands.pull.Pull.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/pull.html#Pull.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.pull.Pull.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kollacli.commands.reconfigure">
+<span id="kollacli-commands-reconfigure-module"></span><h2>kollacli.commands.reconfigure module<a class="headerlink" href="#module-kollacli.commands.reconfigure" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kollacli.commands.reconfigure.Reconfigure">
+<em class="property">class </em><tt class="descclassname">kollacli.commands.reconfigure.</tt><tt class="descname">Reconfigure</tt><big>(</big><em>app</em>, <em>app_args</em>, <em>cmd_name=None</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/reconfigure.html#Reconfigure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.reconfigure.Reconfigure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
+<p>Reconfigure and update kolla containers on all hosts.</p>
+<dl class="method">
+<dt id="kollacli.commands.reconfigure.Reconfigure.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/reconfigure.html#Reconfigure.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.reconfigure.Reconfigure.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kollacli.commands.reconfigure.Reconfigure.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/kollacli/commands/reconfigure.html#Reconfigure.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kollacli.commands.reconfigure.Reconfigure.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-kollacli.commands.service">
 <span id="kollacli-commands-service-module"></span><h2>kollacli.commands.service module<a class="headerlink" href="#module-kollacli.commands.service" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -610,6 +645,8 @@ debugging problems.</p>
 <li><a class="reference internal" href="#module-kollacli.commands.host">kollacli.commands.host module</a></li>
 <li><a class="reference internal" href="#module-kollacli.commands.password">kollacli.commands.password module</a></li>
 <li><a class="reference internal" href="#module-kollacli.commands.property">kollacli.commands.property module</a></li>
+<li><a class="reference internal" href="#module-kollacli.commands.pull">kollacli.commands.pull module</a></li>
+<li><a class="reference internal" href="#module-kollacli.commands.reconfigure">kollacli.commands.reconfigure module</a></li>
 <li><a class="reference internal" href="#module-kollacli.commands.service">kollacli.commands.service module</a></li>
 <li><a class="reference internal" href="#module-kollacli.commands.support">kollacli.commands.support module</a></li>
 <li><a class="reference internal" href="#module-kollacli.commands.upgrade">kollacli.commands.upgrade module</a></li>
@@ -649,7 +686,7 @@ debugging problems.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li> 
+        <li><a href="index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

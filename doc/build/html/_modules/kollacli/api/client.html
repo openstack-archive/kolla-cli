@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>kollacli.api.client &mdash; kollacli 4.0.0.dev483 documentation</title>
+    <title>kollacli.api.client &mdash; kollacli 4.0.1.dev498 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '4.0.0.dev483',
+        VERSION:     '4.0.1.dev498',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="kollacli 4.0.0.dev483 documentation" href="../../../index.html" />
+    <link rel="top" title="kollacli 4.0.1.dev498 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,7 +47,7 @@
           <div class="body">
             
   <h1>Source code for kollacli.api.client</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright(c) 2016, Oracle and/or its affiliates.  All Rights Reserved.</span>
+<span></span><span class="c1"># Copyright(c) 2017, Oracle and/or its affiliates.  All Rights Reserved.</span>
 <span class="c1">#</span>
 <span class="c1">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may</span>
 <span class="c1">#    not use this file except in compliance with the License. You may obtain</span>
@@ -68,8 +68,7 @@
 
 <span class="kn">from</span> <span class="nn">logging.handlers</span> <span class="kn">import</span> <span class="n">RotatingFileHandler</span>
 
-<span class="kn">from</span> <span class="nn">kollacli.api.async</span> <span class="kn">import</span> <span class="n">AsyncApi</span>
-<span class="kn">from</span> <span class="nn">kollacli.api.deploy</span> <span class="kn">import</span> <span class="n">DeployApi</span>
+<span class="kn">from</span> <span class="nn">kollacli.api.control_plane</span> <span class="kn">import</span> <span class="n">ControlPlaneApi</span>
 <span class="kn">from</span> <span class="nn">kollacli.api.group</span> <span class="kn">import</span> <span class="n">GroupApi</span>
 <span class="kn">from</span> <span class="nn">kollacli.api.host</span> <span class="kn">import</span> <span class="n">HostApi</span>
 <span class="kn">from</span> <span class="nn">kollacli.api.password</span> <span class="kn">import</span> <span class="n">PasswordApi</span>
@@ -83,12 +82,11 @@
     <span class="s1">&#39;[</span><span class="si">%(asctime)s</span><span class="s1">] </span><span class="si">%(levelname)-8s</span><span class="s1"> </span><span class="si">%(name)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
 <span class="n">LOG</span> <span class="o">=</span> <span class="bp">None</span>
 
-<span class="n">VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
+<span class="n">VERSION</span> <span class="o">=</span> <span class="s1">&#39;2.0&#39;</span>
 
 
 <div class="viewcode-block" id="ClientApi"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.client.ClientApi">[docs]</a><span class="k">class</span> <span class="nc">ClientApi</span><span class="p">(</span>
-        <span class="n">AsyncApi</span><span class="p">,</span>
-        <span class="n">DeployApi</span><span class="p">,</span>
+        <span class="n">ControlPlaneApi</span><span class="p">,</span>
         <span class="n">GroupApi</span><span class="p">,</span>
         <span class="n">HostApi</span><span class="p">,</span>
         <span class="n">PasswordApi</span><span class="p">,</span>
@@ -109,14 +107,17 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_configure_logging</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ClientApi.get_version"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.client.ClientApi.get_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClientApi.get_version"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.client.ClientApi.get_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_version</span><span class="p">():</span>
         <span class="c1"># type: () -&gt; str</span>
         <span class="k">return</span> <span class="n">VERSION</span>
 </div>
-<div class="viewcode-block" id="ClientApi.base_call"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.client.ClientApi.base_call">[docs]</a>    <span class="k">def</span> <span class="nf">base_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClientApi.base_call"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.client.ClientApi.base_call">[docs]</a>    <span class="k">def</span> <span class="nf">base_call</span><span class="p">():</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;base call&#39;</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="ClientApi.enable_console_logging"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.client.ClientApi.enable_console_logging">[docs]</a>    <span class="k">def</span> <span class="nf">enable_console_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">enable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClientApi.enable_console_logging"><a class="viewcode-back" href="../../../kollacli.api.html#kollacli.api.client.ClientApi.enable_console_logging">[docs]</a>    <span class="k">def</span> <span class="nf">enable_console_logging</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">enable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="c1"># type: (int, bool) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;enable/disable console logging for the api</span>
 
@@ -209,7 +210,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">kollacli 4.0.0.dev483 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">kollacli 4.0.1.dev498 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
