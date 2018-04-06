@@ -19,7 +19,7 @@ import subprocess
 import sys
 import yaml
 
-from kollacli.common.utils import change_password
+from kolla_cli.common.utils import change_password
 
 
 def _init_keys():

@@ -19,9 +19,9 @@ import os
 import shutil
 import unittest
 
-from kollacli.api.client import ClientApi
-from kollacli.common.allinone import AllInOne
-from kollacli.common.utils import get_kollacli_etc
+from kolla_cli.api.client import ClientApi
+from kolla_cli.common.allinone import AllInOne
+from kolla_cli.common.utils import get_kolla_cli_etc
 
 INV_NAME = 'inventory.json'
 
@@ -86,7 +86,7 @@ class TestFunctional(KollaCliTest):
         return upg_inventory_paths
 
     def _replace_inventory(self, old_version_inv_path):
-        inv_path = os.path.join(get_kollacli_etc(),
+        inv_path = os.path.join(get_kolla_cli_etc(),
                                 'ansible', 'inventory.json')
         shutil.copyfile(old_version_inv_path, inv_path)
 

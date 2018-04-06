@@ -17,9 +17,9 @@ from common import KollaCliTest
 import json
 import unittest
 
-from kollacli.api.client import ClientApi
-from kollacli.api.exceptions import NotInInventory
-from kollacli.common.allinone import AllInOne
+from kolla_cli.api.client import ClientApi
+from kolla_cli.api.exceptions import NotInInventory
+from kolla_cli.common.allinone import AllInOne
 
 CLIENT = ClientApi()
 

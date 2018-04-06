@@ -20,7 +20,7 @@ import tarfile
 import tempfile
 import traceback
 
-from kollacli.api.client import ClientApi
+from kolla_cli.api.client import ClientApi
 
 tar_file_descr = None
 
@@ -107,7 +107,7 @@ def main():
             if os.path.exists(LOGDIR):
                 shutil.rmtree(LOGDIR)
 
-        # gather dump output from kollacli
+        # gather dump output from kolla-cli
         dump_kolla_info()
 
     print('Log collection complete. Logs are at %s' % tar_path)

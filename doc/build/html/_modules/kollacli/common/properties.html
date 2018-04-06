@@ -72,7 +72,7 @@
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">change_property</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_group_vars_dir</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_host_vars_dir</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_home</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_ansible_home</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">sync_read_file</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -97,7 +97,7 @@
 <span class="sd">        KOLLA_HOME/ansible/host_vars/*</span>
 <span class="sd">        KOLLA_ETC/passwords.yml</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">globals_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_home</span><span class="p">(),</span> <span class="n">GLOBALS_PATH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">globals_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_ansible_home</span><span class="p">(),</span> <span class="n">GLOBALS_PATH</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_props</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unique_global_props</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unique_override_flags</span> <span class="o">=</span> <span class="p">{}</span>
@@ -117,7 +117,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">properties_loaded</span> <span class="o">=</span> <span class="bp">True</span>
 
     <span class="k">def</span> <span class="nf">_load_properties_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">start_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_home</span><span class="p">(),</span> <span class="n">ANSIBLE_ROLES_PATH</span><span class="p">)</span>
+        <span class="n">start_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_ansible_home</span><span class="p">(),</span> <span class="n">ANSIBLE_ROLES_PATH</span><span class="p">)</span>
         <span class="n">services</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">start_dir</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">service_name</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
             <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">start_dir</span><span class="p">,</span> <span class="n">service_name</span><span class="p">,</span>
@@ -133,7 +133,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">unique_global_props</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ansible_prop</span>
 
     <span class="k">def</span> <span class="nf">_load_properties_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">allvars_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_home</span><span class="p">(),</span> <span class="n">ALLVARS_PATH</span><span class="p">)</span>
+        <span class="n">allvars_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_ansible_home</span><span class="p">(),</span> <span class="n">ALLVARS_PATH</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">allvars_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">allvars_file</span><span class="p">:</span>
             <span class="n">allvars_contents</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">allvars_file</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">allvars_contents</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

@@ -14,7 +14,7 @@
 #
 from common import KollaCliTest
 
-from kollacli.api.client import ClientApi
+from kolla_cli.api.client import ClientApi
 
 import unittest
 

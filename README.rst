@@ -1,26 +1,31 @@
 ========
-KollaCLI
+Kolla-CLI
 ========
 
-The following steps can be used to build / run the kollacli
+The following steps can be used to build / run the kolla-cli
 
 * install ansible and docker
 * virtualenv .venv
 * . .venv/bin/activate
 * pip install -r requirements.txt
 * python setup.py install
-* mkdir /usr/share/kolla
-* cp -r openstack-kolla/ansible to /usr/share/kolla
+* mkdir /usr/share/kolla-ansible
+* cp -r kolla-ansible/ansible to /usr/share/kolla
 * mkdir /etc/kolla
-* mkdir /etc/kolla/kollacli
-* mkdir /etc/kolla/kollacli/ansible
+* mkdir /etc/kolla/kolla-cli
+* mkdir /etc/kolla/kolla-cli/ansible
+* touch /etc/kolla/kolla-cli/ansible/inventory.json
+* mkdir /var/log/kolla-cli
+* touch /var/log/kolla-cli/kolla.log
 * cp -r openstack-kolla/etc/kolla/* to /etc/kolla
-* mkdir /usr/share/kolla/kollacli
-* mkdir /usr/share/kolla/kollacli/tools
-* mkdir /usr/share/kolla/kollacli/ansible
-* cp openstack-kollacli/tools /usr/share/kolla/kollacli/tools
-* cp openstack-kollacli/ansible /usr/share/kolla/kollacli/ansible
-* kollacli
+* mkdir /usr/share/kolla-ansible/kolla-cli
+* touch /usr/share/kolla-ansible/kolla-cli/ansible.lock
+* mkdir /usr/share/kolla-ansible/kolla-cli/tools
+* mkdir /usr/share/kolla-ansible/kolla-cli/ansible
+* cp kolla-cli/tools /usr/share/kolla-ansible/kolla-cli/tools
+* mkdir /usr/share/kolla-ansible/ansible/host_vars
+* cp /etc/kolla/globals.yml /usr/share/kolla-ansible/ansible/group_vars/__GLOBAL__
+* kolla-cli
 
 At that point you will be dropped into the kollacli shell where
 you can run commands like help or ? to see what commands are

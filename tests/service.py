@@ -17,9 +17,9 @@ from common import KollaCliTest
 import json
 import unittest
 
-from kollacli.api.client import ClientApi
-from kollacli.common.allinone import AllInOne
-from kollacli.common.inventory import Inventory
+from kolla_cli.api.client import ClientApi
+from kolla_cli.common.allinone import AllInOne
+from kolla_cli.common.inventory import Inventory
 
 CLIENT = ClientApi()
 
@@ -38,7 +38,7 @@ class TestFunctional(KollaCliTest):
         self.assertEqual(exp_services, servicenames, 'services mis-match')
 
     def test_service_list(self):
-        """$ kollacli service list -f json
+        """$ kolla-cli service list -f json
 
         [{"Service": "barbican", "Children": ["barbican-keystone-listener"
         "barbican-worker", "barbican-api"]}, {"Service": "barbican-api"
@@ -62,7 +62,7 @@ class TestFunctional(KollaCliTest):
                          '\n\ncli services: %s' % cli_services)
 
     def test_listgroups(self):
-        """$ kollacli service listgroups
+        """$ kolla-cli service listgroups
 
         +------------------------+-------------------------+
         | Service                | Groups                  |

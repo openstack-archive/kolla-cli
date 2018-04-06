@@ -14,10 +14,9 @@
 #
 from common import KollaCliTest
 
-from kollacli.api.client import ClientApi
-from kollacli.common.allinone import AllInOne
-from kollacli.common.ansible import job
-from kollacli.common.inventory import Inventory
+from kolla_cli.api.client import ClientApi
+from kolla_cli.common.allinone import AllInOne
+from kolla_cli.common.inventory import Inventory
 
 import json
 import unittest
@@ -173,7 +172,7 @@ class TestFunctional(KollaCliTest):
             CLIENT.set_deploy_mode(remote_mode=True)
             self.run_cli_cmd('group addhost compute dummy_host')
             (retval, msg) = self.run_command(
-                'kollacli deploy --host dummy_host -v')
+                'kolla-cli deploy --host dummy_host -v')
             self.assertNotEqual(retval, 0,
                                 'host only deploy ran ok but shouldn\'t have')
             self.assertIn(err_msg, msg,
@@ -207,31 +206,6 @@ class TestFunctional(KollaCliTest):
                              % (e.message, msg))
         finally:
             CLIENT.host_remove(['localhost'])
-
-    def test_deserialize(self):
-        # create a dummy ansible job
-        j = job.AnsibleJob('', 123, True, '')
-        line1 = '"This is line1."\n'
-        line2_frag1 = '"This is line2 start. '
-        line2_frag2 = 'This is line2 middle. '
-        line2_frag3 = 'This is line2 end."\n'
-        line3 = '"This is line3."\n'
-
-        exp_results = [
-            'This is line1.',
-            'This is line2 start. This is line2 middle. This is line2 end.',
-            'This is line3.']
-
-        packet1 = line1 + line2_frag1
-        packet2 = line2_frag2
-        packet3 = line2_frag3 + line3
-
-        results = []
-        results.extend(j._deserialize_packets(packet1))
-        results.extend(j._deserialize_packets(packet2))
-        results.extend(j._deserialize_packets(packet3))
-
-        self.assertEqual(exp_results, results, 'packet mis-match')
 
     def check_json(self, msg, groups, hosts, included_groups, included_hosts):
         err_msg = ('included groups: %s\n' % included_groups +

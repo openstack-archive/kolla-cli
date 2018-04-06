@@ -73,7 +73,7 @@
 <span class="kn">from</span> <span class="nn">kollacli.common.passwords</span> <span class="kn">import</span> <span class="n">get_empty_password_values</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.properties</span> <span class="kn">import</span> <span class="n">AnsibleProperties</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_etc</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_home</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_ansible_home</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">is_string_true</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -91,7 +91,7 @@
     <span class="n">playbook_name</span> <span class="o">=</span> <span class="s1">&#39;destroy.yml&#39;</span>
 
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s1">&#39;Please be patient as this may take a while.&#39;</span><span class="p">))</span>
-    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_ansible_home</span><span class="p">()</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
                                           <span class="s1">&#39;ansible/&#39;</span> <span class="o">+</span> <span class="n">playbook_name</span><span class="p">)</span>
 
@@ -110,7 +110,7 @@
 <div class="viewcode-block" id="deploy"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.deploy">[docs]</a><span class="k">def</span> <span class="nf">deploy</span><span class="p">(</span><span class="n">hostnames</span><span class="o">=</span><span class="p">[],</span>
            <span class="n">serial_flag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">servicenames</span><span class="o">=</span><span class="p">[]):</span>
     <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
-    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_ansible_home</span><span class="p">()</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
                                           <span class="s1">&#39;ansible/site.yml&#39;</span><span class="p">)</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;action=deploy&#39;</span>
@@ -128,7 +128,7 @@
 <div class="viewcode-block" id="precheck"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.precheck">[docs]</a><span class="k">def</span> <span class="nf">precheck</span><span class="p">(</span><span class="n">hostnames</span><span class="p">,</span> <span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;run check playbooks on a set of hosts&#39;&#39;&#39;</span>
     <span class="n">playbook_name</span> <span class="o">=</span> <span class="s1">&#39;prechecks_preinstall.yml&#39;</span>
-    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_ansible_home</span><span class="p">()</span>
     <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
                                           <span class="s1">&#39;ansible/&#39;</span> <span class="o">+</span> <span class="n">playbook_name</span><span class="p">)</span>
@@ -147,7 +147,7 @@
 <div class="viewcode-block" id="pull"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.pull">[docs]</a><span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;run pull action against all hosts&#39;&#39;&#39;</span>
     <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
-    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_ansible_home</span><span class="p">()</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
                                           <span class="s1">&#39;ansible/site.yml&#39;</span><span class="p">)</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;action=pull&#39;</span>
@@ -166,7 +166,7 @@
     <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
     <span class="n">playbook_name</span> <span class="o">=</span> <span class="s1">&#39;stop.yml&#39;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">_LI</span><span class="p">(</span><span class="s1">&#39;Please be patient as this may take a while.&#39;</span><span class="p">))</span>
-    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_ansible_home</span><span class="p">()</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
                                           <span class="s1">&#39;ansible/&#39;</span> <span class="o">+</span> <span class="n">playbook_name</span><span class="p">)</span>
 
@@ -182,7 +182,7 @@
 </div>
 <div class="viewcode-block" id="reconfigure"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.reconfigure">[docs]</a><span class="k">def</span> <span class="nf">reconfigure</span><span class="p">(</span><span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
-    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_ansible_home</span><span class="p">()</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
                                           <span class="s1">&#39;ansible/site.yml&#39;</span><span class="p">)</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;action=reconfigure&#39;</span>
@@ -196,7 +196,7 @@
 </div>
 <div class="viewcode-block" id="upgrade"><a class="viewcode-back" href="../../../../kollacli.common.ansible.html#kollacli.common.ansible.actions.upgrade">[docs]</a><span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="n">verbose_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">servicenames</span><span class="o">=</span><span class="p">[]):</span>
     <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybook</span><span class="p">()</span>
-    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_ansible_home</span><span class="p">()</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span>
                                           <span class="s1">&#39;ansible/site.yml&#39;</span><span class="p">)</span>
     <span class="n">playbook</span><span class="o">.</span><span class="n">extra_vars</span> <span class="o">=</span> <span class="s1">&#39;action=upgrade&#39;</span>

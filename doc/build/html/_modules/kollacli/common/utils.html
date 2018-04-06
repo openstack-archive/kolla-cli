@@ -99,7 +99,7 @@
                           <span class="s2">&quot;/etc/ansible/&quot;</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="get_kolla_home"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kolla_home">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_home</span><span class="p">():</span>
+<div class="viewcode-block" id="get_kolla_home"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kolla_home">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_ansible_home</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;KOLLA_HOME&quot;</span><span class="p">,</span> <span class="s2">&quot;/usr/share/kolla/&quot;</span><span class="p">)</span>
 
 </div>
@@ -107,32 +107,32 @@
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;KOLLA_ETC&quot;</span><span class="p">,</span> <span class="s2">&quot;/etc/kolla/&quot;</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="get_kollacli_home"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kollacli_home">[docs]</a><span class="k">def</span> <span class="nf">get_kollacli_home</span><span class="p">():</span>
+<div class="viewcode-block" id="get_kollacli_home"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kollacli_home">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_cli_home</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;KOLLA_CLI_HOME&quot;</span><span class="p">,</span> <span class="s2">&quot;/usr/share/kolla/kollacli/&quot;</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="get_kollacli_etc"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kollacli_etc">[docs]</a><span class="k">def</span> <span class="nf">get_kollacli_etc</span><span class="p">():</span>
+<div class="viewcode-block" id="get_kollacli_etc"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kollacli_etc">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_cli_etc</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;KOLLA_CLI_ETC&quot;</span><span class="p">,</span> <span class="s2">&quot;/etc/kolla/kollacli/&quot;</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="get_group_vars_dir"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_group_vars_dir">[docs]</a><span class="k">def</span> <span class="nf">get_group_vars_dir</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_home</span><span class="p">(),</span> <span class="s1">&#39;ansible/group_vars&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_ansible_home</span><span class="p">(),</span> <span class="s1">&#39;ansible/group_vars&#39;</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="get_host_vars_dir"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_host_vars_dir">[docs]</a><span class="k">def</span> <span class="nf">get_host_vars_dir</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_home</span><span class="p">(),</span> <span class="s1">&#39;ansible/host_vars&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_ansible_home</span><span class="p">(),</span> <span class="s1">&#39;ansible/host_vars&#39;</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="get_kolla_log_dir"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kolla_log_dir">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_log_dir</span><span class="p">():</span>
+<div class="viewcode-block" id="get_kolla_log_dir"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kolla_log_dir">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_ansible_log_dir</span><span class="p">():</span>
     <span class="k">return</span> <span class="s1">&#39;/var/log/kolla/&#39;</span>
 
 </div>
 <div class="viewcode-block" id="get_ansible_lock_path"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_ansible_lock_path">[docs]</a><span class="k">def</span> <span class="nf">get_ansible_lock_path</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_home</span><span class="p">(),</span> <span class="s1">&#39;ansible.lock&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_cli_home</span><span class="p">(),</span> <span class="s1">&#39;ansible.lock&#39;</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="get_kolla_actions_path"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_kolla_actions_path">[docs]</a><span class="k">def</span> <span class="nf">get_kolla_actions_path</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_home</span><span class="p">(),</span> <span class="s1">&#39;tools&#39;</span><span class="p">,</span> <span class="s1">&#39;kolla_actions.py&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_cli_home</span><span class="p">(),</span> <span class="s1">&#39;tools&#39;</span><span class="p">,</span> <span class="s1">&#39;kolla_actions.py&#39;</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="get_admin_uids"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.utils.get_admin_uids">[docs]</a><span class="k">def</span> <span class="nf">get_admin_uids</span><span class="p">():</span>
