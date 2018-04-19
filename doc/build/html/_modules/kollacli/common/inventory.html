@@ -87,7 +87,7 @@
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_ansible_command</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_group_vars_dir</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_host_vars_dir</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kollacli_etc</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_cli_etc</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">run_cmd</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">sync_read_file</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">sync_write_file</span>
@@ -166,7 +166,7 @@
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="Inventory.load"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;load the inventory from a pickle file&quot;&quot;&quot;</span>
-        <span class="n">inventory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_etc</span><span class="p">(),</span> <span class="n">INVENTORY_PATH</span><span class="p">)</span>
+        <span class="n">inventory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_cli_etc</span><span class="p">(),</span> <span class="n">INVENTORY_PATH</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">):</span>
@@ -190,7 +190,7 @@
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="Inventory.save"><a class="viewcode-back" href="../../../kollacli.common.html#kollacli.common.inventory.Inventory.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">inventory</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Save the inventory in a pickle file&quot;&quot;&quot;</span>
-        <span class="n">inventory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kollacli_etc</span><span class="p">(),</span> <span class="n">INVENTORY_PATH</span><span class="p">)</span>
+        <span class="n">inventory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_kolla_cli_etc</span><span class="p">(),</span> <span class="n">INVENTORY_PATH</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># multiple trips thru json to render a readable inventory file</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">jsonpickle</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>

@@ -18,11 +18,11 @@ import json
 import os
 import unittest
 
-from kollacli.common.utils import get_group_vars_dir
-from kollacli.common.utils import get_host_vars_dir
-from kollacli.common.utils import get_kolla_home
+from kolla_cli.common.utils import get_group_vars_dir
+from kolla_cli.common.utils import get_host_vars_dir
+from kolla_cli.common.utils import get_kolla_ansible_home
 
-from kollacli.common.inventory import Inventory
+from kolla_cli.common.inventory import Inventory
 
 
 class TestFunctional(KollaCliTest):
@@ -140,12 +140,12 @@ class TestFunctional(KollaCliTest):
             if targets_csv != 'all':
                 targets_csv += comma + target
                 comma = ','
-            path = os.path.join(get_kolla_home(),
+            path = os.path.join(get_kolla_ansible_home(),
                                 'ansible', dir_name, target)
             sizes[path] = [os.path.getsize(path)]
         if not switch:
             self.run_cli_cmd('property clear %s' % key)
-            path = os.path.join(get_kolla_home(),
+            path = os.path.join(get_kolla_ansible_home(),
                                 'ansible/group_vars/__GLOBAL__')
             sizes[path] = [os.path.getsize(path)]
 

@@ -68,9 +68,9 @@
 <span class="kn">from</span> <span class="nn">kollacli.api.exceptions</span> <span class="kn">import</span> <span class="n">FailedOperation</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.inventory</span> <span class="kn">import</span> <span class="n">Inventory</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.properties</span> <span class="kn">import</span> <span class="n">AnsibleProperties</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_home</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_log_dir</span>
-<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kollacli_etc</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_ansible_home</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_ansible_log_dir</span>
+<span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">get_kolla_cli_etc</span>
 <span class="kn">from</span> <span class="nn">kollacli.common.utils</span> <span class="kn">import</span> <span class="n">run_cmd</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -209,10 +209,10 @@
 <span class="sd">    tar file so be given to support / development to help with</span>
 <span class="sd">    debugging problems.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_home</span><span class="p">()</span>
-    <span class="n">kolla_logs</span> <span class="o">=</span> <span class="n">get_kolla_log_dir</span><span class="p">()</span>
+    <span class="n">kolla_home</span> <span class="o">=</span> <span class="n">get_kolla_ansible_home</span><span class="p">()</span>
+    <span class="n">kolla_logs</span> <span class="o">=</span> <span class="n">get_kolla_ansible_log_dir</span><span class="p">()</span>
     <span class="n">kolla_ansible</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kolla_home</span><span class="p">,</span> <span class="s1">&#39;ansible&#39;</span><span class="p">)</span>
-    <span class="n">kollacli_etc</span> <span class="o">=</span> <span class="n">get_kollacli_etc</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="n">kollacli_etc</span> <span class="o">=</span> <span class="n">get_kolla_cli_etc</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
     <span class="n">ketc</span> <span class="o">=</span> <span class="s1">&#39;kolla/etc/&#39;</span>
     <span class="n">kshare</span> <span class="o">=</span> <span class="s1">&#39;kolla/share/&#39;</span>
     <span class="n">fd</span><span class="p">,</span> <span class="n">dump_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;kollacli_dump_&#39;</span><span class="p">,</span>

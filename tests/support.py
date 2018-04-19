@@ -18,9 +18,9 @@ import tarfile
 import unittest
 
 from common import KollaCliTest
-from kollacli.api.client import ClientApi
-from kollacli.common.utils import get_kollacli_home
-from kollacli.common.utils import safe_decode
+from kolla_cli.api.client import ClientApi
+from kolla_cli.common.utils import get_kolla_cli_home
+from kolla_cli.common.utils import safe_decode
 
 LOGS_PREFIX = '/tmp/kolla_support_logs_'
 CLIENT = ClientApi()
@@ -36,7 +36,7 @@ class TestFunctional(KollaCliTest):
 
         zip_path = ''
         try:
-            path = os.path.join(get_kollacli_home(),
+            path = os.path.join(get_kolla_cli_home(),
                                 'tools', 'log_collector.py')
 
             # run the log_collector tool
@@ -78,8 +78,8 @@ class TestFunctional(KollaCliTest):
 
     def test_dump(self):
         check_files = [
-            'var/log/kolla/kolla.log',
-            'kolla/etc/kollacli/ansible/inventory.json',
+            'var/log/kolla-cli/kolla.log',
+            'kolla/etc/kolla-cli/ansible/inventory.json',
             'kolla/share/ansible/site.yml',
         ]
         # dump success output is:
@@ -93,7 +93,6 @@ class TestFunctional(KollaCliTest):
             is_file = os.path.isfile(dump_path)
             self.assertTrue(is_file,
                             'dump file not found at %s' % dump_path)
-            file_paths = []
             with tarfile.open(dump_path, 'r') as tar:
                 file_paths = tar.getnames()
 

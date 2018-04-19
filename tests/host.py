@@ -19,9 +19,9 @@ import os
 import unittest
 import yaml
 
-from kollacli.api.client import ClientApi
-from kollacli.api.exceptions import NotInInventory
-from kollacli.api.host import Host
+from kolla_cli.api.client import ClientApi
+from kolla_cli.api.exceptions import NotInInventory
+from kolla_cli.api.host import Host
 
 TEST_YML_FNAME = 'unittest_hosts_setup.yml'
 

@@ -19,13 +19,13 @@ import subprocess
 import sys
 import testtools
 
-import kollacli.common.utils as utils
+import kolla_cli.common.utils as utils
 
 from copy import copy
 from shutil import copyfile
 
-from kollacli.api.client import ClientApi
-from kollacli.api.exceptions import InvalidArgument
+from kolla_cli.api.client import ClientApi
+from kolla_cli.api.exceptions import InvalidArgument
 
 CLIENT = ClientApi()
 CLIENT.enable_console_logging(logging.DEBUG)
@@ -40,8 +40,8 @@ ARG_LIST = {
 
 TEST_SUFFIX = 'test/'
 VENV_PY_PATH = '.venv/bin/python'
-KOLLA_CMD = 'kollacli'
-KOLLA_SHELL_DIR = 'kollacli'
+KOLLA_CMD = 'kolla-cli'
+KOLLA_SHELL_DIR = 'kolla_cli'
 
 
 class KollaCliTest(testtools.TestCase):
@@ -60,7 +60,7 @@ class KollaCliTest(testtools.TestCase):
 
         # switch to test path
         self.log.info('running python: %s/%s' % (sys.executable, sys.version))
-        etc_path = utils.get_kollacli_etc()
+        etc_path = utils.get_kolla_cli_etc()
         self.log.debug('etc for tests: %s' % etc_path)
 
         self._set_cmd_prefix()
@@ -160,13 +160,13 @@ class KollaCliTest(testtools.TestCase):
     def _save_config(self):
         """save config"""
         # save inventory
-        src_path = os.path.join(utils.get_kollacli_etc(),
+        src_path = os.path.join(utils.get_kolla_cli_etc(),
                                 'ansible', 'inventory.json')
         dst_path = os.path.join('/tmp', 'inventory.json.utest.save')
         copyfile(src_path, dst_path)
 
         # save group vars
-        ansible_dir = os.path.join(utils.get_kolla_home(), 'ansible')
+        ansible_dir = os.path.join(utils.get_kolla_ansible_home(), 'ansible')
         groupdir = os.path.join(ansible_dir, 'group_vars')
         self._save_dir(groupdir)
 
@@ -177,13 +177,13 @@ class KollaCliTest(testtools.TestCase):
     def _restore_config(self):
         """restore config"""
         # restore inventory
-        dst_path = os.path.join(utils.get_kollacli_etc(),
+        dst_path = os.path.join(utils.get_kolla_cli_etc(),
                                 'ansible', 'inventory.json')
         src_path = os.path.join('/tmp', 'inventory.json.utest.save')
         copyfile(src_path, dst_path)
 
         # restore group vars
-        ansible_dir = os.path.join(utils.get_kolla_home(), 'ansible')
+        ansible_dir = os.path.join(utils.get_kolla_ansible_home(), 'ansible')
         groupdir = os.path.join(ansible_dir, 'group_vars')
         self._restore_dir(groupdir)
 
@@ -232,14 +232,14 @@ class KollaCliTest(testtools.TestCase):
             os.mkdir(path)
 
     def _set_cmd_prefix(self):
-        """Select the command to invoke the kollacli
+        """Select the command to invoke the kolla-cli
 
             The kolla cli can be run:
 
             1) from the command line via $ KOLLA_CMD, or
 
             2) if that doesn't work, this assumes that we're operating
-            in a dev't debug environment, which means that the kollacli
+            in a dev't debug environment, which means that the kolla-cli
             was installed in a virtualenv. So then we have to use the python
             version in virtualenv and the tests will have to be run
             from the tests directory.
@@ -254,10 +254,10 @@ class KollaCliTest(testtools.TestCase):
             return
 
         # self.log.debug('%s exec failed: %s' % (KOLLA_CMD, msg))
-        self.log.debug('look for kollacli shell in virtual env')
+        self.log.debug('look for kolla-cli shell in virtual env')
 
         # try to see if this is a debug virtual environment
-        # will run the tests via kollacli/shell.sh and
+        # will run the tests via kolla_cli/shell.py and
         # use the python in .venv/bin/python
         cwd = os.getcwd()
         if cwd.endswith('tests'):
@@ -278,4 +278,4 @@ class KollaCliTest(testtools.TestCase):
                 return
 
         self.assertEqual(0, 1,
-                         'no kollacli shell command found. Aborting tests')
+                         'no kolla-cli shell command found. Aborting tests')
