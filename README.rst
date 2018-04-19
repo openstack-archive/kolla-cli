@@ -11,17 +11,11 @@ The following steps can be used to build / run the kolla-cli
 * python setup.py install
 * mkdir /usr/share/kolla-ansible
 * cp -r kolla-ansible/ansible to /usr/share/kolla
-* mkdir /etc/kolla
-* mkdir /etc/kolla/kolla-cli
-* mkdir /etc/kolla/kolla-cli/ansible
+* mkdir -p /etc/kolla/kolla-cli/ansible
 * touch /etc/kolla/kolla-cli/ansible/inventory.json
-* mkdir /var/log/kolla-cli
-* touch /var/log/kolla-cli/kolla.log
-* cp -r openstack-kolla/etc/kolla/* to /etc/kolla
-* mkdir /usr/share/kolla-ansible/kolla-cli
-* touch /usr/share/kolla-ansible/kolla-cli/ansible.lock
-* mkdir /usr/share/kolla-ansible/kolla-cli/tools
+* mkdir -p /usr/share/kolla-ansible/kolla-cli/tools
 * mkdir /usr/share/kolla-ansible/kolla-cli/ansible
+* touch /usr/share/kolla-ansible/kolla-cli/ansible.lock
 * cp kolla-cli/tools /usr/share/kolla-ansible/kolla-cli/tools
 * mkdir /usr/share/kolla-ansible/ansible/host_vars
 * cp /etc/kolla/globals.yml /usr/share/kolla-ansible/ansible/group_vars/__GLOBAL__

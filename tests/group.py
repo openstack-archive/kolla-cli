@@ -60,7 +60,7 @@ class TestFunctional(KollaCliTest):
 
         host1 = 'test_host1'
         host2 = 'test_host2'
-        groupname = 'compute'
+        groupname = 'control'
 
         group = groups[groupname]
         hosts = group['Hosts']
@@ -88,7 +88,7 @@ class TestFunctional(KollaCliTest):
     def test_add_group_to_service(self):
         groups = self.get_default_groups()
 
-        groupname = 'compute'
+        groupname = 'network'
         service1 = 'keystone'
         service2 = 'heat-api'
 
@@ -211,12 +211,14 @@ class TestFunctional(KollaCliTest):
                                  % group_name +
                                  ' not equal to expected services,' +
                                  '\nexpected: %s, \ncli: %s'
-                                 % (group_services, cli_services))
+                                 % (sorted(group_services),
+                                    sorted(cli_services)))
                 for group_service in group_services:
                     self.assertIn(group_service, cli_services,
                                   'Group: %s' % group_name +
                                   '\nexpected_services: %s, \nnot in cli: %s '
-                                  % (group_service, cli_services))
+                                  % (sorted(group_services),
+                                     sorted(cli_services)))
 
     def get_default_groups(self):
         """get default groups

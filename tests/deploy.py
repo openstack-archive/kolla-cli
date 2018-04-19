@@ -22,6 +22,7 @@ import json
 import unittest
 
 CLIENT = ClientApi()
+UNREACHABLE = 'UNREACHABLE!'
 
 
 class TestFunctional(KollaCliTest):
@@ -56,7 +57,7 @@ class TestFunctional(KollaCliTest):
             json.loads(msg)
         except Exception:
             self.assertTrue(False, 'invalid json: %s' % msg)
-        remote_msg = '"ansible_ssh_user": "kolla"'
+        remote_msg = '"ansible_ssh_user": "root"'
         local_msg = '"ansible_connection": "local"'
 
         # verify that setdeploy local worked:
@@ -66,7 +67,7 @@ class TestFunctional(KollaCliTest):
                          % (remote_msg, msg))
 
         # verify that setdeploy remote worked:
-        self.run_cli_cmd('setdeploy remote')
+        CLIENT.set_deploy_mode(remote_mode=True)
         inventory = Inventory.load()
         path = inventory.create_json_gen_file()
         (retval, msg) = self.run_command(path)
@@ -85,8 +86,9 @@ class TestFunctional(KollaCliTest):
 
         for host in hosts:
             self.run_cli_cmd('host add %s' % host)
-            for group in groups:
-                self.run_cli_cmd('group addhost %s %s' % (group, host))
+            for groupname in groups:
+                group = CLIENT.group_get([groupname])[0]
+                group.add_host(host)
 
         inventory = Inventory.load()
 
@@ -139,50 +141,17 @@ class TestFunctional(KollaCliTest):
             enable_service_props['enable_%s' % service_name] = 'no'
         CLIENT.property_set(enable_service_props)
 
-        self.run_cli_cmd('deploy')
-        self.run_cli_cmd('deploy --serial -v')
+        msg = ''
+        CLIENT.set_deploy_mode(remote_mode=False)
+        job = CLIENT.deploy(hostnames=[])
+        job.wait()
+        msg = job.get_console_output()
+        self.assertEqual(job.get_status(), 0,
+                         'error performing whole host deploy %s' % msg)
 
         # test deploy with timeout
         msg = self.run_cli_cmd('deploy --timeout .001', expect_error=True)
         self.assertIn('timed out', msg)
-
-        # full host deploy to non-compute host.  this can only be done
-        # through the api (cli test below makes sure it fails in cli)
-        msg = ''
-        try:
-            CLIENT.host_add(['localhost'])
-            CLIENT.set_deploy_mode(remote_mode=False)
-            job = CLIENT.deploy(hostnames=['localhost'])
-            job.wait()
-            msg = job.get_console_output()
-            self.assertEqual(job.get_status(), 0,
-                             'error performing whole host deploy %s' % msg)
-        except Exception as e:
-            self.assertEqual(0, 1,
-                             'unexpected exception in host deploy %s, %s'
-                             % (e.message, msg))
-        finally:
-            CLIENT.host_remove(['localhost'])
-
-        # run compute host deploy to invalid host
-        err_msg = 'Status: unreachable'
-        msg = ''
-        try:
-            self.run_cli_cmd('host add dummy_host')
-            CLIENT.set_deploy_mode(remote_mode=True)
-            self.run_cli_cmd('group addhost compute dummy_host')
-            (retval, msg) = self.run_command(
-                'kolla-cli deploy --host dummy_host -v')
-            self.assertNotEqual(retval, 0,
-                                'host only deploy ran ok but shouldn\'t have')
-            self.assertIn(err_msg, msg,
-                          'Incorrect error message')
-        except Exception as e:
-            self.assertEqual(0, 1,
-                             'host only deploy threw exception %s, %s'
-                             % (e.message, msg))
-        finally:
-            self.run_cli_cmd('host remove dummy_host')
 
     def test_upgrade(self):
         # test will upgrade an environment with no hosts, mostly a NOP,
@@ -192,20 +161,19 @@ class TestFunctional(KollaCliTest):
         msg = ''
         # run rabbitmq service deploy
         try:
-            CLIENT.host_add(['localhost'])
-            CLIENT.set_deploy_mode(remote_mode=False)
+            CLIENT.host_add(['dummy_host'])
+            CLIENT.set_deploy_mode(remote_mode=True)
             job = CLIENT.upgrade()
             job.wait()
             msg = job.get_console_output()
-            self.assertEqual(job.get_status(), 0,
-                             'error performing service specific deploy %s'
+            self.assertEqual(job.get_status(), 1,
+                             'upgrade succeeded unexpectedly: %s'
                              % msg)
+            self.assertIn(UNREACHABLE, msg)
         except Exception as e:
-            self.assertEqual(0, 1,
-                             'unexpected exception in service deploy: %s, %s'
-                             % (e.message, msg))
+            raise e
         finally:
-            CLIENT.host_remove(['localhost'])
+            CLIENT.host_remove(['dummy_host'])
 
     def check_json(self, msg, groups, hosts, included_groups, included_hosts):
         err_msg = ('included groups: %s\n' % included_groups +

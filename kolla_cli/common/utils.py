@@ -40,26 +40,20 @@ def get_log_level():
     return level
 
 
-def get_ansible_etc():
-    return os.environ.get("ANSIBLE_ETC",
-                          "/etc/ansible/")
-
-
 def get_kolla_ansible_home():
     return os.environ.get("KOLLA_HOME", "/usr/share/kolla-ansible/")
 
 
 def get_kolla_etc():
-    return os.environ.get("KOLLA_ETC", "/etc/kolla/")
+    return os.environ.get('KOLLA_ETC', '/etc/kolla/')
 
 
 def get_kolla_cli_home():
-    return os.environ.get("KOLLA_CLI_HOME",
-                          "/usr/share/kolla-ansible/kolla-cli/")
+    return os.path.join(get_kolla_ansible_home(), 'kolla-cli')
 
 
 def get_kolla_cli_etc():
-    return os.environ.get("KOLLA_CLI_ETC", "/etc/kolla/kolla-cli/")
+    return os.path.join(get_kolla_etc(), 'kolla-cli')
 
 
 def get_group_vars_dir():
@@ -70,16 +64,17 @@ def get_host_vars_dir():
     return os.path.join(get_kolla_ansible_home(), 'ansible/host_vars')
 
 
-def get_kolla_ansible_log_dir():
-    return '/var/log/kolla-cli/'
-
-
 def get_ansible_lock_path():
     return os.path.join(get_kolla_cli_home(), 'ansible.lock')
 
 
+def get_tools_path():
+    return os.environ.get(
+        'KOLLA_TOOLS_DIR', os.path.join(get_kolla_cli_home(), 'tools'))
+
+
 def get_kolla_actions_path():
-    return os.path.join(get_kolla_cli_home(), 'tools', 'kolla_actions.py')
+    return os.path.join(get_tools_path(), 'kolla_actions.py')
 
 
 def get_admin_uids():
@@ -88,19 +83,6 @@ def get_admin_uids():
     uid = user_info.pw_uid
     gid = user_info.pw_gid
     return uid, gid
-
-
-def get_kolla_log_file_size():
-    envvar = 'KOLLA_LOG_FILE_SIZE'
-    size_str = os.environ.get(envvar, '500000')
-    try:
-        size = int(size_str)
-    except Exception:
-        raise InvalidArgument(
-            u._('Environmental variable ({env_var}) is not an '
-                'integer ({log_size}).')
-            .format(env_var=envvar, log_size=size_str))
-    return size
 
 
 def get_property_list_length():
@@ -252,11 +234,16 @@ def change_property(file_path, property_dict, clear=False):
     If not clear, and key is found, edit property in place.
     """
     cloned_dict = copy.copy(property_dict)
-    group_info = grp.getgrnam('kolla')
     if not os.path.exists(file_path):
         with open(file_path, 'a'):
             os.utime(file_path, None)
-            os.chown(file_path, -1, group_info.gr_gid)
+            try:
+                group_info = grp.getgrnam('kolla')
+                os.chown(file_path, -1, group_info.gr_gid)
+            except KeyError:
+                # ignore error if kolla user not present, needed
+                # for functional test
+                LOG.debug('Ignoring error- kolla user not defined')
 
     new_contents = []
     read_data = sync_read_file(file_path)
@@ -568,6 +555,9 @@ class Lock(object):
                 self._release_flock()
             else:
                 self._release_pidfile()
+        except OSError:
+            # ignore release of an already released lock
+            pass
         except Exception:
             # this really shouldn't happen unless for some reason
             # two areas in the same process try to release the lock

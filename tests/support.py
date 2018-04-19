@@ -19,7 +19,7 @@ import unittest
 
 from common import KollaCliTest
 from kolla_cli.api.client import ClientApi
-from kolla_cli.common.utils import get_kolla_cli_home
+from kolla_cli.common.utils import get_tools_path
 from kolla_cli.common.utils import safe_decode
 
 LOGS_PREFIX = '/tmp/kolla_support_logs_'
@@ -36,8 +36,8 @@ class TestFunctional(KollaCliTest):
 
         zip_path = ''
         try:
-            path = os.path.join(get_kolla_cli_home(),
-                                'tools', 'log_collector.py')
+            path = os.path.join(get_tools_path(),
+                                'log_collector.py')
 
             # run the log_collector tool
             retval, msg = self.run_command('/usr/bin/python %s %s'
@@ -78,7 +78,6 @@ class TestFunctional(KollaCliTest):
 
     def test_dump(self):
         check_files = [
-            'var/log/kolla-cli/kolla.log',
             'kolla/etc/kolla-cli/ansible/inventory.json',
             'kolla/share/ansible/site.yml',
         ]

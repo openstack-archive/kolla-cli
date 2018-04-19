@@ -147,7 +147,7 @@ class TestFunctional(KollaCliTest):
 
         # add new group to a service which has a parent
         servicename = 'glance-api'
-        new_group = 'compute'
+        new_group = 'control'
         self.run_cli_cmd('service addgroup %s %s' % (servicename, new_group))
 
         msg = self.run_cli_cmd('service listgroups -f json')

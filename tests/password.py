@@ -56,7 +56,8 @@ class TestFunctional(KollaCliTest):
     def test_password_set_clear(self):
 
         # This test should leave the passwords.yml file unchanged
-        # after the test completes.
+        # after the test completes. The tox setup bash script sets
+        # one password - "database_password" to "foobar".
         pwds_path = os.path.join(get_kolla_etc(), 'passwords.yml')
         size_start = os.path.getsize(pwds_path)
 
@@ -127,9 +128,6 @@ class TestFunctional(KollaCliTest):
         size_end = os.path.getsize(pwds_path)
         self.assertEqual(size_start, size_end, 'passwords.yml size changed ' +
                          'from %s to %s' % (size_start, size_end))
-
-        # check that password init does not throw an exception
-        self.run_cli_cmd('password init')
 
     def _password_value_exists(self, key, value, cli_output):
         """Verify cli data against model data"""

@@ -24,7 +24,7 @@ TEST_GROUP_NAME = 'test_group'
 CLIENT = ClientApi()
 
 NOT_KNOWN = 'Name or service not known'
-UNREACHABLE = 'Status: unreachable'
+UNREACHABLE = 'UNREACHABLE!'
 
 
 class TestFunctional(KollaCliTest):
@@ -35,19 +35,7 @@ class TestFunctional(KollaCliTest):
         # This will generate expected exceptions in all host access
         # commands.
         hostnames = ['test_deploy_host1']
-        pwd = 'test_pwd'
-
         CLIENT.host_add(hostnames)
-
-        try:
-            setup_info = {}
-            for hostname in hostnames:
-                setup_info[hostname] = {'password': pwd}
-            CLIENT.host_setup(setup_info)
-        except Exception as e:
-            self.assertFalse(False, 'host setup exception: %s' % e)
-            self.assertIn(NOT_KNOWN, '%s' % e,
-                          'Unexpected exception in host setup: %s' % e)
 
         # add host to a new deploy group
         CLIENT.group_add([TEST_GROUP_NAME])
@@ -58,7 +46,7 @@ class TestFunctional(KollaCliTest):
         # destroy services, initialize server
         self.log.info('Start destroy #1')
         job = CLIENT.host_destroy(hostnames, destroy_type='kill',
-                                  include_data=True)
+                                  include_data=True, verbose_level=2)
         self._process_job(job, 'destroy #1')
 
         self.log.info('updating various properties for the test')
@@ -91,18 +79,18 @@ class TestFunctional(KollaCliTest):
 
     def _process_job(self, job, descr, expect_kill=False):
         status = job.wait()
-        err_msg = job.get_error_message()
+        output = job.get_console_output()
         self.log.info('job is complete. status: %s, err: %s'
-                      % (status, err_msg))
+                      % (status, output))
         if expect_kill:
             self.assertEqual(2, status, 'Job %s does not have killed status %s'
-                             % (descr, err_msg))
+                             % (descr, output))
         else:
             self.assertEqual(1, status, 'Job %s ' % descr +
                              'succeeded when it should have failed')
-            self.assertIn(UNREACHABLE,
+            self.assertIn(UNREACHABLE, output,
                           'Job %s: No hosts, but got wrong error: %s'
-                          % (descr, err_msg))
+                          % (descr, output))
 
 if __name__ == '__main__':
     unittest.main()

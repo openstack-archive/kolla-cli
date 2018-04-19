@@ -20,7 +20,6 @@ from kolla_cli.api.exceptions import FailedOperation
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.properties import AnsibleProperties
 from kolla_cli.common.utils import get_kolla_ansible_home
-from kolla_cli.common.utils import get_kolla_ansible_log_dir
 from kolla_cli.common.utils import get_kolla_cli_etc
 from kolla_cli.common.utils import run_cmd
 
@@ -161,7 +160,6 @@ def dump(dirpath):
     debugging problems.
     """
     kolla_home = get_kolla_ansible_home()
-    kolla_logs = get_kolla_ansible_log_dir()
     kolla_ansible = os.path.join(kolla_home, 'ansible')
     kollacli_etc = get_kolla_cli_etc().rstrip('/')
     ketc = 'kolla/etc/'
@@ -179,10 +177,6 @@ def dump(dirpath):
         # file is accessible by the kolla user only (not kolla group)
         tar.add(kollacli_etc,
                 arcname=ketc + os.path.basename(kollacli_etc))
-
-        # add kolla log files
-        if os.path.isdir(kolla_logs):
-            tar.add(kolla_logs)
 
         # add output of various commands
         _add_cmd_info(tar)

@@ -605,7 +605,6 @@ class Inventory(object):
         dirpath = os.path.join(tempfile.gettempdir(), dirname)
         os.mkdir(dirpath, 0o775)
         _, gid = get_admin_uids()
-        os.chown(dirpath, -1, gid)  # nosec
         json_gen_path = os.path.join(dirpath, 'temp_inventory.py')
 
         with open(json_gen_path, 'w') as json_gen_file:

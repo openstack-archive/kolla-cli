@@ -42,18 +42,19 @@ def _get_empty_keys(path):
         pwd_data = f.read()
     pwds = yaml.safe_load(pwd_data)
     comma = ''
-    for pwd_key, pwd_val in pwds.items():
-        is_empty = False
-        if not pwd_val and pwd_key not in ok_empty:
-            is_empty = True
-        elif isinstance(pwd_val, dict):
-            if not pwd_val.get('private_key', None):
+    if pwds:
+        for pwd_key, pwd_val in pwds.items():
+            is_empty = False
+            if not pwd_val and pwd_key not in ok_empty:
                 is_empty = True
-            elif not pwd_val.get('public_key', None):
-                is_empty = True
-        if is_empty:
-            empty_keys = ''.join([empty_keys, comma, pwd_key])
-            comma = ','
+            elif isinstance(pwd_val, dict):
+                if not pwd_val.get('private_key', None):
+                    is_empty = True
+                elif not pwd_val.get('public_key', None):
+                    is_empty = True
+            if is_empty:
+                empty_keys = ''.join([empty_keys, comma, pwd_key])
+                comma = ','
     if empty_keys:
         print(empty_keys)
 
@@ -64,9 +65,10 @@ def _print_pwd_keys(path):
     with open(path, 'r') as f:
         pwd_data = f.read()
     pwds = yaml.safe_load(pwd_data)
-    for pwd_key in pwds.keys():
-        keys_str = ''.join([keys_str, prefix, pwd_key])
-        prefix = ','
+    if pwds:
+        for pwd_key in pwds.keys():
+            keys_str = ''.join([keys_str, prefix, pwd_key])
+            prefix = ','
     print(keys_str)
 
 

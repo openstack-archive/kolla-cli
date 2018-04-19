@@ -39,7 +39,7 @@ ARG_LIST = {
     }
 
 TEST_SUFFIX = 'test/'
-VENV_PY_PATH = '.venv/bin/python'
+VENV_PY_PATH = '.tox/py27/bin/python'
 KOLLA_CMD = 'kolla-cli'
 KOLLA_SHELL_DIR = 'kolla_cli'
 
@@ -95,14 +95,9 @@ class KollaCliTest(testtools.TestCase):
         """
         # self.log.debug('run cmd: %s' % cmd)
         msg = ''
-
-        # pipe encoding defaults to None which will cause output encode errors
-        # if non-ascii chars are attempted to be written to stdout.
-        env = {'PYTHONIOENCODING': 'utf-8'}
         process = subprocess.Popen(cmd,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
-                                   env=env,
                                    shell=True)
         (out, err) = process.communicate()
         retval = process.returncode
@@ -192,6 +187,8 @@ class KollaCliTest(testtools.TestCase):
         self._restore_dir(hostdir)
 
     def _save_dir(self, src_dir):
+        if not os.path.exists(src_dir):
+            return
         dirname = os.path.basename(src_dir)
         save_dir = os.path.join('/tmp', dirname + '.utest.save')
         if os.path.exists(save_dir):
@@ -247,8 +244,8 @@ class KollaCliTest(testtools.TestCase):
         (_, msg) = self.run_command('which python')
         self.log.debug('starting with python: %s' % msg.strip())
         self.cmd_prefix = KOLLA_CMD
-        (retval, msg) = self.run_command('%s host add -h' % self.cmd_prefix)
-        if retval == 0:
+        (retval, msg) = self.run_command('%s --version' % self.cmd_prefix)
+        if retval is not None and retval == 0:
             self.log.debug('%s found, will use as the test command'
                            % KOLLA_CMD)
             return
@@ -260,20 +257,21 @@ class KollaCliTest(testtools.TestCase):
         # will run the tests via kolla_cli/shell.py and
         # use the python in .venv/bin/python
         cwd = os.getcwd()
-        if cwd.endswith('tests'):
-            os_kolla_dir = cwd.rsplit('/', 1)[0]
+        if os.path.basename(cwd) == 'kolla-cli':
+            # we're in a debug env
+            os_kollacli_dir = cwd
 
-            shell_dir = os_kolla_dir + '/%s/' % KOLLA_SHELL_DIR
+            shell_dir = os_kollacli_dir + '/%s/' % KOLLA_SHELL_DIR
             shell_path = os.path.join(shell_dir, 'shell.py')
 
-            python_path = os.path.join(os_kolla_dir, VENV_PY_PATH)
+            python_path = os.path.join(os_kollacli_dir, VENV_PY_PATH)
 
             self.log.debug('shell_path: %s' % shell_path)
             self.log.debug('python_path: %s' % python_path)
             if os.path.exists(shell_path) and os.path.exists(python_path):
                 self.cmd_prefix = '%s %s ' % (python_path, shell_path)
 
-                self.run_cli_cmd('host add -h')
+                self.run_cli_cmd('host --version')
                 self.log.info('successfully ran command in venv environment')
                 return
 
