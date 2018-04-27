@@ -139,7 +139,8 @@ class HostRemove(Command):
             hostnames = [hostname]
             if hostname == 'all':
                 hostnames = _get_all_hostnames()
-            CLIENT.host_remove(hostnames)
+            if len(hostnames) > 0:
+                CLIENT.host_remove(hostnames)
 
         except ClientException as e:
             raise CommandError(str(e))
