@@ -19,6 +19,7 @@ from kolla_cli.common.passwords import init_passwords
 from kolla_cli.common.passwords import set_password
 from kolla_cli.common.passwords import set_password_sshkey
 from kolla_cli.common.utils import check_arg
+from kolla_cli.common.utils import disallow_chars
 
 
 class PasswordApi(object):
@@ -32,9 +33,13 @@ class PasswordApi(object):
         :param value: value of the password
         :type value: string
         """
-        check_arg(name, u._('Password name'), str)
-        check_arg(value, u._('Password value'), str, display_param=False,
+        password_name_string = u._('Password name')
+        password_value_string = u._('Password value')
+        check_arg(name, password_name_string, str)
+        disallow_chars(name, password_name_string, '\'')
+        check_arg(value, password_value_string, str, display_param=False,
                   empty_ok=True, none_ok=True)
+        disallow_chars(value, password_value_string, '\'')
         set_password(name, value)
 
     def password_set_sshkey(self, name, private_key, public_key):
@@ -48,9 +53,15 @@ class PasswordApi(object):
         :param public_key: ssh public key
         :type value: string
         """
-        check_arg(name, u._('Password name'), str)
-        check_arg(private_key, u._('Private key'), str, display_param=False)
-        check_arg(public_key, u._('Public key'), str, display_param=False)
+        password_name_string = u._('Password name')
+        private_key_string = u._('Private key')
+        public_key_string = u._('Public key')
+        check_arg(name, password_name_string, str)
+        disallow_chars(name, password_name_string, '\'')
+        check_arg(private_key, private_key_string, str, display_param=False)
+        disallow_chars(private_key, private_key_string, '\'')
+        check_arg(public_key, public_key_string, str, display_param=False)
+        disallow_chars(public_key, public_key_string, '\'')
         set_password_sshkey(name, private_key, public_key)
 
     def password_clear(self, name):
@@ -60,7 +71,9 @@ class PasswordApi(object):
         :param name: name of the password
         :type name: string
         """
-        check_arg(name, u._('Password name'), str)
+        password_name_string = u._('Password name')
+        check_arg(name, password_name_string, str)
+        disallow_chars(name, password_name_string, '\'')
         clear_password(name)
 
     def password_get_names(self):
