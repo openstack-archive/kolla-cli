@@ -204,6 +204,9 @@ def change_password(file_path, pname, pvalue=None, public_key=None,
     """
     read_data = sync_read_file(file_path)
     file_pwds = yaml.safe_load(read_data)
+    # if the password file is empty file_pwds will be None after safe_load
+    if file_pwds is None:
+        file_pwds = {}
     if clear:
         # clear
         if pname in file_pwds:
