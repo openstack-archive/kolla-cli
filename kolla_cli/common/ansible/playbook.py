@@ -43,6 +43,7 @@ class AnsiblePlaybook(object):
     deploy_id = None  # type: str
     inventory = None  # type: Inventory
     local_only = False
+    become_user = None  # type: str
 
     def run(self):
         try:
@@ -120,6 +121,10 @@ class AnsiblePlaybook(object):
 
         if self.flush_cache:
             cmd += ' --flush-cache'
+
+        if self.become_user:
+            cmd += ' --become-user %s' % self.become_user
+
         return cmd
 
     def _make_temp_inventory(self):

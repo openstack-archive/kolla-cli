@@ -23,6 +23,7 @@ from kolla_cli.common.ansible.playbook import AnsiblePlaybook
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.passwords import get_empty_password_values
 from kolla_cli.common.properties import AnsibleProperties
+from kolla_cli.common.utils import get_admin_user
 from kolla_cli.common.utils import get_kolla_ansible_home
 from kolla_cli.common.utils import get_kolla_etc
 from kolla_cli.common.utils import is_string_true
@@ -40,6 +41,7 @@ def certificate_init(verbose_level=1):
                                           'ansible/' + playbook_name)
     playbook.verbose_level = verbose_level
     playbook.local_only = True
+    playbook.become_user = get_admin_user()
 
     job = playbook.run()
     return job
