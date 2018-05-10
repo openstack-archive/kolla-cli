@@ -12,12 +12,12 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from kolla_cli.tests.functional.common import KollaCliTest
 import os
 import unittest
 
 from kolla_cli.api import client
 from kolla_cli.common.utils import get_kolla_etc
+from kolla_cli.tests.functional.common import KollaCliTest
 
 CLIENT = client.ClientApi()
 
@@ -54,13 +54,6 @@ PRIVATE_KEY = (
 class TestFunctional(KollaCliTest):
 
     def test_password_set_clear(self):
-
-        # This test should leave the passwords.yml file unchanged
-        # after the test completes. The tox setup bash script sets
-        # one password - "database_password" to "foobar".
-        pwds_path = os.path.join(get_kolla_etc(), 'passwords.yml')
-        size_start = os.path.getsize(pwds_path)
-
         # test list
         msg = self.run_cli_cmd('password list')
         key = 'database_password'
@@ -68,26 +61,6 @@ class TestFunctional(KollaCliTest):
         ok = self._password_value_exists(key, value, msg)
         self.assertTrue(ok, 'list failed. Password (%s/%s) not in output: %s'
                         % (key, value, msg))
-
-        # test append
-        key = 'TeStKeY'
-        value = '-'
-        self.run_cli_cmd('password set %s --insecure %s' % (key, value))
-        msg = self.run_cli_cmd('password list')
-        ok = self._password_value_exists(key, value, msg)
-        self.assertTrue(ok, 'set new password failed. Password ' +
-                        '(%s/%s) not in output: %s'
-                        % (key, value, msg))
-
-        # test modify existing
-        key = 'TeStKeY'
-        value = '-'
-        self.run_cli_cmd('password set %s --insecure %s' % (key, value))
-        msg = self.run_cli_cmd('password list')
-        ok = self._password_value_exists(key, value, msg)
-        self.assertTrue(ok, 'set modify password failed. Password ' +
-                        '(%s/%s) not in output: %s' %
-                        (key, value, msg))
 
         # test setting empty password
         self.run_cli_cmd('password set %s --insecure' % key)
@@ -106,28 +79,48 @@ class TestFunctional(KollaCliTest):
                         (key, msg))
 
         # test clear
-        key = 'TeStKeY'
+        key = 'database_password'
         value = '-'
         self.run_cli_cmd('password clear %s' % key)
         msg = self.run_cli_cmd('password list')
         ok = self._password_value_exists(key, value, msg)
-        self.assertFalse(ok, 'clear password failed. Password ' +
-                         '(%s/%s) not in output: %s' %
-                         (key, value, msg))
+        self.assertTrue(ok, 'clear password failed. Password ' +
+                        '(%s/%s) not in output: %s' %
+                        (key, value, msg))
 
-        # test setting/clearing an ssh key
-        key = 'TeStKeY'
+        # test setting an ssh key
+        key = 'nova_ssh_key'
         CLIENT.password_set_sshkey(key, PRIVATE_KEY, PUBLIC_KEY)
         keynames = CLIENT.password_get_names()
         self.assertIn(key, keynames, 'ssh key not in passwords')
-        CLIENT.password_clear(key)
-        keynames = CLIENT.password_get_names()
-        self.assertNotIn(key, keynames, 'ssh key not cleared from passwords')
 
-        # check that passwords.yml file size didn't change
-        size_end = os.path.getsize(pwds_path)
-        self.assertEqual(size_start, size_end, 'passwords.yml size changed ' +
-                         'from %s to %s' % (size_start, size_end))
+        # test modify non-ssh password
+        key = 'database_password'
+        value = '-'
+        self.run_cli_cmd('password set %s --insecure %s' % (key, value))
+        msg = self.run_cli_cmd('password list')
+        ok = self._password_value_exists(key, value, msg)
+        self.assertTrue(ok, 'set modify password failed. Password ' +
+                        '(%s/%s) not in output: %s' %
+                        (key, value, msg))
+
+        # test to make sure that saves / loads aren't doing something
+        # bad to the password file size
+        CLIENT.password_clear(key)
+        # snapshot file size with key cleared
+        password_file_path = os.path.join(get_kolla_etc(), 'passwords.yml')
+        size_start = os.path.getsize(password_file_path)
+        # set and clear password
+        CLIENT.password_set(key, value)
+        CLIENT.password_clear(key)
+        size_end = os.path.getsize(password_file_path)
+        self.assertEqual(size_start, size_end, 'password file size changed ' +
+                         'during set/clear (%s/%s)' % (size_start, size_end))
+
+        # make sure to end the test with the password init, as some other
+        # non-password related tests require that all passwords in the file
+        # be populated
+        CLIENT.password_init()
 
     def _password_value_exists(self, key, value, cli_output):
         """Verify cli data against model data"""
