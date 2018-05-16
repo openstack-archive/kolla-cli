@@ -1,10 +1,24 @@
 ---
+- job:
+    name: kollacli-tox-functional
+    parent: openstack-tox
+    description: |
+      Run tox-based functional tests for the OpenStack Kolla-cli project.
+      Uses tox with the ``functional`` environment.
+    irrelevant-files:
+      - ^.*\.rst$
+      - ^doc/source/.*$
+      - ^releasenotes/.*$
+    vars:
+      tox_envlist: functional
+    timeout: 3600
+
 - project:
     check:
       jobs:
         - openstack-tox-pep8
-        - openstack-tox-py27
+        - kollacli-tox-functional
     gate:
       jobs:
         - openstack-tox-pep8
-        - openstack-tox-py27
+        - kollacli-tox-functional

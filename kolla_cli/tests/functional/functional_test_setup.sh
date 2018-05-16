@@ -1,8 +1,7 @@
 #!/bin/bash
 #
-# delete old pyc files
-/usr/bin/find . -type f -name "*.pyc" -delete
-
+# Setup script for running kolla-cli functional tests.
+#
 # clean up files from last run
 rm -f $KOLLA_ETC/kolla-cli/ansible/inventory.json
 rm -f $KOLLA_HOME/ansible/group_vars/__GLOBAL__

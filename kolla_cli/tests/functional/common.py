@@ -38,16 +38,12 @@ ARG_LIST = {
     int: 0,
     }
 
-TEST_SUFFIX = 'test/'
-VENV_PY_PATH = '.tox/py27/bin/python'
-KOLLA_CMD = 'kolla-cli'
-KOLLA_SHELL_DIR = 'kolla_cli'
+KOLLACLI_CMD_PATH = 'kolla_cli/shell.py'
 
 
 class KollaCliTest(testtools.TestCase):
 
     saved_kolla_etc = ''
-    cmd_prefix = ''
     log = logging.getLogger(__name__)
 
     def setUp(self):
@@ -59,27 +55,17 @@ class KollaCliTest(testtools.TestCase):
                       % self._testMethodName)
 
         # switch to test path
-        self.log.info('running python: %s/%s' % (sys.executable, sys.version))
         etc_path = utils.get_kolla_cli_etc()
         self.log.debug('etc for tests: %s' % etc_path)
 
-        self._set_cmd_prefix()
-
         self._save_config()
-
-        # make sure inventory dirs exists and remove inventory file
-        etc_ansible_path = os.path.join(etc_path, 'ansible/')
-        inv_path = os.path.join(etc_ansible_path, 'inventory.json')
-        self._init_dir(etc_path)
-        self._init_dir(etc_ansible_path)
-        self._init_file(inv_path)
 
     def tearDown(self):
         super(KollaCliTest, self).tearDown()
         self._restore_config()
 
     def run_cli_cmd(self, cmd, expect_error=False):
-        full_cmd = ('%s %s' % (self.cmd_prefix, cmd))
+        full_cmd = ('python %s %s' % (KOLLACLI_CMD_PATH, cmd))
         self.log.debug('running command: %s' % cmd)
         (retval, msg) = self.run_command(full_cmd)
 
@@ -219,61 +205,3 @@ class KollaCliTest(testtools.TestCase):
             src_path = os.path.join(save_dir, sv_fname)
             dst_path = os.path.join(dst_dir, sv_fname)
             copyfile(src_path, dst_path)
-
-    def _init_file(self, filepath):
-        with open(filepath, 'w'):
-            pass
-
-    def _init_dir(self, path):
-        if not os.path.isdir(path):
-            os.mkdir(path)
-
-    def _set_cmd_prefix(self):
-        """Select the command to invoke the kolla-cli
-
-            The kolla cli can be run:
-
-            1) from the command line via $ KOLLA_CMD, or
-
-            2) if that doesn't work, this assumes that we're operating
-            in a dev't debug environment, which means that the kolla-cli
-            was installed in a virtualenv. So then we have to use the python
-            version in virtualenv and the tests will have to be run
-            from the tests directory.
-        """
-        (_, msg) = self.run_command('which python')
-        self.log.debug('starting with python: %s' % msg.strip())
-        self.cmd_prefix = KOLLA_CMD
-        (retval, msg) = self.run_command('%s --version' % self.cmd_prefix)
-        if retval is not None and retval == 0:
-            self.log.debug('%s found, will use as the test command'
-                           % KOLLA_CMD)
-            return
-
-        # self.log.debug('%s exec failed: %s' % (KOLLA_CMD, msg))
-        self.log.debug('look for kolla-cli shell in virtual env')
-
-        # try to see if this is a debug virtual environment
-        # will run the tests via kolla_cli/shell.py and
-        # use the python in .venv/bin/python
-        cwd = os.getcwd()
-        if os.path.basename(cwd) == 'kolla-cli':
-            # we're in a debug env
-            os_kollacli_dir = cwd
-
-            shell_dir = os_kollacli_dir + '/%s/' % KOLLA_SHELL_DIR
-            shell_path = os.path.join(shell_dir, 'shell.py')
-
-            python_path = os.path.join(os_kollacli_dir, VENV_PY_PATH)
-
-            self.log.debug('shell_path: %s' % shell_path)
-            self.log.debug('python_path: %s' % python_path)
-            if os.path.exists(shell_path) and os.path.exists(python_path):
-                self.cmd_prefix = '%s %s ' % (python_path, shell_path)
-
-                self.run_cli_cmd('host --version')
-                self.log.info('successfully ran command in venv environment')
-                return
-
-        self.assertEqual(0, 1,
-                         'no kolla-cli shell command found. Aborting tests')

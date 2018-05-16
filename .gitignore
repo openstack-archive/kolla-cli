@@ -1,1 +1,7 @@
 etc/
+*.pyc
+.stestr/*
+.tox/*
+.idea/*
+kolla_cli.egg-info/*
+.testrepository
