@@ -11,6 +11,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+MYPY = False
+if MYPY:
+    from typing import Dict  # noqa
+    from typing import List  # noqa
+
 import logging
 import yaml
 

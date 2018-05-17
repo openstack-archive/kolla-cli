@@ -11,6 +11,10 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+MYPY = False
+if MYPY:
+    from typing import List  # noqa
+
 from copy import copy
 import kolla_cli.i18n as u
 
@@ -59,7 +63,7 @@ class GroupApi(object):
         :return: groups
         :rtype: list of Group objects
         """
-        return self._get_groups(None, get_all=True)
+        return self._get_groups([], get_all=True)
 
     def group_get(self, groupnames):
         # type: (List[str]) -> List[Group]

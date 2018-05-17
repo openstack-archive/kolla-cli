@@ -13,12 +13,23 @@
       tox_envlist: functional
     timeout: 3600
 
+- job:
+    name: kollacli-tox-mypy
+    parent: openstack-tox
+    description: |
+      Run static mypy type checker for the OpenStack Kolla-cli project.
+    vars:
+      tox_envlist: mypy
+    timeout: 3600
+
 - project:
     check:
       jobs:
         - openstack-tox-pep8
+        - kollacli-tox-mypy
         - kollacli-tox-functional
     gate:
       jobs:
         - openstack-tox-pep8
+        - kollacli-tox-mypy
         - kollacli-tox-functional

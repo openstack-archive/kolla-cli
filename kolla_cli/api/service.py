@@ -11,6 +11,10 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+MYPY = False
+if MYPY:
+    from typing import List  # noqa
+
 from copy import copy
 import kolla_cli.i18n as u
 
@@ -28,7 +32,7 @@ class ServiceApi(object):
         :return: services
         :rtype: List of Service objects
         """
-        return self._get_services(None, get_all=True)
+        return self._get_services([], get_all=True)
 
     def service_get(self, servicenames):
         # type: (List[str]) -> List[Service]
@@ -92,7 +96,7 @@ class Service(object):
 
     def __init__(self, servicename, parentnames=[],
                  childnames=[], groupnames=[]):
-        # type: (str, str, List[str], List[str]) -> None
+        # type: (str, List[str], List[str], List[str]) -> None
         self.name = servicename
         self._parentnames = parentnames
         self._childnames = childnames
@@ -108,7 +112,7 @@ class Service(object):
         return self.name
 
     def get_parents(self):
-        # type: () -> str
+        # type: () -> List[str]
         """Get name of parent services
 
         :return: parent service names
