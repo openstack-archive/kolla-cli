@@ -19,7 +19,6 @@ import os
 import pwd
 import six
 import subprocess  # nosec
-import sys
 import time
 import yaml
 
@@ -115,32 +114,10 @@ def get_lock_enabled():
 
 
 def get_ansible_command(playbook=False):
-    """get a python2 ansible command
-
-    Ansible cannot run yet with python3. If the current default
-    python is py3, prefix the ansible command with a py2
-    interpreter.
-    """
+    """Get the ansible command"""
     cmd = 'ansible'
     if playbook:
         cmd = 'ansible-playbook'
-    if sys.version_info[0] >= 3:
-        # running with py3, find a py2 interpreter for ansible
-        py2_path = None
-        usr_bin = os.path.join('/', 'usr', 'bin')
-        for fname in os.listdir(usr_bin):
-            if (fname.startswith('python2.') and
-                    os.path.isfile(os.path.join(usr_bin, fname))):
-                suffix = fname.split('.')[1]
-                if suffix.isdigit():
-                    py2_path = os.path.join(usr_bin, fname)
-                    break
-        if py2_path is None:
-            raise Exception(
-                u._('ansible-playbook requires python2 and no '
-                    'python2 interpreter found in {path}.')
-                .format(path=usr_bin))
-        cmd = '%s %s' % (py2_path, os.path.join(usr_bin, cmd))
     return cmd
 
 

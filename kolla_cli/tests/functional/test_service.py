@@ -12,7 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from common import KollaCliTest
+from kolla_cli.tests.functional.common import KollaCliTest
 
 import json
 import unittest

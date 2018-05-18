@@ -12,12 +12,13 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+from kolla_cli.tests.functional.common import KollaCliTest
+
 import os
 import shutil
 import tarfile
 import unittest
 
-from common import KollaCliTest
 from kolla_cli.api.client import ClientApi
 from kolla_cli.common.utils import get_tools_path
 from kolla_cli.common.utils import safe_decode
