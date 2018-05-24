@@ -140,7 +140,6 @@ def run_cmd(cmd, print_output=True):
                 not None=command failed
     - output:   string: all the output of the run command
     """
-    err = None
     output = None
     try:
         process = subprocess.Popen(cmd, shell=True,  # nosec
@@ -439,6 +438,17 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False,
             raise InvalidArgument(u._('{name} is not a {type}')
                                   .format(name=param_name,
                                           type=expected_type))
+
+
+def disallow_chars(param, param_name, chars):
+    if param is None:
+        return
+
+    for char in chars:
+        if char in param:
+            raise InvalidArgument(
+                u._('{name} contains invalid character {chars}')
+                .format(name=param_name, chars=chars))
 
 
 class Lock(object):

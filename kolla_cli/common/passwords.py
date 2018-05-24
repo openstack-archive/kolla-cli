@@ -31,8 +31,8 @@ def set_password(pwd_key, pwd_value):
     if not pwd_value:
         pwd_value = ''
         value_switch = ''
-    cmd = '%s -k %s %s %s' % (_get_cmd_prefix(), pwd_key, value_switch,
-                              pwd_value)
+    cmd = '%s -k \'%s\' %s \'%s\'' % (_get_cmd_prefix(), pwd_key, value_switch,
+                                      pwd_value)
     err_msg, output = utils.run_cmd(cmd, print_output=False)
     if err_msg:
         raise FailedOperation(
@@ -41,8 +41,8 @@ def set_password(pwd_key, pwd_value):
 
 
 def set_password_sshkey(pwd_key, private_key, public_key):
-    cmd = '%s -k %s -r "%s" -u "%s"' % (_get_cmd_prefix(), pwd_key,
-                                        private_key, public_key)
+    cmd = '%s -k \'%s\' -r \'%s\' -u \'%s\'' % (_get_cmd_prefix(), pwd_key,
+                                                private_key, public_key)
     err_msg, output = utils.run_cmd(cmd, print_output=False)
     if err_msg:
         raise FailedOperation(
@@ -55,7 +55,7 @@ def clear_password(pwd_key):
 
     if the password exists, it will be removed from the passwords file
     """
-    cmd = '%s -k %s -c' % (_get_cmd_prefix(), pwd_key)
+    cmd = '%s -k \'%s\' -c' % (_get_cmd_prefix(), pwd_key)
     err_msg, output = utils.run_cmd(cmd, print_output=False)
     if err_msg:
         raise FailedOperation('%s %s' % (err_msg, output))
