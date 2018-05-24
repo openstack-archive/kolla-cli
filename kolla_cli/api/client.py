@@ -15,6 +15,7 @@
 import logging
 import sys
 
+from kolla_cli.api.certificate import CertificateApi
 from kolla_cli.api.control_plane import ControlPlaneApi
 from kolla_cli.api.group import GroupApi
 from kolla_cli.api.host import HostApi
@@ -30,6 +31,7 @@ VERSION = '0.1'
 
 
 class ClientApi(
+        CertificateApi,
         ControlPlaneApi,
         GroupApi,
         HostApi,

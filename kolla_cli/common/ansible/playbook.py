@@ -42,10 +42,17 @@ class AnsiblePlaybook(object):
     serial = False
     deploy_id = None  # type: str
     inventory = None  # type: Inventory
+    local_only = False
 
     def run(self):
         try:
-            self.inventory = Inventory.load()
+            if self.local_only:
+                # Create a temporary local inventory with only localhost
+                self.inventory = Inventory()
+                self.inventory.set_deploy_mode(False)
+                self.inventory.add_host('localhost')
+            else:
+                self.inventory = Inventory.load()
             inventory_path = self._make_temp_inventory()
             cmd = self._get_playbook_cmd(inventory_path)
             self._log_ansible_cmd(cmd, inventory_path)
