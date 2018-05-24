@@ -278,9 +278,10 @@ def _get_property_line(key, value):
         line = '%s: "%s"' % (key, value)
     else:
         str_value = yaml.safe_dump(value).strip()
-        if type(value) is bool:
+        value_type = type(value)
+        if value_type is bool or value_type is int:
             # yaml dump adds a newline and an ellipsis after
-            # a boolean value. This needs to be stripped.
+            # a boolean or int value. This needs to be stripped.
             str_value = str_value.replace('\n...', '')
         line = '%s: %s' % (key, str_value)
     return line
