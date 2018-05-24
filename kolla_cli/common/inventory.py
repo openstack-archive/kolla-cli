@@ -225,11 +225,10 @@ class Inventory(object):
             if not groupname or groupname == group.name:
                 group.remove_host(host)
 
-        host_vars = os.path.join(get_host_vars_dir(), hostname)
-        if os.path.exists(host_vars):
-            os.remove(host_vars)
-
         if not groupname:
+            host_vars = os.path.join(get_host_vars_dir(), hostname)
+            if os.path.exists(host_vars):
+                os.remove(host_vars)
             del self._hosts[hostname]
         return changed
 
