@@ -17,6 +17,7 @@ if MYPY:
     from typing import List  # noqa
 
 import logging
+import six
 import yaml
 
 import kolla_cli.i18n as u
@@ -57,7 +58,16 @@ class PropertyApi(object):
             if current_property is not None:
                 current_property_type = current_property.value_type
                 if current_property_type is not str:
+                    original_value = value
                     value = yaml.safe_load(value)
+
+                    # this check is to make sure that we can assign an empty
+                    # string to a property.  without this safe_load will turn
+                    # an empty string into a None which is different than an
+                    # empty string.
+                    if isinstance(original_value, six.string_types)\
+                            and value is None:
+                        value = ''
                     if current_property.value is None:
                         current_property_type = None
                     check_arg(value, u._('Property Value'),
