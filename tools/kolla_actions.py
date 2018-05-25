@@ -20,10 +20,16 @@ import sys
 import yaml
 
 from kolla_cli.common.utils import change_password
+from kolla_cli.common.utils import clear_all_passwords
+from kolla_cli.common.utils import get_kolla_ansible_home
+from kolla_cli.common.utils import get_kolla_cli_etc
+from kolla_cli.common.utils import get_kolla_etc
 
 
-def _init_keys():
+def _init_keys(path):
     cmd = 'kolla-genpwd'
+    if os.path.exists(path):
+        cmd = ' '.join((cmd, '-p', path))
     (_, err) = subprocess.Popen(cmd, shell=True,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE).communicate()
@@ -117,7 +123,7 @@ def _password_cmd(argv):
             init_flag = True
     if init_flag:
         # init empty keys
-        _init_keys()
+        _init_keys(path)
     elif list_flag:
         # print the password keys
         _print_pwd_keys(path)
@@ -154,6 +160,56 @@ def _job_cmd(argv):
             raise Exception('%s, pid %s' % (str(e), pid))
 
 
+def _config_reset_cmd():
+    """config_reset command
+
+    args for config_reset command
+    - none
+    """
+    kolla_etc = get_kolla_etc()
+    kolla_home = get_kolla_ansible_home()
+    kollacli_etc = get_kolla_cli_etc()
+
+    group_vars_path = os.path.join(kolla_home, 'ansible/group_vars')
+    host_vars_path = os.path.join(kolla_home, 'ansible/host_vars')
+    globals_path = os.path.join(group_vars_path, '__GLOBAL__')
+    inventory_path = os.path.join(kollacli_etc, 'ansible/inventory.json')
+
+    # truncate global property and inventory files
+    with open(globals_path, 'w') as globals_file:
+        globals_file.truncate()
+
+    with open(inventory_path, 'w') as inventory_file:
+        inventory_file.truncate()
+
+    # clear all passwords
+    clear_all_passwords()
+
+    # nuke all files under the kolla etc base, skipping everything
+    # in the kollacli directory and the passwords.yml file
+    for dir_path, dir_names, file_names in os.walk(kolla_etc, topdown=False):
+        if 'kollacli' not in dir_path:
+            for dir_name in dir_names:
+                if dir_name != 'kollacli':
+                    os.rmdir(os.path.join(dir_path, dir_name))
+
+            for file_name in file_names:
+                if file_name != 'passwords.yml':
+                    os.remove(os.path.join(dir_path, file_name))
+
+    # nuke all property files under the kolla-ansible base other than
+    # all.yml and the global property file which we truncate above
+    for dir_path, _, file_names in os.walk(group_vars_path):
+        for file_name in file_names:
+            if (file_name != '__GLOBAL__' and
+               file_name != 'all.yml'):
+                os.remove(os.path.join(dir_path, file_name))
+
+    for dir_path, _, file_names in os.walk(host_vars_path):
+        for file_name in file_names:
+            os.remove(os.path.join(dir_path, file_name))
+
+
 def main():
     """perform actions on behalf of kolla user
 
@@ -163,6 +219,7 @@ def main():
     Supported commands:
     - password
     - job
+    - config_reset
     """
     if len(sys.argv) <= 1:
         raise Exception('Invalid number of parameters')
@@ -172,6 +229,8 @@ def main():
         _password_cmd(sys.argv)
     elif command == 'job':
         _job_cmd(sys.argv)
+    elif command == 'config_reset':
+        _config_reset_cmd()
     else:
         raise Exception('Invalid command %s' % command)
 

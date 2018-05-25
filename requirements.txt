@@ -1,5 +1,4 @@
 ansible>=1.9.2
-kolla-ansible
 Babel>=0.9.6
 cliff>=1.13.0  # Apache-2.0
 cliff-tablib<=1.1

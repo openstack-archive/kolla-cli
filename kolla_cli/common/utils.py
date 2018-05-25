@@ -29,6 +29,9 @@ from kolla_cli.api.exceptions import MissingArgument
 
 LOG = logging.getLogger(__name__)
 
+private_key_string = 'private_key'
+public_key_string = 'public_key'
+
 
 def get_log_level():
     evar = os.environ.get('KOLLA_LOG_LEVEL', 'info')
@@ -151,7 +154,7 @@ def run_cmd(cmd, print_output=True):
 
     err = safe_decode(err)
     output = safe_decode(output)
-    if process.returncode != 0:
+    if process is not None and process.returncode != 0:
         err = (u._('Command failed. : {error}')
                .format(error=err))
     if print_output:
@@ -168,36 +171,95 @@ def change_password(file_path, pname, pvalue=None, public_key=None,
     pvalue:            value of password when not ssh key
     public_key:        public ssh key
     private_key:       private ssh key
-    clear:             flag to remove password
+    clear:             flag to clear password
 
-    If clear, and password exists, remove it from the password file.
-    If clear, and password doesn't exists, nothing is done.
-    If not clear, and key is not found, the new password will be added.
-    If not clear, and key is found, edit password in place.
+    If key is not found, an error is returned.
+    If clear, and password exists, remove password.
+    If clear, and password is already empty, nothing is done.
+    If not clear, edit password in place.
 
     The passwords file contains both key-value pairs and key-dictionary
-    pairs.
+    pairs.  Type is maintained so you cannot change a key-dictionary
+    password to a key-value password or the other way around.
     """
     read_data = sync_read_file(file_path)
     file_pwds = yaml.safe_load(read_data)
     # if the password file is empty file_pwds will be None after safe_load
     if file_pwds is None:
         file_pwds = {}
+
+    if pname not in file_pwds.keys():
+        raise Exception(
+            u._('unable to update password as it does not exist: {pname}')
+            .format(pname=pname))
+
+    ssh_password_type = is_ssh_password(file_pwds[pname])
+
     if clear:
         # clear
         if pname in file_pwds:
-            del file_pwds[pname]
+            if ssh_password_type:
+                file_pwds[pname] = {private_key_string: None,
+                                    public_key_string: None}
+            else:
+                file_pwds[pname] = None
     else:
         # edit
         if private_key:
-            file_pwds[pname] = {'private_key': private_key,
-                                'public_key': public_key}
+            if not ssh_password_type:
+                raise Exception(
+                    u._('unable to set non ssh type password to ssh value'))
+            file_pwds[pname] = {private_key_string: private_key,
+                                public_key_string: public_key}
         else:
+            if ssh_password_type:
+                raise Exception(
+                    u._('unable to set ssh password type to non ssh value'))
             if not pvalue:
                 pvalue = None
             file_pwds[pname] = pvalue
-    write_data = yaml.safe_dump(file_pwds, default_flow_style=False)
+
+    # dump Nones as empty strings instead of the value 'null' as this is how
+    # it looks when we read it.  also, this will not work with safe_dump
+    yaml.add_representer(type(None), _empty_is_none)
+    write_data = yaml.dump(file_pwds, default_flow_style=False)
     sync_write_file(file_path, write_data)
+
+
+def clear_all_passwords():
+    """clear all passwords in passwords.yml file"""
+    password_path = os.path.join(get_kolla_etc(), 'passwords.yml')
+    read_data = sync_read_file(password_path)
+    file_pwds = yaml.safe_load(read_data)
+    # if the password file is empty file_pwds will be None after safe_load
+    if file_pwds is None:
+        file_pwds = {}
+
+    keys = file_pwds.keys()
+    for key in keys:
+        if is_ssh_password(file_pwds[key]):
+            file_pwds[key] = {private_key_string: None,
+                              public_key_string: None}
+        else:
+            file_pwds[key] = None
+
+    yaml.add_representer(type(None), _empty_is_none)
+    write_data = yaml.dump(file_pwds, default_flow_style=False)
+    sync_write_file(password_path, write_data)
+
+
+def _empty_is_none(self, _):
+    return self.represent_scalar('tag:yaml.org,2002:null', '')
+
+
+def is_ssh_password(password):
+    if password is not None:
+        if isinstance(password, dict):
+            password_keys = password.keys()
+            if (private_key_string in password_keys and
+               public_key_string in password_keys):
+                return True
+    return False
 
 
 def change_property(file_path, property_dict, clear=False):

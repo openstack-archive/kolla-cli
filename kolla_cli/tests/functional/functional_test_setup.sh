@@ -14,12 +14,6 @@ touch $KOLLA_ETC/kolla-cli/ansible/inventory.json
 mkdir -p $KOLLA_HOME/kolla-cli
 touch $KOLLA_HOME/kolla-cli/ansible.lock
 
-# setup kolla-ansible passwords file with just 2 passwords
-cat > $KOLLA_ETC/passwords.yml <<EOF
-database_password: foobar
-nova_password: foobar
-EOF
-
 # If it's not there, clone the kolla-ansible repo to get its ansible directory
 # and then copy it over
 mkdir -p $KOLLA_HOME/git
@@ -29,5 +23,6 @@ if [ ! -d $KOLLA_HOME/ansible ]; then
 fi
 
 # setup needed kolla-ansible files
+cp $KOLLA_HOME/git/etc/kolla/passwords.yml $KOLLA_ETC/passwords.yml
 mkdir -p $KOLLA_HOME/ansible/host_vars
 touch $KOLLA_HOME/ansible/group_vars/__GLOBAL__
