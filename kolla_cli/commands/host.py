@@ -90,7 +90,7 @@ class HostDestroy(Command):
             if parsed_args.removeimages:
                 remove_images = True
 
-            if not include_data:
+            if include_data:
                 question = ('This will delete all containers and data'
                             ', are you sure? (y/n)')
                 answer = raw_input(question)
