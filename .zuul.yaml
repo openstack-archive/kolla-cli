@@ -40,12 +40,14 @@
     check:
       jobs:
         - openstack-tox-pep8
+        - openstack-tox-py27
         - kollacli-tox-mypy
         - kollacli-tox-functional
         - kollacli-tox-functional-py35
     gate:
       jobs:
         - openstack-tox-pep8
+        - openstack-tox-py27
         - kollacli-tox-mypy
         - kollacli-tox-functional
         - kollacli-tox-functional-py35

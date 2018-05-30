@@ -90,15 +90,10 @@ class HostDestroy(Command):
             if parsed_args.removeimages:
                 remove_images = True
 
-            if include_data:
-                question = ('This will delete all containers and data'
-                            ', are you sure? (y/n)')
-                answer = raw_input(question)
-                while answer != 'y' and answer != 'n':
-                    answer = raw_input(question)
-                if answer is 'n':
-                    LOG.info('Aborting destroy')
-                    return
+            if include_data and not self._is_ok_to_delete_data():
+                LOG.info('Aborting destroy')
+                return
+
             verbose_level = self.app.options.verbose_level
 
             job = CLIENT.host_destroy(hostnames, destroy_type,
@@ -122,6 +117,14 @@ class HostDestroy(Command):
             raise CommandError(str(e))
         except Exception as e:
             raise Exception(traceback.format_exc())
+
+    def _is_ok_to_delete_data(self):
+        question = ('This will delete all containers and data'
+                    ', are you sure? (y/n)')
+        answer = raw_input(question)
+        while answer != 'y' and answer != 'n':
+            answer = raw_input(question)
+        return True if answer == 'y' else False
 
 
 class HostRemove(Command):
@@ -231,7 +234,7 @@ class HostCheck(Command):
                     status = u._('success')
                     msg = ''
                     if not info['success']:
-                        status = u._('failed- ')
+                        status = u._('failed-')
                         msg = info['msg']
                         all_ok = False
                     LOG.info(u._('Host {host}: {sts} {msg}')
@@ -280,7 +283,7 @@ class HostSetup(Command):
                     LOG.info(
                         u._LI('Skipping setup of host ({host}) as '
                               'ssh check is ok.').format(host=hostname))
-                    return True
+                    return 0
 
                 if parsed_args.insecure:
                     password = parsed_args.insecure.strip()

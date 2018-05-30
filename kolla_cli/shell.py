@@ -41,7 +41,7 @@ class KollaCli(App):
 
         inventory_path = os.path.join(get_kolla_cli_etc(),
                                       INVENTORY_PATH)
-        if os.path.isfile(inventory_path) is False:
+        if not self._is_inventory_present(inventory_path):
             err_string = u._(
                 'Required file ({inventory}) does not exist.\n'
                 'Please re-install the kollacli to '
@@ -56,6 +56,9 @@ class KollaCli(App):
         logging.getLogger('paramiko').setLevel(logging.WARNING)
 
         self.dump_stack_trace = False
+
+    def _is_inventory_present(self, inventory_path):
+        return os.path.isfile(inventory_path)
 
 
 def main(argv=sys.argv[1:]):
