@@ -79,6 +79,9 @@ class HostDestroy(Command):
             hostnames = [hostname]
             if hostname == 'all':
                 hostnames = _get_all_hostnames()
+                # if there are no hosts, don't bother doing anything
+                if not hostnames:
+                    return
 
             destroy_type = 'kill'
             if parsed_args.stop:
