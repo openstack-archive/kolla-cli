@@ -19,6 +19,18 @@ deployments and perform upgrades.
 Installing
 ==========
 
+The installation process below assumes that the kolla-ansible repository
+exists at the same level as the kolla-cli repository.  This is made clear
+in the cli-setup.py script which makes a relative '../' reference to
+the kolla-ansible repository.  If your kolla-ansible directory is somewhere
+else then that location can be passed as an argument to the cli-setup.py
+script.  The location on the system where the kolla-cli expects the
+kolla-ansible files to be and installs them to can be tweaked by setting
+the KOLLA_HOME and KOLLA_ETC environment variables before running the
+cli-setup.py script, and while running the kolla-cli command itself.  The
+default value for KOLLA_HOME is /usr/share/kolla-ansible and the default
+value for KOLLA_ETC is /etc/kolla.
+
 The following steps can be used to build / run the kolla-cli
 
 * install ansible and docker
@@ -26,16 +38,7 @@ The following steps can be used to build / run the kolla-cli
 * . .venv/bin/activate
 * pip install -r requirements.txt
 * python setup.py install
-* mkdir /usr/share/kolla-ansible
-* cp -r kolla-ansible/ansible to /usr/share/kolla
-* mkdir -p /etc/kolla/kolla-cli/ansible
-* touch /etc/kolla/kolla-cli/ansible/inventory.json
-* mkdir -p /usr/share/kolla-ansible/kolla-cli/tools
-* mkdir /usr/share/kolla-ansible/kolla-cli/ansible
-* touch /usr/share/kolla-ansible/kolla-cli/ansible.lock
-* cp kolla-cli/tools /usr/share/kolla-ansible/kolla-cli/tools
-* mkdir /usr/share/kolla-ansible/ansible/host_vars
-* cp /etc/kolla/globals.yml /usr/share/kolla-ansible/ansible/group_vars/__GLOBAL__
+* python ./cli-setup.py
 * kolla-cli
 
 At that point you will be dropped into the kollacli shell where
