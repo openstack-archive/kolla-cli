@@ -16,4 +16,4 @@ export KOLLA_TOOLS_DIR=./tools/
 Then you can run a single test, for eg:
 
 source .tox/functional/bin/activate
-ostestr -n kolla_cli.tests.functional.test_deploy.TestFunctional.test_deploy
+stestr run -n kolla_cli.tests.functional.test_deploy.TestFunctional.test_deploy
