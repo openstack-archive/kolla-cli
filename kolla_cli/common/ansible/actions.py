@@ -81,7 +81,7 @@ def deploy(hostnames=[],
     kolla_home = get_kolla_ansible_home()
     playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/site.yml')
-    playbook.extra_vars = 'action=deploy'
+    playbook.extra_vars = 'kolla_action=deploy'
     playbook.hosts = hostnames
     playbook.serial = serial_flag
     playbook.verbose_level = verbose_level
@@ -118,7 +118,7 @@ def pull(verbose_level=1):
     kolla_home = get_kolla_ansible_home()
     playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/site.yml')
-    playbook.extra_vars = 'action=pull'
+    playbook.extra_vars = 'kolla_action=pull'
     playbook.verbose_level = verbose_level
 
     job = playbook.run()
@@ -153,7 +153,7 @@ def reconfigure(verbose_level=1):
     kolla_home = get_kolla_ansible_home()
     playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/site.yml')
-    playbook.extra_vars = 'action=reconfigure'
+    playbook.extra_vars = 'kolla_action=reconfigure'
     playbook.verbose_level = verbose_level
 
     _run_deploy_rules(playbook)
@@ -167,7 +167,7 @@ def upgrade(verbose_level=1, servicenames=[]):
     kolla_home = get_kolla_ansible_home()
     playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/site.yml')
-    playbook.extra_vars = 'action=upgrade'
+    playbook.extra_vars = 'kolla_action=upgrade'
     playbook.print_output = True
     playbook.verbose_level = verbose_level
     playbook.services = servicenames
