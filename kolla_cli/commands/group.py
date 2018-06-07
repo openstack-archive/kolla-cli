@@ -135,55 +135,6 @@ class GroupListhosts(Lister):
             raise Exception(traceback.format_exc())
 
 
-class GroupAddservice(Command):
-    """Add service to group."""
-    def get_parser(self, prog_name):
-        parser = super(GroupAddservice, self).get_parser(prog_name)
-        parser.add_argument('groupname', metavar='<groupname>',
-                            help=u._('Group name'))
-        parser.add_argument('servicename', metavar='<servicename>',
-                            help=u._('Service name'))
-        return parser
-
-    def take_action(self, parsed_args):
-        try:
-            groupname = parsed_args.groupname.strip()
-            servicename = parsed_args.servicename.strip()
-
-            group = CLIENT.group_get([groupname])[0]
-            group.add_service(servicename)
-
-        except ClientException as e:
-            raise CommandError(str(e))
-        except Exception as e:
-            raise Exception(traceback.format_exc())
-
-
-class GroupRemoveservice(Command):
-    """Remove service group from group."""
-
-    def get_parser(self, prog_name):
-        parser = super(GroupRemoveservice, self).get_parser(prog_name)
-        parser.add_argument('groupname', metavar='<groupname>',
-                            help=u._('Group name'))
-        parser.add_argument('servicename', metavar='<servicename>',
-                            help=u._('Service name'))
-        return parser
-
-    def take_action(self, parsed_args):
-        try:
-            groupname = parsed_args.groupname.strip()
-            servicename = parsed_args.servicename.strip()
-
-            group = CLIENT.group_get([groupname])[0]
-            group.remove_service(servicename)
-
-        except ClientException as e:
-            raise CommandError(str(e))
-        except Exception as e:
-            raise Exception(traceback.format_exc())
-
-
 class GroupListservices(Lister):
     """List all groups and their services."""
 
