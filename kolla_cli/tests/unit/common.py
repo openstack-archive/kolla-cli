@@ -13,6 +13,7 @@
 #    under the License.
 import testtools
 
+from kolla_cli.api.group import Group
 from kolla_cli.api.host import Host
 from kolla_cli.common.ansible.job import AnsibleJob
 from kolla_cli import shell
@@ -30,3 +31,7 @@ class KollaCliUnitTest(testtools.TestCase):
 
     def get_fake_host(self, hostname='foo'):
         return Host(hostname)
+
+    def get_fake_group(self, groupname='group1', servicenames=[],
+                       hostnames=[]):
+        return Group(groupname, servicenames, hostnames)
