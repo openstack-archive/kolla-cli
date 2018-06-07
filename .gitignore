@@ -6,3 +6,4 @@ etc/
 kolla_cli.egg-info/*
 .testrepository
 .mypy_cache/*
+.stestr
