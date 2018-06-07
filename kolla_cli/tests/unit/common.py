@@ -15,6 +15,7 @@ import testtools
 
 from kolla_cli.api.group import Group
 from kolla_cli.api.host import Host
+from kolla_cli.api.service import Service
 from kolla_cli.common.ansible.job import AnsibleJob
 from kolla_cli import shell
 
@@ -35,3 +36,7 @@ class KollaCliUnitTest(testtools.TestCase):
     def get_fake_group(self, groupname='group1', servicenames=[],
                        hostnames=[]):
         return Group(groupname, servicenames, hostnames)
+
+    def get_fake_service(self, servicename='service1', parentnames=[],
+                         childnames=[], groupnames=[]):
+        return Service(servicename, parentnames, childnames, groupnames)
