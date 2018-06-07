@@ -95,15 +95,14 @@ def deploy(hostnames=[],
 
 def precheck(hostnames, verbose_level=1):
     '''run check playbooks on a set of hosts'''
-    playbook_name = 'prechecks_preinstall.yml'
     kolla_home = get_kolla_ansible_home()
     playbook = AnsiblePlaybook()
     playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/' + playbook_name)
+                                          'ansible/site.yml')
 
     # define 'hosts' to be all, but inventory filtering will subset
     # that down to the hosts in playbook.hosts.
-    playbook.extra_vars = 'hosts=all'
+    playbook.extra_vars = 'kolla_action=precheck hosts=all'
     playbook.hosts = hostnames
     playbook.print_output = True
     playbook.verbose_level = verbose_level
