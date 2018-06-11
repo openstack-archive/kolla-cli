@@ -541,15 +541,16 @@ class Lock(object):
                     return self._acquire_flock()
                 else:
                     return self._acquire_pidfile()
-            except Exception as e:
-                if not os.path.exists(self.lockpath):
-                    raise Exception('Lock file (%s) is missing'
-                                    % self.lockpath)
-
-                # it is ok to fail to acquire, we just return that we failed
-                LOG.debug('Exception in acquire lock. '
+            except IOError as e:
+                # IOError is the error you get when the file is
+                # already locked. (No such file returns an OSError.)
+                # This may be OK and is handled by the caller.
+                LOG.debug('Exception in acquiring lock. '
                           'path: %s pid: %s owner: %s error: %s' %
                           (self.lockpath, self.pid, self.owner, str(e)))
+                return False
+            except Exception as e:
+                raise e
 
     def _acquire_pidfile(self):
         if not self.is_owned_by_me():

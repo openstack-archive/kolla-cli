@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#
 # Copyright 2018 OpenStack Foundation
 # All Rights Reserved.
 #
@@ -44,8 +46,8 @@ def setup_ansible_etc():
     # copy over all kolla ansible etc files
     kolla_ansible_etc_source = os.path.join(kolla_ansible_source_base,
                                             'etc', kolla)
-    copy_kolla_etc_files_cmd = ('cp -a %s %s' % (kolla_ansible_etc_source,
-                                                 kolla_ansible_etc_target))
+    copy_kolla_etc_files_cmd = ('cp -a %s/* %s' % (kolla_ansible_etc_source,
+                                                   kolla_ansible_etc_target))
     _command_exec(copy_kolla_etc_files_cmd)
 
 
