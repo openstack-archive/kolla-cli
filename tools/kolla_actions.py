@@ -28,8 +28,10 @@ from kolla_cli.common.utils import get_kolla_etc
 
 def _init_keys(path):
     cmd = 'kolla-genpwd'
-    if os.path.exists(path):
-        cmd = ' '.join((cmd, '-p', path))
+    if not os.path.exists(path):
+        raise Exception('The path %s does not exist' % path)
+
+    cmd = ' '.join((cmd, '-p', path))
     (_, err) = subprocess.Popen(cmd, shell=True,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE).communicate()
