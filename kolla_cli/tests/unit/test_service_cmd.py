@@ -18,19 +18,30 @@ from kolla_cli.tests.unit.common import KollaCliUnitTest
 
 class TestUnit(KollaCliUnitTest):
 
+    @mock.patch('cliff.lister.Lister.produce_output')
     @mock.patch('kolla_cli.api.client.ClientApi.service_get_all')
     @mock.patch('kolla_cli.shell.KollaCli._is_inventory_present',
                 return_value=True)
-    def test_service_list(self, _, mock_service_get_all):
-        # list all services
-        servicename = 'service1'
-        childname = 'child1'
-        fake_service = self.get_fake_service(servicename,
-                                             childnames=[childname])
-        mock_service_get_all.return_value = [fake_service]
+    def test_service_list(self, _, mock_service_get_all, mock_cliff):
+        # list all services, check that output is sorted properly
+        servicename1 = 'service1'
+        servicename2 = 'service2'
+        childnames = ['child2', 'child1']
+        fake_service1 = self.get_fake_service(servicename1,
+                                              childnames=childnames)
+        fake_service2 = self.get_fake_service(servicename2,
+                                              childnames=childnames)
+        mock_service_get_all.return_value = [fake_service2, fake_service1]
         ret = self.run_cli_command('service list')
         self.assertEqual(ret, 0)
         mock_service_get_all.assert_called_once_with()
+
+        expected_childnames = '[child1,child2]'
+        mock_cliff.assert_called_once_with(
+            mock.ANY, ('Service', 'Children'),
+            [(servicename1, expected_childnames),
+             (servicename2, expected_childnames)
+             ])
 
     @mock.patch('kolla_cli.api.client.ClientApi.service_get_all')
     @mock.patch('kolla_cli.shell.KollaCli._is_inventory_present',
