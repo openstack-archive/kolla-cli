@@ -111,7 +111,8 @@ class ServiceList(Lister):
             if services:
                 data = []
                 for service in services:
-                    data.append((service.name, service.get_children()))
+                    data.append((service.name,
+                                 sorted(service.get_children())))
 
             data = convert_lists_to_string(data, parsed_args)
             return ((u._('Service'), u._('Children')), sorted(data))
