@@ -20,6 +20,7 @@ import yaml
 
 import kolla_cli.i18n as u
 
+from builtins import input
 from kolla_cli.api.client import ClientApi
 from kolla_cli.api.exceptions import ClientException
 from kolla_cli.commands.exceptions import CommandError
@@ -124,9 +125,9 @@ class HostDestroy(Command):
     def _is_ok_to_delete_data(self):
         question = ('This will delete all containers and data'
                     ', are you sure? (y/n)')
-        answer = raw_input(question)
+        answer = input(question)
         while answer != 'y' and answer != 'n':
-            answer = raw_input(question)
+            answer = input(question)
         return True if answer == 'y' else False
 
 
