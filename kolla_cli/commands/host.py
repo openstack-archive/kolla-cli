@@ -20,7 +20,6 @@ import yaml
 
 import kolla_cli.i18n as u
 
-from builtins import input
 from kolla_cli.api.client import ClientApi
 from kolla_cli.api.exceptions import ClientException
 from kolla_cli.commands.exceptions import CommandError
@@ -29,6 +28,8 @@ from kolla_cli.common.utils import get_setup_user
 
 from cliff.command import Command
 from cliff.lister import Lister
+
+from six.moves import input
 
 LOG = logging.getLogger(__name__)
 CLIENT = ClientApi()
