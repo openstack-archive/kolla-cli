@@ -38,10 +38,11 @@ def setup_ansible_etc():
         make_cli_etc_dir_cmd = ('mkdir -p %s' % cli_etc_dir)
         _command_exec(make_cli_etc_dir_cmd)
 
+    # Create the inventory file (if it doesn't already exist).
+    # (The script will exit here if the user doesn't have sufficient privs.)
     inventory_file_path = os.path.join(cli_etc_dir, 'inventory.json')
-    if not os.path.exists(inventory_file_path):
-        touch_inventory_file_cmd = ('touch %s' % inventory_file_path)
-        _command_exec(touch_inventory_file_cmd)
+    touch_inventory_file_cmd = ('touch %s' % inventory_file_path)
+    _command_exec(touch_inventory_file_cmd)
 
     # copy over all kolla ansible etc files
     kolla_ansible_etc_source = os.path.join(kolla_ansible_source_base,
@@ -49,6 +50,18 @@ def setup_ansible_etc():
     copy_kolla_etc_files_cmd = ('cp -a %s/* %s' % (kolla_ansible_etc_source,
                                                    kolla_ansible_etc_target))
     _command_exec(copy_kolla_etc_files_cmd)
+
+    # add ssh keys for cli
+    key_path = os.path.join(os.getenv('HOME'), '.ssh', 'id_rsa')
+    if not os.path.exists(key_path):
+        # generate new ssh keys
+        keygen_cmd = 'ssh-keygen -t rsa -N \'\' -f %s' % key_path
+        _command_exec(keygen_cmd)
+    # copy the public key to where kolla-cli expects it
+    pub_key_path = os.path.join(os.getenv('HOME'), '.ssh', 'id_rsa.pub')
+    cli_etc_path = os.path.join(kolla_ansible_etc_target, kolla_cli)
+    copy_cmd = 'cp -p %s %s/' % (pub_key_path, cli_etc_path)
+    _command_exec(copy_cmd)
 
 
 def setup_ansible_home():
@@ -106,6 +119,7 @@ def _command_exec(command):
     error, _ = utils.run_cmd(command)
     if error:
         print('error - %s' % error)
+        sys.exit(1)
 
 
 def main():
