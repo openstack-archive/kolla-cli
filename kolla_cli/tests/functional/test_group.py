@@ -19,7 +19,7 @@ import unittest
 
 from kolla_cli.api.client import ClientApi
 from kolla_cli.api.exceptions import NotInInventory
-from kolla_cli.common.allinone import AllInOne
+from kolla_cli.common.ansible_inventory import AnsibleInventory
 
 CLIENT = ClientApi()
 
@@ -231,14 +231,14 @@ class TestFunctional(KollaCliTest):
                       }
         }
         """
-        allinone = AllInOne()
-        groupnames = allinone.groups
+        ansible_inventory = AnsibleInventory()
+        groupnames = ansible_inventory.groups
         groups = {}
         for groupname in groupnames:
             groups[groupname] = {'Services': [],
                                  'Hosts': []}
 
-            for servicename, service in allinone.services.items():
+            for servicename, service in ansible_inventory.services.items():
                 if groupname in service.get_groupnames():
                     groups[groupname]['Services'].append(servicename)
 

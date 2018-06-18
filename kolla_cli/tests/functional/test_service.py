@@ -18,7 +18,7 @@ import json
 import unittest
 
 from kolla_cli.api.client import ClientApi
-from kolla_cli.common.allinone import AllInOne
+from kolla_cli.common.ansible_inventory import AnsibleInventory
 from kolla_cli.common.inventory import Inventory
 
 CLIENT = ClientApi()
@@ -47,18 +47,18 @@ class TestFunctional(KollaCliTest):
         """
         msg = self.run_cli_cmd('service list -f json')
         cli_services = json.loads(msg)
-        allinone = AllInOne()
-        allinone_services = []
-        allinone_service_names = []
-        for service in allinone.services.values():
+        ansible_inventory = AnsibleInventory()
+        ansible_inventory_services = []
+        ansible_inventory_service_names = []
+        for service in ansible_inventory.services.values():
             if service.is_supported():
-                allinone_services.append(service)
-                allinone_service_names.append(service.name)
-        num_services = len(allinone_services)
+                ansible_inventory_services.append(service)
+                ansible_inventory_service_names.append(service.name)
+        num_services = len(ansible_inventory_services)
         self.assertEqual(num_services, len(cli_services),
                          '# of cli services != expected services.' +
                          '\n\nexpected services: %s'
-                         % allinone_service_names +
+                         % ansible_inventory_service_names +
                          '\n\ncli services: %s' % cli_services)
 
     def test_listgroups(self):
@@ -81,14 +81,14 @@ class TestFunctional(KollaCliTest):
         msg = self.run_cli_cmd('service listgroups -f json')
         cli_services = json.loads(msg)
 
-        allinone = AllInOne()
-        allinone_services = []
-        allinone_service_names = []
-        for service in allinone.services.values():
+        ansible_inventory = AnsibleInventory()
+        ansible_inventory_services = []
+        ansible_inventory_service_names = []
+        for service in ansible_inventory.services.values():
             if service.is_supported():
-                allinone_services.append(service)
-                allinone_service_names.append(service.name)
-        num_services = len(allinone_services)
+                ansible_inventory_services.append(service)
+                ansible_inventory_service_names.append(service.name)
+        num_services = len(ansible_inventory_services)
         self.assertEqual(num_services, len(cli_services),
                          '# of cli services (%s) ' % len(cli_services) +
                          '!= # of expected services (%s).' % num_services +

@@ -15,21 +15,22 @@
 import os
 
 from kolla_cli.common.service import Service
-
 from kolla_cli.common.utils import get_kolla_ansible_home
 
 
-class AllInOne(object):
-    """AllInOne helper class
+class AnsibleInventory(object):
+    """AnsibleInventory helper class
 
-    This class parses the kolla all-in-one file and provides an
+    This class parses an anisble inventory file and provides an
     easier to use way to represent that file.
     """
-    def __init__(self):
+    def __init__(self, inventory_path=None):
         self.groups = []
         self.services = {}
+        self.group_vars = {}
+        self.host_vars = {}
 
-        self._load()
+        self._load(inventory_path)
 
     def add_service(self, servicename):
         if servicename not in self.services:
@@ -41,8 +42,8 @@ class AllInOne(object):
         if groupname not in self.groups:
             self.groups.append(groupname)
 
-    def _load(self):
-        """load all-in-one inventory file
+    def _load(self, inventory_path):
+        """load an ansible inventory file
 
         Note: This assumes that there will be a blank line between each
         section:
@@ -54,10 +55,11 @@ class AllInOne(object):
         [mistral-executor:children]
         mistral
         """
-        allinone_path = os.path.join(get_kolla_ansible_home(), 'ansible',
-                                     'inventory',
-                                     'all-in-one')
-        with open(allinone_path, 'r') as ain1:
+        if not inventory_path:
+            inventory_path = os.path.join(
+                get_kolla_ansible_home(), 'ansible', 'inventory',
+                'all-in-one')
+        with open(inventory_path, 'r') as ain1:
             ain1_inv = ain1.read()
 
         lines = [x for x in ain1_inv.split('\n') if not x.startswith('#')]
@@ -66,6 +68,12 @@ class AllInOne(object):
             if not line.startswith('['):
                 continue
             line.strip()
+            if ':vars' in line:
+                # this is defining a set of group vars in the next set
+                # of lines.
+                groupname = line.split(':')[0]
+                i = self._process_group_vars(groupname, lines, i)
+                continue
             if ':children' not in line:
                 groupname = line[1:len(line) - 1]
                 self.add_group(groupname)
@@ -103,3 +111,11 @@ class AllInOne(object):
                 parent = self.services[parentname]
                 if parent:
                     parent.add_childname(service.name)
+
+    def _process_group_vars(self, groupname, lines, i):
+        # currently group vars are ignored
+        while True:
+            i += 1
+            line = lines[i].strip()
+            if not line:
+                break

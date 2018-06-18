@@ -14,6 +14,8 @@
 import logging
 import traceback
 
+import kolla_cli.i18n as u
+
 from cliff.command import Command
 
 from kolla_cli.api.client import ClientApi
@@ -23,10 +25,26 @@ LOG = logging.getLogger(__name__)
 
 
 class ConfigReset(Command):
-    """Resets the kolla-ansible configuration to its release defaults."""
+    """Resets the kolla-ansible configuration
+
+    The properties and inventory will be reset to their original
+    values. If an inventory path is provided, the groups,
+    hosts, and host vars in the provided inventory file will be
+    imported into the kolla-cli inventory file.
+    """
+
+    def get_parser(self, prog_name):
+        parser = super(ConfigReset, self).get_parser(prog_name)
+        parser.add_argument('--inventory', nargs='?',
+                            metavar='<inventory>',
+                            help=u._('Path to inventory file'))
+        return parser
 
     def take_action(self, parsed_args):
         try:
-            CLIENT.config_reset()
+            inventory_path = None
+            if parsed_args.inventory:
+                inventory_path = parsed_args.inventory.strip()
+            CLIENT.config_reset(inventory_path)
         except Exception:
             raise Exception(traceback.format_exc())

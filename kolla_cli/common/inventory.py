@@ -28,7 +28,7 @@ from kolla_cli.api.exceptions import InvalidArgument
 from kolla_cli.api.exceptions import InvalidConfiguration
 from kolla_cli.api.exceptions import MissingArgument
 from kolla_cli.api.exceptions import NotInInventory
-from kolla_cli.common.allinone import AllInOne
+from kolla_cli.common.ansible_inventory import AnsibleInventory
 from kolla_cli.common.host import Host
 from kolla_cli.common.host_group import HostGroup
 from kolla_cli.common.service import Service
@@ -79,7 +79,7 @@ class Inventory(object):
     2: (v2.1.1) added ceilometer
     1: (v2.0.1) initial release
     """
-    def __init__(self):
+    def __init__(self, inventory_path=None):
         self._groups = {}           # kv = name:object
         self._hosts = {}            # kv = name:object
         self._services = {}         # kv = name:object
@@ -87,8 +87,9 @@ class Inventory(object):
         self.version = self.__class__.class_version
         self.remote_mode = True
 
-        # initialize the inventory to its defaults
-        self._create_default_inventory()
+        # initialize the inventory to its defaults as they are
+        # described in the kolla-ansible all-in-one inventory file.
+        self.import_inventory(inventory_path)
 
     def upgrade(self):
         # check for new services or subservices in the all-in-one file
@@ -101,16 +102,16 @@ class Inventory(object):
         Inventory.save(self)
 
     def _upgrade_services(self):
-        allinone = AllInOne()
+        ansible_inventory = AnsibleInventory()
 
         # add new services
-        for servicename, service in allinone.services.items():
+        for servicename, service in ansible_inventory.services.items():
             if servicename not in self._services:
                 self._services[servicename] = service
 
         # remove obsolete services
         for servicename in copy(self._services).keys():
-            if servicename not in allinone.services:
+            if servicename not in ansible_inventory.services:
                 self.delete_service(servicename)
 
     @staticmethod
@@ -665,9 +666,9 @@ class Inventory(object):
                 filtered_service_dict[service.name] = service
         return filtered_service_dict
 
-    def _create_default_inventory(self):
-        allin1 = AllInOne()
-        for groupname in allin1.groups:
+    def import_inventory(self, inventory_path):
+        ansible_inventory = AnsibleInventory(inventory_path)
+        for groupname in ansible_inventory.groups:
             self.add_group(groupname)
-        for servicename, service in allin1.services.items():
+        for servicename, service in ansible_inventory.services.items():
             self._services[servicename] = service
