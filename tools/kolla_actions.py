@@ -186,16 +186,17 @@ def _config_reset_cmd():
     clear_all_passwords()
 
     # nuke all files under the kolla etc base, skipping everything
-    # in the kollacli directory and the passwords.yml file
+    # in the kolla-cli directory and the globals.yml and passwords.yml files
     for dir_path, dir_names, file_names in os.walk(kolla_etc, topdown=False):
-        if 'kollacli' not in dir_path:
+        if 'kolla-cli' not in dir_path:
             for dir_name in dir_names:
-                if dir_name != 'kollacli':
+                if dir_name != 'kolla-cli':
                     os.rmdir(os.path.join(dir_path, dir_name))
 
             for file_name in file_names:
-                if file_name != 'passwords.yml':
-                    os.remove(os.path.join(dir_path, file_name))
+                if file_name == 'passwords.yml' or file_name == 'globals.yml':
+                    continue
+                os.remove(os.path.join(dir_path, file_name))
 
     # nuke all property files under the kolla-ansible base other than
     # all.yml and the global property file which we truncate above

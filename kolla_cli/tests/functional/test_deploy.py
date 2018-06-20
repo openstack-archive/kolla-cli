@@ -15,7 +15,7 @@
 from kolla_cli.tests.functional.common import KollaCliTest
 
 from kolla_cli.api.client import ClientApi
-from kolla_cli.common.allinone import AllInOne
+from kolla_cli.common.ansible_inventory import AnsibleInventory
 from kolla_cli.common.inventory import Inventory
 
 import json
@@ -46,8 +46,8 @@ class TestFunctional(KollaCliTest):
         self.assertIn(host1, msg, '%s not in json_gen output: %s'
                       % (host1, msg))
 
-        allinone = AllInOne()
-        services = allinone.services
+        ansible_inventory = AnsibleInventory()
+        services = ansible_inventory.services
         for servicename, service in services.items():
             self.assertIn(servicename, msg, '%s not in json_gen output: %s'
                           % (servicename, msg))

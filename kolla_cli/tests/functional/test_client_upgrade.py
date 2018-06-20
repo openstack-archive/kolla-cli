@@ -20,7 +20,7 @@ import shutil
 import unittest
 
 from kolla_cli.api.client import ClientApi
-from kolla_cli.common.allinone import AllInOne
+from kolla_cli.common.ansible_inventory import AnsibleInventory
 from kolla_cli.common.utils import get_kolla_cli_etc
 
 INV_NAME = 'inventory.json'
@@ -109,10 +109,10 @@ class TestFunctional(KollaCliTest):
             # in v1 > v2, ceilometer was added, check that it's there
             # and verify that all ceilometer groups are in the same groups
             # as heat.
-            allinone = AllInOne()
+            ansible_inventory = AnsibleInventory()
             heat = CLIENT.service_get(['heat'])[0]
             expected_groups = sorted(heat.get_groups())
-            ceilometer = allinone.services['ceilometer']
+            ceilometer = ansible_inventory.services['ceilometer']
             expected_services = ceilometer.get_sub_servicenames()
             expected_services.append('ceilometer')
             expected_services = sorted(expected_services)

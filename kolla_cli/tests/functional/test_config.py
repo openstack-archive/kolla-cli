@@ -12,8 +12,10 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-import kolla_cli.api.properties
+import os
 import unittest
+
+import kolla_cli.api.properties
 
 from kolla_cli.api.client import ClientApi
 from kolla_cli.tests.functional.common import KollaCliTest
@@ -96,7 +98,19 @@ class TestFunctional(KollaCliTest):
         self.assertIs(set(host_list).issubset(fetched_list), False,
                       'inventory reset config failed')
 
+        # test config reset with a different inventory file
+        expected_group_names = ['chipmunk', 'aardvark']
+        test_inventory_path = os.path.join(
+            os.getcwd(), 'kolla_cli', 'tests', 'functional',
+            'inventory_test_file')
+        CLIENT.config_reset(inventory_path=test_inventory_path)
+        groups = CLIENT.group_get_all()
+        self.assertEqual(len(groups), len(expected_group_names))
+        for group in groups:
+            self.assertIn(group.name, expected_group_names)
+
         # need to populate the password file or many other tests will fail
+        CLIENT.config_reset()
         CLIENT.password_init()
 
     @staticmethod
