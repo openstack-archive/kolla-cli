@@ -98,20 +98,23 @@ class TestFunctional(KollaCliTest):
         self.assertIs(set(host_list).issubset(fetched_list), False,
                       'inventory reset config failed')
 
-        # test config reset with a different inventory file
+        # need to populate the password file or many other tests will fail
+        CLIENT.password_init()
+
+    def test_config_import_inventory(self):
+        # test config import of a different inventory file
         expected_group_names = ['chipmunk', 'aardvark']
         test_inventory_path = os.path.join(
             os.getcwd(), 'kolla_cli', 'tests', 'functional',
             'inventory_test_file')
-        CLIENT.config_reset(inventory_path=test_inventory_path)
+        CLIENT.config_import_inventory(file_path=test_inventory_path)
         groups = CLIENT.group_get_all()
         self.assertEqual(len(groups), len(expected_group_names))
         for group in groups:
             self.assertIn(group.name, expected_group_names)
 
-        # need to populate the password file or many other tests will fail
+        # need to reset the inventory back to its defaults
         CLIENT.config_reset()
-        CLIENT.password_init()
 
     @staticmethod
     def _properties_to_dict(props):

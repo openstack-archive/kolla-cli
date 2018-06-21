@@ -25,24 +25,11 @@ from kolla_cli.common.utils import check_arg
 class ConfigApi(object):
 
     @staticmethod
-    def config_reset(inventory_path=None):
-        # type: (str) -> None
+    def config_reset():
         """Config Reset.
 
-        Resets the kolla-ansible configuration to its release defaults. If
-        an inventory path is provided, the inventory file will be imported
-        after the reset,
-
-        :param inventory_path: absolute path to inventory file to import
-        :type inventory_path: string
+        Resets the kolla-ansible configuration to its release defaults.
         """
-        if inventory_path:
-            check_arg(inventory_path, u._('Inventory path'), str)
-            if not os.path.isfile(inventory_path):
-                raise InvalidArgument(
-                    u._('Inventory file {path} is not valid.').format(
-                        path=inventory_path))
-
         actions_path = utils.get_kolla_actions_path()
         cmd = ('%s config_reset' % actions_path)
         err_msg, output = utils.run_cmd(cmd, print_output=False)
@@ -51,6 +38,21 @@ class ConfigApi(object):
                 u._('Configuration reset failed. {error} {message}')
                 .format(error=err_msg, message=output))
 
-        if inventory_path:
-            inventory = Inventory(inventory_path)
-            Inventory.save(inventory)
+    def config_import_inventory(self, file_path):
+        # type: (str) -> None
+        """Config Import Inventory
+
+        Import groups and child associations from the provided
+        inventory file. This currently does not import hosts, group
+        vars, or host vars that may also exist in the inventory file.
+
+        :param file_path: path to inventory file to import
+        :type file_path: string
+        """
+        check_arg(file_path, u._('File path'), str)
+        if not os.path.isfile(file_path):
+            raise InvalidArgument(
+                u._('File {path} is not valid.').format(
+                    path=file_path))
+        inventory = Inventory(file_path)
+        Inventory.save(inventory)
