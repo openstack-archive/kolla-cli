@@ -70,6 +70,28 @@ to add a host to the inventory:
 
 CLIENT.host_add(['host_name'])
 
+Getting Involved
+================
+
+Need a feature? Find a bug? Let us know! Contributions are much
+appreciated and should follow the standard `Gerrit
+workflow <https://docs.openstack.org/infra/manual/developers.html>`__.
+
+-  We communicate using the #openstack-kolla irc channel.
+-  File bugs, blueprints, track releases, etc on
+   `Launchpad <https://launchpad.net/kolla-cli>`__.
+-  Attend weekly
+   `meetings <https://wiki.openstack.org/wiki/Meetings/Kolla>`__.
+-  Contribute `code <https://git.openstack.org/cgit/openstack/kolla-cli>`__.
+
+Contributors
+============
+
+Check out who is `contributing
+code <http://stackalytics.com/?module=kolla-group&metric=commits>`__ and
+`contributing
+reviews <http://stackalytics.com/?module=kolla-group&metric=marks>`__.
+
 Troubleshooting
 ===============
 
