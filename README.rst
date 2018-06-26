@@ -1,6 +1,6 @@
-========
+=========
 Kolla-CLI
-========
+=========
 
 The Kolla-CLI project provides the ability to more easily manage
 Kolla-Ansible deployments. It provides both a CLI and a python
@@ -21,13 +21,13 @@ Installing
 
 The installation process below assumes that the kolla-ansible repository
 exists at the same level as the kolla-cli repository.  This is made clear
-in the cli-setup.py script which makes a relative '../' reference to
+in the cli_setup.py script which makes a relative '../' reference to
 the kolla-ansible repository.  If your kolla-ansible directory is somewhere
-else then that location can be passed as an argument to the cli-setup.py
+else then that location can be passed as an argument to the cli_setup.py
 script.  The location on the system where the kolla-cli expects the
 kolla-ansible files to be and installs them to can be tweaked by setting
 the KOLLA_HOME and KOLLA_ETC environment variables before running the
-cli-setup.py script, and while running the kolla-cli command itself.  The
+cli_setup.py script, and while running the kolla-cli command itself.  The
 default value for KOLLA_HOME is /usr/share/kolla-ansible and the default
 value for KOLLA_ETC is /etc/kolla.
 
@@ -38,7 +38,7 @@ The following steps can be used to build / run the kolla-cli
 * . .venv/bin/activate
 * pip install -r requirements.txt
 * python setup.py install
-* python ./cli-setup.py
+* python ./cli_setup.py
 * kolla-cli
 
 At that point you will be dropped into the kollacli shell where
