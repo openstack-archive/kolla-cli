@@ -4,6 +4,5 @@ etc/
 .tox/*
 .idea/*
 kolla_cli.egg-info/*
-.testrepository
 .mypy_cache/*
 .stestr
