@@ -108,6 +108,18 @@ class Inventory(object):
         for servicename, service in ansible_inventory.services.items():
             if servicename not in self._services:
                 self._services[servicename] = service
+            else:
+                # If Service newly enabled/disabled, take the latest
+                if self._services[servicename].is_supported() != \
+                        service.is_supported():
+                    self._services[servicename].set_supported(
+                        service.is_supported())
+
+                # If Service group changed, take the latest
+                if sorted(self._services[servicename].get_groupnames()) != \
+                        sorted(service.get_groupnames()):
+                    self._services[servicename].set_groupnames(
+                        service.get_groupnames())
 
         # remove obsolete services
         for servicename in copy(self._services).keys():
