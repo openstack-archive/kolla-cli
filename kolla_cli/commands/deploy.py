@@ -38,6 +38,9 @@ class Deploy(Command):
         parser.add_argument('--timeout', nargs=1,
                             metavar='<timeout>',
                             help=u._('timeout (in minutes)'))
+        parser.add_argument('--services', nargs='?',
+                            metavar='<service_list>',
+                            help=u._('Deploy service list'))
         return parser
 
     def take_action(self, parsed_args):
@@ -45,6 +48,7 @@ class Deploy(Command):
         serial_flag = False
         verbose_level = self.app.options.verbose_level
         timeout_target = 0
+        services = None
         try:
             if parsed_args.hosts:
                 host_list = parsed_args.hosts.strip()
@@ -57,6 +61,9 @@ class Deploy(Command):
                 except Exception:
                     raise CommandError(u._('Timeout value is not a number.'))
                 timeout_target = time.time() + (60 * timeout)
+            if parsed_args.services:
+                service_list = parsed_args.services.strip()
+                services = service_list.split(',')
 
             # if we are doing a targeted host deploy make sure we are doing it
             # to only compute nodes
@@ -74,8 +81,7 @@ class Deploy(Command):
                             'Invalid hosts: {hosts}')
                         .format(hosts=invalid_host_list))
 
-            job = CLIENT.deploy(hosts, serial_flag,
-                                verbose_level)
+            job = CLIENT.deploy(hosts, serial_flag, verbose_level, services)
 
             # wait for job to complete
             status = None
