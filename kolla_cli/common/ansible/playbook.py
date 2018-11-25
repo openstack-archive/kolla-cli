@@ -11,9 +11,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-MYPY = False
-if MYPY:
-    from typing import List  # noqa
 
 import logging
 import os
@@ -24,6 +21,11 @@ from kolla_cli.common.utils import get_ansible_command
 from kolla_cli.common.utils import get_kolla_etc
 
 from kolla_cli.common.inventory import Inventory
+
+MYPY = False
+if MYPY:
+    from typing import List  # noqa
+
 
 LOG = logging.getLogger(__name__)
 

@@ -11,9 +11,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-MYPY = False
-if MYPY:
-    from typing import List  # noqa
 
 import kolla_cli.i18n as u
 
@@ -24,6 +21,11 @@ from kolla_cli.common.passwords import set_password
 from kolla_cli.common.passwords import set_password_sshkey
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import disallow_chars
+
+
+MYPY = False
+if MYPY:
+    from typing import List  # noqa
 
 
 class PasswordApi(object):

@@ -11,10 +11,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-MYPY = False
-if MYPY:
-    from typing import Dict  # noqa
-    from typing import List  # noqa
 
 import logging
 import six
@@ -26,6 +22,12 @@ from kolla_cli.api.exceptions import InvalidArgument
 from kolla_cli.common.properties import AnsibleProperties
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import safe_decode
+
+
+MYPY = False
+if MYPY:
+    from typing import Dict  # noqa
+    from typing import List  # noqa
 
 LOG = logging.getLogger(__name__)
 

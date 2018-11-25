@@ -11,9 +11,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-MYPY = False
-if MYPY:
-    from typing import List  # noqa
 
 from copy import copy
 import kolla_cli.i18n as u
@@ -21,6 +18,11 @@ import kolla_cli.i18n as u
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import safe_decode
+
+
+MYPY = False
+if MYPY:
+    from typing import List  # noqa
 
 
 class GroupApi(object):
