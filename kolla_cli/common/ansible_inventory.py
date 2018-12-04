@@ -21,7 +21,7 @@ from kolla_cli.common.utils import get_kolla_ansible_home
 class AnsibleInventory(object):
     """AnsibleInventory helper class
 
-    This class parses an anisble inventory file and provides an
+    This class parses an ansible inventory file and provides an
     easier to use way to represent that file.
     """
     def __init__(self, inventory_path=None):
