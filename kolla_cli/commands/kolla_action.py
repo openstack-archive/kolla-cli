@@ -101,10 +101,21 @@ class Deploy(Command):
 
 class Pull(Command):
     """Pull all images for containers (only pulls, no running container)."""
+    def get_parser(self, prog_name):
+        parser = super(Pull, self).get_parser(prog_name)
+        parser.add_argument('--services', nargs='?',
+                            metavar='<service_list>',
+                            help=u._('Pull service list'))
+        return parser
+
     def take_action(self, parsed_args):
+        services = []
         try:
             verbose_level = self.app.options.verbose_level
-            job = CLIENT.pull(verbose_level)
+            if parsed_args.services:
+                service_list = parsed_args.services.strip()
+                services = service_list.split(',')
+            job = CLIENT.pull(verbose_level, services)
             status = job.wait()
             handers_action_result(job, status, verbose_level)
         except Exception:

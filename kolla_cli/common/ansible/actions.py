@@ -125,14 +125,17 @@ def deploy(hostnames=[],
     return job
 
 
-def pull(verbose_level=1):
+def pull(verbose_level=1, servicenames=[]):
     '''run pull action against all hosts'''
+
     playbook = AnsiblePlaybook()
     kolla_home = get_kolla_ansible_home()
     playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/site.yml')
     playbook.extra_vars = 'kolla_action=pull'
+    playbook.print_output = True
     playbook.verbose_level = verbose_level
+    playbook.services = servicenames
 
     job = playbook.run()
     return job

@@ -62,18 +62,19 @@ class ControlPlaneApi(object):
         return Job(ansible_job)
 
     @staticmethod
-    def pull(verbose_level=1):
+    def pull(verbose_level=1, services=[]):
         """Pull.
 
         Pull all images for containers (only pulls, no running container).
 
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
+        :param servicenames: services to pull. If empty, then pull all.
         :return: Job object
         :rtype: Job
         """
         check_arg(verbose_level, u._('Verbose level'), int)
-        ansible_job = actions.pull(verbose_level)
+        ansible_job = actions.pull(verbose_level, services)
         return Job(ansible_job)
 
     @staticmethod
