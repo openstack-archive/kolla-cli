@@ -22,7 +22,6 @@ TEST_GROUP_NAME = 'test_group'
 CLIENT = ClientApi()
 
 NOT_KNOWN = 'Name or service not known'
-UNREACHABLE = 'UNREACHABLE!'
 
 
 class TestFunctional(KollaCliTest):
@@ -74,9 +73,6 @@ class TestFunctional(KollaCliTest):
         else:
             self.assertEqual(1, status, 'Job %s ' % descr +
                              'succeeded when it should have failed')
-            self.assertIn(UNREACHABLE,
-                          'Job %s: No hosts, but got wrong error: %s'
-                          % (descr, output))
 
 if __name__ == '__main__':
     unittest.main()

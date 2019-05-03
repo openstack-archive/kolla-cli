@@ -14,17 +14,17 @@
     timeout: 3600
 
 - job:
-    name: kollacli-tox-functional-py35
+    name: kollacli-tox-functional-py36
     parent: openstack-tox
     description: |
-      Run tox-based py35 functional tests for the OpenStack Kolla-cli project.
+      Run tox-based py36 functional tests for the OpenStack Kolla-cli project.
       Uses tox with the ``functional`` environment.
     irrelevant-files:
       - ^.*\.rst$
       - ^doc/source/.*$
       - ^releasenotes/.*$
     vars:
-      tox_envlist: functional-py35
+      tox_envlist: functional-py36
     timeout: 3600
 
 - job:
@@ -41,15 +41,15 @@
       jobs:
         - openstack-tox-pep8
         - openstack-tox-py27
-        - openstack-tox-py35
+        - openstack-tox-py36
         - kollacli-tox-mypy
         - kollacli-tox-functional
-        - kollacli-tox-functional-py35
+        - kollacli-tox-functional-py36
     gate:
       jobs:
         - openstack-tox-pep8
         - openstack-tox-py27
-        - openstack-tox-py35
+        - openstack-tox-py36
         - kollacli-tox-mypy
         - kollacli-tox-functional
-        - kollacli-tox-functional-py35
+        - kollacli-tox-functional-py36
