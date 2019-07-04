@@ -20,14 +20,14 @@ Installing
 ==========
 
 The installation process below assumes that the kolla-ansible repository
-exists at the same level as the kolla-cli repository.  This is made clear
+exists at the same level as the kolla-cli repository. This is made clear
 in the cli_setup.py script which makes a relative '../' reference to
-the kolla-ansible repository.  If your kolla-ansible directory is somewhere
+the kolla-ansible repository. If your kolla-ansible directory is somewhere
 else then that location can be passed as an argument to the cli_setup.py
-script.  The location on the system where the kolla-cli expects the
+script. The location on the system where the kolla-cli expects the
 kolla-ansible files to be and installs them to can be tweaked by setting
 the KOLLA_HOME and KOLLA_ETC environment variables before running the
-cli_setup.py script, and while running the kolla-cli command itself.  The
+cli_setup.py script, and while running the kolla-cli command itself. The
 default value for KOLLA_HOME is /usr/share/kolla-ansible and the default
 value for KOLLA_ETC is /etc/kolla.
 
@@ -82,15 +82,15 @@ workflow <https://docs.openstack.org/infra/manual/developers.html>`__.
    `Launchpad <https://launchpad.net/kolla-cli>`__.
 -  Attend weekly
    `meetings <https://wiki.openstack.org/wiki/Meetings/Kolla>`__.
--  Contribute `code <https://git.openstack.org/cgit/openstack/kolla-cli>`__.
+-  Contribute `code <https://opendev.org/openstack/kolla-cli>`__.
 
 Contributors
 ============
 
 Check out who is `contributing
-code <http://stackalytics.com/?module=kolla-group&metric=commits>`__ and
+code <https://www.stackalytics.com/?module=kolla-group&metric=commits>`__ and
 `contributing
-reviews <http://stackalytics.com/?module=kolla-group&metric=marks>`__.
+reviews <https://www.stackalytics.com/?module=kolla-group&metric=marks>`__.
 
 Troubleshooting
 ===============
