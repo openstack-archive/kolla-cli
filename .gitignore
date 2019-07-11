@@ -22,3 +22,6 @@ doc/build
 # pbr generates these
 AUTHORS
 ChangeLog
+
+.coverage
+cover/
