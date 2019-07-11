@@ -30,7 +30,7 @@ tools = 'tools'
 
 def setup_ansible_etc():
     # if the kolla-cli directory for the inventory doesn't exist
-    # already then make it.  this will also create the directory the
+    # already then make it. this will also create the directory the
     # globals and password file goes into
     cli_etc_dir = os.path.join(kolla_ansible_etc_target,
                                kolla_cli, ansible)

@@ -37,11 +37,12 @@
     timeout: 3600
 
 - project:
+    templates:
+        - openstack-python3-train-jobs
     check:
       jobs:
         - openstack-tox-pep8
         - openstack-tox-py27
-        - openstack-tox-py36
         - kollacli-tox-mypy
         - kollacli-tox-functional
         - kollacli-tox-functional-py36
@@ -49,7 +50,6 @@
       jobs:
         - openstack-tox-pep8
         - openstack-tox-py27
-        - openstack-tox-py36
         - kollacli-tox-mypy
         - kollacli-tox-functional
         - kollacli-tox-functional-py36
