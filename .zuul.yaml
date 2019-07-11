@@ -39,18 +39,15 @@
 - project:
     templates:
         - openstack-cover-jobs
+        - openstack-python-jobs
         - openstack-python3-train-jobs
     check:
       jobs:
-        - openstack-tox-pep8
-        - openstack-tox-py27
         - kollacli-tox-mypy
         - kollacli-tox-functional
         - kollacli-tox-functional-py36
     gate:
       jobs:
-        - openstack-tox-pep8
-        - openstack-tox-py27
         - kollacli-tox-mypy
         - kollacli-tox-functional
         - kollacli-tox-functional-py36
