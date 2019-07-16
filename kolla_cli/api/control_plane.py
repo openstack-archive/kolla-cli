@@ -136,6 +136,25 @@ class ControlPlaneApi(object):
         return Job(ansible_job)
 
     @staticmethod
+    def check(verbose_level=1, servicenames=[]):
+        """Do post-deployment smoke tests.
+
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
+        :return: Job object
+        :rtype: Job
+        """
+        check_arg(verbose_level, u._('Verbose level'), int)
+        check_arg(servicenames, u._('Service names'), list,
+                  empty_ok=True, none_ok=True)
+
+        servicenames = safe_decode(servicenames)
+        action = KollaAction(verbose_level=verbose_level,
+                             playbook_name='site.yml')
+        ansible_job = action.check(servicenames)
+        return Job(ansible_job)
+
+    @staticmethod
     def postdeploy(verbose_level=1):
         """Post-Deploy.
 
