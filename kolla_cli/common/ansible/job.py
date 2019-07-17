@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 import fcntl
 import json
 import logging
@@ -20,15 +21,13 @@ import re
 import subprocess  # nosec
 import time
 
-import kolla_cli.i18n as u
-
 from kolla_cli.common.inventory import remove_temp_inventory
-from kolla_cli.common.utils import get_ansible_lock_path
 from kolla_cli.common.utils import get_kolla_actions_path
 from kolla_cli.common.utils import Lock
 from kolla_cli.common.utils import PidManager
 from kolla_cli.common.utils import run_cmd
 from kolla_cli.common.utils import safe_decode
+import kolla_cli.i18n as u
 
 LOG = logging.getLogger(__name__)
 
@@ -53,7 +52,7 @@ class AnsibleJob(object):
         self._ignore_total = 0
         self._cmd_output = ''
         self._kill_uname = None
-        self._ansible_lock = Lock(get_ansible_lock_path(), 'ansible_job')
+        self._ansible_lock = Lock(owner='ansible_job')
         self._ignore_error_strings = None
         self._host_ignored_error_count = {}
 
@@ -64,7 +63,8 @@ class AnsibleJob(object):
                 raise Exception(
                     u._('unable to get lock: {lock}, to run '
                         'ansible job: {cmd} ')
-                    .format(lock=get_ansible_lock_path(), cmd=self._command))
+                    .format(lock=self._ansible_lock.lockpath,
+                            cmd=self._command))
 
             LOG.debug('playbook command: %s' % self._command)
             # ansible 2.2 and later introduced an issue where if

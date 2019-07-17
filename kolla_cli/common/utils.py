@@ -66,10 +66,6 @@ def get_host_vars_dir():
     return os.path.join(get_kolla_ansible_home(), 'ansible/host_vars')
 
 
-def get_ansible_lock_path():
-    return os.path.join(get_kolla_cli_home(), 'ansible.lock')
-
-
 def get_tools_path():
     return os.environ.get(
         'KOLLA_TOOLS_DIR', os.path.join(get_kolla_cli_home(), 'tools'))
@@ -378,7 +374,7 @@ def sync_write_file(path, data, mode='w'):
     lock = None
     try:
         if get_lock_enabled():
-            ansible_lock = Lock(get_ansible_lock_path(), 'sync_write')
+            ansible_lock = Lock(owner='sync_write')
             locked = ansible_lock.wait_acquire()
             if not locked:
                 raise Exception(
@@ -386,7 +382,7 @@ def sync_write_file(path, data, mode='w'):
                         'as it was locked.')
                     .format(path=path))
 
-            lock = Lock(path, 'sync_write')
+            lock = Lock(lockpath=path, owner='sync_write')
             locked = lock.wait_acquire()
             if not locked:
                 raise Exception(
@@ -526,14 +522,17 @@ class Lock(object):
     works then it seems better / less complicated for our needs.
     """
 
-    def __init__(self, lockpath, owner='unknown owner', use_flock=True):
-        self.lockpath = lockpath
+    def __init__(self, lockpath=None, owner='unknown owner', use_flock=True):
+        self.lockpath = lockpath or self.get_lockpath()
         self.pid = str(os.getpid())
         self.fd = None
         self.owner = owner
         self.current_pid = -1
         self.current_owner = ''
         self.use_flock = use_flock
+
+    def get_lockpath(self):
+        return os.path.join(get_kolla_cli_home(), 'ansible.lock')
 
     def acquire(self):
             try:
