@@ -26,7 +26,7 @@ LOG = logging.getLogger(__name__)
 
 
 class Pull(Command):
-    """Pull enabled service images onto appropriate hosts."""
+    """Pull all images for containers (only pulls, no running container)."""
     def take_action(self, parsed_args):
         try:
             verbose_level = self.app.options.verbose_level

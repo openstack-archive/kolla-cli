@@ -34,7 +34,7 @@ class ControlPlaneApi(object):
         # type: (List[str], bool, int, List[str]) -> Job
         """Deploy.
 
-        Deploy containers to hosts.
+        Deploy and start all kolla containers.
 
         :param hostnames: hosts to deploy to. If empty, then deploy to all.
         :type hostnames: list of strings
@@ -64,7 +64,7 @@ class ControlPlaneApi(object):
     def pull(verbose_level=1):
         """Pull.
 
-        Pull container images onto appropriate hosts.
+        Pull all images for containers (only pulls, no running container).
 
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
@@ -79,6 +79,8 @@ class ControlPlaneApi(object):
     def upgrade(verbose_level=1, servicenames=[]):
         # type: (int, List[str]) -> Job
         """Upgrade.
+
+        Upgrades existing OpenStack Environment.
 
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
@@ -103,7 +105,7 @@ class ControlPlaneApi(object):
         # type: (int) -> Job
         """Reconfigure.
 
-        Reconfigure containers on hosts.
+        Reconfigure OpenStack service.
 
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
@@ -118,11 +120,11 @@ class ControlPlaneApi(object):
     @staticmethod
     def set_deploy_mode(remote_mode):
         # type: (bool) -> None
-        """Set deploy mode.
+        """Set deploy mode to either local or remote.
 
-        Set deploy mode to either local or remote. Local indicates
-        that the openstack deployment will be to the local host.
-        Remote means that the deployment is executed via ssh.
+        Local indicates that the openstack deployment will be
+        to the local host. Remote means that the deployment is
+        executed via ssh.
 
         NOTE: local mode is not supported and should never be used
         in production environments.

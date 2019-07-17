@@ -27,7 +27,7 @@ CLIENT = ClientApi()
 
 
 class Deploy(Command):
-    """Deploy containers to hosts."""
+    """Deploy and start all kolla containers."""
     def get_parser(self, prog_name):
         parser = super(Deploy, self).get_parser(prog_name)
         parser.add_argument('--hosts', nargs='?',
@@ -113,11 +113,11 @@ class Deploy(Command):
 
 
 class Setdeploy(Command):
-    """Set deploy mode.
+    """Set deploy mode to either local or remote.
 
-    Set deploy mode to either local or remote. Local indicates
-    that the openstack deployment will be to the local host.
-    Remote means that the deployment is on remote hosts.
+    Local indicates that the openstack deployment will be
+    to the local host. Remote means that the deployment is
+    on remote hosts.
     """
     def get_parser(self, prog_name):
         parser = super(Setdeploy, self).get_parser(prog_name)

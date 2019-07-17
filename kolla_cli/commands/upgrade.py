@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
 
 
 class Upgrade(Command):
-    """Upgrade."""
+    """Upgrades existing OpenStack Environment."""
     def get_parser(self, prog_name):
         parser = super(Upgrade, self).get_parser(prog_name)
         parser.add_argument('--services', nargs='?',

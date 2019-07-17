@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
 
 
 class Reconfigure(Command):
-    """Reconfigure and update kolla containers on all hosts."""
+    """Reconfigure OpenStack service."""
     def get_parser(self, prog_name):
         parser = super(Reconfigure, self).get_parser(prog_name)
         return parser
