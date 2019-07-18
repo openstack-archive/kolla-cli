@@ -277,6 +277,13 @@ class HostSetup(Command):
 
             if parsed_args.file:
                 # multi-host setup via xml file
+                # The xml file's content is like a dict of format:
+                # hostname1:
+                #     uname: user1
+                #     password: <password1>
+                # hostname2:
+                #     uname: user2
+                #     password: <password2>
                 hosts_data = self._get_yml_data(parsed_args.file.strip())
                 CLIENT.host_setup(hosts_data)
             else:

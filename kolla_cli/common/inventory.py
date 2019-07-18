@@ -266,6 +266,11 @@ class Inventory(object):
                 failed_hosts[hostname] = u._('No password in yml file.')
                 continue
             passwd = host_info['password']
+
+            # NOTE(caoyuan): The type of password must be string,
+            # convert to string if the password is int.
+            if not isinstance(passwd, str):
+                passwd = str(passwd)
             uname = None
             if 'uname' in host_info:
                 uname = host_info['uname']
