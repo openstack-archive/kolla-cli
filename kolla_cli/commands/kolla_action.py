@@ -13,6 +13,7 @@
 #    under the License.
 
 import logging
+import time
 import traceback
 
 from cliff.command import Command
@@ -23,6 +24,91 @@ import kolla_cli.i18n as u
 
 CLIENT = ClientApi()
 LOG = logging.getLogger(__name__)
+
+
+class Deploy(Command):
+    """Deploy and start all kolla containers."""
+    def get_parser(self, prog_name):
+        parser = super(Deploy, self).get_parser(prog_name)
+        parser.add_argument('--hosts', nargs='?',
+                            metavar='<host_list>',
+                            help=u._('Deployment host list'))
+        parser.add_argument('--serial', action='store_true',
+                            help=u._('Deploy serially'))
+        parser.add_argument('--timeout', nargs=1,
+                            metavar='<timeout>',
+                            help=u._('timeout (in minutes)'))
+        parser.add_argument('--services', nargs='?',
+                            metavar='<service_list>',
+                            help=u._('Deploy service list'))
+        return parser
+
+    def take_action(self, parsed_args):
+        hosts = None
+        serial_flag = False
+        verbose_level = self.app.options.verbose_level
+        timeout_target = 0
+        services = None
+        try:
+            if parsed_args.hosts:
+                host_list = parsed_args.hosts.strip()
+                hosts = host_list.split(',')
+            if parsed_args.serial:
+                serial_flag = True
+            if parsed_args.timeout:
+                try:
+                    timeout = float(parsed_args.timeout[0])
+                except Exception:
+                    raise CommandError(u._('Timeout value is not a number.'))
+                timeout_target = time.time() + (60 * timeout)
+            if parsed_args.services:
+                service_list = parsed_args.services.strip()
+                services = service_list.split(',')
+
+            # if we are doing a targeted host deploy make sure we are doing it
+            # to only compute nodes
+            if hosts:
+                invalid_host_list = []
+                compute_group = CLIENT.group_get(['compute'])[0]
+                compute_hosts = compute_group.get_hosts()
+                for host in hosts:
+                    if host not in compute_hosts:
+                        invalid_host_list.append(host)
+                if len(invalid_host_list) > 0:
+                    raise CommandError(
+                        u._('Invalid hosts for host targeted deploy. '
+                            'Hosts must be in the compute group only.'
+                            'Invalid hosts: {hosts}')
+                        .format(hosts=invalid_host_list))
+
+            job = CLIENT.deploy(hosts, serial_flag, verbose_level, services)
+
+            # wait for job to complete
+            status = None
+            while status is None:
+                if timeout_target and time.time() > timeout_target:
+                    job.kill()
+                    raise CommandError(u._('Job timed out and was killed.'))
+                time.sleep(1)
+                status = job.get_status()
+
+            # job is done
+            if verbose_level > 2:
+                LOG.info('\n\n' + 80 * '=')
+                LOG.info(u._('DEBUG command output:\n{out}')
+                         .format(out=job.get_console_output()))
+            if status == 0:
+                if verbose_level > 1:
+                    # log any ansible warnings
+                    msg = job.get_error_message()
+                    if msg:
+                        LOG.warn(msg)
+                LOG.info(u._('Success'))
+            else:
+                raise CommandError(u._('Job failed:\n{msg}')
+                                   .format(msg=job.get_error_message()))
+        except Exception:
+            raise Exception(traceback.format_exc())
 
 
 class Pull(Command):
