@@ -70,7 +70,7 @@ class AnsibleJob(object):
             # ansible 2.2 and later introduced an issue where if
             # the playbook is executed from within a directory without
             # read / write permission (which can happen when you,
-            # for example, execute via sudo) it will fail.  the
+            # for example, execute via sudo) it will fail. the
             # workaround will be to run the ansible command from /tmp
             # and then change back to the original directory at the end
             current_dir = os.getcwd()  # nosec
@@ -116,7 +116,10 @@ class AnsibleJob(object):
         status = self._process.poll()
         out = self._read_stream(self._process.stdout)
         self._cmd_output = ''.join([self._cmd_output, out])
-        self._log_output(out)
+
+        # unnecessary spaces should be hidden
+        if out:
+            self._log_output(out)
         if status is not None:
             # job has completed
             if self._kill_uname:
@@ -129,7 +132,7 @@ class AnsibleJob(object):
                 if status != 0:
                     # if the process ran and returned a non zero return
                     # code we want to see if we got some ansible errors
-                    # and if so if we ignored all the errors.  if all
+                    # and if so if we ignored all the errors. if all
                     # errors are ignored we consider the job a success
                     if (self._error_total > 0 and
                             self._error_total == self._ignore_total):
@@ -247,8 +250,9 @@ class AnsibleJob(object):
     def _cleanup(self):
         """cleanup job
 
-        - delete temp inventory
+        - release the ansible lock
         - close stdout and stderr
+        - delete temp inventory
         """
         # try to clear the ansible lock
         self._ansible_lock.release()
