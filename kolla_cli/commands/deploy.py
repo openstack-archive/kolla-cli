@@ -110,36 +110,3 @@ class Deploy(Command):
 
         except Exception:
             raise Exception(traceback.format_exc())
-
-
-class Setdeploy(Command):
-    """Set deploy mode to either local or remote.
-
-    Local indicates that the openstack deployment will be
-    to the local host. Remote means that the deployment is
-    on remote hosts.
-    """
-    def get_parser(self, prog_name):
-        parser = super(Setdeploy, self).get_parser(prog_name)
-        parser.add_argument('mode', metavar='<mode>',
-                            help=u._('mode=<local, remote>'))
-        return parser
-
-    def take_action(self, parsed_args):
-        try:
-            mode = parsed_args.mode.strip()
-            remote_flag = True
-            if mode == 'local':
-                remote_flag = False
-                LOG.info(u._('Please note that local mode is not supported '
-                             'and should never be used in production '
-                             'environments.'))
-            elif mode != 'remote':
-                raise CommandError(
-                    u._('Invalid deploy mode. Mode must be '
-                        'either "local" or "remote".'))
-            CLIENT.set_deploy_mode(remote_flag)
-        except CommandError as e:
-            raise e
-        except Exception:
-            raise Exception(traceback.format_exc())
