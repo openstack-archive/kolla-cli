@@ -184,3 +184,27 @@ class Upgrade(Command):
                                    .format(msg=job.get_error_message()))
         except Exception:
             raise Exception(traceback.format_exc())
+
+
+class CertificateInit(Command):
+    """Generates self-signed certificate"""
+
+    def take_action(self, parsed_args):
+        verbose_level = self.app.options.verbose_level
+
+        try:
+            job = CLIENT.certificate_init(verbose_level)
+
+            # wait for job to complete
+            status = job.wait()
+            if verbose_level > 2:
+                LOG.info('\n\n' + 80 * '=')
+                LOG.info(u._('DEBUG command output:\n{out}')
+                         .format(out=job.get_console_output()))
+            if status == 0:
+                LOG.info(u._('Success'))
+            else:
+                raise CommandError(u._('Job failed:\n{msg}')
+                                   .format(msg=job.get_error_message()))
+        except Exception:
+            raise Exception(traceback.format_exc())
