@@ -11,11 +11,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import kolla_cli.i18n as u
 
 from kolla_cli.api.job import Job
 from kolla_cli.common.ansible import actions
 from kolla_cli.common.utils import check_arg
+import kolla_cli.i18n as u
 
 
 class CertificateApi(object):

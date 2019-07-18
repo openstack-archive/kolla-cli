@@ -15,11 +15,11 @@
 import logging
 import traceback
 
+from cliff.command import Command
+
 from kolla_cli.api.client import ClientApi
 from kolla_cli.commands.exceptions import CommandError
 import kolla_cli.i18n as u
-
-from cliff.command import Command
 
 LOG = logging.getLogger(__name__)
 CLIENT = ClientApi()

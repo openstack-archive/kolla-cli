@@ -11,12 +11,15 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from cliff.command import Command
-from kolla_cli.api.client import ClientApi
-import kolla_cli.i18n as u
+
 import logging
 import tempfile
 import traceback
+
+from cliff.command import Command
+
+from kolla_cli.api.client import ClientApi
+import kolla_cli.i18n as u
 
 LOG = logging.getLogger(__name__)
 CLIENT = ClientApi()
