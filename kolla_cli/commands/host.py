@@ -108,14 +108,16 @@ class HostDestroy(Command):
                 LOG.info('\n\n' + 80 * '=')
                 LOG.info(u._('DEBUG command output:\n{out}')
                          .format(out=job.get_console_output()))
-            if status != 0:
+            if status == 0:
+                if verbose_level > 1:
+                    # log any ansible warnings
+                    msg = job.get_error_message()
+                    if msg:
+                        LOG.warn(msg)
+                LOG.info(u._('Success'))
+            else:
                 raise CommandError(u._('Job failed:\n{msg}')
                                    .format(msg=job.get_error_message()))
-            elif verbose_level > 1:
-                # log any ansible warnings
-                msg = job.get_error_message()
-                if msg:
-                    LOG.warn(msg)
 
         except ClientException as e:
             raise CommandError(str(e))
@@ -222,14 +224,16 @@ class HostCheck(Command):
                     LOG.info('\n\n' + 80 * '=')
                     LOG.info(u._('DEBUG command output:\n{out}')
                              .format(out=job.get_console_output()))
-                if status != 0:
+                if status == 0:
+                    if verbose_level > 1:
+                        # log any ansible warnings
+                        msg = job.get_error_message()
+                        if msg:
+                            LOG.warn(msg)
+                    LOG.info(u._('Success'))
+                else:
                     raise CommandError(u._('Job failed:\n{msg}')
                                        .format(msg=job.get_error_message()))
-                elif verbose_level > 1:
-                    # log any ansible warnings
-                    msg = job.get_error_message()
-                    if msg:
-                        LOG.warn(msg)
             else:
                 # just do an ssh check
                 summary = CLIENT.host_ssh_check(hostnames)
@@ -353,14 +357,16 @@ class HostStop(Command):
                 LOG.info('\n\n' + 80 * '=')
                 LOG.info(u._('DEBUG command output:\n{out}')
                          .format(out=job.get_console_output()))
-            if status != 0:
+            if status == 0:
+                if verbose_level > 1:
+                    # log any ansible warnings
+                    msg = job.get_error_message()
+                    if msg:
+                        LOG.warn(msg)
+                LOG.info(u._('Success'))
+            else:
                 raise CommandError(u._('Job failed:\n{msg}')
                                    .format(msg=job.get_error_message()))
-            elif verbose_level > 1:
-                # log any ansible warnings
-                msg = job.get_error_message()
-                if msg:
-                    LOG.warn(msg)
 
         except ClientException as e:
             raise CommandError(str(e))
