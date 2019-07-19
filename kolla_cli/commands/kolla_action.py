@@ -20,6 +20,7 @@ from cliff.command import Command
 
 from kolla_cli.api.client import ClientApi
 from kolla_cli.commands.exceptions import CommandError
+from kolla_cli.common.utils import handers_action_result
 import kolla_cli.i18n as u
 
 CLIENT = ClientApi()
@@ -93,20 +94,7 @@ class Deploy(Command):
                 status = job.get_status()
 
             # job is done
-            if verbose_level > 2:
-                LOG.info('\n\n' + 80 * '=')
-                LOG.info(u._('DEBUG command output:\n{out}')
-                         .format(out=job.get_console_output()))
-            if status == 0:
-                if verbose_level > 1:
-                    # log any ansible warnings
-                    msg = job.get_error_message()
-                    if msg:
-                        LOG.warn(msg)
-                LOG.info(u._('Success'))
-            else:
-                raise CommandError(u._('Job failed:\n{msg}')
-                                   .format(msg=job.get_error_message()))
+            handers_action_result(job, status, verbose_level)
         except Exception:
             raise Exception(traceback.format_exc())
 
@@ -118,20 +106,7 @@ class Pull(Command):
             verbose_level = self.app.options.verbose_level
             job = CLIENT.pull(verbose_level)
             status = job.wait()
-            if verbose_level > 2:
-                LOG.info('\n\n' + 80 * '=')
-                LOG.info(u._('DEBUG command output:\n{out}')
-                         .format(out=job.get_console_output()))
-            if status == 0:
-                if verbose_level > 1:
-                    # log any ansible warnings
-                    msg = job.get_error_message()
-                    if msg:
-                        LOG.warn(msg)
-                LOG.info(u._('Success'))
-            else:
-                raise CommandError(u._('Job failed:\n{msg}')
-                                   .format(msg=job.get_error_message()))
+            handers_action_result(job, status, verbose_level)
         except Exception:
             raise Exception(traceback.format_exc())
 
@@ -147,20 +122,7 @@ class Reconfigure(Command):
             verbose_level = self.app.options.verbose_level
             job = CLIENT.reconfigure(verbose_level)
             status = job.wait()
-            if verbose_level > 2:
-                LOG.info('\n\n' + 80 * '=')
-                LOG.info(u._('DEBUG command output:\n{out}')
-                         .format(out=job.get_console_output()))
-            if status == 0:
-                if verbose_level > 1:
-                    # log any ansible warnings
-                    msg = job.get_error_message()
-                    if msg:
-                        LOG.warn(msg)
-                LOG.info(u._('Success'))
-            else:
-                raise CommandError(u._('Job failed:\n{msg}')
-                                   .format(msg=job.get_error_message()))
+            handers_action_result(job, status, verbose_level)
         except Exception:
             raise Exception(traceback.format_exc())
 
@@ -183,20 +145,7 @@ class Upgrade(Command):
             verbose_level = self.app.options.verbose_level
             job = CLIENT.upgrade(verbose_level, services)
             status = job.wait()
-            if verbose_level > 2:
-                LOG.info('\n\n' + 80 * '=')
-                LOG.info(u._('DEBUG command output:\n{out}')
-                         .format(out=job.get_console_output()))
-            if status == 0:
-                if verbose_level > 1:
-                    # log any ansible warnings
-                    msg = job.get_error_message()
-                    if msg:
-                        LOG.warn(msg)
-                LOG.info(u._('Success'))
-            else:
-                raise CommandError(u._('Job failed:\n{msg}')
-                                   .format(msg=job.get_error_message()))
+            handers_action_result(job, status, verbose_level)
         except Exception:
             raise Exception(traceback.format_exc())
 
@@ -212,19 +161,6 @@ class CertificateInit(Command):
 
             # wait for job to complete
             status = job.wait()
-            if verbose_level > 2:
-                LOG.info('\n\n' + 80 * '=')
-                LOG.info(u._('DEBUG command output:\n{out}')
-                         .format(out=job.get_console_output()))
-            if status == 0:
-                if verbose_level > 1:
-                    # log any ansible warnings
-                    msg = job.get_error_message()
-                    if msg:
-                        LOG.warn(msg)
-                LOG.info(u._('Success'))
-            else:
-                raise CommandError(u._('Job failed:\n{msg}')
-                                   .format(msg=job.get_error_message()))
+            handers_action_result(job, status, verbose_level)
         except Exception:
             raise Exception(traceback.format_exc())

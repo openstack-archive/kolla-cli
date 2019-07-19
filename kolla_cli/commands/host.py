@@ -28,6 +28,7 @@ from kolla_cli.api.exceptions import ClientException
 from kolla_cli.commands.exceptions import CommandError
 from kolla_cli.common.utils import convert_lists_to_string
 from kolla_cli.common.utils import get_setup_user
+from kolla_cli.common.utils import handers_action_result
 import kolla_cli.i18n as u
 
 LOG = logging.getLogger(__name__)
@@ -104,21 +105,7 @@ class HostDestroy(Command):
                                       verbose_level, include_data,
                                       remove_images)
             status = job.wait()
-            if verbose_level > 2:
-                LOG.info('\n\n' + 80 * '=')
-                LOG.info(u._('DEBUG command output:\n{out}')
-                         .format(out=job.get_console_output()))
-            if status == 0:
-                if verbose_level > 1:
-                    # log any ansible warnings
-                    msg = job.get_error_message()
-                    if msg:
-                        LOG.warn(msg)
-                LOG.info(u._('Success'))
-            else:
-                raise CommandError(u._('Job failed:\n{msg}')
-                                   .format(msg=job.get_error_message()))
-
+            handers_action_result(job, status, verbose_level)
         except ClientException as e:
             raise CommandError(str(e))
         except Exception as e:
@@ -220,20 +207,7 @@ class HostCheck(Command):
                 verbose_level = self.app.options.verbose_level
                 job = CLIENT.host_precheck(hostnames, verbose_level)
                 status = job.wait()
-                if verbose_level > 2:
-                    LOG.info('\n\n' + 80 * '=')
-                    LOG.info(u._('DEBUG command output:\n{out}')
-                             .format(out=job.get_console_output()))
-                if status == 0:
-                    if verbose_level > 1:
-                        # log any ansible warnings
-                        msg = job.get_error_message()
-                        if msg:
-                            LOG.warn(msg)
-                    LOG.info(u._('Success'))
-                else:
-                    raise CommandError(u._('Job failed:\n{msg}')
-                                       .format(msg=job.get_error_message()))
+                handers_action_result(job, status, verbose_level)
             else:
                 # just do an ssh check
                 summary = CLIENT.host_ssh_check(hostnames)
@@ -353,21 +327,7 @@ class HostStop(Command):
 
             job = CLIENT.host_stop(hostnames, verbose_level)
             status = job.wait()
-            if verbose_level > 2:
-                LOG.info('\n\n' + 80 * '=')
-                LOG.info(u._('DEBUG command output:\n{out}')
-                         .format(out=job.get_console_output()))
-            if status == 0:
-                if verbose_level > 1:
-                    # log any ansible warnings
-                    msg = job.get_error_message()
-                    if msg:
-                        LOG.warn(msg)
-                LOG.info(u._('Success'))
-            else:
-                raise CommandError(u._('Job failed:\n{msg}')
-                                   .format(msg=job.get_error_message()))
-
+            handers_action_result(job, status, verbose_level)
         except ClientException as e:
             raise CommandError(str(e))
         except Exception as e:
