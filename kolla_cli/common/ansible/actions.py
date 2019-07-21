@@ -31,20 +31,33 @@ import kolla_cli.i18n as u
 LOG = logging.getLogger(__name__)
 
 
-def certificate_init(verbose_level=1):
-    '''Creates a self-signed certificate'''
-    playbook = AnsiblePlaybook()
-    playbook_name = 'certificates.yml'
+class KollaAction(object):
+    """Kolla Action."""
 
-    kolla_home = get_kolla_ansible_home()
-    playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/' + playbook_name)
-    playbook.verbose_level = verbose_level
-    playbook.local_only = True
-    playbook.become_user = get_admin_user()
+    def __init__(self, verbose_level=0, playbook_name=''):
+        self.playbook_name = playbook_name
+        self.playbook_path = os.path.join(get_kolla_ansible_home(),
+                                          'ansible/',
+                                          self.playbook_name)
+        self.playbook = AnsiblePlaybook()
+        self.playbook.verbose_level = verbose_level
+        self.playbook.playbook_path = self.playbook_path
 
-    job = playbook.run()
-    return job
+    def certificate_init(self):
+        '''Creates a self-signed certificate'''
+
+        self.playbook.local_only = True
+        self.playbook.become_user = get_admin_user()
+        job = self.playbook.run()
+        return job
+
+    def postdeploy(self):
+        '''Do post deploy on deploy node.'''
+
+        self.playbook.local_only = True
+        self.playbook.become_user = get_admin_user()
+        job = self.playbook.run()
+        return job
 
 
 def destroy_hosts(hostnames, destroy_type,
@@ -170,20 +183,6 @@ def upgrade(verbose_level=1, servicenames=[]):
     playbook.print_output = True
     playbook.verbose_level = verbose_level
     playbook.services = servicenames
-
-    job = playbook.run()
-    return job
-
-
-def postdeploy(verbose_level=1):
-    playbook = AnsiblePlaybook()
-    playbook_name = 'post-deploy.yml'
-    kolla_home = get_kolla_ansible_home()
-    playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/' + playbook_name)
-    playbook.verbose_level = verbose_level
-    playbook.local_only = True
-    playbook.become_user = get_admin_user()
 
     job = playbook.run()
     return job

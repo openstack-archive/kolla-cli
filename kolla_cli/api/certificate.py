@@ -13,7 +13,7 @@
 #    under the License.
 
 from kolla_cli.api.job import Job
-from kolla_cli.common.ansible import actions
+from kolla_cli.common.ansible.actions import KollaAction
 from kolla_cli.common.utils import check_arg
 import kolla_cli.i18n as u
 
@@ -32,6 +32,7 @@ class CertificateApi(object):
         :rtype: Job
         """
         check_arg(verbose_level, u._('Verbose level'), int)
-
-        ansible_job = actions.certificate_init(verbose_level)
+        action = KollaAction(verbose_level=verbose_level,
+                             playbook_name='certificates.yml')
+        ansible_job = action.certificate_init()
         return Job(ansible_job)

@@ -16,6 +16,7 @@ import kolla_cli.i18n as u
 
 from kolla_cli.api.job import Job
 from kolla_cli.common.ansible import actions
+from kolla_cli.common.ansible.actions import KollaAction
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import safe_decode
@@ -113,7 +114,9 @@ class ControlPlaneApi(object):
         """
         check_arg(verbose_level, u._('Verbose level'), int)
 
-        ansible_job = actions.postdeploy(verbose_level)
+        action = KollaAction(verbose_level=verbose_level,
+                             playbook_name='post-deploy.yml')
+        ansible_job = action.postdeploy()
         return Job(ansible_job)
 
     @staticmethod
