@@ -63,7 +63,7 @@ oslo.serialization==2.25.0
 oslo.utils==3.33.0
 oslotest==3.2.0
 packaging==17.1
-paramiko==1.15
+paramiko==2.6.0
 pbr==2.0.0
 prettytable==0.7.1
 pycparser==2.18

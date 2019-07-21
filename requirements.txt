@@ -7,7 +7,7 @@ cliff>=2.11.0 # Apache-2.0
 cliff-tablib>=2.0 # Apache-2.0
 jsonpickle>=0.9 # BSD
 oslo.i18n>=3.20.0 # Apache-2.0
-paramiko>=1.15 # LGPL
+paramiko>=2.6.0 # LGPL
 pbr!=2.1.0,>=2.0.0 # Apache-2.0
 six>=1.10.0 # MIT
 docker>=2.4.2 # Apache-2.0

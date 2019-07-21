@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 import copy
 import fcntl
 import grp
@@ -22,11 +23,10 @@ import subprocess  # nosec
 import time
 import yaml
 
-import kolla_cli.i18n as u
-
 from kolla_cli.api.exceptions import InvalidArgument
 from kolla_cli.api.exceptions import MissingArgument
 from kolla_cli.commands.exceptions import CommandError
+import kolla_cli.i18n as u
 
 LOG = logging.getLogger(__name__)
 

@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 import logging
 import os.path
 import paramiko
@@ -19,11 +20,9 @@ import traceback
 from kolla_cli.common.utils import get_admin_user
 from kolla_cli.common.utils import get_kolla_cli_etc
 from kolla_cli.common.utils import get_setup_user
-
 import kolla_cli.i18n as u
 
-
-MIN_DOCKER_VERSION = '1.8.1'
+MIN_DOCKER_VERSION = '1.10.0'
 
 LOG = logging.getLogger(__name__)
 
