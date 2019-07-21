@@ -17,10 +17,9 @@ import os
 import traceback
 
 from kolla_cli.common.ansible.job import AnsibleJob
+from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.utils import get_ansible_command
 from kolla_cli.common.utils import get_kolla_etc
-
-from kolla_cli.common.inventory import Inventory
 
 MYPY = False
 if MYPY:

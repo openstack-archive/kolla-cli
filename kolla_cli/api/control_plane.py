@@ -101,6 +101,22 @@ class ControlPlaneApi(object):
         return Job(ansible_job)
 
     @staticmethod
+    def postdeploy(verbose_level=1):
+        """Post-Deploy.
+
+        Do post deploy on deploy node.
+
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
+        :return: Job object
+        :rtype: Job
+        """
+        check_arg(verbose_level, u._('Verbose level'), int)
+
+        ansible_job = actions.postdeploy(verbose_level)
+        return Job(ansible_job)
+
+    @staticmethod
     def reconfigure(verbose_level=1):
         # type: (int) -> Job
         """Reconfigure.

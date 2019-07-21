@@ -11,10 +11,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 import logging
 import os
-
-import kolla_cli.i18n as u
 
 from kolla_cli.api.exceptions import InvalidArgument
 from kolla_cli.api.exceptions import InvalidConfiguration
@@ -27,6 +26,7 @@ from kolla_cli.common.utils import get_admin_user
 from kolla_cli.common.utils import get_kolla_ansible_home
 from kolla_cli.common.utils import get_kolla_etc
 from kolla_cli.common.utils import is_string_true
+import kolla_cli.i18n as u
 
 LOG = logging.getLogger(__name__)
 
@@ -170,6 +170,20 @@ def upgrade(verbose_level=1, servicenames=[]):
     playbook.print_output = True
     playbook.verbose_level = verbose_level
     playbook.services = servicenames
+
+    job = playbook.run()
+    return job
+
+
+def postdeploy(verbose_level=1):
+    playbook = AnsiblePlaybook()
+    playbook_name = 'post-deploy.yml'
+    kolla_home = get_kolla_ansible_home()
+    playbook.playbook_path = os.path.join(kolla_home,
+                                          'ansible/' + playbook_name)
+    playbook.verbose_level = verbose_level
+    playbook.local_only = True
+    playbook.become_user = get_admin_user()
 
     job = playbook.run()
     return job

@@ -150,12 +150,24 @@ class Upgrade(Command):
             raise Exception(traceback.format_exc())
 
 
+class PostDeploy(Command):
+    """Do post deploy on deploy node."""
+
+    def take_action(self, parsed_args):
+        verbose_level = self.app.options.verbose_level
+        try:
+            job = CLIENT.postdeploy(verbose_level)
+            status = job.wait()
+            handers_action_result(job, status, verbose_level)
+        except Exception:
+            raise Exception(traceback.format_exc())
+
+
 class CertificateInit(Command):
     """Generates self-signed certificate"""
 
     def take_action(self, parsed_args):
         verbose_level = self.app.options.verbose_level
-
         try:
             job = CLIENT.certificate_init(verbose_level)
 
