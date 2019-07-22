@@ -98,6 +98,17 @@ class KollaAction(object):
     def precheck(self, hostnames):
         '''run check playbooks on a set of hosts'''
 
+        # check that password file has no empty password values
+        empty_keys = get_empty_password_values()
+        if empty_keys:
+            raise InvalidConfiguration(
+                u._('Deploy failed. There are empty password values '
+                    'in {etc}passwords.yml. '
+                    'Please run kolla-cli password init or '
+                    'kolla-cli password set(key) to correct them. '
+                    '\nEmpty passwords: '
+                    '{keys}').format(etc=get_kolla_etc(), keys=empty_keys))
+
         # define 'hosts' to be all, but inventory filtering will subset
         # that down to the hosts in playbook.hosts.
         self.playbook.hosts = hostnames
@@ -172,17 +183,6 @@ def upgrade(verbose_level=1, servicenames=[]):
 def _run_deploy_rules(playbook):
     properties = AnsibleProperties()
     inventory = Inventory.load()
-
-    # check that password file has no empty password values
-    empty_keys = get_empty_password_values()
-    if empty_keys:
-        raise InvalidConfiguration(
-            u._('Deploy failed. There are empty password values '
-                'in {etc}passwords.yml. '
-                'Please run kolla-cli password init or '
-                'kolla-cli password set(key) to correct them. '
-                '\nEmpty passwords: '
-                '{keys}').format(etc=get_kolla_etc(), keys=empty_keys))
 
     # cannot have both groups and hosts
     if playbook.hosts and playbook.groups:
