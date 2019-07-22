@@ -144,18 +144,13 @@ def stop_hosts(hostnames=[], verbose_level=1):
     or killed if the stop takes over 20 seconds.
     '''
     playbook = AnsiblePlaybook()
-    playbook_name = 'stop.yml'
-    LOG.info(u._LI('Please be patient as this may take a while.'))
     kolla_home = get_kolla_ansible_home()
     playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/' + playbook_name)
-
-    # 'hosts' is defined as 'all' in the playbook yml code, but inventory
-    # filtering will subset that down to the hosts in playbook.hosts.
+                                          'ansible/site.yml')
+    playbook.extra_vars = 'kolla_action=stop'
     playbook.hosts = hostnames
-    if verbose_level <= 1:
-        playbook.print_output = False
     playbook.verbose_level = verbose_level
+
     job = playbook.run()
     return job
 
