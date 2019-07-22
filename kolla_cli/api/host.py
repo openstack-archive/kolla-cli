@@ -16,7 +16,7 @@ import kolla_cli.i18n as u
 
 from kolla_cli.api.exceptions import InvalidArgument
 from kolla_cli.api.job import Job
-from kolla_cli.common.ansible import actions
+from kolla_cli.common.ansible.actions import KollaAction
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import safe_decode
@@ -183,9 +183,10 @@ class HostApi(object):
         inventory = Inventory.load()
         inventory.validate_hostnames(hostnames)
 
-        ansible_job = actions.destroy_hosts(hostnames, destroy_type,
-                                            verbose_level, include_data,
-                                            remove_images)
+        action = KollaAction(verbose_level=verbose_level,
+                             playbook_name='destroy.yml')
+        ansible_job = action.destroy_hosts(hostnames, destroy_type,
+                                           include_data, remove_images)
         return Job(ansible_job)
 
     @staticmethod
@@ -209,7 +210,9 @@ class HostApi(object):
         inventory = Inventory.load()
         inventory.validate_hostnames(hostnames)
 
-        ansible_job = actions.precheck(hostnames, verbose_level)
+        action = KollaAction(verbose_level=verbose_level,
+                             playbook_name='site.yml')
+        ansible_job = action.precheck(hostnames)
         return Job(ansible_job)
 
     @staticmethod
@@ -233,7 +236,9 @@ class HostApi(object):
         inventory = Inventory.load()
         inventory.validate_hostnames(hostnames)
 
-        ansible_job = actions.stop_hosts(hostnames, verbose_level)
+        action = KollaAction(verbose_level=verbose_level,
+                             playbook_name='site.yml')
+        ansible_job = action.stop_hosts(hostnames)
         return Job(ansible_job)
 
 

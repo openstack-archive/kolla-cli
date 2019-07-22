@@ -59,33 +59,52 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
+    def destroy_hosts(self, hostnames, destroy_type,
+                      include_data=False, remove_images=False):
+        '''destroy containers on a set of hosts.
 
-def destroy_hosts(hostnames, destroy_type,
-                  verbose_level=1, include_data=False,
-                  remove_images=False):
-    '''destroy containers on a set of hosts.
+        The containers on the specified hosts will be stopped
+        or killed.
+        '''
 
-    The containers on the specified hosts will be stopped
-    or killed.
-    '''
-    playbook = AnsiblePlaybook()
-    playbook_name = 'destroy.yml'
+        LOG.info(u._LI('Please be patient as this may take a while.'))
+        # 'hosts' is defined as 'all' in the playbook yml code, but inventory
+        # filtering will subset that down to the hosts in playbook.hosts.
+        self.playbook.hosts = hostnames
+        if remove_images:
+            self.playbook.extra_vars = 'destroy_include_images=yes'
+        if self.playbook.verbose_level <= 1:
+            self.playbook.print_output = False
+        job = self.playbook.run()
+        return job
 
-    LOG.info(u._LI('Please be patient as this may take a while.'))
-    kolla_home = get_kolla_ansible_home()
-    playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/' + playbook_name)
+    def stop_hosts(self, hostnames=[]):
+        '''stop containers on a set of hosts.
 
-    # 'hosts' is defined as 'all' in the playbook yml code, but inventory
-    # filtering will subset that down to the hosts in playbook.hosts.
-    playbook.hosts = hostnames
-    if remove_images:
-        playbook.extra_vars = 'destroy_include_images=yes'
-    if verbose_level <= 1:
-        playbook.print_output = False
-    playbook.verbose_level = verbose_level
-    job = playbook.run()
-    return job
+        The containers on the specified hosts will be stopped
+        or killed if the stop takes over 20 seconds.
+        '''
+
+        LOG.info(u._LI('Please be patient as this may take a while.'))
+        # 'hosts' is defined as 'all' in the playbook yml code, but inventory
+        # filtering will subset that down to the hosts in playbook.hosts.
+        self.playbook.hosts = hostnames
+        self.playbook.extra_vars = 'kolla_action=stop'
+        if self.playbook.verbose_level <= 1:
+            self.playbook.print_output = False
+        job = self.playbook.run()
+        return job
+
+    def precheck(self, hostnames):
+        '''run check playbooks on a set of hosts'''
+
+        # define 'hosts' to be all, but inventory filtering will subset
+        # that down to the hosts in playbook.hosts.
+        self.playbook.hosts = hostnames
+        self.playbook.extra_vars = 'kolla_action=precheck hosts=all'
+        self.playbook.print_output = True
+        job = self.playbook.run()
+        return job
 
 
 def deploy(hostnames=[],
@@ -106,24 +125,6 @@ def deploy(hostnames=[],
     return job
 
 
-def precheck(hostnames, verbose_level=1):
-    '''run check playbooks on a set of hosts'''
-    kolla_home = get_kolla_ansible_home()
-    playbook = AnsiblePlaybook()
-    playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/site.yml')
-
-    # define 'hosts' to be all, but inventory filtering will subset
-    # that down to the hosts in playbook.hosts.
-    playbook.extra_vars = 'kolla_action=precheck hosts=all'
-    playbook.hosts = hostnames
-    playbook.print_output = True
-    playbook.verbose_level = verbose_level
-
-    job = playbook.run()
-    return job
-
-
 def pull(verbose_level=1):
     '''run pull action against all hosts'''
     playbook = AnsiblePlaybook()
@@ -131,24 +132,6 @@ def pull(verbose_level=1):
     playbook.playbook_path = os.path.join(kolla_home,
                                           'ansible/site.yml')
     playbook.extra_vars = 'kolla_action=pull'
-    playbook.verbose_level = verbose_level
-
-    job = playbook.run()
-    return job
-
-
-def stop_hosts(hostnames=[], verbose_level=1):
-    '''stop containers on a set of hosts.
-
-    The containers on the specified hosts will be stopped
-    or killed if the stop takes over 20 seconds.
-    '''
-    playbook = AnsiblePlaybook()
-    kolla_home = get_kolla_ansible_home()
-    playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/site.yml')
-    playbook.extra_vars = 'kolla_action=stop'
-    playbook.hosts = hostnames
     playbook.verbose_level = verbose_level
 
     job = playbook.run()
