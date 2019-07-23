@@ -161,6 +161,29 @@ class Upgrade(Command):
             raise Exception(traceback.format_exc())
 
 
+class Genconfig(Command):
+    """Generate configuration files for enabled OpenStack services."""
+    def get_parser(self, prog_name):
+        parser = super(Genconfig, self).get_parser(prog_name)
+        parser.add_argument('--services', nargs='?',
+                            metavar='<service_list>',
+                            help=u._('genarate configs service list'))
+        return parser
+
+    def take_action(self, parsed_args):
+        services = None
+        try:
+            if parsed_args.services:
+                service_list = parsed_args.services.strip()
+                services = service_list.split(',')
+            verbose_level = self.app.options.verbose_level
+            job = CLIENT.genconfig(verbose_level, services)
+            status = job.wait()
+            handers_action_result(job, status, verbose_level)
+        except Exception:
+            raise Exception(traceback.format_exc())
+
+
 class PostDeploy(Command):
     """Do post deploy on deploy node."""
 

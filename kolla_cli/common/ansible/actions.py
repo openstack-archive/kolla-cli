@@ -135,6 +135,15 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
+    def genconfig(self, servicenames=[]):
+        '''Generate configuration files for enabled OpenStack services'''
+
+        self.playbook.services = servicenames
+        self.playbook.extra_vars = 'kolla_action=config'
+        self.playbook.print_output = True
+        job = self.playbook.run()
+        return job
+
 
 def deploy(hostnames=[],
            serial_flag=False, verbose_level=1, servicenames=[]):

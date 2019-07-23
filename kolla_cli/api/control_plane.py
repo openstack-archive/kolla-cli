@@ -111,6 +111,33 @@ class ControlPlaneApi(object):
         return Job(ansible_job)
 
     @staticmethod
+    def genconfig(verbose_level=1, servicenames=[]):
+        # type: (int, List[str]) -> Job
+        """Genconfig.
+
+        Upgrades existing OpenStack Environment.
+
+        :param verbose_level: the higher the number, the more verbose
+        :type verbose_level: integer
+        :param servicenames: services to upgrade. If empty, then upgrade all.
+        :type servicenames: list of strings
+        :return: Job object
+        :rtype: Job
+
+        Upgrade containers to new version specified by the property
+        "openstack_release."
+        """
+        check_arg(verbose_level, u._('Verbose level'), int)
+        check_arg(servicenames, u._('Service names'), list,
+                  empty_ok=True, none_ok=True)
+
+        servicenames = safe_decode(servicenames)
+        aciton = KollaAction(verbose_level=verbose_level,
+                             playbook_name='site.yml')
+        ansible_job = aciton.genconfig(servicenames)
+        return Job(ansible_job)
+
+    @staticmethod
     def postdeploy(verbose_level=1):
         """Post-Deploy.
 
