@@ -16,12 +16,11 @@ import logging
 import six
 import yaml
 
-import kolla_cli.i18n as u
-
 from kolla_cli.api.exceptions import InvalidArgument
 from kolla_cli.common.properties import AnsibleProperties
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import safe_decode
+import kolla_cli.i18n as u
 
 
 MYPY = False

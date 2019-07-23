@@ -11,15 +11,15 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import os
 
-import kolla_cli.i18n as u
+import os
 
 from kolla_cli.api.exceptions import FailedOperation
 from kolla_cli.api.exceptions import InvalidArgument
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common import utils
 from kolla_cli.common.utils import check_arg
+import kolla_cli.i18n as u
 
 
 class ConfigApi(object):

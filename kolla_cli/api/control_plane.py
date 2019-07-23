@@ -12,15 +12,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import kolla_cli.i18n as u
-
 from kolla_cli.api.job import Job
 from kolla_cli.common.ansible import actions
 from kolla_cli.common.ansible.actions import KollaAction
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import safe_decode
-
+import kolla_cli.i18n as u
 
 MYPY = False
 if MYPY:

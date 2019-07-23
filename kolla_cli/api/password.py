@@ -12,8 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import kolla_cli.i18n as u
-
 from kolla_cli.common.passwords import clear_password
 from kolla_cli.common.passwords import get_password_names
 from kolla_cli.common.passwords import init_passwords
@@ -21,6 +19,7 @@ from kolla_cli.common.passwords import set_password
 from kolla_cli.common.passwords import set_password_sshkey
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import disallow_chars
+import kolla_cli.i18n as u
 
 
 MYPY = False

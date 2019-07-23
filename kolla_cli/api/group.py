@@ -13,11 +13,11 @@
 #    under the License.
 
 from copy import copy
-import kolla_cli.i18n as u
 
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import safe_decode
+import kolla_cli.i18n as u
 
 
 MYPY = False
