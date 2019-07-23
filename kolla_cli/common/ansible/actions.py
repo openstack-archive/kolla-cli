@@ -102,7 +102,7 @@ class KollaAction(object):
         empty_keys = get_empty_password_values()
         if empty_keys:
             raise InvalidConfiguration(
-                u._('Deploy failed. There are empty password values '
+                u._('password check failed. There are empty password values '
                     'in {etc}passwords.yml. '
                     'Please run kolla-cli password init or '
                     'kolla-cli password set(key) to correct them. '

@@ -11,12 +11,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 import copy
 import logging
 import os
 import yaml
-
-import kolla_cli.i18n as u
 
 from kolla_cli.api.exceptions import NotInInventory
 from kolla_cli.common.inventory import Inventory
@@ -25,6 +24,7 @@ from kolla_cli.common.utils import get_group_vars_dir
 from kolla_cli.common.utils import get_host_vars_dir
 from kolla_cli.common.utils import get_kolla_ansible_home
 from kolla_cli.common.utils import sync_read_file
+import kolla_cli.i18n as u
 
 LOG = logging.getLogger(__name__)
 
