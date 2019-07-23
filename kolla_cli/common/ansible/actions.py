@@ -117,6 +117,24 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
+    def pull(self, servicenames=[]):
+        '''run pull action against all hosts'''
+
+        self.playbook.services = servicenames
+        self.playbook.extra_vars = 'kolla_action=pull'
+        self.playbook.print_output = True
+        job = self.playbook.run()
+        return job
+
+    def upgrade(self, servicenames=[]):
+        '''Upgrades existing OpenStack Environment.'''
+
+        self.playbook.services = servicenames
+        self.playbook.extra_vars = 'kolla_action=upgrade'
+        self.playbook.print_output = True
+        job = self.playbook.run()
+        return job
+
 
 def deploy(hostnames=[],
            serial_flag=False, verbose_level=1, servicenames=[]):
@@ -136,22 +154,6 @@ def deploy(hostnames=[],
     return job
 
 
-def pull(verbose_level=1, servicenames=[]):
-    '''run pull action against all hosts'''
-
-    playbook = AnsiblePlaybook()
-    kolla_home = get_kolla_ansible_home()
-    playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/site.yml')
-    playbook.extra_vars = 'kolla_action=pull'
-    playbook.print_output = True
-    playbook.verbose_level = verbose_level
-    playbook.services = servicenames
-
-    job = playbook.run()
-    return job
-
-
 def reconfigure(verbose_level=1):
     playbook = AnsiblePlaybook()
     kolla_home = get_kolla_ansible_home()
@@ -161,20 +163,6 @@ def reconfigure(verbose_level=1):
     playbook.verbose_level = verbose_level
 
     _run_deploy_rules(playbook)
-
-    job = playbook.run()
-    return job
-
-
-def upgrade(verbose_level=1, servicenames=[]):
-    playbook = AnsiblePlaybook()
-    kolla_home = get_kolla_ansible_home()
-    playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/site.yml')
-    playbook.extra_vars = 'kolla_action=upgrade'
-    playbook.print_output = True
-    playbook.verbose_level = verbose_level
-    playbook.services = servicenames
 
     job = playbook.run()
     return job

@@ -62,7 +62,7 @@ class ControlPlaneApi(object):
         return Job(ansible_job)
 
     @staticmethod
-    def pull(verbose_level=1, services=[]):
+    def pull(verbose_level=1, servicenames=[]):
         """Pull.
 
         Pull all images for containers (only pulls, no running container).
@@ -74,7 +74,13 @@ class ControlPlaneApi(object):
         :rtype: Job
         """
         check_arg(verbose_level, u._('Verbose level'), int)
-        ansible_job = actions.pull(verbose_level, services)
+        check_arg(servicenames, u._('Service names'), list,
+                  empty_ok=True, none_ok=True)
+
+        servicenames = safe_decode(servicenames)
+        aciton = KollaAction(verbose_level=verbose_level,
+                             playbook_name='site.yml')
+        ansible_job = aciton.pull(servicenames)
         return Job(ansible_job)
 
     @staticmethod
@@ -97,9 +103,11 @@ class ControlPlaneApi(object):
         check_arg(verbose_level, u._('Verbose level'), int)
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
-        servicenames = safe_decode(servicenames)
 
-        ansible_job = actions.upgrade(verbose_level, servicenames)
+        servicenames = safe_decode(servicenames)
+        aciton = KollaAction(verbose_level=verbose_level,
+                             playbook_name='site.yml')
+        ansible_job = aciton.upgrade(servicenames)
         return Job(ansible_job)
 
     @staticmethod
