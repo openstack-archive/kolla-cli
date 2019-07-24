@@ -114,7 +114,7 @@ class AnsibleProperties(object):
                 override_flags.ovr_global = True
                 orig_value = self.unique_global_props[key].value
             ansible_prop = AnsibleProperty(key, value,
-                                           'group_vars/__GLOBAL',
+                                           'group_vars/__GLOBAL__',
                                            overrides, orig_value)
             ansible_prop.override_flags = override_flags
             self.global_props.append(ansible_prop)
