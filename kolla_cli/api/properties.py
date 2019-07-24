@@ -145,8 +145,10 @@ class PropertyApi(object):
             property_list = ansible_properties.get_all_unique()
         elif property_type == GROUP_TYPE:
             property_list = ansible_properties.get_group_list(get_set)
-        else:
+        elif property_type == HOST_TYPE:
             property_list = ansible_properties.get_host_list(get_set)
+        else:
+            property_list = ansible_properties.get_default_unique()
 
         override_flags = ansible_properties.get_all_override_flags()
 
