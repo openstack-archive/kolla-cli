@@ -56,3 +56,21 @@ class Setdeploy(Command):
             raise e
         except Exception:
             raise Exception(traceback.format_exc())
+
+
+class Getdeploy(Command):
+    """get deploy mode from either local or remote.
+
+    Local indicates that the openstack deployment will be
+    to the local host. Remote means that the deployment is
+    on remote hosts.
+    """
+
+    def take_action(self, parsed_args):
+        try:
+            mode = CLIENT.get_deploy_mode()
+            return mode
+        except CommandError as e:
+            raise e
+        except Exception:
+            raise Exception(traceback.format_exc())

@@ -208,3 +208,19 @@ class ControlPlaneApi(object):
         inventory = Inventory.load()
         inventory.set_deploy_mode(remote_mode)
         Inventory.save(inventory)
+
+    @staticmethod
+    def get_deploy_mode():
+        """Get deploy mode from either local or remote.
+
+        Local indicates that the openstack deployment will be
+        to the local host. Remote means that the deployment is
+        executed via ssh.
+
+        NOTE: local mode is not supported and should never be used
+        in production environments.
+        """
+        inventory = Inventory.load()
+        remote_mode = inventory.remote_mode
+        deploy_mode = 'remote' if remote_mode else 'local'
+        return deploy_mode
