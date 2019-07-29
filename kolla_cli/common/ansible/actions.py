@@ -230,26 +230,6 @@ def _run_deploy_rules(playbook):
                     'have no associated hosts')
                 .format(groups=failed_groups, services=failed_services))
 
-    # check that ring files are in /etc/kolla/config/swift if
-    # swift is enabled
-    expected_files = ['account.ring.gz',
-                      'container.ring.gz',
-                      'object.ring.gz']
-    is_swift_enabled = _is_service_enabled('swift', inventory, properties)
-
-    if is_swift_enabled:
-        path_pre = os.path.join(get_kolla_etc(), 'config', 'swift')
-        for expected_file in expected_files:
-            path = os.path.join(path_pre, expected_file)
-            if not os.path.isfile(path):
-                msg = u._(
-                    'Deploy failed. '
-                    'Swift is enabled but ring buffers have '
-                    'not yet been set up. Please see the '
-                    'documentation for swift configuration '
-                    'instructions.')
-                raise InvalidConfiguration(msg)
-
 
 def _is_service_enabled(servicename, inventory, properties):
     service = inventory.get_service(servicename)
