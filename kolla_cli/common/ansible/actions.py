@@ -51,6 +51,29 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
+    def deploy(self, hostnames=[], serial_flag=False, servicenames=[]):
+        '''Deploy and start all kolla containers.'''
+
+        self.playbook.hosts = hostnames
+        self.playbook.serial = serial_flag
+        self.playbook.services = servicenames
+        self.playbook.extra_vars = 'kolla_action=deploy'
+
+        self._run_deploy_rules(self.playbook)
+
+        job = self.playbook.run()
+        return job
+
+    def reconfigure(self):
+        '''Reconfigure OpenStack service.'''
+
+        self.playbook.extra_vars = 'kolla_action=reconfigure'
+
+        self._run_deploy_rules(self.playbook)
+
+        job = self.playbook.run()
+        return job
+
     def postdeploy(self):
         '''Do post deploy on deploy node.'''
 
@@ -153,89 +176,57 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
+    def _run_deploy_rules(self, playbook):
+        properties = AnsibleProperties()
+        inventory = Inventory.load()
 
-def deploy(hostnames=[],
-           serial_flag=False, verbose_level=1, servicenames=[]):
-    playbook = AnsiblePlaybook()
-    kolla_home = get_kolla_ansible_home()
-    playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/site.yml')
-    playbook.extra_vars = 'kolla_action=deploy'
-    playbook.hosts = hostnames
-    playbook.serial = serial_flag
-    playbook.verbose_level = verbose_level
-    playbook.services = servicenames
+        # cannot have both groups and hosts
+        if playbook.hosts and playbook.groups:
+            raise InvalidArgument(
+                u._('Hosts and Groups arguments cannot '
+                    'both be present at the same time.'))
 
-    _run_deploy_rules(playbook)
+        # verify that all services exists
+        if playbook.services:
+            for service in playbook.services:
+                valid_service = inventory.get_service(service)
+                if not valid_service:
+                    raise NotInInventory(u._('Service'), service)
 
-    job = playbook.run()
-    return job
+        # check that every group with enabled services
+        # has hosts associated to it
+        group_services = inventory.get_group_services()
+        failed_groups = []
+        failed_services = []
+        if group_services:
+            for (groupname, servicenames) in group_services.items():
+                group = inventory.get_group(groupname)
+                hosts = group.get_hostnames()
 
+                group_needs_host = False
+                if not hosts:
+                    for servicename in servicenames:
+                        if self._is_service_enabled(servicename,
+                                                    inventory,
+                                                    properties):
+                            group_needs_host = True
+                            failed_services.append(servicename)
+                    if group_needs_host:
+                        failed_groups.append(groupname)
 
-def reconfigure(verbose_level=1):
-    playbook = AnsiblePlaybook()
-    kolla_home = get_kolla_ansible_home()
-    playbook.playbook_path = os.path.join(kolla_home,
-                                          'ansible/site.yml')
-    playbook.extra_vars = 'kolla_action=reconfigure'
-    playbook.verbose_level = verbose_level
+            if len(failed_groups) > 0:
+                raise InvalidConfiguration(
+                    u._('Deploy failed. '
+                        'Groups: {groups} with enabled '
+                        'services : {services} '
+                        'have no associated hosts')
+                    .format(groups=failed_groups, services=failed_services))
 
-    _run_deploy_rules(playbook)
-
-    job = playbook.run()
-    return job
-
-
-def _run_deploy_rules(playbook):
-    properties = AnsibleProperties()
-    inventory = Inventory.load()
-
-    # cannot have both groups and hosts
-    if playbook.hosts and playbook.groups:
-        raise InvalidArgument(
-            u._('Hosts and Groups arguments cannot '
-                'both be present at the same time.'))
-
-    # verify that all services exists
-    if playbook.services:
-        for service in playbook.services:
-            valid_service = inventory.get_service(service)
-            if not valid_service:
-                raise NotInInventory(u._('Service'), service)
-
-    # check that every group with enabled services
-    # has hosts associated to it
-    group_services = inventory.get_group_services()
-    failed_groups = []
-    failed_services = []
-    if group_services:
-        for (groupname, servicenames) in group_services.items():
-            group = inventory.get_group(groupname)
-            hosts = group.get_hostnames()
-
-            group_needs_host = False
-            if not hosts:
-                for servicename in servicenames:
-                    if _is_service_enabled(servicename, inventory, properties):
-                        group_needs_host = True
-                        failed_services.append(servicename)
-                if group_needs_host:
-                    failed_groups.append(groupname)
-
-        if len(failed_groups) > 0:
-            raise InvalidConfiguration(
-                u._('Deploy failed. '
-                    'Groups: {groups} with enabled '
-                    'services : {services} '
-                    'have no associated hosts')
-                .format(groups=failed_groups, services=failed_services))
-
-
-def _is_service_enabled(servicename, inventory, properties):
-    service = inventory.get_service(servicename)
-    if service is not None:
-        enabled_property = 'enable_' + servicename.replace('-', '_')
-        is_enabled = properties.get_property_value(enabled_property)
-        if type(is_enabled) is str:
-            is_enabled = is_string_true(is_enabled)
-    return is_enabled
+    def _is_service_enabled(self, servicename, inventory, properties):
+        service = inventory.get_service(servicename)
+        if service is not None:
+            enabled_property = 'enable_' + servicename.replace('-', '_')
+            is_enabled = properties.get_property_value(enabled_property)
+            if type(is_enabled) is str:
+                is_enabled = is_string_true(is_enabled)
+        return is_enabled
