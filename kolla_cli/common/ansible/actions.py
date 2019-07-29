@@ -117,9 +117,10 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
-    def pull(self, servicenames=[]):
+    def pull(self, hostnames=[], servicenames=[]):
         '''run pull action against all hosts'''
 
+        self.playbook.hosts = hostnames
         self.playbook.services = servicenames
         self.playbook.extra_vars = 'kolla_action=pull'
         self.playbook.print_output = True
