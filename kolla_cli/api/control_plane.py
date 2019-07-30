@@ -14,6 +14,7 @@
 
 from kolla_cli.api.job import Job
 from kolla_cli.common.ansible.actions import KollaAction
+from kolla_cli.common.ansible.utils import check_kolla_args
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.utils import check_arg
 from kolla_cli.common.utils import safe_decode
@@ -78,6 +79,9 @@ class ControlPlaneApi(object):
         check_arg(verbose_level, u._('Verbose level'), int)
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
+
+        check_kolla_args(hostnames=hostnames,
+                         servicenames=servicenames)
 
         hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
