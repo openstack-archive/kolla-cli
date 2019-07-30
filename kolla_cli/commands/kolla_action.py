@@ -112,6 +112,7 @@ class Pull(Command):
         return parser
 
     def take_action(self, parsed_args):
+        hosts = []
         services = []
         try:
             verbose_level = self.app.options.verbose_level
