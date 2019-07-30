@@ -13,7 +13,6 @@
 #    under the License.
 
 from kolla_cli.api.job import Job
-from kolla_cli.common.ansible import actions
 from kolla_cli.common.ansible.actions import KollaAction
 from kolla_cli.common.inventory import Inventory
 from kolla_cli.common.utils import check_arg
@@ -55,8 +54,9 @@ class ControlPlaneApi(object):
         hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
 
-        ansible_job = actions.deploy(hostnames,
-                                     serial_flag, verbose_level, servicenames)
+        action = KollaAction(verbose_level=verbose_level,
+                             playbook_name='site.yml')
+        ansible_job = action.deploy(hostnames, serial_flag, servicenames)
         return Job(ansible_job)
 
     @staticmethod
@@ -191,7 +191,9 @@ class ControlPlaneApi(object):
         """
         check_arg(verbose_level, u._('Verbose level'), int)
 
-        ansible_job = actions.reconfigure(verbose_level)
+        action = KollaAction(verbose_level=verbose_level,
+                             playbook_name='site.yml')
+        ansible_job = action.reconfigure()
         return Job(ansible_job)
 
     @staticmethod
