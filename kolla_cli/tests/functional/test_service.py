@@ -64,17 +64,17 @@ class TestFunctional(KollaCliTest):
     def test_listgroups(self):
         """$ kolla-cli service listgroups
 
-        +------------------------+-------------------------+
-        | Service                | Groups                  |
-        +------------------------+-------------------------+
-        | cinder                 | ['control', 'control2'] |
-        | cinder-api             |                         |
-        | cinder-backup          | ['storage']             |
-        | cinder-scheduler       |                         |
-        | cinder-volume          | ['storage']             |
-        | glance                 | ['control', 'control2'] |
-        | glance-api             |                         |
-        | glance-registry        |                         |
+        +------------------------+-------------------------+ \
+        | Service                | Groups                  | \
+        +------------------------+-------------------------+ \
+        | cinder                 | ['control', 'control2'] | \
+        | cinder-api             |                         | \
+        | cinder-backup          | ['storage']             | \
+        | cinder-scheduler       |                         | \
+        | cinder-volume          | ['storage']             | \
+        | glance                 | ['control', 'control2'] | \
+        | glance-api             |                         | \
+        | glance-registry        |                         | \
         ...
 
         """

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# kollacli documentation build configuration file, created by
+# kolla-cli documentation build configuration file, created by
 # sphinx-quickstart on Thu Mar 17 18:17:04 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -47,7 +47,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'kollacli'
+project = u'kolla-cli'
 copyright = u'2016, Oracle'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -180,7 +180,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'kollaclidoc'
+htmlhelp_basename = 'kolla-clidoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -200,7 +200,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'kollacli.tex', u'kollacli Documentation',
+  ('index', 'kolla-cli.tex', u'kolla-cli Documentation',
    u'Oracle', 'manual'),
 ]
 
@@ -230,7 +230,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'kollacli', u'kollacli Documentation',
+    ('index', 'kolla-cli', u'kolla-cli Documentation',
      [u'Oracle'], 1)
 ]
 
@@ -244,8 +244,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'kollacli', u'kollacli Documentation',
-   u'Oracle', 'kollacli', 'One line description of project.',
+  ('index', 'kolla-cli', u'kolla-cli Documentation',
+   u'Oracle', 'kolla-cli', 'One line description of project.',
    'Miscellaneous'),
 ]
 

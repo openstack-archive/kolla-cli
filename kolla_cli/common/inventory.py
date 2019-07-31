@@ -72,11 +72,13 @@ class Inventory(object):
     """class version history
 
     4: (v4.0.1):
-        - removed concept of sub-services (not backward compatible)
+        removed concept of sub-services (not backward compatible)
     3: (v3.0.1):
-        - added aodh, ceph
-        - fix to ensure all sub-services have service as parent
+        added aodh, ceph
+        fix to ensure all sub-services have service as parent
+
     2: (v2.1.1) added ceilometer
+
     1: (v2.0.1) initial release
     """
     def __init__(self, inventory_path=None):
@@ -249,11 +251,10 @@ class Inventory(object):
         """setup multiple hosts
 
         hosts_info is a dict of format:
-        {'hostname1': {
-            'password': password
-            'uname': user_name
-            }
-        }
+            {'hostname1': {
+                'password': password
+                'uname': user_name}}
+
         The uname entry is optional.
         """
         failed_hosts = {}
@@ -523,31 +524,26 @@ class Inventory(object):
         groups.
 
         typical ansible json format:
-        {
-        'group': {
-            'hosts': [
-                '192.168.28.71',
-                '192.168.28.72'
-            ],
-            'vars': {
-                'ansible_ssh_user': 'johndoe',
-                'ansible_ssh_private_key_file': '~/.ssh/mykey',
-                'example_variable': 'value'
-            }
-            'children': [ 'marietta', '5points' ]
-        },
-        '_meta': {
-            'hostvars': {
-                '192.168.28.71': {
-                    'host_specific_var': 'bar'
-                },
-                '192.168.28.72': {
-                    'host_specific_var': 'foo'
-                }
-            }
-        }
-    }
-    """
+            {'group': {
+                'hosts': ['192.168.28.71', '192.168.28.72'],
+                'vars': {
+
+                    'ansible_ssh_user': 'johndoe',
+                    'ansible_ssh_private_key_file': '~/.ssh/mykey',
+                    'example_variable': 'value'},
+
+                'children': [ 'marietta', '5points' ]},
+
+             '_meta': {
+                 'hostvars': {
+
+                     '192.168.28.71': {
+                         'host_specific_var': 'bar'},
+
+                     '192.168.28.72': {
+                         'host_specific_var': 'foo'}}}}
+        """
+
         jdict = {}
 
         # if no filter provided, use all groups, all hosts

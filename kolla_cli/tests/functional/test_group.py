@@ -158,17 +158,17 @@ class TestFunctional(KollaCliTest):
         """check groups
 
         group listhosts -f json:
-            group listhosts -f json
-                [{"Group Name": "compute", "Hosts": []},
-                {"Group Name": "control", "Hosts": ["ub-target1"]},
-                {"Group Name": "network", "Hosts": []}]
+            [{"Group Name": "compute", "Hosts": []},
+             {"Group Name": "control", "Hosts": ["ub-target1"]},
+             {"Group Name": "network", "Hosts": []}]
 
-            group listservices -f json:
-                [{"Group Name": "compute", "Services": []},
-                {"Group Name": "control",
-                    "Services": ["glance", "keystone", "mysqlcluster",
-                        "nova", "rabbitmq"]},
-                {"Group Name": "network", "Services": ["haproxy", "neutron"]}]
+        group listservices -f json:
+            [{"Group Name": "compute", "Services": []},
+             {"Group Name": "control",
+              "Services": ["glance", "keystone", "mysqlcluster",
+                           "nova", "rabbitmq"]},
+             {"Group Name": "network",
+              "Services": ["haproxy", "neutron"]}]
         """
         # check hosts in groups
         msg = self.run_cli_cmd('group listhosts -f json')
@@ -224,12 +224,9 @@ class TestFunctional(KollaCliTest):
         """get default groups
 
         return a dict:
-        {
-          groupname: {
-                      Services: [svc1, svc2...],
-                      Hosts: []
-                      }
-        }
+            {groupname: {
+                 Services: [svc1, svc2...],
+                 Hosts: []}}
         """
         ansible_inventory = AnsibleInventory()
         groupnames = ansible_inventory.groups

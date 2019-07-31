@@ -1,7 +1,7 @@
-kollacli
-========
+kolla_cli
+=========
 
 .. toctree::
    :maxdepth: 4
 
-   kollacli
+   kolla_cli

@@ -136,9 +136,10 @@ def run_cmd(cmd, print_output=True):
     """run a system command
 
     return:
-    - err_msg:  empty string=command succeeded
-                not None=command failed
-    - output:   string: all the output of the run command
+        err_msg:
+            empty string=command succeeded not None=command failed
+        output:
+            string: all the output of the run command
     """
     output = None
     try:
