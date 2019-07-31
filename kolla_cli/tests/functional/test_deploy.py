@@ -175,6 +175,21 @@ class TestFunctional(KollaCliTest):
         finally:
             CLIENT.host_remove(['dummy_host'])
 
+    def test_pull(self):
+        # test will upgrade an environment with no hosts, mostly a NOP,
+        # but it will go through the client code paths.
+        self.run_cli_cmd('pull -v')
+
+        CLIENT.host_add(['test_pull_host'])
+        CLIENT.set_deploy_mode(remote_mode=True)
+        job = CLIENT.pull()
+        job.wait()
+        msg = job.get_console_output()
+        self.assertEqual(job.get_status(), 1,
+                         'pull succeeded unexpectedly: %s'
+                         % msg)
+        self.assertIn(UNREACHABLE, msg)
+
     def check_json(self, msg, groups, hosts, included_groups, included_hosts):
         err_msg = ('included groups: %s\n' % included_groups +
                    'included hosts: %s\n' % included_hosts)
