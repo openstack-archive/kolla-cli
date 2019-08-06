@@ -24,7 +24,7 @@ class TestUnit(KollaCliUnitTest):
     def test_deploy(self, _, mock_get_status, mock_deploy):
         mock_get_status.return_value = 0
         mock_deploy.return_value = self.get_fake_job()
-        ret = self.run_cli_command('deploy')
+        ret = self.run_cli_command('action deploy')
         self.assertEqual(ret, 0)
         mock_deploy.assert_called_once_with(None, False, 1, None)
 
@@ -37,6 +37,6 @@ class TestUnit(KollaCliUnitTest):
         mock_deploy.return_value = self.get_fake_job()
         services = ['foo', 'bar']
         ret = self.run_cli_command(
-            'deploy --services {}'.format(','.join(services)))
+            'action deploy --services {}'.format(','.join(services)))
         self.assertEqual(ret, 0)
         mock_deploy.assert_called_once_with(None, False, 1, services)

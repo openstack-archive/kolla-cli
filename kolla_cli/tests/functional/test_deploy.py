@@ -150,13 +150,14 @@ class TestFunctional(KollaCliTest):
                          'error performing whole host deploy %s' % msg)
 
         # test deploy with timeout
-        msg = self.run_cli_cmd('deploy --timeout .001', expect_error=True)
+        msg = self.run_cli_cmd('action deploy --timeout .001',
+                               expect_error=True)
         self.assertIn('timed out', msg)
 
     def test_upgrade(self):
         # test will upgrade an environment with no hosts, mostly a NOP,
         # but it will go through the client code paths.
-        self.run_cli_cmd('upgrade -v')
+        self.run_cli_cmd('action upgrade -v')
 
         msg = ''
         # run rabbitmq service deploy
@@ -178,7 +179,7 @@ class TestFunctional(KollaCliTest):
     def test_pull(self):
         # test will upgrade an environment with no hosts, mostly a NOP,
         # but it will go through the client code paths.
-        self.run_cli_cmd('pull -v')
+        self.run_cli_cmd('action pull -v')
 
         CLIENT.host_add(['test_pull_host'])
         CLIENT.set_deploy_mode(remote_mode=True)
