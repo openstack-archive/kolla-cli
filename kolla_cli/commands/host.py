@@ -185,45 +185,37 @@ class HostList(Lister):
 
 
 class HostCheck(Command):
-    """Check configuration of host(s)."""
+    """Check an ssh check of host(s)."""
 
     def get_parser(self, prog_name):
         parser = super(HostCheck, self).get_parser(prog_name)
         parser.add_argument('hostname', metavar='<hostname | all>',
                             help=u._('Host name or "all"'))
-        parser.add_argument('--predeploy', action='store_true',
-                            help=u._('Run pre-deploy host checks.'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             hostname = parsed_args.hostname.strip()
-            hostnames = [hostname]
             if hostname == 'all':
                 hostnames = _get_all_hostnames()
-
-            if parsed_args.predeploy:
-                # run pre-deploy checks
-                verbose_level = self.app.options.verbose_level
-                job = CLIENT.host_precheck(hostnames, verbose_level)
-                status = job.wait()
-                handers_action_result(job, status, verbose_level)
             else:
-                # just do an ssh check
-                summary = CLIENT.host_ssh_check(hostnames)
-                all_ok = True
-                for hostname, info in summary.items():
-                    status = u._('success')
-                    msg = ''
-                    if not info['success']:
-                        status = u._('failed-')
-                        msg = info['msg']
-                        all_ok = False
-                    LOG.info(u._('Host {host}: {sts} {msg}')
-                             .format(host=hostname, sts=status, msg=msg))
+                hostnames = [hostname]
 
-                if not all_ok:
-                    raise CommandError(u._('Host check failed.'))
+            # just do an ssh check
+            summary = CLIENT.host_ssh_check(hostnames)
+            all_ok = True
+            for hostname, info in summary.items():
+                status = u._('success')
+                msg = ''
+                if not info['success']:
+                    status = u._('failed-')
+                    msg = info['msg']
+                    all_ok = False
+                LOG.info(u._('Host {host}: {sts} {msg}')
+                         .format(host=hostname, sts=status, msg=msg))
+
+            if not all_ok:
+                raise CommandError(u._('Host check failed.'))
         except ClientException as e:
             raise CommandError(str(e))
         except Exception as e:

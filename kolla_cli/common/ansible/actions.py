@@ -118,7 +118,7 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
-    def precheck(self, hostnames):
+    def precheck(self, hostnames=[], servicenames=[]):
         '''run check playbooks on a set of hosts'''
 
         # check that password file has no empty password values
@@ -135,7 +135,8 @@ class KollaAction(object):
         # define 'hosts' to be all, but inventory filtering will subset
         # that down to the hosts in playbook.hosts.
         self.playbook.hosts = hostnames
-        self.playbook.extra_vars = 'kolla_action=precheck hosts=all'
+        self.playbook.services = servicenames
+        self.playbook.extra_vars = 'kolla_action=precheck'
         self.playbook.print_output = True
         job = self.playbook.run()
         return job

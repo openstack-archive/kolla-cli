@@ -135,30 +135,6 @@ class TestUnit(KollaCliUnitTest):
         mock_ssh_check.assert_called_once_with([hostname])
         mock_log.assert_called_once_with('Host %s: failed- FAILED' % hostname)
 
-    @mock.patch('kolla_cli.common.ansible.job.AnsibleJob.get_status')
-    @mock.patch('kolla_cli.commands.host.ClientApi.host_precheck')
-    @mock.patch('kolla_cli.api.client.ClientApi.host_get_all')
-    @mock.patch('kolla_cli.shell.KollaCli._is_inventory_present',
-                return_value=True)
-    def test_host_precheck(self, _, mock_get_all, mock_precheck,
-                           mock_get_status):
-        hostname = 'foo'
-        mock_get_all.return_value = [self.get_fake_host(hostname)]
-
-        # host check hostname --predeploy (success)
-        mock_precheck.return_value = self.get_fake_job()
-        mock_get_status.return_value = 0
-        ret = self.run_cli_command('host check %s --predeploy' % hostname)
-        self.assertEqual(ret, 0)
-        mock_precheck.assert_called_once_with([hostname], 1)
-
-        # host check hostname --predeploy (fail)
-        mock_precheck.reset_mock()
-        mock_get_status.return_value = 1
-        ret = self.run_cli_command('host check %s --predeploy' % hostname)
-        self.assertEqual(ret, 1)
-        mock_precheck.assert_called_once_with([hostname], 1)
-
     @mock.patch('kolla_cli.commands.host.HostSetup._get_yml_data')
     @mock.patch('getpass.getpass')
     @mock.patch('kolla_cli.commands.host.ClientApi.host_ssh_check')

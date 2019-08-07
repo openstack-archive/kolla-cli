@@ -122,7 +122,6 @@ class TestFunctional(KollaCliTest):
         self.check_types(CLIENT.host_setup, [dict])
         self.check_types(CLIENT.host_ssh_check, [list])
         self.check_types(CLIENT.host_destroy, [list, str, int, bool])
-        self.check_types(CLIENT.host_precheck, [list, int])
 
     def test_host_list_nonascii(self):
         hostname = 'host_test1'

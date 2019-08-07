@@ -191,32 +191,6 @@ class HostApi(object):
         return Job(ansible_job)
 
     @staticmethod
-    def host_precheck(hostnames, verbose_level=1):
-        # type: (List[str], int) -> Job
-        """Check pre-deployment configuration of hosts.
-
-        Check if host is ready for a new deployment. This will fail if
-        any of the hosts are not configured correctly or if they have
-        already been deployed to.
-        :param hostnames: host names
-        :type hostnames: list
-        :param verbose_level: the higher the number, the more verbose
-        :type verbose_level: integer
-        :return: Job object
-        :rtype: Job
-        """
-        check_arg(hostnames, u._('Host names'), list)
-        check_arg(verbose_level, u._('Verbose level'), int)
-        hostnames = safe_decode(hostnames)
-        inventory = Inventory.load()
-        inventory.validate_hostnames(hostnames)
-
-        action = KollaAction(verbose_level=verbose_level,
-                             playbook_name='site.yml')
-        ansible_job = action.precheck(hostnames)
-        return Job(ansible_job)
-
-    @staticmethod
     def host_stop(hostnames, verbose_level=1):
         # type: (List[str], int) -> Job
         """Stop Hosts.
