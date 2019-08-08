@@ -85,9 +85,9 @@ class ControlPlaneApi(object):
 
         hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
-        aciton = KollaAction(verbose_level=verbose_level,
+        action = KollaAction(verbose_level=verbose_level,
                              playbook_name='site.yml')
-        ansible_job = aciton.pull(hostnames, servicenames)
+        ansible_job = action.pull(hostnames, servicenames)
         return Job(ansible_job)
 
     @staticmethod
@@ -112,9 +112,9 @@ class ControlPlaneApi(object):
                   empty_ok=True, none_ok=True)
 
         servicenames = safe_decode(servicenames)
-        aciton = KollaAction(verbose_level=verbose_level,
+        action = KollaAction(verbose_level=verbose_level,
                              playbook_name='site.yml')
-        ansible_job = aciton.upgrade(servicenames)
+        ansible_job = action.upgrade(servicenames)
         return Job(ansible_job)
 
     @staticmethod
@@ -142,9 +142,9 @@ class ControlPlaneApi(object):
 
         hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
-        aciton = KollaAction(verbose_level=verbose_level,
+        action = KollaAction(verbose_level=verbose_level,
                              playbook_name='site.yml')
-        ansible_job = aciton.genconfig(hostnames, servicenames)
+        ansible_job = action.genconfig(hostnames, servicenames)
         return Job(ansible_job)
 
     @staticmethod
