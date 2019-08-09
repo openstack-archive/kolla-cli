@@ -12,10 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from kolla_cli.api.exceptions import InvalidHosts
-from kolla_cli.api.exceptions import InvalidServices
 from kolla_cli.common.inventory import Inventory
-import kolla_cli.i18n as u
 
 
 def check_kolla_args(hostnames=[], servicenames=[]):
@@ -25,18 +22,7 @@ def check_kolla_args(hostnames=[], servicenames=[]):
 
     inventory = Inventory.load()
     if hostnames:
-        all_hosts = inventory.get_hostnames()
-        invalid_hosts = list(set(hostnames) - set(all_hosts))
-        if invalid_hosts:
-            raise InvalidHosts(
-                u._('Hosts {hosts} are not valid.').format(
-                    hosts=invalid_hosts))
+        inventory.validate_hostnames(hostnames)
 
     if servicenames:
-        all_services = [service.name
-                        for service in inventory.get_services()]
-        invalid_services = list(set(servicenames) - set(all_services))
-        if invalid_services:
-            raise InvalidServices(
-                u._('Services {services} are not valid.').format(
-                    services=invalid_services))
+        inventory.validate_servicenames(servicenames)

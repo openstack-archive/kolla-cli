@@ -69,16 +69,6 @@ class InvalidConfiguration(ClientException):
     pass
 
 
-class InvalidHosts(ClientException):
-    """Invalid hosts"""
-    pass
-
-
-class InvalidServices(ClientException):
-    """Invalid services"""
-    pass
-
-
 class FailedOperation(ClientException):
     pass
 
