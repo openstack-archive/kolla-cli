@@ -41,7 +41,7 @@ class TestFunctional(KollaCliTest):
 
         # stop services, initialize server
         self.log.info('Start stop #1')
-        job = CLIENT.host_stop(hostnames)
+        job = CLIENT.stop(1, hostnames)
         self._process_job(job, 'stop #1')
 
         self.log.info('updating various properties for the test')
@@ -59,7 +59,7 @@ class TestFunctional(KollaCliTest):
         self._process_job(job, 'deploy')
 
         self.log.info('Start stop #2')
-        job = CLIENT.host_stop(hostnames)
+        job = CLIENT.stop(1, hostnames)
         self._process_job(job, 'stop #2')
 
     def _process_job(self, job, descr, expect_kill=False):
