@@ -164,12 +164,26 @@ class Reconfigure(Command):
     """Reconfigure OpenStack service."""
     def get_parser(self, prog_name):
         parser = super(Reconfigure, self).get_parser(prog_name)
+        parser.add_argument('--hosts', nargs='?',
+                            metavar='<host_list>',
+                            help=u._('Reconfigure host list'))
+        parser.add_argument('--services', nargs='?',
+                            metavar='<service_list>',
+                            help=u._('Reconfigure service list'))
         return parser
 
     def take_action(self, parsed_args):
+        hosts = []
+        services = []
         try:
             verbose_level = self.app.options.verbose_level
-            job = CLIENT.reconfigure(verbose_level)
+            if parsed_args.hosts:
+                host_list = parsed_args.hosts.strip()
+                hosts = host_list.split(',')
+            if parsed_args.services:
+                service_list = parsed_args.services.strip()
+                services = service_list.split(',')
+            job = CLIENT.reconfigure(verbose_level, hosts, services)
             status = job.wait()
             handers_action_result(job, status, verbose_level)
         except Exception:

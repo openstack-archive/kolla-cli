@@ -64,9 +64,11 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
-    def reconfigure(self):
+    def reconfigure(self, hostnames=[], servicenames=[]):
         '''Reconfigure OpenStack service.'''
 
+        self.playbook.hosts = hostnames
+        self.playbook.services = servicenames
         self.playbook.extra_vars = 'kolla_action=reconfigure'
 
         self._run_deploy_rules(self.playbook)
