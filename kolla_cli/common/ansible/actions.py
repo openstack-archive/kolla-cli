@@ -103,7 +103,7 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
-    def stop_hosts(self, hostnames=[]):
+    def stop(self, hostnames=[]):
         '''stop containers on a set of hosts.
 
         The containers on the specified hosts will be stopped

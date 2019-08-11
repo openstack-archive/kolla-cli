@@ -190,6 +190,33 @@ class Reconfigure(Command):
             raise Exception(traceback.format_exc())
 
 
+class Stop(Command):
+    """Stop all kolla containers on host(s).
+
+    Stops all kolla related docker containers on either the
+    specified host or all hosts if the hostname all is used.
+    """
+    def get_parser(self, prog_name):
+        parser = super(Stop, self).get_parser(prog_name)
+        parser.add_argument('--hosts', nargs='?',
+                            metavar='<host_list>',
+                            help=u._('Stop host list'))
+        return parser
+
+    def take_action(self, parsed_args):
+        try:
+            hosts = []
+            verbose_level = self.app.options.verbose_level
+            if parsed_args.hosts:
+                host_list = parsed_args.hosts.strip()
+                hosts = host_list.split(',')
+            job = CLIENT.stop(verbose_level, hosts)
+            status = job.wait()
+            handers_action_result(job, status, verbose_level)
+        except Exception:
+            raise Exception(traceback.format_exc())
+
+
 class Upgrade(Command):
     """Upgrades existing OpenStack Environment."""
     def get_parser(self, prog_name):

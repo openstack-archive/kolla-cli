@@ -294,38 +294,6 @@ class HostSetup(Command):
         return hosts_info
 
 
-class HostStop(Command):
-    """Stop all kolla containers on host(s).
-
-    Stops all kolla related docker containers on either the
-    specified host or all hosts if the hostname all is used.
-    """
-
-    def get_parser(self, prog_name):
-        parser = super(HostStop, self).get_parser(prog_name)
-        parser.add_argument('hostname', metavar='<hostname | all>',
-                            help=u._('Host name or ip address or "all"'))
-        return parser
-
-    def take_action(self, parsed_args):
-        try:
-            hostname = parsed_args.hostname.strip()
-
-            hostnames = [hostname]
-            if hostname == 'all':
-                hostnames = _get_all_hostnames()
-
-            verbose_level = self.app.options.verbose_level
-
-            job = CLIENT.host_stop(hostnames, verbose_level)
-            status = job.wait()
-            handers_action_result(job, status, verbose_level)
-        except ClientException as e:
-            raise CommandError(str(e))
-        except Exception as e:
-            raise Exception(traceback.format_exc())
-
-
 def _get_all_hostnames():
     hostnames = []
     hosts = CLIENT.host_get_all()

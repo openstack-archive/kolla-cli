@@ -176,26 +176,3 @@ class TestUnit(KollaCliUnitTest):
         mock_setup.assert_called_once_with({hostname: {'password': password}})
         mock_yml.assert_called_once_with(fake_path)
         mock_ssh_check.assert_not_called()
-
-    @mock.patch('kolla_cli.common.ansible.job.AnsibleJob.get_status')
-    @mock.patch('kolla_cli.api.client.ClientApi.host_get_all')
-    @mock.patch('kolla_cli.api.client.ClientApi.host_stop')
-    @mock.patch('kolla_cli.shell.KollaCli._is_inventory_present',
-                return_value=True)
-    def test_host_stop(self, _, mock_stop, mock_get_all,
-                       mock_get_status):
-        hostname = 'foo'
-        mock_get_all.return_value = [self.get_fake_host(hostname)]
-        mock_get_status.return_value = 0
-        mock_stop.return_value = self.get_fake_job()
-
-        # host stop hostname
-        ret = self.run_cli_command('host stop %s' % hostname)
-        self.assertEqual(ret, 0)
-        mock_stop.assert_called_once_with([hostname], 1)
-
-        # host stop all
-        mock_stop.reset_mock()
-        ret = self.run_cli_command('host stop all')
-        self.assertEqual(ret, 0)
-        mock_stop.assert_called_once_with([hostname], 1)
