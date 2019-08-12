@@ -41,15 +41,22 @@ def setup_ansible_etc():
     # Create the inventory file (if it doesn't already exist).
     # (The script will exit here if the user doesn't have sufficient privs.)
     inventory_file_path = os.path.join(cli_etc_dir, 'inventory.json')
-    touch_inventory_file_cmd = ('touch %s' % inventory_file_path)
-    _command_exec(touch_inventory_file_cmd)
+    if not os.path.exists(inventory_file_path):
+        touch_inventory_file_cmd = ('touch %s' % inventory_file_path)
+        _command_exec(touch_inventory_file_cmd)
 
     # copy over all kolla ansible etc files
     kolla_ansible_etc_source = os.path.join(kolla_ansible_source_base,
                                             'etc', kolla)
-    copy_kolla_etc_files_cmd = ('cp -a %s/* %s' % (kolla_ansible_etc_source,
-                                                   kolla_ansible_etc_target))
-    _command_exec(copy_kolla_etc_files_cmd)
+    for etc_file in os.listdir(kolla_ansible_etc_source):
+        if not os.path.exists(os.path.join(kolla_ansible_etc_target,
+                                           etc_file)):
+            copy_kolla_etc_files_cmd = (
+                'cp -a {source_dir}/{filename} {target_dir}'.format(
+                    source_dir=kolla_ansible_etc_source,
+                    filename=etc_file,
+                    target_dir=kolla_ansible_etc_target))
+            _command_exec(copy_kolla_etc_files_cmd)
 
     # add ssh keys for cli
     key_path = os.path.join(os.getenv('HOME'), '.ssh', 'id_rsa')
