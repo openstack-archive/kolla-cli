@@ -114,6 +114,25 @@ class GroupRemovehost(Command):
             raise Exception(traceback.format_exc())
 
 
+class GroupList(Lister):
+    """Only list all groups """
+
+    def take_action(self, parsed_args):
+        try:
+            data = [('',)]
+            groups = CLIENT.group_get_all()
+            if groups:
+                data = []
+                for group in groups:
+                    data.append((group.get_name(),))
+            data = convert_lists_to_string(data, parsed_args)
+            return ((u._('Group'), ), sorted(data))
+        except ClientException as e:
+            raise CommandError(str(e))
+        except Exception as e:
+            raise Exception(traceback.format_exc())
+
+
 class GroupListhosts(Lister):
     """List all groups and their hosts."""
 
