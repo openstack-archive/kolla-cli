@@ -221,19 +221,26 @@ class Upgrade(Command):
     """Upgrades existing OpenStack Environment."""
     def get_parser(self, prog_name):
         parser = super(Upgrade, self).get_parser(prog_name)
+        parser.add_argument('--hosts', nargs='?',
+                            metavar='<host_list>',
+                            help=u._('Upgrade host list'))
         parser.add_argument('--services', nargs='?',
                             metavar='<service_list>',
                             help=u._('Upgrade service list'))
         return parser
 
     def take_action(self, parsed_args):
+        hosts = None
         services = None
         try:
+            if parsed_args.hosts:
+                host_list = parsed_args.hosts.strip()
+                hosts = host_list.split(',')
             if parsed_args.services:
                 service_list = parsed_args.services.strip()
                 services = service_list.split(',')
             verbose_level = self.app.options.verbose_level
-            job = CLIENT.upgrade(verbose_level, services)
+            job = CLIENT.upgrade(verbose_level, hosts, services)
             status = job.wait()
             handers_action_result(job, status, verbose_level)
         except Exception:
