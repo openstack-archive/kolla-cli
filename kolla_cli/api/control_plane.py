@@ -52,9 +52,12 @@ class ControlPlaneApi(object):
         check_arg(verbose_level, u._('Verbose level'), int)
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
+
+        check_kolla_args(hostnames=hostnames,
+                         servicenames=servicenames)
+
         hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
-
         action = KollaAction(verbose_level=verbose_level,
                              playbook_name='site.yml')
         ansible_job = action.deploy(hostnames, serial_flag, servicenames)
@@ -82,6 +85,9 @@ class ControlPlaneApi(object):
         check_arg(verbose_level, u._('Verbose level'), int)
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
+
+        check_kolla_args(hostnames=hostnames,
+                         servicenames=servicenames)
 
         hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
@@ -138,6 +144,8 @@ class ControlPlaneApi(object):
                   empty_ok=True, none_ok=True)
         check_arg(verbose_level, u._('Verbose level'), int)
 
+        check_kolla_args(hostnames=hostnames)
+
         hostnames = safe_decode(hostnames)
 
         action = KollaAction(verbose_level=verbose_level,
@@ -165,6 +173,8 @@ class ControlPlaneApi(object):
         check_arg(verbose_level, u._('Verbose level'), int)
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
+
+        check_kolla_args(servicenames=servicenames)
 
         servicenames = safe_decode(servicenames)
         action = KollaAction(verbose_level=verbose_level,
@@ -195,6 +205,9 @@ class ControlPlaneApi(object):
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
 
+        check_kolla_args(hostnames=hostnames,
+                         servicenames=servicenames)
+
         hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
         action = KollaAction(verbose_level=verbose_level,
@@ -214,6 +227,8 @@ class ControlPlaneApi(object):
         check_arg(verbose_level, u._('Verbose level'), int)
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
+
+        check_kolla_args(servicenames=servicenames)
 
         servicenames = safe_decode(servicenames)
         action = KollaAction(verbose_level=verbose_level,
@@ -260,6 +275,10 @@ class ControlPlaneApi(object):
         check_arg(verbose_level, u._('Verbose level'), int)
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
+
+        check_kolla_args(hostnames=hostnames,
+                         servicenames=servicenames)
+
         hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
 
