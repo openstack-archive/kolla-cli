@@ -191,7 +191,7 @@ class ControlPlaneApi(object):
 
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
-        :param servicenames: services to upgrade. If empty, then upgrade all.
+        :param servicenames: services to generate. If empty, then generate all.
         :type servicenames: list of strings
         :return: Job object
         :rtype: Job
