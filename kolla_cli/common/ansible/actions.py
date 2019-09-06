@@ -153,9 +153,10 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
-    def upgrade(self, servicenames=[]):
+    def upgrade(self, hostnames=[], servicenames=[]):
         '''Upgrades existing OpenStack Environment.'''
 
+        self.playbook.hosts = hostnames
         self.playbook.services = servicenames
         self.playbook.extra_vars = 'kolla_action=upgrade'
         self.playbook.print_output = True

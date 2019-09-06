@@ -154,14 +154,16 @@ class ControlPlaneApi(object):
         return Job(ansible_job)
 
     @staticmethod
-    def upgrade(verbose_level=1, servicenames=[]):
-        # type: (int, List[str]) -> Job
+    def upgrade(verbose_level=1, hostnames=[], servicenames=[]):
+        # type: (int, List[str], List[str]) -> Job
         """Upgrade.
 
         Upgrades existing OpenStack Environment.
 
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
+        :param hostnames: hostnames to upgrade.
+        :type hostnames: list of strings.
         :param servicenames: services to upgrade. If empty, then upgrade all.
         :type servicenames: list of strings
         :return: Job object
@@ -171,15 +173,18 @@ class ControlPlaneApi(object):
         "openstack_release."
         """
         check_arg(verbose_level, u._('Verbose level'), int)
+        check_arg(hostnames, u._('Host names'), list,
+                  empty_ok=True, none_ok=True)
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
 
         check_kolla_args(servicenames=servicenames)
 
+        hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
         action = KollaAction(verbose_level=verbose_level,
                              playbook_name='site.yml')
-        ansible_job = action.upgrade(servicenames)
+        ansible_job = action.upgrade(hostnames, servicenames)
         return Job(ansible_job)
 
     @staticmethod
