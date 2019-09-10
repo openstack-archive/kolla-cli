@@ -127,8 +127,8 @@ class ControlPlaneApi(object):
         return Job(ansible_job)
 
     @staticmethod
-    def stop(verbose_level=1, hostnames=[]):
-        # type: (int, List[str]) -> Job
+    def stop(verbose_level=1, hostnames=[], servicenames=[]):
+        # type: (int, List[str], List[str]) -> Job
         """Stop Hosts.
 
         Stops all kolla related docker containers on the specified hosts.
@@ -137,20 +137,25 @@ class ControlPlaneApi(object):
         :type hostnames: list
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
+        :param servicenames: services to stop. If empty, then stop all.
+        :type servicenames: list of strings
         :return: Job object
         :rtype: Job
         """
+        check_arg(verbose_level, u._('Verbose level'), int)
         check_arg(hostnames, u._('Host names'), list,
                   empty_ok=True, none_ok=True)
-        check_arg(verbose_level, u._('Verbose level'), int)
+        check_arg(servicenames, u._('Service names'), list,
+                  empty_ok=True, none_ok=True)
 
-        check_kolla_args(hostnames=hostnames)
+        check_kolla_args(hostnames=hostnames,
+                         servicenames=servicenames)
 
         hostnames = safe_decode(hostnames)
-
+        servicenames = safe_decode(servicenames)
         action = KollaAction(verbose_level=verbose_level,
                              playbook_name='site.yml')
-        ansible_job = action.stop(hostnames)
+        ansible_job = action.stop(hostnames, servicenames)
         return Job(ansible_job)
 
     @staticmethod

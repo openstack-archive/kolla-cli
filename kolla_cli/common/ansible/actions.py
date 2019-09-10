@@ -103,7 +103,7 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
-    def stop(self, hostnames=[]):
+    def stop(self, hostnames=[], servicenames=[]):
         '''stop containers on a set of hosts.
 
         The containers on the specified hosts will be stopped
@@ -114,6 +114,7 @@ class KollaAction(object):
         # 'hosts' is defined as 'all' in the playbook yml code, but inventory
         # filtering will subset that down to the hosts in playbook.hosts.
         self.playbook.hosts = hostnames
+        self.playbook.services = servicenames
         self.playbook.extra_vars = 'kolla_action=stop'
         if self.playbook.verbose_level <= 1:
             self.playbook.print_output = False

@@ -26,7 +26,7 @@ class TestUnit(KollaCliUnitTest):
         mock_stop.return_value = self.get_fake_job()
         ret = self.run_cli_command('action stop')
         self.assertEqual(ret, 0)
-        mock_stop.assert_called_once_with(1, [])
+        mock_stop.assert_called_once_with(1, [], [])
 
     @mock.patch('kolla_cli.api.control_plane.ControlPlaneApi.stop')
     @mock.patch('kolla_cli.common.ansible.job.AnsibleJob.get_status')
@@ -39,4 +39,4 @@ class TestUnit(KollaCliUnitTest):
         ret = self.run_cli_command('action stop --hosts {hosts}'.format(
             hosts=','.join(hostnames)))
         self.assertEqual(ret, 0)
-        mock_stop.assert_called_once_with(1, hostnames)
+        mock_stop.assert_called_once_with(1, hostnames, [])

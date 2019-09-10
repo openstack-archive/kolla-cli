@@ -201,16 +201,23 @@ class Stop(Command):
         parser.add_argument('--hosts', nargs='?',
                             metavar='<host_list>',
                             help=u._('Stop host list'))
+        parser.add_argument('--services', nargs='?',
+                            metavar='<service_list>',
+                            help=u._('Stop service list'))
         return parser
 
     def take_action(self, parsed_args):
         try:
             hosts = []
+            services = []
             verbose_level = self.app.options.verbose_level
             if parsed_args.hosts:
                 host_list = parsed_args.hosts.strip()
                 hosts = host_list.split(',')
-            job = CLIENT.stop(verbose_level, hosts)
+            if parsed_args.services:
+                service_list = parsed_args.services.strip()
+                services = service_list.split(',')
+            job = CLIENT.stop(verbose_level, hosts, services)
             status = job.wait()
             handers_action_result(job, status, verbose_level)
         except Exception:
