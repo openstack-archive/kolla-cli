@@ -33,6 +33,13 @@ GLOBALS_PATH = 'ansible/group_vars/__GLOBAL__'
 ANSIBLE_ROLES_PATH = 'ansible/roles'
 ANSIBLE_DEFAULTS_PATH = 'defaults/main.yml'
 
+DEFAULT_KEYS = ['kolla_base_distro',
+                'kolla_install_type',
+                'openstack_release',
+                'kolla_internal_vip_address',
+                'network_interface',
+                'neutron_external_interface']
+
 
 class AnsibleProperties(object):
 
@@ -238,6 +245,14 @@ class AnsibleProperties(object):
         for _, value in self.unique_global_props.items():
             unique_list.append(value)
         return sorted(unique_list, key=lambda x: x.name)
+
+    def get_default_unique(self):
+        self._load_properties()
+        default_list = []
+        for key, value in self.unique_global_props.items():
+            if key in DEFAULT_KEYS or key.startswith('enable_'):
+                default_list.append(value)
+        return default_list
 
     def get_all_override_flags(self):
         self._load_properties()
