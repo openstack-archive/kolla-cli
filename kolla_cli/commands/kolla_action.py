@@ -237,8 +237,8 @@ class Upgrade(Command):
         return parser
 
     def take_action(self, parsed_args):
-        hosts = None
-        services = None
+        hosts = []
+        services = []
         try:
             if parsed_args.hosts:
                 host_list = parsed_args.hosts.strip()
