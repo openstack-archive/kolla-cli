@@ -105,10 +105,10 @@ class Prechecks(Command):
         parser = super(Prechecks, self).get_parser(prog_name)
         parser.add_argument('--hosts', nargs='?',
                             metavar='<host_list>',
-                            help=u._('Pull host list'))
+                            help=u._('Precheck host list'))
         parser.add_argument('--services', nargs='?',
                             metavar='<service_list>',
-                            help=u._('Pull service list'))
+                            help=u._('Precheck service list'))
         return parser
 
     def take_action(self, parsed_args):
