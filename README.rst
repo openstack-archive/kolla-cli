@@ -70,6 +70,38 @@ to add a host to the inventory:
 
 CLIENT.host_add(['host_name'])
 
+Generating Documentation
+========================
+
+We use `Sphinx <https://pypi.python.org/pypi/Sphinx>`_ to maintain the
+documentation. You can install Sphinx using pip.
+
+::
+
+    $ pip install -U Sphinx
+
+In addition to Sphinx you will also need the following requirements
+(not covered by `requirements.txt`)::
+
+    $ pip install openstackdocstheme reno 'reno[sphinx]'
+
+The source code of the documentation are under *doc*, you can generate the
+html files using the following command. If the generation succeeds,a
+*build/html* dir will be created under *doc*.
+
+::
+
+    $ cd doc
+    $ make html
+
+Now you can serve the documentation at http://localhost:8080 as a simple
+website.
+
+::
+
+    $ cd build/html
+    $ python -m SimpleHTTPServer 8080
+
 Getting Involved
 ================
 
