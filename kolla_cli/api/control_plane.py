@@ -226,24 +226,32 @@ class ControlPlaneApi(object):
         return Job(ansible_job)
 
     @staticmethod
-    def check(verbose_level=1, servicenames=[]):
+    def check(verbose_level=1, hostnames=[], servicenames=[]):
+        # type: (int, List[str], List[str]) -> Job
         """Do post-deployment smoke tests.
 
+        :param hostnames: host names
+        :type hostnames: list
         :param verbose_level: the higher the number, the more verbose
         :type verbose_level: integer
+        :param servicenames: services to check. If empty, then check all.
+        :type servicenames: list of strings
         :return: Job object
         :rtype: Job
         """
         check_arg(verbose_level, u._('Verbose level'), int)
+        check_arg(hostnames, u._('Host names'), list,
+                  empty_ok=True, none_ok=True)
         check_arg(servicenames, u._('Service names'), list,
                   empty_ok=True, none_ok=True)
 
         check_kolla_args(servicenames=servicenames)
 
+        hostnames = safe_decode(hostnames)
         servicenames = safe_decode(servicenames)
         action = KollaAction(verbose_level=verbose_level,
                              playbook_name='site.yml')
-        ansible_job = action.check(servicenames)
+        ansible_job = action.check(hostnames, servicenames)
         return Job(ansible_job)
 
     @staticmethod

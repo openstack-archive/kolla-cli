@@ -174,9 +174,10 @@ class KollaAction(object):
         job = self.playbook.run()
         return job
 
-    def check(self, servicenames=[]):
+    def check(self, hostnames=[], servicenames=[]):
         '''Do post-deployment smoke tests.'''
 
+        self.playbook.hosts = hostnames
         self.playbook.services = servicenames
         self.playbook.extra_vars = 'kolla_action=check'
         self.playbook.print_output = True
