@@ -263,7 +263,7 @@ class Check(Command):
                             help=u._('Check host list'))
         parser.add_argument('--services', nargs='?',
                             metavar='<service_list>',
-                            help=u._('Upgrade service list'))
+                            help=u._('Check service list'))
         return parser
 
     def take_action(self, parsed_args):
