@@ -81,7 +81,7 @@ documentation. You can install Sphinx using pip.
     $ pip install -U Sphinx
 
 In addition to Sphinx you will also need the following requirements
-(not covered by `requirements.txt`)::
+(covered by `doc/requirements.txt`)::
 
     $ pip install openstackdocstheme reno 'reno[sphinx]'
 
