@@ -1,19 +1,5 @@
 ---
 - job:
-    name: kollacli-tox-functional-py27
-    parent: openstack-tox
-    description: |
-      Run tox-based py27 functional tests for the OpenStack Kolla-cli project.
-      Uses tox with the ``functional`` environment.
-    irrelevant-files:
-      - ^.*\.rst$
-      - ^doc/source/.*$
-      - ^releasenotes/.*$
-    vars:
-      tox_envlist: functional-py27
-    timeout: 3600
-
-- job:
     name: kollacli-tox-functional-py36
     parent: openstack-tox
     description: |
