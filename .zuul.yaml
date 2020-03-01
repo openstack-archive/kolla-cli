@@ -40,16 +40,13 @@
     templates:
       - openstack-cover-jobs
       - openstack-lower-constraints-jobs
-      - openstack-python-jobs
       - openstack-python3-ussuri-jobs
       - publish-openstack-docs-pti
     check:
       jobs:
         - kollacli-tox-mypy
-        - kollacli-tox-functional-py27
         - kollacli-tox-functional-py36
     gate:
       jobs:
         - kollacli-tox-mypy
-        - kollacli-tox-functional-py27
         - kollacli-tox-functional-py36

@@ -197,18 +197,6 @@ class TestFunctional(KollaCliTest):
                          'Group: %s, still listed in services: %s'
                          % (test_group, msg))
 
-    def test_ceph(self):
-        # ceph has an odd structure in the upstream all-in-one file.
-        # It was changed in 3.0.1 of kolla. This test is to check that
-        # the kolla change was not overwritten by a kolla update from upstream.
-        # If the upstream file is used, ceph will default to having no
-        # groups.
-        inventory = Inventory.load()
-        ceph = inventory.get_service('ceph')
-        groups = ceph.get_groupnames()
-        self.assertIsNot(groups, 'ceph has no groups, could be due to '
-                         'using an unpatched upstream all-in-one file.')
-
 
 if __name__ == '__main__':
     unittest.main()
