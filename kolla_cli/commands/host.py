@@ -51,7 +51,7 @@ class HostAdd(Command):
 
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -108,7 +108,7 @@ class HostDestroy(Command):
             handers_action_result(job, status, verbose_level)
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
     def _is_ok_to_delete_data(self):
@@ -140,7 +140,7 @@ class HostRemove(Command):
 
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -180,7 +180,7 @@ class HostList(Lister):
 
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -218,7 +218,7 @@ class HostCheck(Command):
                 raise CommandError(u._('Host check failed.'))
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -276,7 +276,7 @@ class HostSetup(Command):
 
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
     def _get_yml_data(self, yml_path):

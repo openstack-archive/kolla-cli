@@ -139,5 +139,6 @@ def main():
     setup_ansible_etc()
     setup_ansible_home()
 
+
 if __name__ == '__main__':
     main()

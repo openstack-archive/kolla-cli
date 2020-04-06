@@ -105,44 +105,44 @@ class TestFunctional(KollaCliTest):
             self._test_v2_upgrade()
 
     def _test_v1_upgrade(self):
-            # this is a v1 inventory
-            # in v1 > v2, ceilometer was added, check that it's there
-            # and verify that all ceilometer groups are in the same groups
-            # as heat.
-            ansible_inventory = AnsibleInventory()
-            heat = CLIENT.service_get(['heat'])[0]
-            expected_groups = sorted(heat.get_groups())
-            ceilometer = ansible_inventory.services['ceilometer']
-            expected_services = ceilometer.get_sub_servicenames()
-            expected_services.append('ceilometer')
-            expected_services = sorted(expected_services)
-            services = CLIENT.service_get_all()
-            services_found = []
+        # this is a v1 inventory
+        # in v1 > v2, ceilometer was added, check that it's there
+        # and verify that all ceilometer groups are in the same groups
+        # as heat.
+        ansible_inventory = AnsibleInventory()
+        heat = CLIENT.service_get(['heat'])[0]
+        expected_groups = sorted(heat.get_groups())
+        ceilometer = ansible_inventory.services['ceilometer']
+        expected_services = ceilometer.get_sub_servicenames()
+        expected_services.append('ceilometer')
+        expected_services = sorted(expected_services)
+        services = CLIENT.service_get_all()
+        services_found = []
 
-            for service in services:
-                servicename = service.get_name()
-                if servicename.startswith('ceilometer'):
-                    groups = sorted(service.get_groups())
-                    if servicename == 'ceilometer':
-                        self.assertEqual(expected_groups, groups,
-                                         'groups mismatch between '
-                                         'ceilometer '
-                                         'and %s' % servicename)
-                    elif servicename == 'ceilometer-compute':
-                        self.assertEqual(['compute'], groups,
-                                         'groups mismatch between '
-                                         'ceilometer-compute '
-                                         'and %s' % servicename)
-                    else:
-                        # sub-services should have no groups (they inherit)
-                        self.assertEqual([], groups,
-                                         '%s has unexpected groups'
-                                         % servicename)
-                    services_found.append(servicename)
+        for service in services:
+            servicename = service.get_name()
+            if servicename.startswith('ceilometer'):
+                groups = sorted(service.get_groups())
+                if servicename == 'ceilometer':
+                    self.assertEqual(expected_groups, groups,
+                                     'groups mismatch between '
+                                     'ceilometer '
+                                     'and %s' % servicename)
+                elif servicename == 'ceilometer-compute':
+                    self.assertEqual(['compute'], groups,
+                                     'groups mismatch between '
+                                     'ceilometer-compute '
+                                     'and %s' % servicename)
+                else:
+                    # sub-services should have no groups (they inherit)
+                    self.assertEqual([], groups,
+                                     '%s has unexpected groups'
+                                     % servicename)
+                services_found.append(servicename)
 
-            services_found = sorted(services_found)
-            self.assertEqual(expected_services, services_found,
-                             'ceilometer subservices mismatch')
+        services_found = sorted(services_found)
+        self.assertEqual(expected_services, services_found,
+                         'ceilometer subservices mismatch')
 
     def _test_v2_upgrade(self):
         # this is a v2 inventory. In the v2 to v3 upgrade, all subservices were
@@ -168,6 +168,7 @@ class TestFunctional(KollaCliTest):
         # aodh and ceph were added in 3.0.1
         self.assertIn('aodh', servicenames, 'aodh not in inventory')
         self.assertIn('ceph', servicenames, 'ceph not in inventory')
+
 
 if __name__ == '__main__':
     unittest.main()

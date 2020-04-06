@@ -289,5 +289,6 @@ class TestFunctional(KollaCliTest):
                          (key, value, prop['OVR'], ovr_string))
         return error_msg
 
+
 if __name__ == '__main__':
     unittest.main()

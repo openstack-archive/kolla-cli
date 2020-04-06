@@ -191,5 +191,6 @@ class TestFunctional(KollaCliTest):
         home = os.path.expanduser('~')
         return os.path.join(home, TEST_YML_FNAME)
 
+
 if __name__ == '__main__':
     unittest.main()

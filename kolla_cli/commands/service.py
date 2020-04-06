@@ -51,7 +51,7 @@ class ServiceAddGroup(Command):
 
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -76,7 +76,7 @@ class ServiceRemoveGroup(Command):
 
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -97,7 +97,7 @@ class ServiceListGroups(Lister):
             return (u._('Service'), u._('Groups')), sorted(data)
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -119,5 +119,5 @@ class ServiceList(Lister):
 
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())

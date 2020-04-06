@@ -41,7 +41,7 @@ class GroupAdd(Command):
             CLIENT.group_add([groupname])
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -61,7 +61,7 @@ class GroupRemove(Command):
             CLIENT.group_remove([groupname])
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -85,7 +85,7 @@ class GroupAddhost(Command):
 
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -110,7 +110,7 @@ class GroupRemovehost(Command):
 
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -129,7 +129,7 @@ class GroupList(Lister):
             return ((u._('Group'), ), sorted(data))
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -149,7 +149,7 @@ class GroupListhosts(Lister):
             return ((u._('Group'), u._('Hosts')), sorted(data))
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())
 
 
@@ -169,5 +169,5 @@ class GroupListservices(Lister):
             return ((u._('Group'), u._('Services')), sorted(data))
         except ClientException as e:
             raise CommandError(str(e))
-        except Exception as e:
+        except Exception:
             raise Exception(traceback.format_exc())

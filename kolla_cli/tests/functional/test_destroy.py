@@ -92,5 +92,6 @@ class TestFunctional(KollaCliTest):
                           'Job %s: No hosts, but got wrong error: %s'
                           % (descr, output))
 
+
 if __name__ == '__main__':
     unittest.main()

@@ -210,7 +210,7 @@ class AnsibleJob(object):
         u'/etc/kolla/config/aodh.conf'"}\n
         """
         fail_key = '\nfailed: '
-        hostnames = re.findall(fail_key + '\[(.+?)]', self._cmd_output)
+        hostnames = re.findall(fail_key + r'\[(.+?)]', self._cmd_output)
         msgs = re.findall(fail_key + '.+ => (.+?)\n', self._cmd_output)
 
         for i in range(0, min(len(hostnames), len(msgs))):

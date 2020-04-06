@@ -45,5 +45,6 @@ class TestFunctional(KollaCliTest):
                              'unexpected exception in reconfigure %s, %s'
                              % (e.message, msg))
 
+
 if __name__ == '__main__':
     unittest.main()

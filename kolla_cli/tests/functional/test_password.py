@@ -131,5 +131,6 @@ class TestFunctional(KollaCliTest):
                 return True
         return False
 
+
 if __name__ == '__main__':
     unittest.main()

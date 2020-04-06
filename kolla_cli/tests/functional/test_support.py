@@ -71,8 +71,8 @@ class TestFunctional(KollaCliTest):
                 raise Exception('get_logs command succeeded without physical '
                                 'hosts')
         except Exception as e:
-                self.assertIn('UNREACHABLE', str(e),
-                              'unexpected failure in get_logs: %s' % str(e))
+            self.assertIn('UNREACHABLE', str(e),
+                          'unexpected failure in get_logs: %s' % str(e))
         finally:
             if os.path.exists(LOGDIR):
                 shutil.rmtree(LOGDIR)

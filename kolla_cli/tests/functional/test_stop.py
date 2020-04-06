@@ -74,5 +74,6 @@ class TestFunctional(KollaCliTest):
             self.assertEqual(1, status, 'Job %s ' % descr +
                              'succeeded when it should have failed')
 
+
 if __name__ == '__main__':
     unittest.main()

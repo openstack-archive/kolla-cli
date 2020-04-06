@@ -114,28 +114,28 @@ class KollaCliTest(testtools.TestCase):
                 self._check_invalid_arg(method, new_args)
 
     def _check_invalid_arg(self, method, args):
-            assert(len(args) <= 5)
-            try:
-                if len(args) == 1:
-                    method(args[0])
-                elif len(args) == 2:
-                    method(args[0], args[1])
-                elif len(args) == 3:
-                    method(args[0], args[1], args[2])
-                elif len(args) == 4:
-                    method(args[0], args[1], args[2], args[3])
-                elif len(args) == 5:
-                    method(args[0], args[1], args[2], args[3], args[4])
-            except InvalidArgument:
-                # success
-                return
-            except Exception as e:
-                self.assertTrue(False,
-                                'method: %s, arg: %s ' % (method, args) +
-                                'failed with the wrong exception: '
-                                '%s' % str(e))
-            self.assertTrue(False, 'method: %s, arg: %s did not fail'
-                            % (method, args))
+        assert(len(args) <= 5)
+        try:
+            if len(args) == 1:
+                method(args[0])
+            elif len(args) == 2:
+                method(args[0], args[1])
+            elif len(args) == 3:
+                method(args[0], args[1], args[2])
+            elif len(args) == 4:
+                method(args[0], args[1], args[2], args[3])
+            elif len(args) == 5:
+                method(args[0], args[1], args[2], args[3], args[4])
+        except InvalidArgument:
+            # success
+            return
+        except Exception as e:
+            self.assertTrue(False,
+                            'method: %s, arg: %s ' % (method, args) +
+                            'failed with the wrong exception: '
+                            '%s' % str(e))
+        self.assertTrue(False, 'method: %s, arg: %s did not fail'
+                        % (method, args))
 
     # PRIVATE FUNCTIONS ----------------------------------------------------
     def _save_config(self):
