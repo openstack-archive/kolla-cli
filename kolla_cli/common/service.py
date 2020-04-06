@@ -50,7 +50,7 @@ class Service(object):
             self._groupnames.remove(groupname)
 
     def set_groupnames(self, groupnames):
-            self._groupnames = groupnames
+        self._groupnames = groupnames
 
     def get_groupnames(self):
         return copy(self._groupnames)

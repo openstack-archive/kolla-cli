@@ -112,5 +112,6 @@ def main():
 
     print('Log collection complete. Logs are at %s' % tar_path)
 
+
 if __name__ == '__main__':
     main()
