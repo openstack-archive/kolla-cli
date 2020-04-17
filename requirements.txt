@@ -1,10 +1,6 @@
-# The order of packages is significant, because pip processes them in the order
-# of appearance. Changing the order has an impact on the overall integration
-# process, which may cause wedges in the gate later.
-
-Babel>=2.5.3 # BSD
 cliff>=2.11.0 # Apache-2.0
 cliff-tablib>=2.0 # Apache-2.0
+docker>=2.4.2 # Apache-2.0
 jsonpickle>=0.9 # BSD
 oslo.i18n>=3.20.0 # Apache-2.0
 paramiko>=2.6.0 # LGPL
