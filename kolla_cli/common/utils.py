@@ -18,7 +18,6 @@ import grp
 import logging
 import os
 import pwd
-import six
 import subprocess  # nosec
 import time
 import yaml
@@ -119,17 +118,6 @@ def get_ansible_command(playbook=False):
     if playbook:
         cmd = 'ansible-playbook'
     return cmd
-
-
-def convert_to_unicode(the_string):
-    """convert string to unicode.
-
-    This is used to fixup extended ascii chars in strings. these chars cause
-    errors in json pickle/unpickle.
-    """
-    if the_string is None:
-        return the_string
-    return six.u(the_string)
 
 
 def run_cmd(cmd, print_output=True):
@@ -422,7 +410,7 @@ def safe_decode(obj_to_decode):
             new_obj[key] = value
     else:
         new_obj = obj_to_decode
-        if not isinstance(obj_to_decode, six.text_type):
+        if not isinstance(obj_to_decode, str):
             # object is not unicode
             new_obj = obj_to_decode.decode('utf-8')
     return new_obj
@@ -478,7 +466,7 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False,
         # None arg
         raise MissingArgument(param_name)
 
-    if ((isinstance(param, six.string_types) or
+    if ((isinstance(param, str) or
             isinstance(param, dict) or
             isinstance(param, list)) and
             not param and not empty_ok):
@@ -488,9 +476,6 @@ def check_arg(param, param_name, expected_type, none_ok=False, empty_ok=False,
     # if expected type is None, skip the type checking
     if expected_type is None:
         return
-    # normalize expected string types for py2 and py3
-    if expected_type is str:
-        expected_type = six.string_types
 
     if not isinstance(param, expected_type):
         # wrong type
