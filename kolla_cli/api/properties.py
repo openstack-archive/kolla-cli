@@ -13,7 +13,6 @@
 #    under the License.
 
 import logging
-import six
 import yaml
 
 from kolla_cli.api.exceptions import InvalidArgument
@@ -66,8 +65,7 @@ class PropertyApi(object):
                     # string to a property.  without this safe_load will turn
                     # an empty string into a None which is different than an
                     # empty string.
-                    if isinstance(original_value, six.string_types)\
-                            and value is None:
+                    if isinstance(original_value, str) and value is None:
                         value = ''
                     if current_property.value is None:
                         current_property_type = None
