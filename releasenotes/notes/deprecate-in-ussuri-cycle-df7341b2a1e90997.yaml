@@ -1,0 +1,6 @@
+---
+prelude: >
+    Kolla CLI is deprecated in the Ussuri cycle due to general lack of interest.
+    The deliverable is expected to leave OpenStack governance in the next
+    (Victoria) cycle. If you use this project and are able to help support it,
+    please contact the Kolla team.
