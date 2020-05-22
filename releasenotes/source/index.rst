@@ -10,6 +10,7 @@ Welcome to Kolla-cli Release Notes documentation
    :maxdepth: 2
 
    unreleased
+   ussuri
    train
 
 
