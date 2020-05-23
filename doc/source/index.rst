@@ -6,6 +6,9 @@
 Welcome to kolla-cli's documentation!
 =====================================
 
+**This project is deprecated since the Ussuri release and will not be
+maintained in the future.**
+
 Contents:
 
 .. toctree::
