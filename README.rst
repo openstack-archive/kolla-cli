@@ -1,3 +1,6 @@
+**This project is deprecated since the Ussuri release and will not be
+maintained in the future.**
+
 =========
 Kolla-CLI
 =========
