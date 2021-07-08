@@ -10,4 +10,4 @@ directly or Kayobe at https://opendev.org/openstack/kayobe .
 
 For any further questions, please email
 openstack-discuss@lists.openstack.org or join #openstack-kolla on
-Freenode.
+OFTC.
